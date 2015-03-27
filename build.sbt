@@ -1,7 +1,7 @@
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
 val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % "1.9.19"
 val nscalaTimeArtifact      = "com.github.nscala-time" %% "nscala-time"               % "1.8.0"
-val json4sJacksonArtifact   = "org.json4s"             %% "json4s-jackson"            % "3.2.11"
+val json4sJacksonArtifact   = "org.json4s"             %% "json4s-jackson"            % "3.2.10"
 val scoptArtifact           = "com.github.scopt"       %% "scopt"                     % "3.3.0"
 val configArtifact          = "com.typesafe"           %  "config"                    % "1.2.1"
 
