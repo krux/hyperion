@@ -6,7 +6,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
-## 0.0.0 - 2015-03-25
+## 1.0.2 - 2015-03-27
+### Fixed
+- #15 - downgrade json4s to 3.2.10
+
+## 1.0.1 - 2015-03-26
+### Fixed
+- #11 - Spark and MapReduce should dependOn PipelineActivity
+
+## 1.0.0 - 2015-03-25
 ### Changed
 - First public release
 
