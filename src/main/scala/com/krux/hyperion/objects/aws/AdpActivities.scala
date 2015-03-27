@@ -1,5 +1,39 @@
 package com.krux.hyperion.objects.aws
 
+
+/*
+ * This object includes the following fields from the Activity object.
+ *
+ * @param dependsOn One or more references to other Activities that must reach the FINISHED state before this activity will start.  Activity object reference No
+ * @param onFail  The SnsAlarm to use when the current instance fails.  SnsAlarm object reference No
+ * @param onSuccess The SnsAlarm to use when the current instance succeeds. SnsAlarm object reference No
+ * @param precondition  A condition that must be met before the object can run. To specify multiple conditions, add multiple precondition fields. The activity cannot run until all its conditions are met. List of preconditions No
+ *
+ */
+
+/*
+ * This object includes the following fields from RunnableObject.
+ *
+ * @param attemptTimeout The timeout time interval for an object attempt. If an attempt does not complete within the start time plus this time interval, AWS Data Pipeline marks the attempt as failed and your retry settings determine the next steps taken.
+ * @param failureAndRerunMode  Determines whether pipeline object failures and rerun commands cascade through pipeline object dependencies. For more information, see Cascading Failures and Reruns. String. Possible values are cascade and none.
+ * @param lateAfterTimeout The time period in which the object run must start. If the object does not start within the scheduled start time plus this time interval, it is considered late.  Time period; for example, "1 hour". The minimum value is "15 minutes".  No
+ * @param maximumRetries  The maximum number of times to retry the action. The default value is 2, which results in 3 tries total (1 original attempt plus 2 retries). The maximum value is 5 (6 total attempts). Integer
+ * @param onFail An action to run when the current object fails. List of SnsAlarm object references  No
+ * @param onLateAction  The SnsAlarm to use when the object's run is late.  List of SnsAlarm object references  No
+ * @param onSuccess An action to run when the current object succeeds.  List of SnsAlarm object references  No
+ * @param retryDelay The timeout duration between two retry attempts. The default is 10 minutes. Period. Minimum is "1 second".
+ */
+
+/*
+ * This object includes the following fields from SchedulableObject
+ * @param maxActiveInstances The maximum number of concurrent active instances of a component. For activities, setting this to 1 runs instances in strict chronological order.
+ *                           A value greater than 1 allows different instances of the activity to run concurrently and requires you to ensure your activity can tolerate
+ *                           concurrent execution. Integer between 1 and 5
+ * @param runsOn  The computational resource to run the activity or command. For example, an Amazon EC2 instance or Amazon EMR cluster. Resource object reference
+ * @param workerGroup The worker group. This is used for routing tasks. If you provide a runsOn value and workerGroup exists, workerGroup is ignored. String
+ */
+
+
 /**
  * AWS Data Pipeline activity objects.
  *
@@ -21,6 +55,29 @@ trait AdpActivity extends AdpDataPipelineObject {
 }
 
 /**
+ * ref: http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-copyactivity.html
+ *
+ * @param id The ID of the object. IDs must be unique within a pipeline definition.
+ * @param name The optional, user-defined label of the object. If you do not provide a name for an object in a pipeline definition, AWS Data Pipeline automatically duplicates the value of id.
+ * @param input The input data source.
+ * @param output The location for the output.
+ * @param dependsOn Required for AdpActivity
+ *
+ */
+case class AdpCopyActivity (
+  id: String,
+  name: Option[String],
+  input: AdpRef[AdpDataNode],
+  output: AdpRef[AdpDataNode],
+  runsOn: AdpRef[AdpEc2Resource],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+) extends AdpActivity {
+
+  val `type` = "CopyActivity"
+
+}
+
+/**
  * ref: http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-redshiftcopyactivity.html
  *
  * @param id required for AdpDataPipelineObject
@@ -39,17 +96,17 @@ trait AdpActivity extends AdpDataPipelineObject {
  * @param dependsOn Required for AdpActivity
  */
 case class AdpRedshiftCopyActivity (
-    id: String,
-    name: Option[String],
-    input: AdpRef[AdpDataNode],
-    insertMode: String,
-    output: AdpRef[AdpDataNode],
-    runsOn: AdpRef[AdpEc2Resource],
-    transformSql: Option[String],
-    commandOptions: Option[Seq[String]],
-    queue: Option[String],
-    dependsOn: Option[Seq[AdpRef[AdpActivity]]]
-  ) extends AdpActivity {
+  id: String,
+  name: Option[String],
+  input: AdpRef[AdpDataNode],
+  insertMode: String,
+  output: AdpRef[AdpDataNode],
+  runsOn: AdpRef[AdpEc2Resource],
+  transformSql: Option[String],
+  commandOptions: Option[Seq[String]],
+  queue: Option[String],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+) extends AdpActivity {
 
   val `type` = "RedshiftCopyActivity"
 
@@ -67,23 +124,122 @@ case class AdpRedshiftCopyActivity (
  *   up to 255, add multiple preStepCommand fields.
  * @param postStepCommand Shell scripts to be run after all steps are finished. To specify multiple
  *   scripts, up to 255, add multiple postStepCommand fields.
+ * @param actionOnResourceFailure Action for the EmrCluster to take when it fails.  String: retryall (retry all inputs) or retrynone (retry nothing)
+ * @param actionOnTaskFailure Action for the activity/task to take when its associated EmrCluster fails.  String: continue (do not terminate the cluster) or terminate
  * @param runsOn The Amazon EMR cluster to run this cluster.
  * @param step One or more steps for the cluster to run. To specify multiple steps, up to 255, add
  *   multiple step fields. Use comma-separated arguments after the JAR name; for example,
  *   "s3://example-bucket/MyWork.jar,arg1,arg2,arg3".
  */
 case class AdpEmrActivity (
-    id: String,
-    name: Option[String],
-    input: Option[AdpRef[AdpDataNode]],
-    output: Option[AdpRef[AdpDataNode]],
-    preStepCommand: Option[Seq[String]],
-    postStepCommand: Option[Seq[String]],
-    runsOn: AdpRef[AdpEmrCluster],
-    step: Seq[String],
-    dependsOn: Option[Seq[AdpRef[AdpActivity]]]
-  ) extends AdpActivity {
+  id: String,
+  name: Option[String],
+  input: Option[AdpRef[AdpDataNode]],
+  output: Option[AdpRef[AdpDataNode]],
+  preStepCommand: Option[Seq[String]],
+  postStepCommand: Option[Seq[String]],
+  actionOnResourceFailure: Option[String],
+  actionOnTaskFailure: Option[String],
+  step: Seq[String],
+  runsOn: AdpRef[AdpEmrCluster],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+) extends AdpActivity {
+
   val `type` = "EmrActivity"
+
+}
+
+/**
+ * ref: http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-hiveactivity.html
+ *
+ * @param hiveScript The Hive script to run.
+ * @param input The input data source.  Data node object reference  Yes
+ * @param output The location for the output.  Data node object reference  Yes
+ * @param runsOn The Amazon EMR cluster to run this activity.  EmrCluster object reference Yes
+ * @param scriptUri The location of the Hive script to run. For example, s3://script location.
+ * @param scriptVariable Specifies script variables for Amazon EMR to pass to Hive while running a script.
+ *                       For example, the following example script variables would pass a SAMPLE and
+ *                       FILTER_DATE variable to Hive: SAMPLE=s3://elasticmapreduce/samples/hive-ads and
+ *                       FILTER_DATE=#{format(@scheduledStartTime,'YYYY-MM-dd')}%
+ *                       This field accepts multiple values and works with both script and scriptUri fields.
+ *                       In addition, scriptVariable functions regardless of stage set to true or false.
+ *                       This field is especially useful to send dynamic values to Hive using AWS Data
+ *                       Pipeline expressions and functions. For more information, see Pipeline
+ *                       Expressions and Functions.
+ * @param stage Determines whether staging is enabled. Not permitted with Hive 11, so use an Amazon EMR AMI version 3.2.0 or greater.
+ */
+case class AdpHiveActivity (
+  id: String,
+  name: Option[String],
+  hiveScript: Option[String],
+  scriptUri: Option[String],
+  scriptVariable: Option[String],
+  input: AdpRef[AdpDataNode],
+  output: AdpRef[AdpDataNode],
+  stage: String,
+  runsOn: AdpRef[AdpEmrCluster],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+) extends AdpActivity {
+
+  val `type` = "HiveActivity"
+
+}
+
+/**
+ * ref: http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-hivecopyactivity.html
+ *
+ * @param filterSql  A Hive SQL statement fragment that filters a subset of DynamoDB or Amazon S3 data to copy. The filter should only contain predicates and not begin with a WHERE clause, because AWS Data Pipeline adds it automatically.
+ * @param generatedScriptsPath  An Amazon S3 path capturing the Hive script that ran after all the expressions in it were evaluated, including staging information. This script is stored for troubleshooting purposes.
+ * @param input The input data node. This must be S3DataNode or DynamoDBDataNode. If you use DynamoDBDataNode, specify a DynamoDBExportDataFormat.
+ * @param output  The output data node. If input is S3DataNode, this must be DynamoDBDataNode. Otherwise, this can be S3DataNode or DynamoDBDataNode. If you use DynamoDBDataNode, specify a DynamoDBExportDataFormat.
+ *
+ */
+case class AdpHiveCopyActivity (
+  id: String,
+  name: Option[String],
+  filterSql: Option[String],
+  generatedScriptsPath: Option[String],
+  input: AdpRef[AdpDataNode],
+  output: AdpRef[AdpDataNode],
+  runsOn: AdpRef[AdpEmrCluster],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+) extends AdpActivity {
+
+  val `type` = "HiveCopyActivity"
+
+}
+
+/**
+ * ref: http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-pigactivity.html
+ *
+ * @param generatedScriptsPath An Amazon S3 path to capture the Pig script that ran after all the expressions
+ *                             in it were evaluated, including staging information. This script is stored for
+ *                             historical, troubleshooting purposes.
+ * @param input The input data source.
+ * @param output The location for the output.
+ * @param script The Pig script to run. You must specify either script or scriptUri.
+ * @param scriptUri The location of the Pig script to run. For example, s3://script location. You must specify either scriptUri or script.
+ * @param scriptVariable The arguments to pass to the Pig script. You can use scriptVariable with script or scriptUri.
+ * @param stage Determines whether staging is enabled and allows your Pig script to have access to the
+ *              staged-data tables, such as ${INPUT1} and ${OUTPUT1}.
+ *
+ */
+case class AdpPigActivity (
+  id: String,
+  name: Option[String],
+  generatedScriptsPath: Option[String],
+  script: Option[String],
+  scriptUri: Option[String],
+  scriptVariable: Option[String],
+  input: AdpRef[AdpDataNode],
+  output: AdpRef[AdpDataNode],
+  stage: String,
+  runsOn: AdpRef[AdpEmrCluster],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+) extends AdpActivity {
+
+  val `type` = "PigActivity"
+
 }
 
 /**
@@ -101,16 +257,18 @@ case class AdpEmrActivity (
  * be any use case for now.
  */
 case class AdpSqlActivity (
-    id: String,
-    name: Option[String],
-    database: AdpRef[AdpDatabase],
-    script: String,
-    scriptArgument: Option[Seq[String]],
-    queue: Option[String],
-    dependsOn: Option[Seq[AdpRef[AdpActivity]]],
-    runsOn: AdpRef[AdpEc2Resource]
-  ) extends AdpActivity {
+  id: String,
+  name: Option[String],
+  database: AdpRef[AdpDatabase],
+  script: String,
+  scriptArgument: Option[Seq[String]],
+  queue: Option[String],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  runsOn: AdpRef[AdpEc2Resource]
+) extends AdpActivity {
+
   val `type` = "SqlActivity"
+
 }
 
 /**
@@ -127,18 +285,20 @@ case class AdpSqlActivity (
  * @param stdout The Amazon S3 path that receives redirected output from the command. If you use the runsOn field, this must be an Amazon S3 path because of the transitory nature of the resource running your activity. However if you specify the workerGroup field, a local file path is permitted.
  */
 case class AdpShellCommandActivity (
-    id: String,
-    name: Option[String],
-    command: Option[String],
-    scriptUri: Option[String],
-    scriptArgument: Option[Seq[String]],
-    input: Option[AdpRef[AdpDataNode]],
-    output: Option[AdpRef[AdpDataNode]],
-    stage: String,
-    stdout: Option[String],
-    stderr: Option[String],
-    dependsOn: Option[Seq[AdpRef[AdpActivity]]],
-    runsOn: AdpRef[AdpEc2Resource]
-  ) extends AdpActivity {
+  id: String,
+  name: Option[String],
+  command: Option[String],
+  scriptUri: Option[String],
+  scriptArgument: Option[Seq[String]],
+  input: Option[AdpRef[AdpDataNode]],
+  output: Option[AdpRef[AdpDataNode]],
+  stage: String,
+  stdout: Option[String],
+  stderr: Option[String],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  runsOn: AdpRef[AdpEc2Resource]
+) extends AdpActivity {
+
   val `type` = "ShellCommandActivity"
+
 }

@@ -26,7 +26,50 @@ class AdpDatabasesSpec extends WordSpec {
 
       assert(AdpJsonSerializer(testObj) === objShoudBe)
     }
+  }
 
+  "AdpJdbcDatabase" should {
+    "converts to Json" in {
+      val testObj = AdpJdbcDatabase(
+        id = "jdbc",
+        name = None,
+        connectionString = "datascience-mysql",
+        jdbcDriverClass = "mysql",
+        databaseName = Some("dbname"),
+        jdbcProperties = None,
+        `*password` = "supersecretpassword",
+        username = "notsosupersecretuser"
+      )
+      val objShoudBe = ("id" -> "jdbc") ~
+        ("connectionString" -> "datascience-mysql") ~
+        ("jdbcDriverClass" -> "mysql") ~
+        ("databaseName" -> "dbname") ~
+        ("*password" -> "supersecretpassword") ~
+        ("username" -> "notsosupersecretuser") ~
+        ("type" -> "JdbcDatabase")
+
+      assert(AdpJsonSerializer(testObj) === objShoudBe)
+    }
+  }
+
+  "AdpRdsDatabase" should {
+    "converts to Json" in {
+      val testObj = AdpRdsDatabase(
+        id = "rds",
+        name = None,
+        databaseName = Some("datascience-rds"),
+        jdbcProperties = None,
+        `*password` = "supersecretpassword",
+        username = "notsosupersecretuser"
+      )
+      val objShoudBe = ("id" -> "rds") ~
+        ("databaseName" -> "datascience-rds") ~
+        ("*password" -> "supersecretpassword") ~
+        ("username" -> "notsosupersecretuser") ~
+        ("type" -> "RdsDatabase")
+
+      assert(AdpJsonSerializer(testObj) === objShoudBe)
+    }
   }
 
 }

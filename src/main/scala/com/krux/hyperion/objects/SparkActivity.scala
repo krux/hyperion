@@ -28,8 +28,10 @@ case class SparkActivity (
       None,
       None,
       None,
-      AdpRef[AdpEmrCluster](runsOn.id),
+      None,
+      None,
       steps.map(_.toStepString),
+      AdpRef[AdpEmrCluster](runsOn.id),
       dependsOn match {
         case Seq() => None
         case deps => Some(deps.map(d => AdpRef[AdpActivity](d.id)))

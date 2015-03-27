@@ -23,10 +23,12 @@ trait AdpDataFormat extends AdpDataPipelineObject
  * character.
  */
 case class AdpTsvDataFormat(
-    id: String,
-    name: Option[String],
-    column: Option[Seq[String]],
-    escapeChar: Option[String]
-  ) extends AdpDataFormat {
+  id: String,
+  name: Option[String],
+  column: Option[Seq[String]],
+  escapeChar: Option[String]
+) extends AdpDataFormat {
+
   val `type` = "TSV"
+
 }
