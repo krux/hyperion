@@ -7,24 +7,24 @@ case class SnsAlarm(
   id: String,
   subject: String = "",
   message: String = "",
-  topicArn: String = "",
-  role: String = ""
+  topicArn: Option[String] = None,
+  role: Option[String] = None
 )(
   implicit val hc: HyperionContext
 ) extends PipelineObject {
 
   def withSubject(subject: String) = this.copy(subject = subject)
   def withMessage(message: String) = this.copy(message = message)
-  def withTopicArn(topicArn: String) = this.copy(topicArn = topicArn)
-  def withRole(role: String) = this.copy(role = role)
+  def withTopicArn(topicArn: String) = this.copy(topicArn = Some(topicArn))
+  def withRole(role: String) = this.copy(role = Some(role))
 
   def serialize = new AdpSnsAlarm(
     id,
     Some(id),
     subject,
     message,
-    topicArn,
-    role
+    topicArn.getOrElse(hc.snsTopic),
+    role.getOrElse(hc.snsRole)
   )
 
 }

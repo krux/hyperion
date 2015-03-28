@@ -38,7 +38,11 @@ case class JarActivity(
   def withStdoutTo(out: String) = this.copy(stdout = Some(out))
   def withStderrTo(err: String) = this.copy(stderr = Some(err))
 
-  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ input ++ output ++ dependsOn
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
+  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
+
+  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ input ++ output ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   def serialize = AdpShellCommandActivity(
       id,

@@ -27,7 +27,11 @@ case class RedshiftCopyActivity(
 
   def withTransformSql(sql: String) = this.copy(transformSql = Some(sql))
 
-  override def objects: Iterable[PipelineObject] = Seq(input, runsOn, output) ++ dependsOn
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
+  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
+
+  override def objects: Iterable[PipelineObject] = Seq(input, runsOn, output) ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   def serialize = AdpRedshiftCopyActivity(
       id,

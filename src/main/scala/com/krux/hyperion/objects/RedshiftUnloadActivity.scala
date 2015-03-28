@@ -29,13 +29,17 @@ case class RedshiftUnloadActivity(
     UNLOAD ('${script.replaceAll("'", "\\\\\\\\'")}')
     TO '$s3Path'
     WITH CREDENTIALS AS
-    'aws_access_key_id=${hc.datapipelineAccessKeyId};aws_secret_access_key=${hc.datapipelineAccessKeySecret}'
+    'aws_access_key_id=${hc.accessKeyId};aws_secret_access_key=${hc.accessKeySecret}'
     ${unloadOptions.map(_.repr).flatten.mkString(" ")}
   """
 
   def withUnloadOptions(opts: RedshiftUnloadOption*) = this.copy(unloadOptions = opts)
 
-  override def objects: Iterable[PipelineObject] = Seq(database, runsOn) ++ dependsOn
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
+  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
+
+  override def objects: Iterable[PipelineObject] = Seq(database, runsOn) ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   def serialize = AdpSqlActivity(
       id = id,

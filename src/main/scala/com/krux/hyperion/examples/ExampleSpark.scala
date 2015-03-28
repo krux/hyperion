@@ -26,9 +26,9 @@ class ExampleSpark extends DataPipelineDef {
 
     // Actions
     val mailAction = SnsAlarm("sns-alarm-1")
-      .withSubject("Something happened")
+      .withSubject("Something happened at #{node.@scheduledStartTime}")
       .withMessage("Some message")
-      .withTopicArn("arn:us-east-1:...")
+      .withTopicArn("arn:aws:sns:us-east-1:28619EXAMPLE:ExampleTopic")
       .withRole("ResourceRole")
 
     // Resources
