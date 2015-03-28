@@ -10,31 +10,31 @@ class HyperionContext(config: Config) {
 
   def this() = this(ConfigFactory.load)
 
-  val scriptUri = config.getString("hyperion.script.uri")
-  val logUri = config.getString("hyperion.log.uri")
+  lazy val scriptUri = config.getString("hyperion.script.uri")
+  lazy val logUri = config.getString("hyperion.log.uri")
 
-  val role = config.getString("hyperion.role")
-  val resourceRole = config.getString("hyperion.resource.role")
+  lazy val role = config.getString("hyperion.role")
+  lazy val resourceRole = config.getString("hyperion.resource.role")
 
-  val failureRerunMode = config.getString("hyperion.failure_rerun_mode")
+  lazy val failureRerunMode = config.getString("hyperion.failure_rerun_mode")
 
-  val keyPair = Try(config.getString("hyperion.aws.keypair")).toOption
-  val region = config.getString("hyperion.aws.region")
-  val accessKeyId = config.getString("hyperion.aws.access_key_id")
-  val accessKeySecret = config.getString("hyperion.aws.access_key_secret")
+  lazy val keyPair = Try(config.getString("hyperion.aws.keypair")).toOption
+  lazy val region = config.getString("hyperion.aws.region")
+  lazy val accessKeyId = config.getString("hyperion.aws.access_key_id")
+  lazy val accessKeySecret = config.getString("hyperion.aws.access_key_secret")
 
-  val ec2SecurityGroup = config.getString("hyperion.aws.ec2.securitygroup")
-  val ec2InstanceType = config.getString("hyperion.aws.ec2.instance.type")
-  val ec2ImageId = config.getString(s"hyperion.aws.ec2.image.$region")
-  val ec2TerminateAfter = config.getString("hyperion.aws.ec2.terminate")
+  lazy val ec2SecurityGroup = config.getString("hyperion.aws.ec2.securitygroup")
+  lazy val ec2InstanceType = config.getString("hyperion.aws.ec2.instance.type")
+  lazy val ec2ImageId = config.getString(s"hyperion.aws.ec2.image.$region")
+  lazy val ec2TerminateAfter = config.getString("hyperion.aws.ec2.terminate")
 
-  val emrAmiVersion = config.getString("hyperion.aws.emr.ami.version")
-  val emrInstanceType = config.getString("hyperion.aws.emr.instance.type")
-  val emrEnvironmentUri = Try(config.getString("hyperion.aws.emr.env.uri")).toOption
-  val emrTerminateAfter = config.getString("hyperion.aws.emr.terminate")
-  val sparkVersion = config.getString("hyperion.aws.emr.spark.version")
+  lazy val emrAmiVersion = config.getString("hyperion.aws.emr.ami.version")
+  lazy val emrInstanceType = config.getString("hyperion.aws.emr.instance.type")
+  lazy val emrEnvironmentUri = Try(config.getString("hyperion.aws.emr.env.uri")).toOption
+  lazy val emrTerminateAfter = config.getString("hyperion.aws.emr.terminate")
+  lazy val sparkVersion = config.getString("hyperion.aws.emr.spark.version")
 
-  val snsRole = config.getString("hyperion.aws.sns.role")
-  val snsTopic = config.getString("hyperion.aws.sns.topic")
+  lazy val snsRole = config.getString("hyperion.aws.sns.role")
+  lazy val snsTopic = config.getString("hyperion.aws.sns.topic")
 
 }

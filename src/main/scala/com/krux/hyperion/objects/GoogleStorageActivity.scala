@@ -11,18 +11,19 @@ trait GoogleStorageActivity extends PipelineActivity
  * Google Storage Download activity
  */
 case class GoogleStorageDownloadActivity(
-    id: String,
-    runsOn: Ec2Resource,
-    input: String = "",
-    output: Option[S3DataNode] = None,
-    botoConfigUrl: String = "",
-    dependsOn: Seq[PipelineActivity] = Seq(),
-    onFailAlarms: Seq[SnsAlarm] = Seq(),
-    onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-    onLateActionAlarms: Seq[SnsAlarm] = Seq()
-  )(
-    implicit val hc: HyperionContext
-  ) extends GoogleStorageActivity {
+  id: String,
+  runsOn: Ec2Resource,
+  input: String = "",
+  output: Option[S3DataNode] = None,
+  botoConfigUrl: String = "",
+  dependsOn: Seq[PipelineActivity] = Seq(),
+  onFailAlarms: Seq[SnsAlarm] = Seq(),
+  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
+  onLateActionAlarms: Seq[SnsAlarm] = Seq()
+)(
+  implicit val hc: HyperionContext
+) extends GoogleStorageActivity {
+
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 

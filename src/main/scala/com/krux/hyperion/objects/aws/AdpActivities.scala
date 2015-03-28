@@ -86,7 +86,10 @@ case class AdpCopyActivity (
   input: AdpRef[AdpDataNode],
   output: AdpRef[AdpDataNode],
   runsOn: AdpRef[AdpEc2Resource],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "CopyActivity"
@@ -200,7 +203,10 @@ case class AdpHiveActivity (
   output: AdpRef[AdpDataNode],
   stage: String,
   runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "HiveActivity"
@@ -224,7 +230,10 @@ case class AdpHiveCopyActivity (
   input: AdpRef[AdpDataNode],
   output: AdpRef[AdpDataNode],
   runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "HiveCopyActivity"
@@ -257,7 +266,10 @@ case class AdpPigActivity (
   output: AdpRef[AdpDataNode],
   stage: String,
   runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "PigActivity"

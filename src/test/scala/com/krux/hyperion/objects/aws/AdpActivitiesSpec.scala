@@ -12,7 +12,10 @@ class AdpActivitiesSpec extends WordSpec {
         input = AdpRef[AdpDataNode]("MyS3DataNode"),
         output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
         runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource"),
-        dependsOn = None
+        dependsOn = None,
+        onFail = None,
+        onSuccess = None,
+        onLateAction = None
       )
       val objShouldBe = ("id" -> "GenericCopyActivity") ~
         ("input" -> ("ref" -> "MyS3DataNode")) ~
@@ -98,7 +101,10 @@ class AdpActivitiesSpec extends WordSpec {
         output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
         stage = "true",
         runsOn = AdpRef[AdpEmrCluster]("MyEc2Resource"),
-        dependsOn = None
+        dependsOn = None,
+        onFail = None,
+        onSuccess = None,
+        onLateAction = None
       )
       val objShouldBe = ("id" -> "HiveActivity") ~
         ("hiveScript" -> "SELECT * FROM TABLE") ~
@@ -121,7 +127,10 @@ class AdpActivitiesSpec extends WordSpec {
         input = AdpRef[AdpDataNode]("MyS3DataNode"),
         output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
         runsOn = AdpRef[AdpEmrCluster]("MyEmrResource"),
-        dependsOn = None
+        dependsOn = None,
+        onFail = None,
+        onSuccess = None,
+        onLateAction = None
       )
       val objShouldBe = ("id" -> "HiveCopyActivity") ~
         ("filterSql" -> "SELECT * FROM TABLE") ~
@@ -146,7 +155,10 @@ class AdpActivitiesSpec extends WordSpec {
         output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
         stage = "true",
         runsOn = AdpRef[AdpEmrCluster]("MyEmrResource"),
-        dependsOn = None
+        dependsOn = None,
+        onFail = None,
+        onSuccess = None,
+        onLateAction = None
       )
       val objShouldBe = ("id" -> "PigActivity") ~
         ("script" -> "SELECT * FROM TABLE") ~
@@ -169,7 +181,10 @@ class AdpActivitiesSpec extends WordSpec {
         scriptArgument = None,
         queue = Some("yes"),
         dependsOn = None,
-        runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource")
+        runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource"),
+        onFail = None,
+        onSuccess = None,
+        onLateAction = None
       )
       val objShouldBe = ("id" -> "SqlActivity") ~
         ("database" -> ("ref" -> "MyDatabase")) ~
@@ -195,7 +210,10 @@ class AdpActivitiesSpec extends WordSpec {
         stdout = Some("log.out"),
         stderr = Some("log.err"),
         dependsOn = None,
-        runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource")
+        runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource"),
+        onFail = None,
+        onSuccess = None,
+        onLateAction = None
       )
       val objShouldBe = ("id" -> "ShellCommandActivity") ~
         ("command" -> "rm -rf /") ~
