@@ -5,9 +5,9 @@ import com.krux.hyperion.objects.aws.{AdpCopyActivity, AdpDataNode, AdpRef, AdpE
 
 case class CopyActivity(
   id: String,
+  input: DataNode,
+  output: DataNode,
   runsOn: Ec2Resource,
-  input: Option[DataNode] = None,
-  output: Option[DataNode] = None,
   dependsOn: Seq[PipelineActivity] = Seq()
 )(
     implicit val hc: HyperionContext
@@ -16,16 +16,13 @@ case class CopyActivity(
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 
-  def withInput(in: DataNode) = this.copy(input = Some(in))
-  def withOutput(out: DataNode) = this.copy(output = Some(out))
-
-  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ input ++ output ++ dependsOn
+  override def objects: Iterable[PipelineObject] = Seq(runsOn, input, output) ++ dependsOn
 
   def serialize = AdpCopyActivity(
     id,
     Some(id),
-    input.map(in => AdpRef[AdpDataNode](in.id)).get,
-    output.map(out => AdpRef[AdpDataNode](out.id)).get,
+    AdpRef[AdpDataNode](input.id),
+    AdpRef[AdpDataNode](output.id),
     AdpRef[AdpEc2Resource](runsOn.id),
     dependsOn match {
       case Seq() => None
