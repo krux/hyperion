@@ -3,6 +3,7 @@ package com.krux.hyperion.objects
 import aws.{AdpJsonSerializer, AdpShellCommandActivity, AdpRef,
   AdpDataNode, AdpActivity, AdpEc2Resource}
 import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 /**
  * Shell command activity
@@ -17,7 +18,10 @@ case class JarActivity(
     input: Option[S3DataNode] = None,
     output: Option[S3DataNode] = None,
     stdout: Option[String] = None,
-    stderr: Option[String] = None
+    stderr: Option[String] = None,
+    onFailAlarms: Seq[SnsAlarm] = Seq(),
+    onSuccessAlarms: Seq[SnsAlarm] = Seq(),
+    onLateActionAlarms: Seq[SnsAlarm] = Seq()
   )(
     implicit val hc: HyperionContext
   ) extends PipelineActivity {
@@ -51,6 +55,18 @@ case class JarActivity(
         case Seq() => None
         case deps => Some(deps.map(act => AdpRef[AdpActivity](act.id)))
       },
-      AdpRef[AdpEc2Resource](runsOn.id)
+      AdpRef[AdpEc2Resource](runsOn.id),
+      onFailAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      },
+      onSuccessAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      },
+      onLateActionAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      }
     )
 }

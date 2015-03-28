@@ -18,6 +18,22 @@ trait AdpActivity extends AdpDataPipelineObject {
    * or Amazon EMR cluster.
    */
   def runsOn: AdpRef[AdpResource]
+
+  /**
+   * The SNS alarm to raise when the activity fails.
+   */
+  def onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
+
+  /**
+   * The SNS alarm to raise when the activity succeeds.
+   */
+  def onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]]
+
+  /**
+   * The SNS alarm to raise when the activity fails to start on time.
+   */
+  def onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+
 }
 
 /**
@@ -48,7 +64,10 @@ case class AdpRedshiftCopyActivity (
     transformSql: Option[String],
     commandOptions: Option[Seq[String]],
     queue: Option[String],
-    dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+    dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+    onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+    onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+    onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
   ) extends AdpActivity {
 
   val `type` = "RedshiftCopyActivity"
@@ -81,7 +100,10 @@ case class AdpEmrActivity (
     postStepCommand: Option[Seq[String]],
     runsOn: AdpRef[AdpEmrCluster],
     step: Seq[String],
-    dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+    dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+    onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+    onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+    onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
   ) extends AdpActivity {
   val `type` = "EmrActivity"
 }
@@ -108,7 +130,10 @@ case class AdpSqlActivity (
     scriptArgument: Option[Seq[String]],
     queue: Option[String],
     dependsOn: Option[Seq[AdpRef[AdpActivity]]],
-    runsOn: AdpRef[AdpEc2Resource]
+    runsOn: AdpRef[AdpEc2Resource],
+    onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+    onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+    onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
   ) extends AdpActivity {
   val `type` = "SqlActivity"
 }
@@ -138,7 +163,10 @@ case class AdpShellCommandActivity (
     stdout: Option[String],
     stderr: Option[String],
     dependsOn: Option[Seq[AdpRef[AdpActivity]]],
-    runsOn: AdpRef[AdpEc2Resource]
+    runsOn: AdpRef[AdpEc2Resource],
+    onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+    onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+    onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
   ) extends AdpActivity {
   val `type` = "ShellCommandActivity"
 }

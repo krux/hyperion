@@ -3,6 +3,7 @@ package com.krux.hyperion.objects
 import aws.{AdpJsonSerializer, AdpShellCommandActivity, AdpRef,
   AdpDataNode, AdpActivity, AdpEc2Resource}
 import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 trait GoogleStorageActivity extends PipelineActivity
 
@@ -15,7 +16,10 @@ case class GoogleStorageDownloadActivity(
     input: String = "",
     output: Option[S3DataNode] = None,
     botoConfigUrl: String = "",
-    dependsOn: Seq[PipelineActivity] = Seq()
+    dependsOn: Seq[PipelineActivity] = Seq(),
+    onFailAlarms: Seq[SnsAlarm] = Seq(),
+    onSuccessAlarms: Seq[SnsAlarm] = Seq(),
+    onLateActionAlarms: Seq[SnsAlarm] = Seq()
   )(
     implicit val hc: HyperionContext
   ) extends GoogleStorageActivity {
@@ -43,7 +47,10 @@ case class GoogleStorageDownloadActivity(
         case Seq() => None
         case deps => Some(deps.map(act => AdpRef[AdpActivity](act.id)))
       },
-      AdpRef[AdpEc2Resource](runsOn.id)
+      AdpRef[AdpEc2Resource](runsOn.id),
+      None,
+      None,
+      None
     )
 }
 
@@ -56,7 +63,10 @@ case class GoogleStorageUploadActivity(
     input: Option[S3DataNode] = None,
     output: String = "",
     botoConfigUrl: String = "",
-    dependsOn: Seq[PipelineActivity] = Seq()
+    dependsOn: Seq[PipelineActivity] = Seq(),
+    onFailAlarms: Seq[SnsAlarm] = Seq(),
+    onSuccessAlarms: Seq[SnsAlarm] = Seq(),
+    onLateActionAlarms: Seq[SnsAlarm] = Seq()
   )(
     implicit val hc: HyperionContext
   ) extends GoogleStorageActivity {
@@ -84,6 +94,18 @@ case class GoogleStorageUploadActivity(
         case Seq() => None
         case deps => Some(deps.map(act => AdpRef[AdpActivity](act.id)))
       },
-      AdpRef[AdpEc2Resource](runsOn.id)
+      AdpRef[AdpEc2Resource](runsOn.id),
+      onFailAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      },
+      onSuccessAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      },
+      onLateActionAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      }
     )
 }

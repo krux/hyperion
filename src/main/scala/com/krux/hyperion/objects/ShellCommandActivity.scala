@@ -2,6 +2,7 @@ package com.krux.hyperion.objects
 
 import aws.{AdpJsonSerializer, AdpShellCommandActivity, AdpRef,
   AdpDataNode, AdpActivity, AdpEc2Resource}
+import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 /**
  * Shell command activity
@@ -17,7 +18,10 @@ case class ShellCommandActivity(
     output: Option[S3DataNode] = None,
     dependsOn: Seq[PipelineActivity] = Seq(),
     stdout: Option[String] = None,
-    stderr: Option[String] = None
+    stderr: Option[String] = None,
+    onFailAlarms: Seq[SnsAlarm] = Seq(),
+    onSuccessAlarms: Seq[SnsAlarm] = Seq(),
+    onLateActionAlarms: Seq[SnsAlarm] = Seq()
   ) extends PipelineActivity {
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
@@ -55,6 +59,18 @@ case class ShellCommandActivity(
         case Seq() => None
         case deps => Some(deps.map(act => AdpRef[AdpActivity](act.id)))
       },
-      AdpRef[AdpEc2Resource](runsOn.id)
+      AdpRef[AdpEc2Resource](runsOn.id),
+      onFailAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      },
+      onSuccessAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      },
+      onLateActionAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      }
     )
 }

@@ -17,7 +17,10 @@ class AdpActivitiesSpec extends WordSpec {
         transformSql = None,
         commandOptions = Some(Seq("EMPTYASNULL", "IGNOREBLANKLINES")),
         queue = None,
-        dependsOn = None
+        dependsOn = None,
+        onFail = None,
+        onSuccess = None,
+        onLateAction = None
       )
       val objShouldBe = ("id" -> "S3ToRedshiftCopyActivity") ~
         ("input" -> ("ref" -> "MyS3DataNode")) ~
@@ -44,7 +47,10 @@ class AdpActivitiesSpec extends WordSpec {
           postStepCommand = Some(Seq("scp localFiles remoteFiles")),
           input = Some(AdpRef[AdpS3DataNode]("MyS3Input")),
           output = Some(AdpRef[AdpS3DataNode]("MyS3Output")),
-          dependsOn = None
+          dependsOn = None,
+          onFail = None,
+          onSuccess = None,
+          onLateAction = None
         )
       val objShouldBe = ("id" -> "MyEmrActivity") ~
         ("input" ->  ("ref" -> "MyS3Input")) ~

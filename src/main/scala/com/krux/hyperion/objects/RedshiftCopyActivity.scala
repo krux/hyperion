@@ -2,6 +2,7 @@ package com.krux.hyperion.objects
 
 import com.krux.hyperion.objects.aws.{AdpRedshiftCopyActivity, AdpRef, AdpJsonSerializer,
   AdpActivity, AdpS3DataNode, AdpRedshiftDataNode, AdpEc2Resource}
+import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 /**
  * Redshift copy activity
@@ -14,7 +15,10 @@ case class RedshiftCopyActivity(
     output: RedshiftDataNode,
     transformSql: Option[String] = None,
     commandOptions: Seq[RedshiftCopyOption] = Seq(),
-    dependsOn: Seq[PipelineActivity] = Seq()
+    dependsOn: Seq[PipelineActivity] = Seq(),
+    onFailAlarms: Seq[SnsAlarm] = Seq(),
+    onSuccessAlarms: Seq[SnsAlarm] = Seq(),
+    onLateActionAlarms: Seq[SnsAlarm] = Seq()
   ) extends PipelineActivity {
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
@@ -41,6 +45,18 @@ case class RedshiftCopyActivity(
       dependsOn match {
         case Seq() => None
         case deps => Some(deps.map(act => AdpRef[AdpActivity](act.id)))
+      },
+      onFailAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      },
+      onSuccessAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+      },
+      onLateActionAlarms match {
+        case Seq() => None
+        case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
       }
     )
 }
