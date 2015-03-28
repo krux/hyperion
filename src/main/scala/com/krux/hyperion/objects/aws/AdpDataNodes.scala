@@ -1,5 +1,13 @@
 package com.krux.hyperion.objects.aws
 
+/**
+ * This object includes the following fields from the DataNode object.
+ * 
+ * @param onFail The SnsAlarm to use when the current instance fails.  SnsAlarm object reference No
+ * @param onSuccess The SnsAlarm to use when the current instance succeeds. SnsAlarm object reference No
+ * @param precondition A list of precondition objects that must be true for the data node to be valid. A data node cannot reach the READY status until all its conditions are met. Preconditions do not have their own schedule or identity, instead they run on the schedule of the activity or data node with which they are associated. A list of object references No
+ * @param workerGroup The worker group. This is used for routing tasks. If you provide a runsOn value and workerGroup exists, workerGroup is ignored. String  No
+ */
 
 /**
  * AWS Data Pipeline DataNode objects
@@ -7,6 +15,29 @@ package com.krux.hyperion.objects.aws
  * ref: http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-datanodes.html
  */
 trait AdpDataNode extends AdpDataPipelineObject
+
+/**
+ * @param tableName The DynamoDB table. String  Yes
+ * @param region  The AWS region where the DynamoDB table exists. It's used by HiveActivity when it performs staging for DynamoDB tables in Hive. For more information, see Using a Pipeline with Resources in Multiple Regions.  Region string. For example, us-east-1.  No
+ * @param dynamoDBDataFormat Applies a schema to a DynamoDB table to make it accessible by a Hive query. DynamoDBDataFormat object reference.  No
+ * @param precondition  A list of preconditions to be met. A data node is not marked READY until all preconditions are met. List  No
+ * @param readThroughputPercent Sets the rate of read operations to keep your DynamoDB provisioned throughput rate in the allocated range for your table. The value is a double between .1 and 1.0, inclusively. For more information, see Specifying Read and Write Requirements for Tables. Double  No
+ * @param writeThroughputPercent  Sets the rate of write operations to keep your DynamoDB provisioned throughput rate in the allocated range for your table. The value is a double between .1 and 1.0, inclusively. For more information, see Specifying Read and Write Requirements for Tables.  Double  No
+ */
+case class AdpDynamoDBDataNode (
+  id: String,
+  name: Option[String],
+  tableName: String,
+  region: Option[String],
+  dynamoDBDataFormat: Option[AdpRef[AdpDataFormat]],
+  precondition: Option[Seq[String]],
+  readThroughputPercent: Option[Double],
+  writeThroughputPercent: Option[Double]
+) extends AdpDataNode {
+
+  val `type` = "DynamoDBDataNode"
+
+}
 
 /**
  * Defines a data node using Amazon S3.
@@ -37,24 +68,24 @@ trait AdpS3DataNode extends AdpDataNode {
 /** You must provide either a filePath or directoryPath value.
  */
 case class AdpS3DirectoryDataNode(
-    id: String,
-    name: Option[String],
-    compression: Option[String],
-    dataFormat: Option[AdpRef[AdpDataFormat]],
-    directoryPath: String,
-    manifestFilePath: Option[String]
-  ) extends AdpS3DataNode
+  id: String,
+  name: Option[String],
+  compression: Option[String],
+  dataFormat: Option[AdpRef[AdpDataFormat]],
+  directoryPath: String,
+  manifestFilePath: Option[String]
+) extends AdpS3DataNode
 
 /** You must provide either a filePath or directoryPath value.
  */
 case class AdpS3FileDataNode(
-    id: String,
-    name: Option[String],
-    compression: Option[String],
-    dataFormat: Option[AdpRef[AdpDataFormat]],
-    filePath: String,
-    manifestFilePath: Option[String]
-  ) extends AdpS3DataNode
+  id: String,
+  name: Option[String],
+  compression: Option[String],
+  dataFormat: Option[AdpRef[AdpDataFormat]],
+  filePath: String,
+  manifestFilePath: Option[String]
+) extends AdpS3DataNode
 
 /**
  * Defines a data node using Amazon Redshift.
@@ -65,13 +96,15 @@ case class AdpS3FileDataNode(
  * overrides the existing key.
  */
 case class AdpRedshiftDataNode(
-    id: String,
-    name: Option[String],
-    createTableSql: Option[String],
-    database: AdpRef[AdpRedshiftDatabase],
-    schemaName: Option[String],
-    tableName: String,
-    primaryKeys: Option[Seq[String]]
-  ) extends AdpDataNode {
+  id: String,
+  name: Option[String],
+  createTableSql: Option[String],
+  database: AdpRef[AdpRedshiftDatabase],
+  schemaName: Option[String],
+  tableName: String,
+  primaryKeys: Option[Seq[String]]
+) extends AdpDataNode {
+
   val `type` = "RedshiftDataNode"
+
 }

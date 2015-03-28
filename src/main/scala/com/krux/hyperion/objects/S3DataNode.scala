@@ -3,7 +3,7 @@ package com.krux.hyperion.objects
 import aws.{AdpS3FileDataNode, AdpS3DirectoryDataNode, AdpJsonSerializer, AdpRef}
 import com.krux.hyperion.util.PipelineId
 
-trait S3DataNode extends PipelineObject {
+trait S3DataNode extends DataNode {
 
   def asInput(): String = asInput(1)
   def asInput(n: Integer): String = "${" + s"INPUT${n}_STAGING_DIR}"

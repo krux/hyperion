@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
+## 1.0.3-SNAPSHOT
+### Added
+- #9 - Additional activity types (PigActivity, HiveActivity, HiveCopyActivity, CopyActivity)
+
 ## 1.0.2 - 2015-03-27
 ### Fixed
 - #15 - downgrade json4s to 3.2.10
