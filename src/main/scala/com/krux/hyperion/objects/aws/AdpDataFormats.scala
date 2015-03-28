@@ -30,3 +30,13 @@ case class AdpTsvDataFormat(
   ) extends AdpDataFormat {
   val `type` = "TSV"
 }
+
+
+case class AdpCsvDataFormat(
+    id: String,
+    name: Option[String],
+    column: Option[Seq[String]],
+    escapeChar: Option[String]
+  ) extends AdpDataFormat {
+  val `type` = "CSV"
+}

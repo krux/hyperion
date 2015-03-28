@@ -5,7 +5,7 @@ import com.krux.hyperion.objects.aws.{AdpJsonSerializer, AdpRedshiftDatabase}
 /**
  * Redshift Database Trait, to use this please extend with an object.
  */
-trait RedshiftDatabase extends PipelineObject {
+trait RedshiftDatabase extends Database {
 
   def clusterId: String
 

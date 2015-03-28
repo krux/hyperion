@@ -19,7 +19,7 @@ case class SparkActivity (
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 
-  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ dependsOn
+  override def objects: Iterable[PipelineObject] = runsOn +: dependsOn
 
   def serialize = AdpEmrActivity(
       id,

@@ -11,7 +11,7 @@ trait AdpDatabase extends AdpDataPipelineObject {
   def databaseName: Option[String]
 
   /** The properties of the JDBC connections for this database. */
-  def jdbcProperties: Option[String]
+  def jdbcProperties: Option[Seq[String]]
 
   /** The password to connect to the database. */
   def `*password`: String
@@ -36,10 +36,21 @@ case class AdpRedshiftDatabase(
     clusterId: String,
     connectionString: Option[String],
     databaseName: Option[String],
-    jdbcProperties: Option[String],
+    jdbcProperties: Option[Seq[String]],
     `*password`: String,
     username: String
   ) extends AdpDatabase {
 
   val `type` = "RedshiftDatabase"
+}
+
+case class AdpRdsDatabase(
+    id: String,
+    name: Option[String],
+    databaseName: Option[String],
+    jdbcProperties: Option[Seq[String]],
+    `*password`: String,
+    username: String
+  ) extends AdpDatabase {
+  val `type` = "RdsDatabase"
 }

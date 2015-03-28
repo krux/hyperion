@@ -18,4 +18,8 @@ object RedshiftCopyOption {
     def repr = Seq("ESCAPE")
   }
 
+  def nullAs(nullStr: String) = new RedshiftCopyOption {
+    def repr = Seq("NULL", s"'$nullStr'")
+  }
+
 }

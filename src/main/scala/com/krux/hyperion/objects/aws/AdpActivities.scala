@@ -50,9 +50,31 @@ case class AdpRedshiftCopyActivity (
     queue: Option[String],
     dependsOn: Option[Seq[AdpRef[AdpActivity]]]
   ) extends AdpActivity {
-
   val `type` = "RedshiftCopyActivity"
+}
 
+/**
+ * ref: http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-copyactivity.html
+ *
+ * Copies data from one location to another. CopyActivity supports S3DataNode and MySqlDataNode as
+ * input and output and the copy operation is normally performed record-by-record. However,
+ * CopyActivity provides a high-performance Amazon S3 to Amazon S3 copy when all the following
+ * conditions are met:
+ *
+ * - The input and output are S3DataNodes
+ *
+ * - The dataFormat field is the same for input and output
+ *
+ */
+case class AdpCopyActivity (
+    id: String,
+    name: Option[String],
+    input: AdpRef[AdpDataNode],
+    output: AdpRef[AdpDataNode],
+    runsOn: AdpRef[AdpEc2Resource],
+    dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  ) extends AdpActivity {
+  val `type` = "CopyActivity"
 }
 
 /**
