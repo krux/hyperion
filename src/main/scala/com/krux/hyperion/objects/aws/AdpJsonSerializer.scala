@@ -33,7 +33,7 @@ object AdpJsonSerializer {
 
   def apply[A <: AdpDataPipelineAbstractObject](obj: A)(implicit m: Manifest[A]): JValue = {
 
-    implicit val formats = DefaultFormats + FieldSerializer[A]() + DateTimeSerializer + AdpRefSerializer 
+    implicit val formats = DefaultFormats + FieldSerializer[A]() + DateTimeSerializer + AdpRefSerializer
 
     obj match {
       case o: AdpDataPipelineObject => Extraction.decompose(obj)

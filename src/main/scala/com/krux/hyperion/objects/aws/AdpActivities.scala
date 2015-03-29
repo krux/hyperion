@@ -54,6 +54,12 @@ trait AdpActivity extends AdpDataPipelineObject {
   def runsOn: AdpRef[AdpResource]
 
   /**
+   * A condition that must be met before the object can run. To specify multiple conditions,
+   * add multiple precondition fields. The activity cannot run until all its conditions are met.
+   */
+  def precondition: Option[Seq[AdpRef[AdpPrecondition]]]
+
+  /**
    * The SNS alarm to raise when the activity fails.
    */
   def onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -87,6 +93,7 @@ case class AdpCopyActivity (
   output: AdpRef[AdpDataNode],
   runsOn: AdpRef[AdpEc2Resource],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -120,11 +127,12 @@ case class AdpRedshiftCopyActivity (
   input: AdpRef[AdpDataNode],
   insertMode: String,
   output: AdpRef[AdpDataNode],
-  runsOn: AdpRef[AdpEc2Resource],
   transformSql: Option[String],
   commandOptions: Option[Seq[String]],
   queue: Option[String],
+  runsOn: AdpRef[AdpEc2Resource],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -165,6 +173,7 @@ case class AdpEmrActivity (
   step: Seq[String],
   runsOn: AdpRef[AdpEmrCluster],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -204,6 +213,7 @@ case class AdpHiveActivity (
   stage: String,
   runsOn: AdpRef[AdpEmrCluster],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -231,6 +241,7 @@ case class AdpHiveCopyActivity (
   output: AdpRef[AdpDataNode],
   runsOn: AdpRef[AdpEmrCluster],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -267,6 +278,7 @@ case class AdpPigActivity (
   stage: String,
   runsOn: AdpRef[AdpEmrCluster],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -297,8 +309,9 @@ case class AdpSqlActivity (
   script: String,
   scriptArgument: Option[Seq[String]],
   queue: Option[String],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
   runsOn: AdpRef[AdpEc2Resource],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -332,8 +345,9 @@ case class AdpShellCommandActivity (
   stage: String,
   stdout: Option[String],
   stderr: Option[String],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
   runsOn: AdpRef[AdpEc2Resource],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]

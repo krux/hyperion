@@ -7,11 +7,11 @@ import com.krux.hyperion.HyperionContext
  * Launch a MapReduce cluster
  */
 case class MapReduceCluster(
-    id: String = "MapReduceCluster",
-    taskInstanceCount: Int = 0
-  )(
-    implicit val hc: HyperionContext
-  ) extends EmrCluster {
+  id: String = "MapReduceCluster",
+  taskInstanceCount: Int = 0
+)(
+  implicit val hc: HyperionContext
+) extends EmrCluster {
 
   assert(taskInstanceCount >= 0)
 
@@ -27,21 +27,61 @@ case class MapReduceCluster(
 
   val terminateAfter = hc.emrTerminateAfter
 
-  def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 
-  def serialize = AdpEmrCluster(
-      id,
-      Some(id),
-      bootstrapAction,
-      Some(amiVersion),
-      Some(instanceType),
-      Some(instanceType),
-      Some(coreInstanceCount.toString),
-      Some(instanceType),
-      Some(taskInstanceCount.toString),
-      terminateAfter,
-      keyPair
+  def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
+
+  def runMapReduce(id: String) =
+    MapReduceActivity(
+      id = id,
+      runsOn = this
     )
+
+  def runPigScript(id: String) =
+    PigActivity(
+      id = id,
+      runsOn = this
+    )
+
+  def runHiveScript(name: String, hiveScript: Option[String] = None,
+      scriptUri: Option[String] = None, scriptVariable: Option[String] = None,
+      input: Option[DataNode] = None, output: Option[DataNode] = None) =
+    HiveActivity(
+      id = name,
+      runsOn = this,
+      hiveScript = hiveScript,
+      scriptUri = scriptUri,
+      scriptVariable = scriptVariable,
+      input = input,
+      output = output
+    )
+
+  def runHiveCopy(id: String,
+      filterSql: Option[String] = None,
+      generatedScriptsPath: Option[String] = None,
+      input: Option[DataNode] = None,
+      output: Option[DataNode] = None) =
+    HiveCopyActivity(
+      id = id,
+      runsOn = this,
+      filterSql = filterSql,
+      generatedScriptsPath = generatedScriptsPath,
+      input = input,
+      output = output
+    )
+
+  def serialize = AdpEmrCluster(
+    id = id,
+    name = Some(id),
+    bootstrapAction = bootstrapAction,
+    amiVersion = Some(amiVersion),
+    masterInstanceType = Some(instanceType),
+    coreInstanceType = Some(instanceType),
+    coreInstanceCount = Some(coreInstanceCount.toString),
+    taskInstanceType = Some(instanceType),
+    taskInstanceCount = Some(taskInstanceCount.toString),
+    terminateAfter = terminateAfter,
+    keyPair = keyPair
+  )
 
 }

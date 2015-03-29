@@ -6,13 +6,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
+## 1.1.0
+### Added
+- #10 - Support Preconditions
+- #18 - Add additional activities to EC2Resource and EmrCluster
+
+### Changed
+- #18 - Renamed runCopyActivity on EC2Resource to runCopy
+
 ## 1.0.5
 ### Added
-- #13 Support SQL related databases and the relevant data nodes
+- #13 - Support SQL related databases and the relevant data nodes
 
 ## 1.0.4
 ### Added
-- #20 Support Actions
+- #20  - Support Actions
 
 ## 1.0.3
 ### Added
