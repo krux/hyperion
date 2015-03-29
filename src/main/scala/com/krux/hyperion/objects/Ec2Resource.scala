@@ -96,15 +96,9 @@ case class Ec2Resource(
     terminateAfter = terminateAfter,
     role = role,
     resourceRole = resourceRole,
-    imageId = imageId match {
-      case None => Some(hc.ec2ImageId)
-      case other => other
-    },
+    imageId = Some(imageId.getOrElse(hc.ec2ImageId)),
     instanceType = Some(instanceType),
-    region = region match {
-      case None => Some(hc.region)
-      case other => other
-    },
+    region = Some(region.getOrElse(hc.region)),
     securityGroups = securityGroups match {
       case Seq() => Some(Seq(hc.ec2SecurityGroup))
       case groups => Some(groups)
