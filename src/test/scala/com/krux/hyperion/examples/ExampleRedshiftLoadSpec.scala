@@ -32,9 +32,11 @@ class ExampleRedshiftLoadSpec extends WordSpec {
       assert(default === defaultShouldBe)
 
       val ec2 = objectsField(1)
+      val ec2Id: String = (ec2 \ "id").values.toString
+      assert(ec2Id.startsWith("Ec2Resource"))
       val ec2ShouldBe =
-        ("id" -> "Ec2Resource") ~
-        ("name" -> "Ec2Resource") ~
+        ("id" -> ec2Id) ~
+        ("name" -> ec2Id) ~
         ("terminateAfter" -> "8 hours") ~
         ("imageId" -> "ami-b0682cd8") ~
         ("instanceType" -> "m1.small") ~
@@ -54,18 +56,27 @@ class ExampleRedshiftLoadSpec extends WordSpec {
         ("type" -> "Schedule")
       assert(pipelineSchedule === pipelineScheduleShouldBe)
 
+      val tsv = objectsField(4)
+      val tsvId: String = (tsv \ "id").values.toString
+      assert(tsvId.startsWith("TsvDataFormat_"))
+      val tsvShouldBe =
+        ("id" -> tsvId) ~
+        ("name" -> tsvId) ~
+        ("type" -> "TSV")
+      assert(tsv === tsvShouldBe)
+
       val s3DataNode = objectsField(3)
       val s3DataNodeId: String = (s3DataNode \ "id").values.toString
       assert(s3DataNodeId.startsWith("S3DataNode_"))
       val s3DataNodeShouldBe =
         ("id" -> s3DataNodeId) ~
         ("name" -> s3DataNodeId) ~
-        ("dataFormat" -> ("ref" -> "tsv")) ~
+        ("dataFormat" -> ("ref" -> tsvId)) ~
         ("directoryPath" -> "s3://testing/testtab/") ~
         ("type" -> "S3DataNode")
       assert(s3DataNode === s3DataNodeShouldBe)
 
-      val mockRedshift = objectsField(4)
+      val mockRedshift = objectsField(5)
       val mockRedshiftShouldBe =
         ("id" -> "_MockRedshift") ~
         ("name" -> "_MockRedshift") ~
@@ -76,18 +87,18 @@ class ExampleRedshiftLoadSpec extends WordSpec {
         ("type" -> "RedshiftDatabase")
       assert(mockRedshift === mockRedshiftShouldBe)
 
-      val copy = objectsField(5)
+      val copy = objectsField(6)
       val copyShouldBe =
         ("id" -> "copy") ~
         ("name" -> "copy") ~
         ("input" -> ("ref" -> s3DataNodeId)) ~
         ("insertMode" -> "OVERWRITE_EXISTING") ~
         ("output" -> ("ref" -> "destTable")) ~
-        ("runsOn" -> ("ref" -> "Ec2Resource")) ~
+        ("runsOn" -> ("ref" -> ec2Id)) ~
         ("type" -> "RedshiftCopyActivity")
       assert(copy === copyShouldBe)
 
-      val destTable = objectsField(6)
+      val destTable = objectsField(7)
       val destTableShouldBe =
         ("id" -> "destTable") ~
         ("name" -> "destTable") ~
@@ -98,12 +109,6 @@ class ExampleRedshiftLoadSpec extends WordSpec {
         ("type" -> "RedshiftDataNode")
       assert(destTable === destTableShouldBe)
 
-      val tsv = objectsField(7)
-      val tsvShouldBe =
-        ("id" -> "tsv") ~
-        ("name" -> "tsv") ~
-        ("type" -> "TSV")
-      assert(tsv === tsvShouldBe)
 
     }
   }

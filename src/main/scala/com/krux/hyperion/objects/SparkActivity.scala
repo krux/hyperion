@@ -27,7 +27,8 @@ case class SparkActivity (
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
 
-  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] =
+    (runsOn +: dependsOn) ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   def serialize = AdpEmrActivity(
       id,

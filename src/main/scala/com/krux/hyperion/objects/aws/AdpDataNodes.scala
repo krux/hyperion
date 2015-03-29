@@ -108,3 +108,33 @@ case class AdpRedshiftDataNode(
   val `type` = "RedshiftDataNode"
 
 }
+
+/**
+ * Example:
+ * {{{
+ * {
+ *   "id" : "Sql Table",
+ *   "type" : "MySqlDataNode",
+ *   "schedule" : { "ref" : "CopyPeriod" },
+ *   "table" : "adEvents",
+ *   "username": "user_name",
+ *   "*password": "my_password",
+ *   "connectionString": "jdbc:mysql://mysqlinstance-rds.example.us-east-1.rds.amazonaws.com:3306/database_name",
+ *   "selectQuery" : "select * from #{table} where eventTime >= '#{@scheduledStartTime.format('YYYY-MM-dd HH:mm:ss')}' and eventTime < '#{@scheduledEndTime.format('YYYY-MM-dd HH:mm:ss')}'"
+ * }
+ * }}}
+ */
+case class AdpSqlDataNode(
+  id: String,
+  name: Option[String],
+  table: String,
+  username: String,
+  `*password`: String,
+  connectionString: String,
+  selectQuery: Option[String],
+  insertQuery: Option[String]
+) extends AdpDataNode {
+
+  val `type` = "SqlDataNode"
+
+}

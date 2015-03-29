@@ -30,7 +30,7 @@ class ExampleRedshiftLoad extends DataPipelineDef {
 
     val ec2instance = Ec2Resource()
 
-    val s3Format = TsvDataFormat("tsv")
+    val s3Format = TsvDataFormat()
 
     val redshiftTable = RedshiftDataNode(
         "destTable",

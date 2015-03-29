@@ -1,3 +1,7 @@
 package com.krux.hyperion.objects
 
-trait PipelineActivity extends PipelineObject
+trait PipelineActivity extends PipelineObject {
+
+  def dependsOn(activities: PipelineActivity*): PipelineActivity
+
+}

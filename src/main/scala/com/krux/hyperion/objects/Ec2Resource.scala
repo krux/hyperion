@@ -2,6 +2,7 @@ package com.krux.hyperion.objects
 
 import aws.{AdpEc2Resource, AdpJsonSerializer}
 import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.util.PipelineId
 
 /**
  * EC2 resource
@@ -31,10 +32,18 @@ case class Ec2Resource(
   def withSecurityGroups(securityGroups: String*) = this.copy(securityGroups = securityGroups)
   def withSecurityGroupIds(securityGroupIds: String*) = this.copy(securityGroupIds = securityGroupIds)
   def withPublicIp() = this.copy(associatePublicIpAddress = true)
+
   def runJar(name: String) = JarActivity(name, this)
   def runShell(name: String) = ShellCommandActivity(name, this)
+
   def downloadFromGoogleStorage(name: String) = GoogleStorageDownloadActivity(name, this)
   def uploadToGoogleStorage(name: String) = GoogleStorageUploadActivity(name, this)
+
+  def runSql(name: String, script: String, database: Database) =
+    SqlActivity(name, this, database, script, Seq(), Seq())
+
+  def runCopyActivity(input: Copyable, output: Copyable) =
+    CopyActivity(input, output, this)
 
   def serialize = AdpEc2Resource(
       id,

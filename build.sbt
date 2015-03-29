@@ -7,6 +7,8 @@ val configArtifact          = "com.typesafe"           %  "config"              
 
 import SonatypeKeys._
 
+val hyperionVersion = "1.0.5"
+
 // Import default settings. This changes `publishTo` settings to use the Sonatype repository and add several commands for publishing.
 sonatypeSettings
 
@@ -54,7 +56,7 @@ site.includeScaladoc()
 lazy val commonSettings = Seq(
   organization := "com.krux",
   scalacOptions ++= Seq("-deprecation", "-feature", "-Xlint", "-Xfatal-warnings"),
-  version := "1.0.4",
+  version := hyperionVersion,
   scalaVersion := "2.11.6",
   crossScalaVersions := Seq("2.10.4", "2.11.6"),
   libraryDependencies += scalatestArtifact,
