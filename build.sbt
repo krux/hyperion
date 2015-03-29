@@ -7,7 +7,7 @@ val configArtifact          = "com.typesafe"           %  "config"              
 
 import SonatypeKeys._
 
-val hyperionVersion = "1.0.4"
+val hyperionVersion = "1.0.5"
 
 // Import default settings. This changes `publishTo` settings to use the Sonatype repository and add several commands for publishing.
 sonatypeSettings

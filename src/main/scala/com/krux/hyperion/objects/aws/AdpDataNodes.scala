@@ -125,14 +125,16 @@ case class AdpRedshiftDataNode(
  * }}}
  */
 case class AdpSqlDataNode(
-    id: String,
-    name: Option[String],
-    table: String,
-    username: String,
-    `*password`: String,
-    connectionString: String,
-    selectQuery: Option[String],
-    insertQuery: Option[String]
-  ) extends AdpDataNode {
+  id: String,
+  name: Option[String],
+  table: String,
+  username: String,
+  `*password`: String,
+  connectionString: String,
+  selectQuery: Option[String],
+  insertQuery: Option[String]
+) extends AdpDataNode {
+
   val `type` = "SqlDataNode"
+
 }

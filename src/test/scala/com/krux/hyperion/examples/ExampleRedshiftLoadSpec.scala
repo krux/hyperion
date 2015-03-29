@@ -33,7 +33,7 @@ class ExampleRedshiftLoadSpec extends WordSpec {
 
       val ec2 = objectsField(1)
       val ec2Id: String = (ec2 \ "id").values.toString
-      assert(ec2Id.startsWith("Ec2Resource_"))
+      assert(ec2Id.startsWith("Ec2Resource"))
       val ec2ShouldBe =
         ("id" -> ec2Id) ~
         ("name" -> ec2Id) ~

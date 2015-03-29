@@ -9,7 +9,7 @@ import com.krux.hyperion.util.PipelineId
  * requires specify the username, password, etc. within the object, we require a JdbcDatabase
  * object for consistency with other database data node objects.
  */
-case class SqlDataNode private (
+case class SqlDataNode (
     id: String,
     tableQuery: TableQuery,
     database: JdbcDatabase

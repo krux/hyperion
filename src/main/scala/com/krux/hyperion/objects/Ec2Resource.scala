@@ -75,7 +75,7 @@ case class Ec2Resource(
 
 object Ec2Resource {
   def apply()(implicit hc: HyperionContext) = new Ec2Resource(
-    id = PipelineId.generateNewId("Ec2Resource"),
+    id = "Ec2Resource",
     terminateAfter = hc.ec2TerminateAfter,
     role = None,
     resourceRole = None,

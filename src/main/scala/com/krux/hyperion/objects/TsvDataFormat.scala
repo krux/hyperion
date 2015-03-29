@@ -6,13 +6,22 @@ import com.krux.hyperion.util.PipelineId
 /**
  * TSV data format
  */
-case class TsvDataFormat private (
-    id: String,
-    column: Option[Seq[String]] = None
-  ) extends DataFormat {
+case class TsvDataFormat (
+  id: String,
+  column: Option[Seq[String]] = None,
+  escapeChar: Option[String] = None
+) extends DataFormat {
 
   def withColumns(cols: Seq[String]) = this.copy(column = Some(cols))
-  def serialize = AdpTsvDataFormat(id, Some(id), column, None)
+
+  def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))
+
+  def serialize = AdpTsvDataFormat(
+    id = id,
+    name = Some(id),
+    column = column,
+    escapeChar = escapeChar
+  )
 
 }
 

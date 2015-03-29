@@ -52,6 +52,22 @@ trait AdpActivity extends AdpDataPipelineObject {
    * or Amazon EMR cluster.
    */
   def runsOn: AdpRef[AdpResource]
+
+  /**
+   * The SNS alarm to raise when the activity fails.
+   */
+  def onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
+
+  /**
+   * The SNS alarm to raise when the activity succeeds.
+   */
+  def onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]]
+
+  /**
+   * The SNS alarm to raise when the activity fails to start on time.
+   */
+  def onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+
 }
 
 /**
@@ -70,7 +86,10 @@ case class AdpCopyActivity (
   input: AdpRef[AdpDataNode],
   output: AdpRef[AdpDataNode],
   runsOn: AdpRef[AdpEc2Resource],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "CopyActivity"
@@ -105,7 +124,10 @@ case class AdpRedshiftCopyActivity (
   transformSql: Option[String],
   commandOptions: Option[Seq[String]],
   queue: Option[String],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "RedshiftCopyActivity"
@@ -142,7 +164,10 @@ case class AdpEmrActivity (
   actionOnTaskFailure: Option[String],
   step: Seq[String],
   runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "EmrActivity"
@@ -178,7 +203,10 @@ case class AdpHiveActivity (
   output: AdpRef[AdpDataNode],
   stage: String,
   runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "HiveActivity"
@@ -202,7 +230,10 @@ case class AdpHiveCopyActivity (
   input: AdpRef[AdpDataNode],
   output: AdpRef[AdpDataNode],
   runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "HiveCopyActivity"
@@ -235,7 +266,10 @@ case class AdpPigActivity (
   output: AdpRef[AdpDataNode],
   stage: String,
   runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]]
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "PigActivity"
@@ -264,7 +298,10 @@ case class AdpSqlActivity (
   scriptArgument: Option[Seq[String]],
   queue: Option[String],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
-  runsOn: AdpRef[AdpEc2Resource]
+  runsOn: AdpRef[AdpEc2Resource],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "SqlActivity"
@@ -296,7 +333,10 @@ case class AdpShellCommandActivity (
   stdout: Option[String],
   stderr: Option[String],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
-  runsOn: AdpRef[AdpEc2Resource]
+  runsOn: AdpRef[AdpEc2Resource],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpActivity {
 
   val `type` = "ShellCommandActivity"

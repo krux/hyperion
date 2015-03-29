@@ -6,13 +6,22 @@ import com.krux.hyperion.util.PipelineId
 /**
  * CSV data format
  */
-case class CsvDataFormat private (
-    id: String,
-    column: Option[Seq[String]] = None
-  ) extends DataFormat {
+case class CsvDataFormat (
+  id: String,
+  column: Option[Seq[String]] = None,
+  escapeChar: Option[String] = None
+) extends DataFormat {
 
   def withColumns(cols: Seq[String]) = this.copy(column = Some(cols))
-  def serialize = AdpCsvDataFormat(id, Some(id), column, None)
+
+  def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))
+
+  def serialize = AdpCsvDataFormat(
+    id = id,
+    name = Some(id),
+    column = column,
+    escapeChar = None
+  )
 
 }
 

@@ -14,13 +14,20 @@ trait JdbcDatabase extends Database {
 
   def jdbcDriverClass: String
 
+  def databaseName: Option[String] = None
+
+  def jdbcProperties: Seq[String] = Seq()
+
   def serialize = AdpJdbcDatabase(
       id = id,
       name = Some(id),
       connectionString = connectionString,
       jdbcDriverClass = jdbcDriverClass,
-      databaseName = None,
-      jdbcProperties = None,
+      databaseName = databaseName,
+      jdbcProperties = jdbcProperties match {
+        case Seq() => None
+        case other => Some(other)
+      },
       `*password` = `*password`,
       username = username
     )

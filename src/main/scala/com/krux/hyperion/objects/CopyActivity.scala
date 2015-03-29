@@ -2,7 +2,7 @@ package com.krux.hyperion.objects
 
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.objects.aws.{AdpCopyActivity, AdpDataNode, AdpRef, AdpEc2Resource,
-  AdpActivity, AdpS3DataNode, AdpSqlDataNode}
+  AdpActivity, AdpS3DataNode, AdpSqlDataNode, AdpSnsAlarm}
 import com.krux.hyperion.util.PipelineId
 
 
@@ -24,15 +24,18 @@ case class CopyActivity private (
   input: Copyable,
   output: Copyable,
   runsOn: Ec2Resource,
-  dependsOn: Seq[PipelineActivity]
+  dependsOn: Seq[PipelineActivity] = Seq(),
+  onFailAlarms: Seq[SnsAlarm] = Seq(),
+  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
+  onLateActionAlarms: Seq[SnsAlarm] = Seq()
 )(
-    implicit val hc: HyperionContext
+  implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 
-  override def objects: Iterable[PipelineObject] = Seq(runsOn, input, output) ++ dependsOn
+  override def objects: Iterable[PipelineObject] = Seq(runsOn, input, output) ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   def serialize = AdpCopyActivity(
     id = id,
@@ -49,6 +52,18 @@ case class CopyActivity private (
     dependsOn = dependsOn match {
       case Seq() => None
       case deps => Some(deps.map(act => AdpRef[AdpActivity](act.id)))
+    },
+    onFailAlarms match {
+      case Seq() => None
+      case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+    },
+    onSuccessAlarms match {
+      case Seq() => None
+      case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
+    },
+    onLateActionAlarms match {
+      case Seq() => None
+      case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     }
   )
 }
@@ -60,6 +75,9 @@ object CopyActivity {
       input = input,
       output = output,
       runsOn = runsOn,
-      dependsOn = Seq()
+      dependsOn = Seq(),
+      onFailAlarms = Seq(),
+      onSuccessAlarms = Seq(),
+      onLateActionAlarms = Seq()
     )
 }

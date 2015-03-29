@@ -8,6 +8,7 @@ import com.krux.hyperion.expressions.DateTimeFunctions.format
 import com.krux.hyperion.expressions.ExpressionDSL._
 import com.krux.hyperion.HyperionContext
 import com.typesafe.config.ConfigFactory
+import com.krux.hyperion.objects.SnsAlarm
 
 
 class ExampleSpark extends DataPipelineDef {
@@ -23,6 +24,13 @@ class ExampleSpark extends DataPipelineDef {
 
   override def workflow = {
 
+    // Actions
+    val mailAction = SnsAlarm("sns-alarm-1")
+      .withSubject("Something happened at #{node.@scheduledStartTime}")
+      .withMessage("Some message")
+      .withTopicArn("arn:aws:sns:us-east-1:28619EXAMPLE:ExampleTopic")
+      .withRole("ResourceRole")
+
     // Resources
     val sparkCluster = SparkCluster().withTaskInstanceCount(1)
 
@@ -37,6 +45,7 @@ class ExampleSpark extends DataPipelineDef {
 
     val filterActivity = SparkActivity("filterActivity", sparkCluster)
       .withSteps(filterStep)
+      .onFail(mailAction)
 
     // Second activity
     val scoreStep1 = SparkStep()
@@ -56,6 +65,7 @@ class ExampleSpark extends DataPipelineDef {
     val scoreActivity = SparkActivity("scoreActivity", sparkCluster)
       .withSteps(scoreStep1, scoreStep2)
       .dependsOn(filterActivity)
+      .onSuccess(mailAction)
 
     Seq(scoreActivity)
 
