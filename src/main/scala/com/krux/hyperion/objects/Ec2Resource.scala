@@ -90,6 +90,13 @@ case class Ec2Resource(
       runsOn = this
     )
 
+  def deleteS3Path(id: String, s3Path: String) =
+    DeleteS3PathActivity(
+      id = id,
+      s3Path = s3Path,
+      runsOn = this
+    )
+
   def serialize = AdpEc2Resource(
     id = id,
     name =Some(id),
