@@ -53,7 +53,7 @@ case class S3File(
     compression = None,
     dataFormat = dataFormat.map(f => AdpRef(f.id)),
     filePath = filePath,
-    manifestFilePath =None,
+    manifestFilePath = None,
     precondition = preconditions match {
       case Seq() => None
       case conditions => Some(conditions.map(precondition => AdpRef[AdpPrecondition](precondition.id)))

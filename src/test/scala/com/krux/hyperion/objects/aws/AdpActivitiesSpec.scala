@@ -13,6 +13,7 @@ class AdpActivitiesSpec extends WordSpec {
         output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
         runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource"),
         dependsOn = None,
+        precondition = None,
         onFail = None,
         onSuccess = None,
         onLateAction = None
@@ -39,6 +40,7 @@ class AdpActivitiesSpec extends WordSpec {
         commandOptions = Some(Seq("EMPTYASNULL", "IGNOREBLANKLINES")),
         queue = None,
         dependsOn = None,
+        precondition = None,
         onFail = None,
         onSuccess = None,
         onLateAction = None
@@ -57,24 +59,25 @@ class AdpActivitiesSpec extends WordSpec {
   "AdpEmrActivity" should {
     "converts to json" in {
       val testObj = AdpEmrActivity(
-          id = "MyEmrActivity",
-          name = None,
-          runsOn = AdpRef[AdpEmrCluster]("MyEmrCluster"),
-          preStepCommand = Some(Seq("scp remoteFiles localFiles")),
-          postStepCommand = Some(Seq("scp localFiles remoteFiles")),
-          actionOnResourceFailure = None,
-          actionOnTaskFailure = None,
-          step = Seq(
-            "s3://myBucket/myPath/myStep.jar,firstArg,secondArg",
-            "s3://myBucket/myPath/myOtherStep.jar,anotherArg"
-          ),
-          input = Some(AdpRef[AdpS3DataNode]("MyS3Input")),
-          output = Some(AdpRef[AdpS3DataNode]("MyS3Output")),
-          dependsOn = None,
-          onFail = None,
-          onSuccess = None,
-          onLateAction = None
-        )
+        id = "MyEmrActivity",
+        name = None,
+        runsOn = AdpRef[AdpEmrCluster]("MyEmrCluster"),
+        preStepCommand = Some(Seq("scp remoteFiles localFiles")),
+        postStepCommand = Some(Seq("scp localFiles remoteFiles")),
+        actionOnResourceFailure = None,
+        actionOnTaskFailure = None,
+        step = Seq(
+          "s3://myBucket/myPath/myStep.jar,firstArg,secondArg",
+          "s3://myBucket/myPath/myOtherStep.jar,anotherArg"
+        ),
+        input = Some(AdpRef[AdpS3DataNode]("MyS3Input")),
+        output = Some(AdpRef[AdpS3DataNode]("MyS3Output")),
+        dependsOn = None,
+        precondition = None,
+        onFail = None,
+        onSuccess = None,
+        onLateAction = None
+      )
       val objShouldBe = ("id" -> "MyEmrActivity") ~
         ("input" ->  ("ref" -> "MyS3Input")) ~
         ("output" -> ("ref" -> "MyS3Output")) ~
@@ -102,6 +105,7 @@ class AdpActivitiesSpec extends WordSpec {
         stage = "true",
         runsOn = AdpRef[AdpEmrCluster]("MyEc2Resource"),
         dependsOn = None,
+        precondition = None,
         onFail = None,
         onSuccess = None,
         onLateAction = None
@@ -128,6 +132,7 @@ class AdpActivitiesSpec extends WordSpec {
         output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
         runsOn = AdpRef[AdpEmrCluster]("MyEmrResource"),
         dependsOn = None,
+        precondition = None,
         onFail = None,
         onSuccess = None,
         onLateAction = None
@@ -156,6 +161,7 @@ class AdpActivitiesSpec extends WordSpec {
         stage = "true",
         runsOn = AdpRef[AdpEmrCluster]("MyEmrResource"),
         dependsOn = None,
+        precondition = None,
         onFail = None,
         onSuccess = None,
         onLateAction = None
@@ -180,8 +186,9 @@ class AdpActivitiesSpec extends WordSpec {
         script = "Script",
         scriptArgument = None,
         queue = Some("yes"),
-        dependsOn = None,
         runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource"),
+        dependsOn = None,
+        precondition = None,
         onFail = None,
         onSuccess = None,
         onLateAction = None
@@ -209,8 +216,9 @@ class AdpActivitiesSpec extends WordSpec {
         stage = "true",
         stdout = Some("log.out"),
         stderr = Some("log.err"),
-        dependsOn = None,
         runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource"),
+        dependsOn = None,
+        precondition = None,
         onFail = None,
         onSuccess = None,
         onLateAction = None
