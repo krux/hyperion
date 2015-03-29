@@ -1,7 +1,7 @@
 package com.krux.hyperion.objects
 
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.objects.aws.{AdpPigActivity, AdpDataNode, AdpRef, AdpEmrCluster, AdpActivity}
+import com.krux.hyperion.objects.aws.{AdpPigActivity, AdpDataNode, AdpRef, AdpEmrCluster, AdpActivity, AdpPrecondition}
 import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 case class PigActivity(
@@ -15,6 +15,7 @@ case class PigActivity(
   output: Option[DataNode] = None,
   stage: Option[Boolean] = None,
   dependsOn: Seq[PipelineActivity] = Seq(),
+  preconditions: Seq[Precondition] = Seq(),
   onFailAlarms: Seq[SnsAlarm] = Seq(),
   onSuccessAlarms: Seq[SnsAlarm] = Seq(),
   onLateActionAlarms: Seq[SnsAlarm] = Seq()
@@ -33,32 +34,36 @@ case class PigActivity(
   def withInput(in: DataNode) = this.copy(input = Some(in))
   def withOutput(out: DataNode) = this.copy(output = Some(out))
 
-  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ input ++ output ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   def serialize = AdpPigActivity(
-    id,
-    Some(id),
-    generatedScriptsPath,
-    script,
-    scriptUri,
-    scriptVariable,
-    input.map(in => AdpRef[AdpDataNode](in.id)).get,
-    output.map(out => AdpRef[AdpDataNode](out.id)).get,
-    stage.toString,
-    AdpRef[AdpEmrCluster](runsOn.id),
-    dependsOn match {
+    id = id,
+    name = Some(id),
+    generatedScriptsPath = generatedScriptsPath,
+    script = script,
+    scriptUri = scriptUri,
+    scriptVariable = scriptVariable,
+    input = input.map(in => AdpRef[AdpDataNode](in.id)).get,
+    output = output.map(out => AdpRef[AdpDataNode](out.id)).get,
+    stage = stage.toString,
+    runsOn = AdpRef[AdpEmrCluster](runsOn.id),
+    dependsOn = dependsOn match {
       case Seq() => None
       case deps => Some(deps.map(act => AdpRef[AdpActivity](act.id)))
     },
-    onFailAlarms match {
+    precondition = preconditions match {
+      case Seq() => None
+      case preconditions => Some(preconditions.map(precondition => AdpRef[AdpPrecondition](precondition.id)))
+    },
+    onFail = onFailAlarms match {
       case Seq() => None
       case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     },
-    onSuccessAlarms match {
+    onSuccess = onSuccessAlarms match {
       case Seq() => None
       case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     },
-    onLateActionAlarms match {
+    onLateAction = onLateActionAlarms match {
       case Seq() => None
       case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     }

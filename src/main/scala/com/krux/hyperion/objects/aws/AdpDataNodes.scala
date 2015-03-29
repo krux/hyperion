@@ -2,7 +2,7 @@ package com.krux.hyperion.objects.aws
 
 /**
  * This object includes the following fields from the DataNode object.
- * 
+ *
  * @param onFail The SnsAlarm to use when the current instance fails.  SnsAlarm object reference No
  * @param onSuccess The SnsAlarm to use when the current instance succeeds. SnsAlarm object reference No
  * @param precondition A list of precondition objects that must be true for the data node to be valid. A data node cannot reach the READY status until all its conditions are met. Preconditions do not have their own schedule or identity, instead they run on the schedule of the activity or data node with which they are associated. A list of object references No
