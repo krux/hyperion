@@ -54,7 +54,7 @@ site.includeScaladoc()
 lazy val commonSettings = Seq(
   organization := "com.krux",
   scalacOptions ++= Seq("-deprecation", "-feature", "-Xlint", "-Xfatal-warnings"),
-  version := "1.0.4-SNAPSHOT",
+  version := "1.0.5",
   scalaVersion := "2.11.6",
   crossScalaVersions := Seq("2.10.4", "2.11.6"),
   libraryDependencies += scalatestArtifact,
