@@ -18,12 +18,13 @@ case class SparkActivity (
   onLateActionAlarms: Seq[SnsAlarm] = Seq()
 ) extends EmrActivity {
 
+  def forClient(client: String) = this.copy(id = s"${id}_${client}")
+
   def withStepSeq(steps: Seq[SparkStep]) = this.copy(steps = steps)
   def withSteps(steps: SparkStep*) = this.copy(steps = steps)
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
-  def forClient(client: String) = this.copy(id = s"${id}_${client}")
-
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)

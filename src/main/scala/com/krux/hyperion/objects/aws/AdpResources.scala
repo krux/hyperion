@@ -25,19 +25,19 @@ trait AdpResource extends AdpDataPipelineObject {
  *
  */
 case class AdpEc2Resource(
-    id: String,
-    name: Option[String],
-    terminateAfter: String,
-    role: Option[String],
-    resourceRole: Option[String],
-    imageId: Option[String],
-    instanceType: Option[String],
-    region: Option[String],
-    securityGroups: Option[Seq[String]],
-    securityGroupIds: Option[Seq[String]],
-    associatePublicIpAddress: Option[String],
-    keyPair: Option[String]
-  ) extends AdpResource {
+  id: String,
+  name: Option[String],
+  terminateAfter: String,
+  role: Option[String],
+  resourceRole: Option[String],
+  imageId: Option[String],
+  instanceType: Option[String],
+  region: Option[String],
+  securityGroups: Option[Seq[String]],
+  securityGroupIds: Option[Seq[String]],
+  associatePublicIpAddress: Option[String],
+  keyPair: Option[String]
+) extends AdpResource {
 
   val `type` = "Ec2Resource"
 
@@ -49,18 +49,18 @@ case class AdpEc2Resource(
  * launch a cluster.
  */
 case class AdpEmrCluster(
-    id: String,
-    name: Option[String],
-    bootstrapAction: Seq[String],
-    amiVersion: Option[String],
-    masterInstanceType: Option[String],
-    coreInstanceType: Option[String],
-    coreInstanceCount: Option[String],
-    taskInstanceType: Option[String],
-    taskInstanceCount: Option[String],
-    terminateAfter: String,
-    keyPair: Option[String]
-  ) extends AdpResource {
+  id: String,
+  name: Option[String],
+  bootstrapAction: Seq[String],
+  amiVersion: Option[String],
+  masterInstanceType: Option[String],
+  coreInstanceType: Option[String],
+  coreInstanceCount: Option[String],
+  taskInstanceType: Option[String],
+  taskInstanceCount: Option[String],
+  terminateAfter: String,
+  keyPair: Option[String]
+) extends AdpResource {
 
   val `type` = "EmrCluster"
 

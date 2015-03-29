@@ -20,7 +20,6 @@ case class HiveCopyActivity(
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 
   def withFilterSql(filterSql: String) = this.copy(filterSql = Some(filterSql))
@@ -28,6 +27,12 @@ case class HiveCopyActivity(
 
   def withInput(in: DataNode) = this.copy(input = Some(in))
   def withOutput(out: DataNode) = this.copy(output = Some(out))
+
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
+  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
 
   override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 

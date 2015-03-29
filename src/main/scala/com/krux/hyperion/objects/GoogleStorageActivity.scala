@@ -25,13 +25,14 @@ case class GoogleStorageDownloadActivity(
   implicit val hc: HyperionContext
 ) extends GoogleStorageActivity {
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
   def withInput(path: String) = this.copy(input = path)
   def withOutput(out: S3DataNode) = this.copy(output = Some(out))
 
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
@@ -92,13 +93,14 @@ case class GoogleStorageUploadActivity(
   implicit val hc: HyperionContext
 ) extends GoogleStorageActivity {
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
   def withInput(in: S3DataNode) = this.copy(input = Some(in))
   def withOutput(path: String) = this.copy(output = path)
 
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)

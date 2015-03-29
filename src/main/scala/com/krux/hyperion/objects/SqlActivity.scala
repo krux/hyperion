@@ -8,7 +8,7 @@ case class SqlActivity (
   runsOn: Ec2Resource,
   database: Database,
   script: String,
-  scriptArgument: Seq[String],
+  scriptArgument: Seq[String] = Seq(),
   queue: Option[String] = None,
   dependsOn: Seq[PipelineActivity] = Seq(),
   preconditions: Seq[Precondition] = Seq(),
@@ -22,6 +22,10 @@ case class SqlActivity (
   def withQueue(queue: String) = this.copy(queue = Option(queue))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
+  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
 
   override def objects: Iterable[PipelineObject] =
     Seq(runsOn, database) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms

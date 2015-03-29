@@ -24,8 +24,6 @@ case class RedshiftUnloadActivity(
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
-
   def unloadScript = s"""
     UNLOAD ('${script.replaceAll("'", "\\\\\\\\'")}')
     TO '$s3Path'
@@ -36,6 +34,8 @@ case class RedshiftUnloadActivity(
 
   def withUnloadOptions(opts: RedshiftUnloadOption*) = this.copy(unloadOptions = opts)
 
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)

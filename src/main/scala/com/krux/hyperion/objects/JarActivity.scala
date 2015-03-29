@@ -27,7 +27,6 @@ case class JarActivity(
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
 
   def withJar(jar: String) = this.copy(jar = Some(jar))
@@ -40,6 +39,8 @@ case class JarActivity(
   def withStdoutTo(out: String) = this.copy(stdout = Some(out))
   def withStderrTo(err: String) = this.copy(stderr = Some(err))
 
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)

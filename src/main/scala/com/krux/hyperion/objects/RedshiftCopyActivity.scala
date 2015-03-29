@@ -22,12 +22,12 @@ case class RedshiftCopyActivity(
   onLateActionAlarms: Seq[SnsAlarm] = Seq()
 ) extends PipelineActivity {
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
-
   def withCopyOptions(opts: RedshiftCopyOption*) = this.copy(commandOptions = opts)
 
   def withTransformSql(sql: String) = this.copy(transformSql = Some(sql))
 
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
