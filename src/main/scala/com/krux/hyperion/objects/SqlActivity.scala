@@ -32,5 +32,5 @@ case class SqlActivity (
       runsOn = AdpRef[AdpEc2Resource](runsOn.id)
     )
 
-  override def objects: Iterable[PipelineObject] = runsOn +: dependsOn
+  override def objects: Iterable[PipelineObject] = Seq(runsOn, database) ++ dependsOn
 }
