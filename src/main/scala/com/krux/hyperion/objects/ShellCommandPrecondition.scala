@@ -27,18 +27,18 @@ case class ShellCommandPrecondition(
 ) extends Precondition {
 
   def serialize = AdpShellCommandPrecondition(
-    id=id,
-    name=Some(id),
-    command=command,
-    scriptArgument=scriptArgument match {
+    id = id,
+    name = Some(id),
+    command = command,
+    scriptArgument = scriptArgument match {
       case Seq() => None
       case arguments => Some(arguments)
     },
-    scriptUri=scriptUri,
-    stdout=stdout,
-    stderr=stderr,
-    preconditionTimeout=preconditionTimeout,
-    role=role.getOrElse(hc.resourceRole)
+    scriptUri = scriptUri,
+    stdout = stdout,
+    stderr = stderr,
+    preconditionTimeout = preconditionTimeout,
+    role = role.getOrElse(hc.resourceRole)
   )
 
 }

@@ -15,10 +15,10 @@ case class ExistsPrecondition(
 ) extends Precondition {
 
   def serialize = AdpExistsPrecondition(
-    id=id,
-    name=Some(id),
-    preconditionTimeout=preconditionTimeout,
-    role=role.getOrElse(hc.resourceRole)
+    id = id,
+    name = Some(id),
+    preconditionTimeout = preconditionTimeout,
+    role = role.getOrElse(hc.resourceRole)
   )
 
 }

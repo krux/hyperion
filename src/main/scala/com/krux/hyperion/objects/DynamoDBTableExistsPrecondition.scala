@@ -18,11 +18,11 @@ case class DynamoDBTableExistsPrecondition(
 ) extends Precondition {
 
   def serialize = AdpDynamoDBTableExistsPrecondition(
-    id=id,
-    name=Some(id),
-    preconditionTimeout=preconditionTimeout,
-    role=role.getOrElse(hc.resourceRole),
-    tableName=tableName
+    id = id,
+    name = Some(id),
+    preconditionTimeout = preconditionTimeout,
+    role = role.getOrElse(hc.resourceRole),
+    tableName = tableName
   )
 
 }

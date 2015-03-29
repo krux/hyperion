@@ -18,11 +18,11 @@ case class S3PrefixNotEmptyPrecondition(
 ) extends Precondition {
 
   def serialize = AdpS3PrefixNotEmptyPrecondition(
-    id=id,
-    name=Some(id),
-    s3Prefix=s3Prefix,
-    preconditionTimeout=preconditionTimeout,
-    role=role.getOrElse(hc.resourceRole)
+    id = id,
+    name = Some(id),
+    s3Prefix = s3Prefix,
+    preconditionTimeout = preconditionTimeout,
+    role = role.getOrElse(hc.resourceRole)
   )
 
 }

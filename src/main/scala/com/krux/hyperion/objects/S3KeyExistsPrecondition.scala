@@ -19,11 +19,11 @@ case class S3KeyExistsPrecondition(
 ) extends Precondition {
 
   def serialize = AdpS3KeyExistsPrecondition(
-    id=id,
-    name=Some(id),
-    s3Key=s3Key,
-    preconditionTimeout=preconditionTimeout,
-    role=role.getOrElse(hc.resourceRole)
+    id = id,
+    name = Some(id),
+    s3Key = s3Key,
+    preconditionTimeout = preconditionTimeout,
+    role = role.getOrElse(hc.resourceRole)
   )
 
 }

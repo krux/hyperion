@@ -18,11 +18,11 @@ case class DynamoDBDataExistsPrecondition (
 ) extends Precondition {
 
   def serialize = AdpDynamoDBDataExistsPrecondition(
-    id=id,
-    name=Some(id),
-    preconditionTimeout=preconditionTimeout,
-    role=role.getOrElse(hc.resourceRole),
-    tableName=tableName
+    id = id,
+    name = Some(id),
+    preconditionTimeout = preconditionTimeout,
+    role = role.getOrElse(hc.resourceRole),
+    tableName = tableName
   )
 
 }
