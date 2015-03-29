@@ -16,7 +16,7 @@ class ExampleSparkSpec extends WordSpec {
       val objectsField = pipelineJson.children(0).children
 
       // have the correct number of objects
-      assert(objectsField.size === 5)
+      assert(objectsField.size === 6)
 
       // the first object should be Default
       val defaultObj = objectsField(0)
@@ -55,7 +55,18 @@ class ExampleSparkSpec extends WordSpec {
         ("type" -> "EmrCluster")
       assert(sparkCluster === sparkClusterShouldBe)
 
-      val scoreActivity = objectsField(3)
+      val snsAlarm = objectsField(3)
+      val snsAlarmShouldBe =
+        ("id" -> "sns-alarm-1") ~
+        ("name" -> "sns-alarm-1") ~
+        ("subject" -> "Something happened at #{node.@scheduledStartTime}") ~
+        ("message" -> "Some message") ~
+        ("topicArn" -> "arn:aws:sns:us-east-1:28619EXAMPLE:ExampleTopic") ~
+        ("role" -> "ResourceRole") ~
+        ("type" -> "SnsAlarm")
+      assert(snsAlarm === snsAlarmShouldBe)
+
+      val scoreActivity = objectsField(4)
       val scoreActivityShouldBe =
         ("id" -> "scoreActivity") ~
         ("name" -> "scoreActivity") ~
@@ -65,17 +76,18 @@ class ExampleSparkSpec extends WordSpec {
           "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob2,the-target,#{format(minusDays(@scheduledStartTime,3),'yyyy-MM-dd')}"
           )) ~
         ("dependsOn" -> List("ref" -> "filterActivity")) ~
+        ("onSuccess" -> List("ref" -> "sns-alarm-1")) ~
         ("type" -> "EmrActivity")
       assert(scoreActivity === scoreActivityShouldBe)
 
-
-      val filterActivity = objectsField(4)
+      val filterActivity = objectsField(5)
       val filterActivityShouldBe =
         ("id" -> "filterActivity") ~
         ("name" -> "filterActivity") ~
         ("runsOn" -> ("ref" -> "SparkCluster")) ~
         ("step" ->
           List("s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.FilterJob,the-target,#{format(minusDays(@scheduledStartTime,3),'yyyy-MM-dd')}")) ~
+        ("onFail" -> List("ref" -> "sns-alarm-1")) ~
         ("type" -> "EmrActivity")
       assert(filterActivity === filterActivityShouldBe)
 
