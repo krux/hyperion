@@ -4,6 +4,24 @@ import org.scalatest.WordSpec
 import org.json4s.JsonDSL._
 
 class AdpActivitiesSpec extends WordSpec {
+  "AdpCopyActivity" should {
+    "converts to json" in {
+      val testObj = AdpCopyActivity(
+        id = "GenericCopyActivity",
+        name = None,
+        input = AdpRef[AdpDataNode]("MyS3DataNode"),
+        output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
+        runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource"),
+        dependsOn = None
+      )
+      val objShouldBe = ("id" -> "GenericCopyActivity") ~
+        ("input" -> ("ref" -> "MyS3DataNode")) ~
+        ("output" -> ("ref" -> "MyOtherS3DataNode")) ~
+        ("runsOn" -> ("ref" -> "MyEc2Resource")) ~
+        ("type" -> "CopyActivity")
+      assert(AdpJsonSerializer(testObj) === objShouldBe)
+    }
+  }
 
   "AdpRedshiftCopyActivity" should {
     "converts to json" in {
@@ -37,11 +55,13 @@ class AdpActivitiesSpec extends WordSpec {
           name = None,
           runsOn = AdpRef[AdpEmrCluster]("MyEmrCluster"),
           preStepCommand = Some(Seq("scp remoteFiles localFiles")),
+          postStepCommand = Some(Seq("scp localFiles remoteFiles")),
+          actionOnResourceFailure = None,
+          actionOnTaskFailure = None,
           step = Seq(
             "s3://myBucket/myPath/myStep.jar,firstArg,secondArg",
             "s3://myBucket/myPath/myOtherStep.jar,anotherArg"
           ),
-          postStepCommand = Some(Seq("scp localFiles remoteFiles")),
           input = Some(AdpRef[AdpS3DataNode]("MyS3Input")),
           output = Some(AdpRef[AdpS3DataNode]("MyS3Output")),
           dependsOn = None
@@ -56,6 +76,130 @@ class AdpActivitiesSpec extends WordSpec {
           "s3://myBucket/myPath/myStep.jar,firstArg,secondArg",
           "s3://myBucket/myPath/myOtherStep.jar,anotherArg")) ~
         ("type" -> "EmrActivity")
+      assert(AdpJsonSerializer(testObj) === objShouldBe)
+    }
+  }
+
+  "AdpHiveActivity" should {
+    "converts to json" in {
+      val testObj = AdpHiveActivity(
+        id = "HiveActivity",
+        name = None,
+        hiveScript = Some("SELECT * FROM TABLE"),
+        scriptUri = None,
+        scriptVariable = None,
+        input = AdpRef[AdpDataNode]("MyS3DataNode"),
+        output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
+        stage = "true",
+        runsOn = AdpRef[AdpEmrCluster]("MyEc2Resource"),
+        dependsOn = None
+      )
+      val objShouldBe = ("id" -> "HiveActivity") ~
+        ("hiveScript" -> "SELECT * FROM TABLE") ~
+        ("input" -> ("ref" -> "MyS3DataNode")) ~
+        ("output" -> ("ref" -> "MyOtherS3DataNode")) ~
+        ("stage" -> "true") ~
+        ("runsOn" -> ("ref" -> "MyEc2Resource")) ~
+        ("type" -> "HiveActivity")
+      assert(AdpJsonSerializer(testObj) === objShouldBe)
+    }
+  }
+
+  "AdpHiveCopyActivity" should {
+    "converts to json" in {
+      val testObj = AdpHiveCopyActivity(
+        id = "HiveCopyActivity",
+        name = None,
+        filterSql = Some("SELECT * FROM TABLE"),
+        generatedScriptsPath = None,
+        input = AdpRef[AdpDataNode]("MyS3DataNode"),
+        output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
+        runsOn = AdpRef[AdpEmrCluster]("MyEmrResource"),
+        dependsOn = None
+      )
+      val objShouldBe = ("id" -> "HiveCopyActivity") ~
+        ("filterSql" -> "SELECT * FROM TABLE") ~
+        ("input" -> ("ref" -> "MyS3DataNode")) ~
+        ("output" -> ("ref" -> "MyOtherS3DataNode")) ~
+        ("runsOn" -> ("ref" -> "MyEmrResource")) ~
+        ("type" -> "HiveCopyActivity")
+      assert(AdpJsonSerializer(testObj) === objShouldBe)
+    }
+  }
+
+  "AdpPigActivity" should {
+    "converts to json" in {
+      val testObj = AdpPigActivity(
+        id = "PigActivity",
+        name = None,
+        generatedScriptsPath = None,
+        script = Some("SELECT * FROM TABLE"),
+        scriptUri = None,
+        scriptVariable = None,
+        input = AdpRef[AdpDataNode]("MyS3DataNode"),
+        output = AdpRef[AdpDataNode]("MyOtherS3DataNode"),
+        stage = "true",
+        runsOn = AdpRef[AdpEmrCluster]("MyEmrResource"),
+        dependsOn = None
+      )
+      val objShouldBe = ("id" -> "PigActivity") ~
+        ("script" -> "SELECT * FROM TABLE") ~
+        ("input" -> ("ref" -> "MyS3DataNode")) ~
+        ("output" -> ("ref" -> "MyOtherS3DataNode")) ~
+        ("stage" -> "true") ~
+        ("runsOn" -> ("ref" -> "MyEmrResource")) ~
+        ("type" -> "PigActivity")
+      assert(AdpJsonSerializer(testObj) === objShouldBe)
+    }
+  }
+
+  "AdpSqlActivity" should {
+    "converts to json" in {
+      val testObj = AdpSqlActivity(
+        id = "SqlActivity",
+        name = None,
+        database = AdpRef[AdpDatabase]("MyDatabase"),
+        script = "Script",
+        scriptArgument = None,
+        queue = Some("yes"),
+        dependsOn = None,
+        runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource")
+      )
+      val objShouldBe = ("id" -> "SqlActivity") ~
+        ("database" -> ("ref" -> "MyDatabase")) ~
+        ("script" -> "Script") ~
+        ("queue" -> "yes") ~
+        ("runsOn" -> ("ref" -> "MyEc2Resource")) ~
+        ("type" -> "SqlActivity")
+      assert(AdpJsonSerializer(testObj) === objShouldBe)
+    }
+  }
+
+  "AdpShellCommandActivity" should {
+    "converts to json" in {
+      val testObj = AdpShellCommandActivity(
+        id = "ShellCommandActivity",
+        name = None,
+        command = Some("rm -rf /"),
+        scriptUri = None,
+        scriptArgument = None,
+        input = Some(AdpRef[AdpDataNode]("MyS3DataNode")),
+        output = Some(AdpRef[AdpDataNode]("MyOtherS3DataNode")),
+        stage = "true",
+        stdout = Some("log.out"),
+        stderr = Some("log.err"),
+        dependsOn = None,
+        runsOn = AdpRef[AdpEc2Resource]("MyEc2Resource")
+      )
+      val objShouldBe = ("id" -> "ShellCommandActivity") ~
+        ("command" -> "rm -rf /") ~
+        ("input" -> ("ref" -> "MyS3DataNode")) ~
+        ("output" -> ("ref" -> "MyOtherS3DataNode")) ~
+        ("stage" -> "true") ~
+        ("stdout" -> "log.out") ~
+        ("stderr" -> "log.err") ~
+        ("runsOn" -> ("ref" -> "MyEc2Resource")) ~
+        ("type" -> "ShellCommandActivity")
       assert(AdpJsonSerializer(testObj) === objShouldBe)
     }
   }

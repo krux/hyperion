@@ -1,13 +1,28 @@
 package com.krux.hyperion.objects
 
-/**
- * This does not relate to any AWS datapipeline database object. The purpose of this object is to
- * bring some consistency that like RedshiftDataNode that reference to RedshiftDatabase
- * for connection details. SqlDataNode should also reference database liked object for
- * connection details rather than specify username, password etc. in the DataNode object.
- */
-trait MySqlDatabase {
+import com.krux.hyperion.objects.aws.AdpJdbcDatabase
+
+trait JdbcDatabase extends Database {
+
+  def id: String
+
   def username: String
+
   def `*password`: String
+
   def connectionString: String
+
+  def jdbcDriverClass: String
+
+  def serialize = AdpJdbcDatabase(
+      id = id,
+      name = Some(id),
+      connectionString = connectionString,
+      jdbcDriverClass = jdbcDriverClass,
+      databaseName = None,
+      jdbcProperties = None,
+      `*password` = `*password`,
+      username = username
+    )
+
 }

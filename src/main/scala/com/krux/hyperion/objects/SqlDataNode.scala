@@ -4,10 +4,15 @@ import com.krux.hyperion.objects.aws.AdpSqlDataNode
 import com.krux.hyperion.objects.sql.{TableQuery, SelectTableQuery, InsertTableQuery}
 import com.krux.hyperion.util.PipelineId
 
+/**
+ * @note that the AWS Datapipeline SqlDataNode does not require a JdbcDatabase parameter, but
+ * requires specify the username, password, etc. within the object, we require a JdbcDatabase
+ * object for consistency with other database data node objects.
+ */
 case class SqlDataNode private (
     id: String,
     tableQuery: TableQuery,
-    database: MySqlDatabase
+    database: JdbcDatabase
   ) extends Copyable {
 
   def serialize = AdpSqlDataNode(
@@ -29,7 +34,7 @@ case class SqlDataNode private (
 }
 
 object SqlDataNode {
-  def apply(tableQuery: TableQuery, database: MySqlDatabase) =
+  def apply(tableQuery: TableQuery, database: JdbcDatabase) =
     new SqlDataNode(
       id = PipelineId.generateNewId("SqlDataNode"),
       tableQuery = tableQuery,
