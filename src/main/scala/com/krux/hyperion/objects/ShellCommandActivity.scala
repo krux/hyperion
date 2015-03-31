@@ -14,8 +14,8 @@ case class ShellCommandActivity(
   scriptUri: Option[String] = None,
   scriptArguments: Seq[String] = Seq(),
   stage: Boolean = true,
-  input: Option[S3DataNode] = None,
-  output: Option[S3DataNode] = None,
+  input: Seq[S3DataNode] = Seq(),
+  output: Seq[S3DataNode] = Seq(),
   stdout: Option[String] = None,
   stderr: Option[String] = None,
   dependsOn: Seq[PipelineActivity] = Seq(),
@@ -34,8 +34,8 @@ case class ShellCommandActivity(
   def staged() = this.copy(stage = true)
   def notStaged() = this.copy(stage = false)
 
-  def withInput(in: S3DataNode) = this.copy(input = Some(in))
-  def withOutput(out: S3DataNode) = this.copy(output = Some(out))
+  def withInput(inputs: S3DataNode*) = this.copy(input = inputs)
+  def withOutput(outputs: S3DataNode*) = this.copy(output = outputs)
 
   def withStdoutTo(out: String) = this.copy(stdout = Some(out))
   def withStderrTo(err: String) = this.copy(stderr = Some(err))
@@ -57,8 +57,14 @@ case class ShellCommandActivity(
       case Seq() => None
       case arguments => Some(arguments)
     },
-    input = input.map(in => AdpRef[AdpDataNode](in.id)),
-    output = output.map(out => AdpRef[AdpDataNode](out.id)),
+    input = input match {
+      case Seq() => None
+      case inputs => Some(inputs.map(in => AdpRef[AdpDataNode](in.id)))
+    },
+    output = output match {
+      case Seq() => None
+      case outputs => Some(outputs.map(out => AdpRef[AdpDataNode](out.id)))
+    },
     stage = stage.toString(),
     stdout = stdout,
     stderr = stderr,

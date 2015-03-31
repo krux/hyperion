@@ -6,7 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
-## 1.1.0
+## 1.2.0 - 2015-03-31
+### Fixed
+- #26 - ShellCommandActivity input and output should actually be a sequence of DataNodes.
+
+## 1.1.0 - 2015-03-31
 ### Added
 - #10 - Support Preconditions
 - #18 - Add additional activities to EC2Resource and EmrCluster
@@ -14,15 +18,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - #18 - Renamed runCopyActivity on EC2Resource to runCopy
 
-## 1.0.5
+## 1.0.5 - 2015-03-29
 ### Added
 - #13 - Support SQL related databases and the relevant data nodes
 
-## 1.0.4
+## 1.0.4 - 2015-03-29
 ### Added
 - #20  - Support Actions
 
-## 1.0.3
+## 1.0.3 - 2015-03-28
 ### Added
 - #9 - Additional activity types (PigActivity, HiveActivity, HiveCopyActivity, CopyActivity)
 

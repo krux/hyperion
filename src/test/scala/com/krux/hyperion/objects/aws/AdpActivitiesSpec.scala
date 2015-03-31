@@ -211,8 +211,8 @@ class AdpActivitiesSpec extends WordSpec {
         command = Some("rm -rf /"),
         scriptUri = None,
         scriptArgument = None,
-        input = Some(AdpRef[AdpDataNode]("MyS3DataNode")),
-        output = Some(AdpRef[AdpDataNode]("MyOtherS3DataNode")),
+        input = Some(Seq(AdpRef[AdpDataNode]("MyS3DataNode"))),
+        output = Some(Seq(AdpRef[AdpDataNode]("MyOtherS3DataNode"))),
         stage = "true",
         stdout = Some("log.out"),
         stderr = Some("log.err"),
@@ -225,8 +225,8 @@ class AdpActivitiesSpec extends WordSpec {
       )
       val objShouldBe = ("id" -> "ShellCommandActivity") ~
         ("command" -> "rm -rf /") ~
-        ("input" -> ("ref" -> "MyS3DataNode")) ~
-        ("output" -> ("ref" -> "MyOtherS3DataNode")) ~
+        ("input" -> Seq(("ref" -> "MyS3DataNode"))) ~
+        ("output" -> Seq(("ref" -> "MyOtherS3DataNode"))) ~
         ("stage" -> "true") ~
         ("stdout" -> "log.out") ~
         ("stderr" -> "log.err") ~
