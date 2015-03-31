@@ -47,7 +47,7 @@ object Hyperion {
     client.deletePipeline(new DeletePipelineRequest().withPipelineId(pipelineId))
   }
 
-  def createPipeline(name: String, pipelineDefinition: Seq[PipelineObject], force: Boolean): Option[String] = {
+  def createPipeline(name: String, pipelineDefinition: DataPipelineDef, force: Boolean): Option[String] = {
     println(s"Creating pipeline $name")
     val pipelineId = client.createPipeline(new CreatePipelineRequest().withUniqueId(name).withName(name)).getPipelineId
     println(s"Pipeline created: $pipelineId")
@@ -55,7 +55,8 @@ object Hyperion {
     println("Uploading pipeline definition")
     val putDefinitionResult = client.putPipelineDefinition(new PutPipelineDefinitionRequest()
       .withPipelineId(pipelineId)
-      .withPipelineObjects(pipelineDefinition))
+      .withPipelineObjects(pipelineDefinition:Seq[PipelineObject])
+      .withParameterObjects(pipelineDefinition:Seq[ParameterObject]))
 
     // Figure out if that worked.
     if (putDefinitionResult.getErrored) {
