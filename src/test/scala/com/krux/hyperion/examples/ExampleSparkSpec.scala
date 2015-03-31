@@ -60,9 +60,9 @@ class ExampleSparkSpec extends WordSpec {
         ("id" -> "sns-alarm-1") ~
         ("name" -> "sns-alarm-1") ~
         ("subject" -> "Something happened at #{node.@scheduledStartTime}") ~
-        ("message" -> "Some message") ~
+        ("message" -> "Some message #{myInstanceCount} x #{myInstanceType} @ #{myInstanceBid} for #{myS3Location}") ~
         ("topicArn" -> "arn:aws:sns:us-east-1:28619EXAMPLE:ExampleTopic") ~
-        ("role" -> "ResourceRole") ~
+        ("role" -> "DataPipelineDefaultResourceRole") ~
         ("type" -> "SnsAlarm")
       assert(snsAlarm === snsAlarmShouldBe)
 
