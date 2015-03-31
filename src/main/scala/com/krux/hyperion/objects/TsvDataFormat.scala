@@ -1,6 +1,6 @@
 package com.krux.hyperion.objects
 
-import com.krux.hyperion.objects.aws.{AdpTsvDataFormat, AdpJsonSerializer}
+import com.krux.hyperion.objects.aws.AdpTsvDataFormat
 import com.krux.hyperion.util.PipelineId
 
 /**
@@ -8,18 +8,21 @@ import com.krux.hyperion.util.PipelineId
  */
 case class TsvDataFormat (
   id: String,
-  column: Option[Seq[String]] = None,
+  column: Seq[String] = Seq(),
   escapeChar: Option[String] = None
 ) extends DataFormat {
 
-  def withColumns(cols: Seq[String]) = this.copy(column = Some(cols))
+  def withColumns(cols: Seq[String]) = this.copy(column = cols)
 
   def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))
 
   def serialize = AdpTsvDataFormat(
     id = id,
     name = Some(id),
-    column = column,
+    column = column match {
+      case Seq() => None
+      case columns => Some(columns)
+    },
     escapeChar = escapeChar
   )
 
