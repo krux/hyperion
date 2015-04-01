@@ -12,7 +12,7 @@ class ExampleSparkSpec extends WordSpec {
 
     "produce correct pipeline JSON" in {
 
-      val pipelineJson: JValue = new ExampleSpark
+      val pipelineJson: JValue = ExampleSpark
       val objectsField = pipelineJson.children(0).children
 
       // have the correct number of objects
