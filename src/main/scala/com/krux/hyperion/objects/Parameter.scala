@@ -22,16 +22,16 @@ case class StringParameter(
 ) extends Parameter {
 
   def serialize = AdpParameter(
-    name,
-    "String",
-    description,
-    false,
-    allowedValues match {
+    id = name,
+    `type` = "String",
+    description = description,
+    optional = false,
+    allowedValues = allowedValues match {
       case Seq() => None
       case values => Some(values)
     },
-    false,
-    Some(value)
+    isArray = false,
+    `default` = Some(value)
   )
 
 }
@@ -45,16 +45,16 @@ case class IntegerParameter(
 ) extends Parameter {
 
   def serialize = AdpParameter(
-    name,
-    "Integer",
-    description,
-    false,
-    allowedValues match {
+    id = name,
+    `type` = "Integer",
+    description = description,
+    optional = false,
+    allowedValues = allowedValues match {
       case Seq() => None
       case values => Some(values.map(_.toString))
     },
-    false,
-    Some(value.toString)
+    isArray = false,
+    `default` = Some(value.toString)
   )
 
 }
@@ -68,16 +68,16 @@ case class DoubleParameter(
 ) extends Parameter {
 
   def serialize = AdpParameter(
-    name,
-    "Double",
-    description,
-    false,
-    allowedValues match {
+    id = name,
+    `type` = "Double",
+    description = description,
+    optional = false,
+    allowedValues = allowedValues match {
       case Seq() => None
       case values => Some(values.map(_.toString))
     },
-    false,
-    Some(value.toString)
+    isArray = false,
+    `default` = Some(value.toString)
   )
 
 }
@@ -90,13 +90,13 @@ case class S3KeyParameter(
 ) extends Parameter {
 
   def serialize = AdpParameter(
-    name,
-    "AWS::S3::ObjectKey",
-    description,
-    false,
-    None,
-    false,
-    Some(value)
+    id = name,
+    `type` = "AWS::S3::ObjectKey",
+    description = description,
+    optional = false,
+    allowedValues = None,
+    isArray = false,
+    `default` = Some(value)
   )
 
 }
