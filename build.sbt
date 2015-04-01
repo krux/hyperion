@@ -67,19 +67,7 @@ lazy val commonSettings = Seq(
       "-doc-source-url",
       "https://github.com/krux/hyperion/tree/master/€{FILE_PATH}.scala")
   },
-  test in assembly := {}, // skip test during assembly
-  assemblyJarName in assembly := "hyperion",
-  assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(
-    Seq(
-      """#!/usr/bin/env bash
-        |if [[ $# -ge 2 && $1 == "-jar" ]]; then
-        |    shift
-        |    ext_jar=$1":"; shift
-        |else
-        |    ext_jar=""
-        |fi
-        |exec java -cp $ext_jar$0 com.krux.hyperion.Hyperion $@""".stripMargin
-  )))
+  test in assembly := {} // skip test during assembly
 )
 
 lazy val root = (project in file(".")).
