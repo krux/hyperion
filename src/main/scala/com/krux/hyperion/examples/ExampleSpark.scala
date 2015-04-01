@@ -1,6 +1,6 @@
 package com.krux.hyperion.examples
 
-import com.krux.hyperion.{DataPipelineDef, HyperionCli}
+import com.krux.hyperion.DataPipelineDef
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.objects.{Schedule, SparkCluster, SparkStep, SnsAlarm, S3KeyParameter,
   SparkActivity, PipelineObject, Parameter, StringParameter, IntegerParameter, DoubleParameter}
