@@ -13,7 +13,7 @@ class ExampleRedshiftLoadSpec extends WordSpec {
 
     "produce correct pipeline JSON" in {
 
-      val pipelineJson: JValue = new ExampleRedshiftLoad
+      val pipelineJson: JValue = ExampleRedshiftLoad
       val objectsField = pipelineJson.children(0).children.sortBy(o => (o \ "id").toString)
 
       // have the correct number of objects

@@ -2,14 +2,16 @@ package com.krux.hyperion.examples
 
 import com.krux.hyperion.objects._
 import com.krux.hyperion.Implicits._
-import com.krux.hyperion.DataPipelineDef
+import com.krux.hyperion.{DataPipelineDef, HyperionCli}
 import com.krux.hyperion.HyperionContext
 import com.typesafe.config.ConfigFactory
 
 /**
  * An example redshift loader object
  */
-class ExampleRedshiftLoad extends DataPipelineDef {
+object ExampleRedshiftLoad extends DataPipelineDef with HyperionCli {
+
+  def pipelineDef = this
 
   object MockRedshift extends RedshiftDatabase {
     val id = "_MockRedshift"
