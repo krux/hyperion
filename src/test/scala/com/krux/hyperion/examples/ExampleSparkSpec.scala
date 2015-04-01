@@ -36,6 +36,7 @@ class ExampleSparkSpec extends WordSpec {
         ("name" -> "PipelineSchedule") ~
         ("period" -> "1 days") ~
         ("startAt" -> "FIRST_ACTIVATION_DATE_TIME") ~
+        ("occurrences" -> "3") ~
         ("type" -> "Schedule")
       assert(pipelineSchedule === pipelineScheduleShouldBe)
 

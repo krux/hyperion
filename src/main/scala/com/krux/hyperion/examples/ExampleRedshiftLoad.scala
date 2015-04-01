@@ -24,7 +24,7 @@ class ExampleRedshiftLoad extends DataPipelineDef {
 
   override lazy val schedule = Schedule()
     .startAtActivation
-    .period(1.hour)
+    .every(1.hour)
 
   override def workflow = {
 

@@ -18,7 +18,8 @@ class ExampleSpark extends DataPipelineDef {
 
   override lazy val schedule = Schedule()
     .startAtActivation
-    .period(1.day)
+    .every(1.day)
+    .stopAfter(3)
 
   val location = S3KeyParameter("S3Location", "s3://krux-temp/")
   val instanceType = StringParameter("InstanceType", "c3.8xlarge")

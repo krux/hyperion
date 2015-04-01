@@ -8,7 +8,7 @@ class AdpScheduleSpec extends WordSpec {
 
   "AdpStartAtSchedule" should {
     "converts to Json" in {
-      val testObj = AdpStartAtSchedule("theId", None, "1 day", "FIRST_ACTIVATION_DATE_TIME", Some("1"))
+      val testObj = AdpSchedule(id="theId", name=None, period="1 day", startAt=Some("FIRST_ACTIVATION_DATE_TIME"), startDateTime=None, endDateTime=None, occurrences=Some("1"))
       val objShouldBe = ("id" -> "theId") ~
         ("period" -> "1 day") ~
         ("startAt" -> "FIRST_ACTIVATION_DATE_TIME") ~
@@ -20,8 +20,7 @@ class AdpScheduleSpec extends WordSpec {
   }
 
   "AdpStartDateTimeSchedule" should {
-    val testObj = AdpStartDateTimeSchedule(
-      "theId", Some("SomeName"), "1 day", new DateTime("2014-04-02T00:00:00Z"), None)
+    val testObj = AdpSchedule(id="theId", name=Some("SomeName"), period="1 day", startAt=None, startDateTime=Some(new DateTime("2014-04-02T00:00:00Z")), endDateTime=None, occurrences=None)
     val objShouldBe = ("id" -> "theId") ~
       ("name" -> "SomeName") ~
       ("period" -> "1 day") ~

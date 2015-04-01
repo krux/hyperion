@@ -12,24 +12,24 @@ case class AdpParameter(
    */
   id: String,
 
-  /* 
-   * The parameter type that defines the allowed range of input values and validation rules. The default is String. 
+  /*
+   * The parameter type that defines the allowed range of input values and validation rules. The default is String.
    * String, Integer, Double, or AWS::S3::ObjectKey
    */
   `type`: String = "String",
 
   /* A description of the parameter. */
   description: Option[String] = None,
-  
+
   /* Indicates whether the parameter is optional or required. */
   optional: Boolean = false,
-  
+
   /* Enumerates all permitted values for the parameter. */
   allowedValues: Option[Seq[String]] = None,
-  
+
   /* Indicates whether the parameter is an array. */
   isArray: Boolean = false,
-  
+
   /* The default value. */
   `default`: Option[String] = None
 ) extends AdpObject
