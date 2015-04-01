@@ -16,8 +16,7 @@ case class Schedule(
   // if None, will use first activation datetime
   start: Option[DateTime] = None,
   period: DpPeriod = 1.day,
-  occurrences: Option[Int] = None,
-  end: Option[DateTime] = None,
+  end: Option[Either[Int, DateTime]] = None,
   scheduleType: ScheduleType = Cron
 ) extends PipelineObject {
 
@@ -45,9 +44,8 @@ case class Schedule(
 
   @deprecated("Use 'every' instead of 'period'", "2015-04-01") def period(p: DpPeriod) = this.copy(period = p)
 
-  def until(dt: DateTime) = this.copy(end = Option(dt))
-
-  def stopAfter(occurrences: Int) = this.copy(occurrences = Some(occurrences))
+  def until(dt: DateTime) = this.copy(end = Some(Right(dt)))
+  def stopAfter(occurrences: Int) = this.copy(end = Some(Left(occurrences)))
 
   def serialize = start match {
     case Some(dt) =>
@@ -57,8 +55,14 @@ case class Schedule(
         period = period.toString,
         startAt = None,
         startDateTime = Some(dt),
-        endDateTime = end,
-        occurrences = occurrences.map(_.toString)
+        endDateTime = end.flatMap {
+          case Right(dt) => Some(dt)
+          case _ => None
+        },
+        occurrences = end.flatMap {
+          case Left(occurrences) => Some(occurrences.toString)
+          case _ => None
+        }
       )
 
     case None =>
@@ -68,8 +72,14 @@ case class Schedule(
         period = period.toString,
         startAt = Some("FIRST_ACTIVATION_DATE_TIME"),
         startDateTime = None,
-        endDateTime = end,
-        occurrences = occurrences.map(_.toString)
+        endDateTime = end.flatMap {
+          case Right(dt) => Some(dt)
+          case _ => None
+        },
+        occurrences = end.flatMap {
+          case Left(occurrences) => Some(occurrences.toString)
+          case _ => None
+        }
       )
   }
 
@@ -80,5 +90,5 @@ object Schedule {
 
   def timeSeries = Schedule(scheduleType = TimeSeries)
 
-  def onceAtActivation = Schedule(occurrences = Some(1), scheduleType = Cron)
+  def onceAtActivation = Schedule(end = Some(Left(1)), scheduleType = Cron)
 }
