@@ -27,3 +27,11 @@ case class RegExDataFormat (
   )
 
 }
+
+object RegExDataFormat {
+  def apply(inputRegEx: String, outputFormat: String) = new RegExDataFormat(
+    id = PipelineId.generateNewId("RegExDataFormat"),
+    inputRegEx = inputRegEx,
+    outputFormat = outputFormat
+  )
+}
