@@ -15,7 +15,7 @@ class AdpTerminate extends AdpAction {
 
 /**
  * Sends an Amazon SNS notification message when an activity fails or finishes successfully.
- * 
+ *
  * @param message The body text of the Amazon SNS notification. String  Yes
  * @param role  The IAM role to use to create the Amazon SNS alarm. String  Yes
  * @param subject The subject line of the Amazon SNS notification message.  String  Yes

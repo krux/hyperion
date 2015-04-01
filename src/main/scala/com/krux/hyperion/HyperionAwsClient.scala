@@ -36,6 +36,7 @@ class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String]
           case true =>
             println("Delete the existing pipline")
             HyperionAwsClient.deletePipelineById(pipelineId)
+            Thread.sleep(15000)  // wait until the data pipeline is really deleted
             createPipeline(false)
           case false =>
             println("User --force to force pipeline creation")
@@ -51,10 +52,12 @@ class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String]
         println(s"Pipeline created: $pipelineId")
         println("Uploading pipeline definition")
         val pipelineObjects: Seq[PipelineObject] = pipelineDef
+        val paramObjects: Seq[ParameterObject] = pipelineDef
         val putDefinitionResult = client.putPipelineDefinition(
           new PutPipelineDefinitionRequest()
             .withPipelineId(pipelineId)
             .withPipelineObjects(pipelineObjects)
+            .withParameterObjects(paramObjects)
         )
         putDefinitionResult.getValidationErrors.flatMap(_.getErrors().map(e => s"ERROR: $e"))
           .foreach(println)

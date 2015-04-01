@@ -7,16 +7,16 @@ import com.krux.hyperion.HyperionContext
  * Launch a Spark cluster
  */
 case class SparkCluster (
-    id: String,
-    taskInstanceCount: Int,
-    coreInstanceCount: Int,
-    instanceType: String,
-    amiVersion: String,
-    sparkVersion: String,
-    terminateAfter: String
-  )(
-    implicit val hc: HyperionContext
-  ) extends EmrCluster {
+  id: String,
+  taskInstanceCount: Int,
+  coreInstanceCount: Int,
+  instanceType: String,
+  amiVersion: String,
+  sparkVersion: String,
+  terminateAfter: String
+)(
+  implicit val hc: HyperionContext
+) extends EmrCluster {
 
   assert(taskInstanceCount >= 0)
 
@@ -28,26 +28,66 @@ case class SparkCluster (
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
   def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
 
-  def runSpark(name: String) = SparkActivity(name, this)
-  def runMapReduce(name: String) = MapReduceActivity(name, this)
+  def runSpark(id: String) = SparkActivity(
+    id = id,
+    runsOn = this
+  )
+
+  def runMapReduce(id: String) = MapReduceActivity(
+    id = id,
+    runsOn = this
+  )
+
+  def runPigScript(id: String) = PigActivity(
+    id = id,
+    runsOn = this
+  )
+
+  def runHiveScript(id: String, hiveScript: Option[String] = None,
+      scriptUri: Option[String] = None, scriptVariable: Option[String] = None,
+      input: Option[DataNode] = None, output: Option[DataNode] = None) =
+    HiveActivity(
+      id = id,
+      runsOn = this,
+      hiveScript = hiveScript,
+      scriptUri = scriptUri,
+      scriptVariable = scriptVariable,
+      input = input,
+      output = output
+    )
+
+  def runHiveCopy(id: String,
+      filterSql: Option[String] = None,
+      generatedScriptsPath: Option[String] = None,
+      input: Option[DataNode] = None,
+      output: Option[DataNode] = None) =
+    HiveCopyActivity(
+      id = id,
+      runsOn = this,
+      filterSql = filterSql,
+      generatedScriptsPath = generatedScriptsPath,
+      input = input,
+      output = output
+    )
 
   def serialize = AdpEmrCluster(
-      id,
-      Some(id),
-      bootstrapAction,
-      Some(amiVersion),
-      Some(instanceType),
-      Some(instanceType),
-      Some(coreInstanceCount.toString),
-      Some(instanceType),
-      Some(taskInstanceCount.toString),
-      terminateAfter,
-      keyPair
-    )
+    id = id,
+    name = Some(id),
+    bootstrapAction = bootstrapAction,
+    amiVersion = Some(amiVersion),
+    masterInstanceType = Some(instanceType),
+    coreInstanceType = Some(instanceType),
+    coreInstanceCount = Some(coreInstanceCount.toString),
+    taskInstanceType = Some(instanceType),
+    taskInstanceCount = Some(taskInstanceCount.toString),
+    terminateAfter = terminateAfter,
+    keyPair = keyPair
+  )
 
 }
 
 object SparkCluster {
+
   def apply()(implicit hc: HyperionContext) = {
     new SparkCluster(
       id = "SparkCluster",
@@ -59,4 +99,5 @@ object SparkCluster {
       terminateAfter = hc.emrTerminateAfter
     )
   }
+
 }

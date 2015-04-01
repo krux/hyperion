@@ -10,13 +10,16 @@ class AdpDataNodesSpec extends WordSpec {
   "AdpS3DirectoryDataNode" should {
     "converts to Json" in {
       val testObj = AdpS3DirectoryDataNode(
-          "s3dn",
-          None,
-          Some("gzip"),
-          Some(AdpRef(tsvFormat)),
-          "s3://blah/blah",
-          None
-        )
+        id = "s3dn",
+        name = None,
+        compression = Some("gzip"),
+        dataFormat = Some(AdpRef(tsvFormat)),
+        directoryPath = "s3://blah/blah",
+        manifestFilePath = None,
+        precondition = None,
+        onSuccess = None,
+        onFail = None
+      )
       val objShouldBe = ("id" -> "s3dn") ~
         ("compression" -> "gzip") ~
         ("dataFormat" -> ("ref" -> "tsv")) ~
@@ -29,13 +32,16 @@ class AdpDataNodesSpec extends WordSpec {
   "AdpS3FileDataNode" should {
     "converts to Json" in {
       val testObj = AdpS3FileDataNode(
-          "s3dn",
-          None,
-          Some("gzip"),
-          Some(AdpRef(tsvFormat)),
-          "s3://blah/blah/dir/",
-          None
-        )
+        id = "s3dn",
+        name = None,
+        compression = Some("gzip"),
+        dataFormat = Some(AdpRef(tsvFormat)),
+        filePath = "s3://blah/blah/dir/",
+        manifestFilePath = None,
+        precondition = None,
+        onSuccess = None,
+        onFail = None
+      )
       val objShouldBe = ("id" -> "s3dn") ~
         ("compression" -> "gzip") ~
         ("dataFormat" -> ("ref" -> "tsv")) ~
@@ -49,14 +55,17 @@ class AdpDataNodesSpec extends WordSpec {
   "AdpRedshiftDataNode" should {
     "converts to Json" in {
       val testObj = AdpRedshiftDataNode(
-          "redshiftTable",
-          None,
-          None,
-          AdpRef[AdpRedshiftDatabase]("myRedshift"),
-          Some("public"),
-          "myTable",
-          None
-        )
+        id = "redshiftTable",
+        name = None,
+        createTableSql = None,
+        database = AdpRef[AdpRedshiftDatabase]("myRedshift"),
+        schemaName = Some("public"),
+        tableName = "myTable",
+        primaryKeys = None,
+        precondition = None,
+        onSuccess = None,
+        onFail = None
+      )
       val objShouldBe = ("id" -> "redshiftTable") ~
         ("database" -> ("ref" -> "myRedshift")) ~
         ("schemaName" -> "public") ~

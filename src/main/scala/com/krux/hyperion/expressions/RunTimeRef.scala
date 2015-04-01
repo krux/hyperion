@@ -6,7 +6,7 @@ package com.krux.hyperion.expressions
 object DateTimeRef extends Enumeration {
   type DateTimeRef = Value
   // The date and time that the scheduled run actually started. This is a runtime slot.
-  val ActiualStartTime = Value("@actualStartTime")
+  val ActualStartTime = Value("@actualStartTime")
   // The date and time that the scheduled run actually ended. This is a runtime slot.
   val ActualEndTime = Value("@actualEndTime")
   // The date and time that the run was scheduled to start.

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [[ $# -ge 2 && $1 == "-jar" ]]; then
+    shift
+    EXT_JAR=$1; shift
+else
+    EXT_JAR=""
+fi
+exec java -cp $EXT_JAR $@

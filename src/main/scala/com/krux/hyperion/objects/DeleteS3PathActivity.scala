@@ -1,21 +1,20 @@
 package com.krux.hyperion.objects
 
-import aws.{AdpJsonSerializer, AdpShellCommandActivity, AdpRef,
-  AdpDataNode, AdpActivity, AdpEc2Resource, AdpPrecondition}
+import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.objects.aws.AdpShellCommandActivity
+import com.krux.hyperion.objects.aws.AdpRef
+import com.krux.hyperion.objects.aws.AdpEc2Resource
+import com.krux.hyperion.objects.aws.AdpActivity
+import com.krux.hyperion.objects.aws.AdpPrecondition
 import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 /**
- * Shell command activity
+ * Activity to recursively delete files in an S3 path.
  */
-case class ShellCommandActivity(
+case class DeleteS3PathActivity(
   id: String,
+  s3Path: String,
   runsOn: Ec2Resource,
-  command: Option[String] = None,
-  scriptUri: Option[String] = None,
-  scriptArguments: Seq[String] = Seq(),
-  stage: Boolean = true,
-  input: Seq[S3DataNode] = Seq(),
-  output: Seq[S3DataNode] = Seq(),
   stdout: Option[String] = None,
   stderr: Option[String] = None,
   dependsOn: Seq[PipelineActivity] = Seq(),
@@ -23,19 +22,11 @@ case class ShellCommandActivity(
   onFailAlarms: Seq[SnsAlarm] = Seq(),
   onSuccessAlarms: Seq[SnsAlarm] = Seq(),
   onLateActionAlarms: Seq[SnsAlarm] = Seq()
+)(
+  implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
   def forClient(client: String) = this.copy(id = s"${id}_${client}")
-
-  def withCommand(cmd: String) = this.copy(command = Some(cmd))
-  def withScriptUri(uri: String) = this.copy(scriptUri = Some(uri))
-  def withArguments(args: String*) = this.copy(scriptArguments = args)
-
-  def staged() = this.copy(stage = true)
-  def notStaged() = this.copy(stage = false)
-
-  def withInput(inputs: S3DataNode*) = this.copy(input = inputs)
-  def withOutput(outputs: S3DataNode*) = this.copy(output = outputs)
 
   def withStdoutTo(out: String) = this.copy(stdout = Some(out))
   def withStderrTo(err: String) = this.copy(stderr = Some(err))
@@ -46,26 +37,17 @@ case class ShellCommandActivity(
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
 
-  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ preconditions ++ input ++ output ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   def serialize = AdpShellCommandActivity(
     id = id,
     name = Some(id),
-    command = command,
-    scriptUri = scriptUri,
-    scriptArgument = scriptArguments match {
-      case Seq() => None
-      case arguments => Some(arguments)
-    },
-    input = input match {
-      case Seq() => None
-      case inputs => Some(inputs.map(in => AdpRef[AdpDataNode](in.id)))
-    },
-    output = output match {
-      case Seq() => None
-      case outputs => Some(outputs.map(out => AdpRef[AdpDataNode](out.id)))
-    },
-    stage = stage.toString(),
+    command = Some(s"aws s3 rm --recursive $s3Path"),
+    scriptUri = None,
+    scriptArgument = None,
+    input = None,
+    output = None,
+    stage = "false",
     stdout = stdout,
     stderr = stderr,
     runsOn = AdpRef[AdpEc2Resource](runsOn.id),
@@ -90,4 +72,5 @@ case class ShellCommandActivity(
       case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     }
   )
+
 }

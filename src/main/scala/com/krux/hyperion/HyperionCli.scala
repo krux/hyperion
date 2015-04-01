@@ -20,14 +20,14 @@ trait HyperionCli {
     val parser = new OptionParser[Cli](s"hyperion") {
       head("hyperion")
       cmd("generate").action { (_, c) => c.copy(mode = "generate") }
+      cmd("create").action { (_, c) => c.copy(mode = "create") }
         .children(
           opt[Unit]("force").action { (_, c) => c.copy(force = true) },
           opt[Unit]("activate").action { (_, c) => c.copy(activate = true) },
           opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Some(x)) }
         )
-      cmd("create").action { (_, c) => c.copy(mode = "create") }
       cmd("delete").action { (_, c) => c.copy(mode = "delete") }
-      cmd("activate").action { (_, c) => c.copy(mode = "delete") }
+      cmd("activate").action { (_, c) => c.copy(mode = "activate") }
     }
 
     parser.parse(args, Cli()).foreach { cli =>
