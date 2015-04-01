@@ -9,7 +9,7 @@ import com.typesafe.config.ConfigFactory
 /**
  * An example redshift loader object
  */
-class ExampleRedshiftLoad extends DataPipelineDef {
+object ExampleRedshiftLoad extends DataPipelineDef {
 
   object MockRedshift extends RedshiftDatabase {
     val id = "_MockRedshift"

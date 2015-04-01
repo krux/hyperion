@@ -9,7 +9,7 @@ import com.krux.hyperion.expressions.ExpressionDSL._
 import com.krux.hyperion.HyperionContext
 import com.typesafe.config.ConfigFactory
 
-class ExampleSpark extends DataPipelineDef {
+object ExampleSpark extends DataPipelineDef {
 
   val target = "the-target"
   val jar = "s3://sample-jars/sample-jar-assembly-current.jar"
