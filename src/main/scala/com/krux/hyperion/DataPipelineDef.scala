@@ -1,13 +1,17 @@
 package com.krux.hyperion
 
-import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineObject}
-import com.krux.hyperion.objects.aws.{AdpJsonSerializer, AdpPipelineSerializer}
-import com.krux.hyperion.objects.{PipelineObject, Schedule, DefaultObject}
-import com.krux.hyperion.util.PipelineId
-import org.json4s.JsonDSL._
-import org.json4s.{JValue, JArray}
 import scala.collection.mutable.Map
 import scala.language.implicitConversions
+
+import org.json4s.JsonDSL._
+import org.json4s.{JValue, JArray}
+
+import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineObject}
+import com.amazonaws.services.datapipeline.model.{ParameterObject => AwsParameterObject}
+
+import com.krux.hyperion.objects.aws.{AdpJsonSerializer, AdpPipelineSerializer, AdpParameterSerializer}
+import com.krux.hyperion.objects.{PipelineObject, Schedule, DefaultObject, Parameter}
+import com.krux.hyperion.util.PipelineId
 
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
@@ -15,6 +19,7 @@ import scala.language.implicitConversions
 trait DataPipelineDef {
 
   private lazy val context = new HyperionContext()
+
   implicit def hc: HyperionContext = context
 
   def schedule: Schedule
@@ -22,6 +27,8 @@ trait DataPipelineDef {
   def workflow: Iterable[PipelineObject]
 
   def defaultObject = DefaultObject(schedule)
+
+  def parameters: Iterable[Parameter] = Seq()
 
   def objects: Iterable[PipelineObject] = workflow
     .foldLeft(Map[String, PipelineObject]())(flattenPipelineObjects)
@@ -42,11 +49,15 @@ object DataPipelineDef {
     ("objects" -> JArray(
       AdpJsonSerializer(pd.defaultObject) ::
       AdpJsonSerializer(pd.schedule.serialize) ::
-      pd.objects.map(o => AdpJsonSerializer(o.serialize)).toList))
+      pd.objects.map(o => AdpJsonSerializer(o.serialize)).toList)) ~
+    ("parameters" -> JArray(
+      pd.parameters.map(o => AdpJsonSerializer(o.serialize)).toList))
 
   implicit def dataPipelineDef2Aws(pd: DataPipelineDef): Seq[AwsPipelineObject] =
     AdpPipelineSerializer(pd.defaultObject) ::
     AdpPipelineSerializer(pd.schedule.serialize) ::
     pd.objects.map(o => AdpPipelineSerializer(o.serialize)).toList
 
+  implicit def dataPipelineDef2AwsParameter(pd: DataPipelineDef): Seq[AwsParameterObject] =
+    pd.parameters.map(o => AdpParameterSerializer(o.serialize)).toList
 }

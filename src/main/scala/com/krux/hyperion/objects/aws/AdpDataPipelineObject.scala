@@ -1,6 +1,8 @@
 package com.krux.hyperion.objects.aws
 
-abstract class AdpDataPipelineAbstractObject {
+trait AdpObject
+
+abstract class AdpDataPipelineAbstractObject extends AdpObject {
   def id: String
   def name: Option[String]
 }
