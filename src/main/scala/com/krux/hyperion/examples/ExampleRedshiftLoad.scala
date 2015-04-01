@@ -11,8 +11,6 @@ import com.typesafe.config.ConfigFactory
  */
 object ExampleRedshiftLoad extends DataPipelineDef with HyperionCli {
 
-  def pipelineDef = this
-
   object MockRedshift extends RedshiftDatabase {
     val id = "_MockRedshift"
     val name = id

@@ -16,7 +16,9 @@ import com.krux.hyperion.util.PipelineId
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
  */
-trait DataPipelineDef {
+trait DataPipelineDef extends HyperionCli {
+
+  def pipelineDef = this
 
   private lazy val context = new HyperionContext()
 
