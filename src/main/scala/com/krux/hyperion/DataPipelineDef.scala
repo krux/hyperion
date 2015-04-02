@@ -1,6 +1,6 @@
 package com.krux.hyperion
 
-import scala.collection.mutable.Map
+import scala.collection.mutable.{Map => MutableMap}
 import scala.language.implicitConversions
 
 import org.json4s.JsonDSL._
@@ -30,13 +30,15 @@ trait DataPipelineDef extends HyperionCli {
 
   def defaultObject = DefaultObject(schedule)
 
+  def tags: Map[String, Option[String]] = Map()
+
   def parameters: Iterable[Parameter] = Seq()
 
   def objects: Iterable[PipelineObject] = workflow
-    .foldLeft(Map[String, PipelineObject]())(flattenPipelineObjects)
+    .foldLeft(MutableMap[String, PipelineObject]())(flattenPipelineObjects)
     .map(_._2)
 
-  private def flattenPipelineObjects(r: Map[String, PipelineObject], po: PipelineObject): Map[String, PipelineObject] =
+  private def flattenPipelineObjects(r: MutableMap[String, PipelineObject], po: PipelineObject): MutableMap[String, PipelineObject] =
     if (!r.contains(po.id)) {
       r ++ Map(po.id -> po) ++ po.objects.foldLeft(r)(flattenPipelineObjects)
     } else {
