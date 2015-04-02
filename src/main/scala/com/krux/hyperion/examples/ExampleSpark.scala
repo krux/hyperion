@@ -16,6 +16,8 @@ object ExampleSpark extends DataPipelineDef {
 
   override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
 
+  override lazy val tags = Map("example" -> None, "ownerGroup" -> Some("spark"))
+
   override lazy val schedule = Schedule()
     .startAtActivation
     .every(1.day)

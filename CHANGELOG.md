@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
+## 1.5.1 - 2015-04-02
+### Added
+- #33 - Added support for tags
+
 ## 1.5.0 - 2015-04-02
 ### Added
 - #6 - Support remaining schedule aspects
