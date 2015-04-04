@@ -13,7 +13,8 @@ trait HyperionCli {
     activate: Boolean = false,
     force: Boolean = false,
     pipelineId: Option[String] = None,
-    customName: Option[String] = None
+    customName: Option[String] = None,
+    tags: Map[String, Option[String]] = Map()
   )
 
   def main(args: Array[String]): Unit = {
@@ -24,7 +25,14 @@ trait HyperionCli {
         .children(
           opt[Unit]("force").action { (_, c) => c.copy(force = true) },
           opt[Unit]("activate").action { (_, c) => c.copy(activate = true) },
-          opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Some(x)) }
+          opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Some(x)) },
+          opt[(String, String)]('t', "tags").valueName("<tag>").action { (x, c) =>
+            val tag = x match {
+              case (k, "") => (k, None)
+              case (k, v) => (k, Some(v))
+            }
+            c.copy(tags = c.tags + tag)
+          } unbounded()
         )
       cmd("delete").action { (_, c) => c.copy(mode = "delete") }
       cmd("activate").action { (_, c) => c.copy(mode = "activate") }
@@ -36,7 +44,7 @@ trait HyperionCli {
         case "generate" =>
           println(pretty(render(pipelineDef)))
         case "create" =>
-          val pipelineId = awsClient.createPipeline(cli.force)
+          val pipelineId = awsClient.createPipeline(cli.force, cli.tags)
           if (cli.activate) pipelineId.foreach(HyperionAwsClient.activatePipelineById)
         case "delete" =>
           awsClient.deletePipeline()

@@ -16,12 +16,14 @@ object ExampleSpark extends DataPipelineDef {
 
   override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
 
+  override lazy val tags = Map("example" -> None, "ownerGroup" -> Some("spark"))
+
   override lazy val schedule = Schedule()
     .startAtActivation
     .every(1.day)
     .stopAfter(3)
 
-  val location = S3KeyParameter("S3Location", "s3://krux-temp/")
+  val location = S3KeyParameter("S3Location", "s3://your-location/")
   val instanceType = StringParameter("InstanceType", "c3.8xlarge")
   val instanceCount = IntegerParameter("InstanceCount", 8)
   val instanceBid = DoubleParameter("InstanceBid", 3.40)

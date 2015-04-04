@@ -28,6 +28,8 @@ trait DataPipelineDef extends HyperionCli {
 
   def defaultObject = DefaultObject(schedule)
 
+  def tags: Map[String, Option[String]] = Map()
+
   def parameters: Iterable[Parameter] = Seq()
 
   def objects: Iterable[PipelineObject] = workflow

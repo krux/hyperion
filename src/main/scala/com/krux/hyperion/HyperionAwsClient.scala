@@ -24,7 +24,7 @@ class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String]
     }
   }
 
-  def createPipeline(force: Boolean = false): Option[String] = {
+  def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map()): Option[String] = {
 
     println(s"Creating pipeline $pipelineName")
 
@@ -36,7 +36,7 @@ class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String]
           println("Delete the existing pipline")
           HyperionAwsClient.deletePipelineById(pipelineId)
           Thread.sleep(15000)  // wait until the data pipeline is really deleted
-          createPipeline(false)
+          createPipeline(false, tags)
         } else {
           println("User --force to force pipeline creation")
           None
@@ -45,6 +45,7 @@ class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String]
       case None =>
         val pipelineId = client.createPipeline(
             new CreatePipelineRequest()
+              .withTags((pipelineDef.tags ++ tags).map { case (k, v) => new Tag().withKey(k).withValue(v.getOrElse("")) } )
               .withUniqueId(pipelineName)
               .withName(pipelineName)
           ).getPipelineId
