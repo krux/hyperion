@@ -8,12 +8,11 @@ import com.krux.hyperion.objects.aws.AdpS3KeyExistsPrecondition
  *
  * @param s3Key Amazon S3 key to check for existence.
  */
-case class S3KeyExistsPrecondition(
-  id: String,
+case class S3KeyExistsPrecondition private (
+  id: UniquePipelineId,
   s3Key: String,
-  name: Option[String] = None,
-  preconditionTimeout: Option[String] = None,
-  role: Option[String] = None
+  preconditionTimeout: Option[String],
+  role: Option[String]
 )(
   implicit val hc: HyperionContext
 ) extends Precondition {
@@ -28,3 +27,12 @@ case class S3KeyExistsPrecondition(
 
 }
 
+object S3KeyExistsPrecondition {
+  def apply(s3Key: String)(implicit hc: HyperionContext) =
+    new S3KeyExistsPrecondition(
+      id = new UniquePipelineId("S3KeyExistsPrecondition"),
+      s3Key = s3Key,
+      preconditionTimeout = None,
+      role = None
+    )
+}

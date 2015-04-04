@@ -8,11 +8,11 @@ import com.krux.hyperion.objects.aws.AdpDynamoDBDataExistsPrecondition
  *
  * @param tableName The DynamoDB table to check.
  */
-case class DynamoDBDataExistsPrecondition (
-  id: String,
+case class DynamoDBDataExistsPrecondition private (
+  id: UniquePipelineId,
   tableName: String,
-  preconditionTimeout: Option[String] = None,
-  role: Option[String] = None
+  preconditionTimeout: Option[String],
+  role: Option[String]
 )(
   implicit val hc: HyperionContext
 ) extends Precondition {
@@ -25,4 +25,14 @@ case class DynamoDBDataExistsPrecondition (
     tableName = tableName
   )
 
+}
+
+object DynamoDBDataExistsPrecondition {
+  def apply(tableName: String)(implicit hc: HyperionContext) =
+    new DynamoDBDataExistsPrecondition(
+      id = new UniquePipelineId("DynamoDBDataExistsPrecondition"),
+      tableName = tableName,
+      preconditionTimeout = None,
+      role = None
+    )
 }

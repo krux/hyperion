@@ -1,16 +1,15 @@
 package com.krux.hyperion.objects
 
 import com.krux.hyperion.objects.aws.AdpRegExDataFormat
-import com.krux.hyperion.util.PipelineId
 
 /**
  * RegEx data format
  */
-case class RegExDataFormat (
-  id: String,
+case class RegExDataFormat private (
+  id: UniquePipelineId,
   inputRegEx: String,
   outputFormat: String,
-  column: Seq[String] = Seq()
+  column: Seq[String]
 ) extends DataFormat {
 
   def withColumns(cols: Seq[String]) = this.copy(column = cols)
@@ -30,8 +29,9 @@ case class RegExDataFormat (
 
 object RegExDataFormat {
   def apply(inputRegEx: String, outputFormat: String) = new RegExDataFormat(
-    id = PipelineId.generateNewId("RegExDataFormat"),
+    id = new UniquePipelineId("RegExDataFormat"),
     inputRegEx = inputRegEx,
-    outputFormat = outputFormat
+    outputFormat = outputFormat,
+    column = Seq()
   )
 }

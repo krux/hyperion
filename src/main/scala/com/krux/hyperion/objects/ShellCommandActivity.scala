@@ -7,25 +7,28 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
 /**
  * Shell command activity
  */
-case class ShellCommandActivity(
-  id: String,
+case class ShellCommandActivity private (
+  id: UniquePipelineId,
   runsOn: Ec2Resource,
-  command: Option[String] = None,
-  scriptUri: Option[String] = None,
-  scriptArguments: Seq[String] = Seq(),
-  stage: Boolean = true,
-  input: Seq[S3DataNode] = Seq(),
-  output: Seq[S3DataNode] = Seq(),
-  stdout: Option[String] = None,
-  stderr: Option[String] = None,
-  dependsOn: Seq[PipelineActivity] = Seq(),
-  preconditions: Seq[Precondition] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onLateActionAlarms: Seq[SnsAlarm] = Seq()
+  command: Option[String],
+  scriptUri: Option[String],
+  scriptArguments: Seq[String],
+  stage: Boolean,
+  input: Seq[S3DataNode],
+  output: Seq[S3DataNode],
+  stdout: Option[String],
+  stderr: Option[String],
+  dependsOn: Seq[PipelineActivity],
+  preconditions: Seq[Precondition],
+  onFailAlarms: Seq[SnsAlarm],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onLateActionAlarms: Seq[SnsAlarm]
 ) extends PipelineActivity {
 
-  def forClient(client: String) = this.copy(id = s"${id}_${client}")
+  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
+  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+
+  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
 
   def withCommand(cmd: String) = this.copy(command = Some(cmd))
   def withScriptUri(uri: String) = this.copy(scriptUri = Some(uri))
@@ -90,4 +93,25 @@ case class ShellCommandActivity(
       case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     }
   )
+}
+
+object ShellCommandActivity {
+  def apply(runsOn: Ec2Resource) =
+    new ShellCommandActivity(
+      id = new UniquePipelineId("ShellCommandActivity"),
+      runsOn = runsOn,
+      command = None,
+      scriptUri = None,
+      scriptArguments = Seq(),
+      stage = true,
+      input = Seq(),
+      output = Seq(),
+      stdout = None,
+      stderr = None,
+      dependsOn = Seq(),
+      preconditions = Seq(),
+      onFailAlarms = Seq(),
+      onSuccessAlarms = Seq(),
+      onLateActionAlarms = Seq()
+    )
 }

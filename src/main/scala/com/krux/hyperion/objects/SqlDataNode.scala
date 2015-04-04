@@ -2,7 +2,6 @@ package com.krux.hyperion.objects
 
 import com.krux.hyperion.objects.aws.{AdpSqlDataNode, AdpPrecondition, AdpSnsAlarm, AdpRef}
 import com.krux.hyperion.objects.sql.{TableQuery, SelectTableQuery, InsertTableQuery}
-import com.krux.hyperion.util.PipelineId
 
 /**
  * @note that the AWS Datapipeline SqlDataNode does not require a JdbcDatabase parameter, but
@@ -10,12 +9,12 @@ import com.krux.hyperion.util.PipelineId
  * object for consistency with other database data node objects.
  */
 case class SqlDataNode (
-  id: String,
+  id: UniquePipelineId,
   tableQuery: TableQuery,
   database: JdbcDatabase,
-  preconditions: Seq[Precondition] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq()
+  preconditions: Seq[Precondition],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onFailAlarms: Seq[SnsAlarm]
 ) extends Copyable {
 
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -57,7 +56,7 @@ object SqlDataNode {
 
   def apply(tableQuery: TableQuery, database: JdbcDatabase) =
     new SqlDataNode(
-      id = PipelineId.generateNewId("SqlDataNode"),
+      id = new UniquePipelineId("SqlDataNode"),
       tableQuery = tableQuery,
       database = database,
       preconditions = Seq(),

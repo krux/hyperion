@@ -12,7 +12,7 @@ import com.typesafe.config.ConfigFactory
 object ExampleRedshiftLoad extends DataPipelineDef {
 
   object MockRedshift extends RedshiftDatabase {
-    val id = "_MockRedshift"
+    val id = new FixedPipelineId("_MockRedshift")
     val name = id
     val clusterId = "mock-redshift"
     val username = "mockuser"
@@ -28,25 +28,24 @@ object ExampleRedshiftLoad extends DataPipelineDef {
 
   override def workflow = {
 
-    val ec2instance = Ec2Resource()
+    val ec2Instance = Ec2Resource()
 
     val s3Format = TsvDataFormat()
 
     val redshiftTable = RedshiftDataNode(
-        "destTable",
         MockRedshift,
         "monthly_campaign_frequency_distribution"
       )
       .withSchema("kexin")
       .withPrimaryKeys("publisher_id", "campaign_id", "month")
 
-    Some(RedshiftCopyActivity(
-      id = "copy",
-      input = S3DataNode.fromPath("s3://testing/testtab/").withDataFormat(s3Format),
-      insertMode = RedshiftCopyActivity.OverwriteExisting,
-      runsOn = ec2instance,
-      output = redshiftTable
-    ))
+    Some(
+      ec2Instance.copyIntoRedshift(
+        input = S3DataNode.fromPath("s3://testing/testtab/").withDataFormat(s3Format),
+        output = redshiftTable,
+        insertMode = RedshiftCopyActivity.OverwriteExisting
+      )
+    )
   }
 
 }

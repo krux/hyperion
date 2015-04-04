@@ -8,11 +8,11 @@ import com.krux.hyperion.objects.aws.AdpS3PrefixNotEmptyPrecondition
  *
  * @param s3Prefix  The Amazon S3 prefix to check for existence of objects.
  */
-case class S3PrefixNotEmptyPrecondition(
-  id: String,
+case class S3PrefixNotEmptyPrecondition private (
+  id: UniquePipelineId,
   s3Prefix: String,
-  preconditionTimeout: Option[String] = None,
-  role: Option[String] = None
+  preconditionTimeout: Option[String],
+  role: Option[String]
 )(
   implicit val hc: HyperionContext
 ) extends Precondition {
@@ -25,4 +25,14 @@ case class S3PrefixNotEmptyPrecondition(
     role = role.getOrElse(hc.resourceRole)
   )
 
+}
+
+object S3PrefixNotEmptyPrecondition {
+  def apply(s3Prefix: String)(implicit hc: HyperionContext) =
+    new S3PrefixNotEmptyPrecondition(
+      id = new UniquePipelineId("S3PrefixNotEmptyPrecondition"),
+      s3Prefix = s3Prefix,
+      preconditionTimeout = None,
+      role = None
+    )
 }

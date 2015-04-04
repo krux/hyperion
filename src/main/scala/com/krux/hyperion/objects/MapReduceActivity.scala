@@ -7,21 +7,24 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
 /**
  * Defines a MapReduce activity
  */
-case class MapReduceActivity(
-  id: String,
+case class MapReduceActivity private (
+  id: UniquePipelineId,
   runsOn: EmrCluster,
-  steps: Seq[MapReduceStep] = Seq(),
-  dependsOn: Seq[PipelineActivity] = Seq(),
-  preconditions: Seq[Precondition] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onLateActionAlarms: Seq[SnsAlarm] = Seq()
+  steps: Seq[MapReduceStep],
+  dependsOn: Seq[PipelineActivity],
+  preconditions: Seq[Precondition],
+  onFailAlarms: Seq[SnsAlarm],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onLateActionAlarms: Seq[SnsAlarm]
 ) extends EmrActivity {
 
   def withStepSeq(steps: Seq[MapReduceStep]) = this.copy(steps = steps)
   def withSteps(steps: MapReduceStep*) = this.copy(steps = steps)
 
-  def forClient(client: String) = this.copy(id = s"${id}_${client}")
+  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
+  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+
+  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -66,4 +69,16 @@ case class MapReduceActivity(
 
 }
 
-object MapReduceActivity extends RunnableObject
+object MapReduceActivity extends RunnableObject {
+  def apply(runsOn: EmrCluster) =
+    new MapReduceActivity(
+      id = new UniquePipelineId("MapReduceActivity"),
+      runsOn = runsOn,
+      steps = Seq(),
+      dependsOn = Seq(),
+      preconditions = Seq(),
+      onFailAlarms = Seq(),
+      onSuccessAlarms = Seq(),
+      onLateActionAlarms = Seq()
+    )
+}

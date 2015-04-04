@@ -13,15 +13,15 @@ import com.krux.hyperion.objects.aws.AdpShellCommandPrecondition
  * @param stderr The Amazon S3 path that receives redirected system error messages from the command. If you use the runsOn field, this must be an Amazon S3 path because of the transitory nature of the resource running your activity. However if you specify the workerGroup field, a local file path is permitted.
  *
  */
-case class ShellCommandPrecondition(
-  id: String,
+case class ShellCommandPrecondition private (
+  id: UniquePipelineId,
   command: String,
-  scriptArgument: Seq[String] = Seq(),
-  scriptUri: Option[String] = None,
-  stdout: Option[String] = None,
-  stderr: Option[String] = None,
-  preconditionTimeout: Option[String] = None,
-  role: Option[String] = None
+  scriptArgument: Seq[String],
+  scriptUri: Option[String],
+  stdout: Option[String],
+  stderr: Option[String],
+  preconditionTimeout: Option[String],
+  role: Option[String]
 )(
   implicit val hc: HyperionContext
 ) extends Precondition {
@@ -43,4 +43,16 @@ case class ShellCommandPrecondition(
 
 }
 
-
+object ShellCommandPrecondition {
+  def apply(command: String)(implicit hc: HyperionContext) =
+    new ShellCommandPrecondition(
+      id = new UniquePipelineId("ShellCommandPrecondition"),
+      command = command,
+      scriptArgument = Seq(),
+      scriptUri = None,
+      stdout = None,
+      stderr = None,
+      preconditionTimeout = None,
+      role = None
+    )
+}

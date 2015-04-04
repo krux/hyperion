@@ -1,13 +1,12 @@
 package com.krux.hyperion.objects
 
 import com.krux.hyperion.objects.aws.AdpTsvDataFormat
-import com.krux.hyperion.util.PipelineId
 
 /**
  * TSV data format
  */
-case class TsvDataFormat (
-  id: String,
+case class TsvDataFormat private (
+  id: UniquePipelineId,
   column: Seq[String] = Seq(),
   escapeChar: Option[String] = None
 ) extends DataFormat {
@@ -29,5 +28,5 @@ case class TsvDataFormat (
 }
 
 object TsvDataFormat {
-  def apply() = new TsvDataFormat(PipelineId.generateNewId("TsvDataFormat"))
+  def apply() = new TsvDataFormat(new UniquePipelineId("TsvDataFormat"))
 }

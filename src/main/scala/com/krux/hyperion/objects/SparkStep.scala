@@ -6,12 +6,10 @@ import com.krux.hyperion.HyperionContext
  * A spark step that runs on Spark Cluster
  */
 case class SparkStep(
-    jar: String = "",
-    mainClass: String = "",
-    args: Seq[String] = List()
-  )(
-    implicit hc: HyperionContext
-  ){
+  jar: String = "",
+  mainClass: String = "",
+  args: Seq[String] = List()
+)(implicit hc: HyperionContext) {
 
   val scriptRunner = "s3://elasticmapreduce/libs/script-runner/script-runner.jar"
   val jobRunner = s"${hc.scriptUri}run-spark-step.sh"

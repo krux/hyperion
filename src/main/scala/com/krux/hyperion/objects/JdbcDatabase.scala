@@ -4,7 +4,7 @@ import com.krux.hyperion.objects.aws.AdpJdbcDatabase
 
 trait JdbcDatabase extends Database {
 
-  def id: String
+  def id: UniquePipelineId
 
   def username: String
 

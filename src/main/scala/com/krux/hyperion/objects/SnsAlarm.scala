@@ -3,12 +3,12 @@ package com.krux.hyperion.objects
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
-case class SnsAlarm(
-  id: String,
-  subject: String = "",
-  message: String = "",
-  topicArn: Option[String] = None,
-  role: Option[String] = None
+case class SnsAlarm private (
+  id: UniquePipelineId,
+  subject: String,
+  message: String,
+  topicArn: Option[String],
+  role: Option[String]
 )(
   implicit val hc: HyperionContext
 ) extends PipelineObject {
@@ -19,12 +19,23 @@ case class SnsAlarm(
   def withRole(role: String) = this.copy(role = Some(role))
 
   def serialize = new AdpSnsAlarm(
-    id,
-    Some(id),
-    subject,
-    message,
-    topicArn.getOrElse(hc.snsTopic),
-    role.getOrElse(hc.snsRole)
+    id = id,
+    name = Some(id),
+    subject = subject,
+    message = message,
+    topicArn = topicArn.getOrElse(hc.snsTopic),
+    role = role.getOrElse(hc.snsRole)
   )
 
+}
+
+object SnsAlarm {
+  def apply()(implicit hc: HyperionContext) =
+    new SnsAlarm(
+      id = new UniquePipelineId("SnsAlarm"),
+      subject = "",
+      message = "",
+      topicArn = None,
+      role = None
+    )
 }

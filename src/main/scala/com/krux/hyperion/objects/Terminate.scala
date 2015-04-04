@@ -3,11 +3,9 @@ package com.krux.hyperion.objects
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.objects.aws.AdpTerminate
 
-class Terminate(
-  implicit val hc: HyperionContext
-) extends PipelineObject {
+object Terminate extends PipelineObject {
 
-  val id = "TerminateAction"
+  val id = TerminateUniquePipelineId
 
   def serialize = new AdpTerminate()
 

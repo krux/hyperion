@@ -7,18 +7,19 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
 /**
  * Defines a spark activity
  */
-case class SparkActivity (
-  id: String,
+case class SparkActivity private (
+  id: UniquePipelineId,
   runsOn: SparkCluster,
-  steps: Seq[SparkStep] = Seq(),
-  dependsOn: Seq[PipelineActivity] = Seq(),
-  preconditions: Seq[Precondition] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onLateActionAlarms: Seq[SnsAlarm] = Seq()
+  steps: Seq[SparkStep],
+  dependsOn: Seq[PipelineActivity],
+  preconditions: Seq[Precondition],
+  onFailAlarms: Seq[SnsAlarm],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onLateActionAlarms: Seq[SnsAlarm]
 ) extends EmrActivity {
 
-  def forClient(client: String) = this.copy(id = s"${id}_${client}")
+  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
 
   def withStepSeq(steps: Seq[SparkStep]) = this.copy(steps = steps)
   def withSteps(steps: SparkStep*) = this.copy(steps = steps)
@@ -66,4 +67,16 @@ case class SparkActivity (
   )
 }
 
-object SparkActivity extends RunnableObject
+object SparkActivity extends RunnableObject {
+  def apply(runsOn: SparkCluster) =
+    new SparkActivity(
+      id = new UniquePipelineId("SparkActivity"),
+      runsOn = runsOn,
+      steps = Seq(),
+      dependsOn = Seq(),
+      preconditions = Seq(),
+      onFailAlarms = Seq(),
+      onSuccessAlarms = Seq(),
+      onLateActionAlarms = Seq()
+    )
+}

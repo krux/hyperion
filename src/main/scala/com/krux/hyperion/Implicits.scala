@@ -3,7 +3,7 @@ package com.krux.hyperion
 import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.expressions.DpPeriodBuilder
 import com.krux.hyperion.expressions.{DateTimeRef, DateTimeExp, Expression}
-import com.krux.hyperion.objects.S3DataNode
+import com.krux.hyperion.objects.{S3DataNode, UniquePipelineId}
 import scala.language.implicitConversions
 import org.json4s.DefaultFormats
 
@@ -26,5 +26,8 @@ object Implicits {
   // Convert to relevant PipelineObject
   implicit def string2S3DataNode(s3path: String): S3DataNode =
     S3DataNode.fromPath(s3path)
+
+  implicit def string2UniquePipelineId(prefix: String): UniquePipelineId =
+    new UniquePipelineId(prefix)
 
 }

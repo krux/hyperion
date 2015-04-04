@@ -4,25 +4,28 @@ import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.objects.aws.{AdpHiveActivity, AdpDataNode, AdpRef, AdpEmrCluster, AdpActivity, AdpPrecondition}
 import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
-case class HiveActivity(
-  id: String,
+case class HiveActivity private (
+  id: UniquePipelineId,
   runsOn: EmrCluster,
-  hiveScript: Option[String] = None,
-  scriptUri: Option[String] = None,
-  scriptVariable: Option[String] = None,
-  input: Option[DataNode] = None,
-  output: Option[DataNode] = None,
-  stage: Option[Boolean] = None,
-  dependsOn: Seq[PipelineActivity] = Seq(),
-  preconditions: Seq[Precondition] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onLateActionAlarms: Seq[SnsAlarm] = Seq()
+  hiveScript: Option[String],
+  scriptUri: Option[String],
+  scriptVariable: Option[String],
+  input: Option[DataNode],
+  output: Option[DataNode],
+  stage: Option[Boolean],
+  dependsOn: Seq[PipelineActivity],
+  preconditions: Seq[Precondition],
+  onFailAlarms: Seq[SnsAlarm],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onLateActionAlarms: Seq[SnsAlarm]
 )(
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  def forClient(client: String) = this.copy(id = s"${id}_${client}")
+  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
+  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+
+  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
 
   def withHiveScript(hiveScript: String) = this.copy(hiveScript = Some(hiveScript))
   def withScriptUri(scriptUri: String) = this.copy(scriptUri = Some(scriptUri))
@@ -70,4 +73,23 @@ case class HiveActivity(
       case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     }
   )
+}
+
+object HiveActivity {
+  def apply(runsOn: EmrCluster)(implicit hc: HyperionContext) =
+    new HiveActivity(
+      id = new UniquePipelineId("HiveActivity"),
+      runsOn = runsOn,
+      hiveScript = None,
+      scriptUri = None,
+      scriptVariable = None,
+      input = None,
+      output = None,
+      stage = None,
+      dependsOn = Seq(),
+      preconditions = Seq(),
+      onFailAlarms = Seq(),
+      onSuccessAlarms = Seq(),
+      onLateActionAlarms = Seq()
+    )
 }

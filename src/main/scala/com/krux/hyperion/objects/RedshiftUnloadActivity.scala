@@ -8,18 +8,18 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
 /**
  * Redshift unload activity
  */
-case class RedshiftUnloadActivity(
-  id: String,
+case class RedshiftUnloadActivity private (
+  id: UniquePipelineId,
   database: RedshiftDatabase,
   script: String,
   s3Path: String,
   runsOn: Ec2Resource,
-  unloadOptions: Seq[RedshiftUnloadOption] = Seq(),
-  dependsOn: Seq[PipelineActivity] = Seq(),
-  preconditions: Seq[Precondition] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onLateActionAlarms: Seq[SnsAlarm] = Seq()
+  unloadOptions: Seq[RedshiftUnloadOption],
+  dependsOn: Seq[PipelineActivity],
+  preconditions: Seq[Precondition],
+  onFailAlarms: Seq[SnsAlarm],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onLateActionAlarms: Seq[SnsAlarm]
 )(
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
@@ -31,6 +31,8 @@ case class RedshiftUnloadActivity(
     'aws_access_key_id=${hc.accessKeyId};aws_secret_access_key=${hc.accessKeySecret}'
     ${unloadOptions.map(_.repr).flatten.mkString(" ")}
   """
+
+  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
 
   def withUnloadOptions(opts: RedshiftUnloadOption*) = this.copy(unloadOptions = opts)
 
@@ -72,4 +74,21 @@ case class RedshiftUnloadActivity(
     }
   )
 
+}
+
+object RedshiftUnloadActivity {
+  def apply(database: RedshiftDatabase, script: String, s3Path: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+    new RedshiftUnloadActivity(
+      id = new UniquePipelineId("RedshiftUnloadActivity"),
+      database = database,
+      script = script,
+      s3Path = s3Path,
+      runsOn = runsOn,
+      unloadOptions = Seq(),
+      dependsOn = Seq(),
+      preconditions = Seq(),
+      onFailAlarms = Seq(),
+      onSuccessAlarms = Seq(),
+      onLateActionAlarms = Seq()
+    )
 }

@@ -1,15 +1,14 @@
 package com.krux.hyperion.objects
 
 import com.krux.hyperion.objects.aws.AdpCsvDataFormat
-import com.krux.hyperion.util.PipelineId
 
 /**
  * CSV data format
  */
-case class CsvDataFormat (
-  id: String,
-  column: Seq[String] = Seq(),
-  escapeChar: Option[String] = None
+case class CsvDataFormat private (
+  id: UniquePipelineId,
+  column: Seq[String],
+  escapeChar: Option[String]
 ) extends DataFormat {
 
   def withColumns(cols: Seq[String]) = this.copy(column = cols)
@@ -29,5 +28,9 @@ case class CsvDataFormat (
 }
 
 object CsvDataFormat {
-  def apply() = new CsvDataFormat(PipelineId.generateNewId("CsvDataFormat"))
+  def apply() = new CsvDataFormat(
+    id = new UniquePipelineId("CsvDataFormat"),
+    column = Seq(),
+    escapeChar = None
+  )
 }

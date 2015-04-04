@@ -6,13 +6,17 @@ import com.krux.hyperion.objects.aws.AdpExistsPrecondition
 /**
  * Checks whether a data node object exists.
  */
-case class ExistsPrecondition(
-  id: String,
-  preconditionTimeout: Option[String] = None,
-  role: Option[String] = None
+case class ExistsPrecondition private (
+  id: UniquePipelineId,
+  preconditionTimeout: Option[String],
+  role: Option[String]
 )(
   implicit val hc: HyperionContext
 ) extends Precondition {
+
+  def withPreconditionTimeOut(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+
+  def withRole(role: String) = this.copy(role = Option(role))
 
   def serialize = AdpExistsPrecondition(
     id = id,
@@ -23,3 +27,11 @@ case class ExistsPrecondition(
 
 }
 
+object ExistsPrecondition {
+  def apply()(implicit hc: HyperionContext) =
+    new ExistsPrecondition(
+      id = new UniquePipelineId("ExistsPrecondition"),
+      preconditionTimeout = None,
+      role = None
+    )
+}

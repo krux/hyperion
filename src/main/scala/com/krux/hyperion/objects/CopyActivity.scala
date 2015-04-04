@@ -3,7 +3,6 @@ package com.krux.hyperion.objects
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.objects.aws.{AdpCopyActivity, AdpDataNode, AdpRef, AdpEc2Resource,
   AdpActivity, AdpS3DataNode, AdpSqlDataNode, AdpSnsAlarm, AdpPrecondition}
-import com.krux.hyperion.util.PipelineId
 
 
 /**
@@ -20,20 +19,23 @@ import com.krux.hyperion.util.PipelineId
  * default CsvDataFormat for tasks involving both exporting to S3 and copy to redshift.
  */
 case class CopyActivity private (
-  id: String,
+  id: UniquePipelineId,
   input: Copyable,
   output: Copyable,
   runsOn: Ec2Resource,
-  dependsOn: Seq[PipelineActivity] = Seq(),
-  preconditions: Seq[Precondition] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onLateActionAlarms: Seq[SnsAlarm] = Seq()
+  dependsOn: Seq[PipelineActivity],
+  preconditions: Seq[Precondition],
+  onFailAlarms: Seq[SnsAlarm],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onLateActionAlarms: Seq[SnsAlarm]
 )(
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  def forClient(client: String) = this.copy(id = s"${id}_${client}")
+  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
+  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+
+  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -82,11 +84,12 @@ object CopyActivity {
 
   def apply(input: Copyable, output: Copyable, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new CopyActivity(
-      id = PipelineId.generateNewId("CopyActivity"),
+      id = new UniquePipelineId("CopyActivity"),
       input = input,
       output = output,
       runsOn = runsOn,
       dependsOn = Seq(),
+      preconditions = Seq(),
       onFailAlarms = Seq(),
       onSuccessAlarms = Seq(),
       onLateActionAlarms = Seq()

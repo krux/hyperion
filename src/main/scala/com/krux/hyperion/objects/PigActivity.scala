@@ -4,26 +4,29 @@ import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.objects.aws.{AdpPigActivity, AdpDataNode, AdpRef, AdpEmrCluster, AdpActivity, AdpPrecondition}
 import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
-case class PigActivity(
-  id: String,
+case class PigActivity private (
+  id: UniquePipelineId,
   runsOn: EmrCluster,
-  generatedScriptsPath: Option[String] = None,
-  script: Option[String] = None,
-  scriptUri: Option[String] = None,
-  scriptVariable: Option[String] = None,
-  input: Option[DataNode] = None,
-  output: Option[DataNode] = None,
-  stage: Option[Boolean] = None,
-  dependsOn: Seq[PipelineActivity] = Seq(),
-  preconditions: Seq[Precondition] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onLateActionAlarms: Seq[SnsAlarm] = Seq()
+  generatedScriptsPath: Option[String],
+  script: Option[String],
+  scriptUri: Option[String],
+  scriptVariable: Option[String],
+  input: Option[DataNode],
+  output: Option[DataNode],
+  stage: Option[Boolean],
+  dependsOn: Seq[PipelineActivity],
+  preconditions: Seq[Precondition],
+  onFailAlarms: Seq[SnsAlarm],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onLateActionAlarms: Seq[SnsAlarm]
 )(
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  def forClient(client: String) = this.copy(id = s"${id}_${client}")
+  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
+  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+
+  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
 
   def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Some(generatedScriptsPath))
   def withScript(script: String) = this.copy(script = Some(script))
@@ -73,4 +76,24 @@ case class PigActivity(
       case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     }
   )
+}
+
+object PigActivity {
+  def apply(runsOn: EmrCluster)(implicit hc: HyperionContext) =
+    new PigActivity(
+      id = new UniquePipelineId("PigActivity"),
+      runsOn = runsOn,
+      generatedScriptsPath = None,
+      script = None,
+      scriptUri = None,
+      scriptVariable = None,
+      input = None,
+      output = None,
+      stage = None,
+      dependsOn = Seq(),
+      preconditions = Seq(),
+      onFailAlarms = Seq(),
+      onSuccessAlarms = Seq(),
+      onLateActionAlarms = Seq()
+    )
 }

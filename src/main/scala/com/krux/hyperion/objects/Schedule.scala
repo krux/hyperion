@@ -12,7 +12,7 @@ import com.krux.hyperion.objects.ScheduleType._
  * @note If start time given is a past time, data pipeline will perform back fill from the start.
  */
 case class Schedule(
-  id: String = "PipelineSchedule",
+  id: UniquePipelineId = ScheduleUniquePipelineId,
   // if None, will use first activation datetime
   start: Option[DateTime] = None,
   period: DpPeriod = 1.day,

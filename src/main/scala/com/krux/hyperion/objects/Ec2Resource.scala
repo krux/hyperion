@@ -2,13 +2,12 @@ package com.krux.hyperion.objects
 
 import aws.{AdpEc2Resource, AdpJsonSerializer}
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.util.PipelineId
 
 /**
  * EC2 resource
  */
-case class Ec2Resource(
-  id: String,
+case class Ec2Resource private (
+  id: UniquePipelineId,
   terminateAfter: String,
   role: Option[String],
   resourceRole: Option[String],
@@ -22,7 +21,7 @@ case class Ec2Resource(
   implicit val hc: HyperionContext
 ) extends ResourceObject {
 
-  def forClient(client: String) = this.copy(id = s"${id}_${client}")
+  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
   def terminatingAfter(terminateAfter: String) = this.copy(terminateAfter = terminateAfter)
   def withRole(role: String) = this.copy(role = Some(role))
   def withResourceRole(role: String) = this.copy(resourceRole = Some(role))
@@ -33,33 +32,16 @@ case class Ec2Resource(
   def withSecurityGroupIds(securityGroupIds: String*) = this.copy(securityGroupIds = securityGroupIds)
   def withPublicIp() = this.copy(associatePublicIpAddress = true)
 
-  def runJar(name: String) =
-    JarActivity(
-      id = name,
-      runsOn = this
-    )
+  def runJar = JarActivity(this)
 
-  def runShell(name: String) =
-    ShellCommandActivity(
-      id = name,
-      runsOn = this
-    )
+  def runShell = ShellCommandActivity(runsOn = this)
 
-  def downloadFromGoogleStorage(name: String) =
-    GoogleStorageDownloadActivity(
-      id = name,
-      runsOn = this
-    )
+  def downloadFromGoogleStorage = GoogleStorageDownloadActivity(this)
 
-  def uploadToGoogleStorage(name: String) =
-    GoogleStorageUploadActivity(
-      id = name,
-      runsOn = this
-    )
+  def uploadToGoogleStorage = GoogleStorageUploadActivity(this)
 
-  def runSql(name: String, script: String, database: Database) =
+  def runSql(script: String, database: Database) =
     SqlActivity(
-      id = name,
       runsOn = this,
       database = database,
       script = script
@@ -72,30 +54,23 @@ case class Ec2Resource(
       runsOn = this
     )
 
-  def copyIntoRedshift(id: String, input: S3DataNode, output: RedshiftDataNode, insertMode: RedshiftCopyActivity.InsertMode) =
+  def copyIntoRedshift(input: S3DataNode, output: RedshiftDataNode, insertMode: RedshiftCopyActivity.InsertMode) =
     RedshiftCopyActivity(
-      id = id,
       input = input,
       output = output,
       insertMode = insertMode,
       runsOn = this
     )
 
-  def copyFromRedshift(id: String, database: RedshiftDatabase, script: String, s3Path: String) =
+  def copyFromRedshift(database: RedshiftDatabase, script: String, s3Path: String) =
     RedshiftUnloadActivity(
-      id = id,
       database = database,
       script = script,
       s3Path = s3Path,
       runsOn = this
     )
 
-  def deleteS3Path(id: String, s3Path: String) =
-    DeleteS3PathActivity(
-      id = id,
-      s3Path = s3Path,
-      runsOn = this
-    )
+  def deleteS3Path(s3Path: String) = DeleteS3PathActivity(s3Path = s3Path, runsOn = this)
 
   def serialize = AdpEc2Resource(
     id = id,
@@ -122,7 +97,7 @@ case class Ec2Resource(
 object Ec2Resource {
 
   def apply()(implicit hc: HyperionContext) = new Ec2Resource(
-    id = "Ec2Resource",
+    id = new UniquePipelineId("Ec2Resource"),
     terminateAfter = hc.ec2TerminateAfter,
     role = None,
     resourceRole = None,

@@ -5,16 +5,16 @@ import com.krux.hyperion.objects.aws.{AdpRedshiftDataNode, AdpJsonSerializer, Ad
 /**
  * The abstracted RedshiftDataNode
  */
-case class RedshiftDataNode (
-  id: String,
+case class RedshiftDataNode private (
+  id: UniquePipelineId,
   database: RedshiftDatabase,
   tableName: String,
-  createTableSql: Option[String] = None,
-  schemaName: Option[String] = None,
-  primaryKeys: Option[Seq[String]] = None,
-  preconditions: Seq[Precondition] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq()
+  createTableSql: Option[String],
+  schemaName: Option[String],
+  primaryKeys: Option[Seq[String]],
+  preconditions: Seq[Precondition],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onFailAlarms: Seq[SnsAlarm]
 ) extends DataNode {
 
   def withCreateTableSql(createSql: String) = this.copy(createTableSql = Some(createSql))
@@ -48,4 +48,19 @@ case class RedshiftDataNode (
     }
   )
 
+}
+
+object RedshiftDataNode {
+  def apply(database: RedshiftDatabase, tableName: String) =
+    new RedshiftDataNode(
+      id = new UniquePipelineId("RedshiftDataNode"),
+      database = database,
+      tableName = tableName,
+      createTableSql = None,
+      schemaName = None,
+      primaryKeys = None,
+      preconditions = Seq(),
+      onSuccessAlarms = Seq(),
+      onFailAlarms = Seq()
+    )
 }

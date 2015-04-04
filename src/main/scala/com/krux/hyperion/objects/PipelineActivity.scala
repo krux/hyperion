@@ -2,6 +2,8 @@ package com.krux.hyperion.objects
 
 trait PipelineActivity extends PipelineObject {
 
+  def withName(name: String): PipelineActivity
+
   def dependsOn(activities: PipelineActivity*): PipelineActivity
   def whenMet(preconditions: Precondition*): PipelineActivity
 

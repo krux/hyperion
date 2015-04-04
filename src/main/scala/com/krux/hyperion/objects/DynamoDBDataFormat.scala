@@ -1,14 +1,13 @@
 package com.krux.hyperion.objects
 
 import com.krux.hyperion.objects.aws.AdpDynamoDBDataFormat
-import com.krux.hyperion.util.PipelineId
 
 /**
  * DynamoDB data format
  */
-case class DynamoDBDataFormat (
-  id: String,
-  column: Seq[String] = Seq()
+case class DynamoDBDataFormat private (
+  id: UniquePipelineId,
+  column: Seq[String]
 ) extends DataFormat {
 
   def withColumns(cols: Seq[String]) = this.copy(column = cols)
@@ -25,5 +24,9 @@ case class DynamoDBDataFormat (
 }
 
 object DynamoDBDataFormat {
-  def apply() = new DynamoDBDataFormat(PipelineId.generateNewId("DynamoDBDataFormat"))
+  def apply() =
+    new DynamoDBDataFormat(
+      id = new UniquePipelineId("DynamoDBDataFormat"),
+      column = Seq()
+    )
 }
