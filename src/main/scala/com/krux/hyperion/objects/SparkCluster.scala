@@ -20,12 +20,15 @@ case class SparkCluster private (
 
   assert(taskInstanceCount >= 0)
 
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
+
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+
   def instanceCount = 1 + coreInstanceCount + taskInstanceCount
 
   val bootstrapAction = s"s3://support.elasticmapreduce/spark/install-spark,-v,$sparkVersion,-x" ::
       hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env").toList
 
-  def groupedBy(client: String) = this.copy(id = PipelineObjectId(client))
   def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
 
   def serialize = AdpEmrCluster(

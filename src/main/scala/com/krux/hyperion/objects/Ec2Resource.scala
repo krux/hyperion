@@ -21,7 +21,10 @@ case class Ec2Resource private (
   implicit val hc: HyperionContext
 ) extends ResourceObject {
 
-  def groupedBy(client: String) = this.copy(id = PipelineObjectId(client))
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
+
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+
   def terminatingAfter(terminateAfter: String) = this.copy(terminateAfter = terminateAfter)
   def withRole(role: String) = this.copy(role = Some(role))
   def withResourceRole(role: String) = this.copy(resourceRole = Some(role))

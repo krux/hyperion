@@ -17,6 +17,9 @@ case class RedshiftDataNode private (
   onFailAlarms: Seq[SnsAlarm]
 ) extends DataNode {
 
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+
   def withCreateTableSql(createSql: String) = this.copy(createTableSql = Some(createSql))
   def withSchema(theSchemaName: String) = this.copy(schemaName = Some(theSchemaName))
   def withPrimaryKeys(pks: String*) = this.copy(primaryKeys = Some(pks))

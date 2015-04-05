@@ -15,6 +15,10 @@ case class MapReduceCluster private (
 
   assert(taskInstanceCount >= 0)
 
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
+
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+
   val amiVersion = hc.emrAmiVersion
   val coreInstanceCount = 2
 
