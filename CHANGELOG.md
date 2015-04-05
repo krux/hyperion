@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
+## 1.6.0 - 2015-04-15
+### Changed
+- #17 - Make pipline id transaprent
+- #35 - Use immutable Map for objects building
+
 ## 1.5.1 - 2015-04-02
 ### Added
 - #33 - Added support for tags
