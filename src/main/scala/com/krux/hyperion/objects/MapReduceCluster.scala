@@ -7,7 +7,7 @@ import com.krux.hyperion.HyperionContext
  * Launch a MapReduce cluster
  */
 case class MapReduceCluster private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   taskInstanceCount: Int
 )(
   implicit val hc: HyperionContext
@@ -27,7 +27,7 @@ case class MapReduceCluster private (
 
   val terminateAfter = hc.emrTerminateAfter
 
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def forClient(client: String) = this.copy(id = PipelineObjectId(client))
 
   def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
 
@@ -50,7 +50,7 @@ case class MapReduceCluster private (
 object MapReduceCluster {
   def apply()(implicit hc: HyperionContext) =
     new MapReduceCluster(
-      id = new UniquePipelineId("MapReduceCluster"),
+      id = PipelineObjectId("MapReduceCluster"),
       taskInstanceCount = 0
     )
 }

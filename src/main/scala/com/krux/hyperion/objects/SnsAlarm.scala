@@ -4,7 +4,7 @@ import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 case class SnsAlarm private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   subject: String,
   message: String,
   topicArn: Option[String],
@@ -32,7 +32,7 @@ case class SnsAlarm private (
 object SnsAlarm {
   def apply()(implicit hc: HyperionContext) =
     new SnsAlarm(
-      id = new UniquePipelineId("SnsAlarm"),
+      id = PipelineObjectId("SnsAlarm"),
       subject = "",
       message = "",
       topicArn = None,

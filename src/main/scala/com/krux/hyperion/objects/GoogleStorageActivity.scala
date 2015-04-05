@@ -11,7 +11,7 @@ trait GoogleStorageActivity extends PipelineActivity
  * Google Storage Download activity
  */
 case class GoogleStorageDownloadActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: Ec2Resource,
   input: String,
   output: Option[S3DataNode],
@@ -25,10 +25,19 @@ case class GoogleStorageDownloadActivity private (
   implicit val hc: HyperionContext
 ) extends GoogleStorageActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
   def withInput(path: String) = this.copy(input = path)
@@ -81,7 +90,7 @@ case class GoogleStorageDownloadActivity private (
 object GoogleStorageDownloadActivity {
   def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new GoogleStorageDownloadActivity(
-      id = new UniquePipelineId("GoogleStorageDownloadActivity"),
+      id = PipelineObjectId("GoogleStorageDownloadActivity"),
       runsOn = runsOn,
       input = "",
       output = None,
@@ -98,7 +107,7 @@ object GoogleStorageDownloadActivity {
  * Google Storage Upload activity
  */
 case class GoogleStorageUploadActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: Ec2Resource,
   input: Option[S3DataNode],
   output: String,
@@ -112,10 +121,19 @@ case class GoogleStorageUploadActivity private (
   implicit val hc: HyperionContext
 ) extends GoogleStorageActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
   def withInput(in: S3DataNode) = this.copy(input = Some(in))
@@ -168,7 +186,7 @@ case class GoogleStorageUploadActivity private (
 object GoogleStorageUploadActivity {
   def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new GoogleStorageUploadActivity(
-      id = new UniquePipelineId("GoogleStorageUploadActivity"),
+      id = PipelineObjectId("GoogleStorageUploadActivity"),
       runsOn = runsOn,
       input = None,
       output = "",

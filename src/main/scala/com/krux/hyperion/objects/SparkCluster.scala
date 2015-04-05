@@ -7,7 +7,7 @@ import com.krux.hyperion.HyperionContext
  * Launch a Spark cluster
  */
 case class SparkCluster private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   taskInstanceCount: Int,
   coreInstanceCount: Int,
   instanceType: String,
@@ -25,10 +25,8 @@ case class SparkCluster private (
   val bootstrapAction = s"s3://support.elasticmapreduce/spark/install-spark,-v,$sparkVersion,-x" ::
       hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env").toList
 
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def forClient(client: String) = this.copy(id = PipelineObjectId(client))
   def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
-
-  def runSpark = SparkActivity(this)
 
   def serialize = AdpEmrCluster(
     id = id,
@@ -50,7 +48,7 @@ object SparkCluster {
 
   def apply()(implicit hc: HyperionContext) = {
     new SparkCluster(
-      id = new UniquePipelineId("SparkCluster"),
+      id = PipelineObjectId("SparkCluster"),
       taskInstanceCount = 0,
       coreInstanceCount = 2,
       instanceType = hc.emrInstanceType,

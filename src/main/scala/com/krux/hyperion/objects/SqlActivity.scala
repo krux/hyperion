@@ -4,7 +4,7 @@ import com.krux.hyperion.objects.aws.{AdpSqlActivity, AdpEc2Resource, AdpRef, Ad
   AdpActivity, AdpSnsAlarm, AdpPrecondition}
 
 case class SqlActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: Ec2Resource,
   database: Database,
   script: String,
@@ -17,10 +17,19 @@ case class SqlActivity private (
   onLateActionAlarms: Seq[SnsAlarm]
 ) extends PipelineActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def withQueue(queue: String) = this.copy(queue = Option(queue))
 
@@ -70,7 +79,7 @@ case class SqlActivity private (
 object SqlActivity {
   def apply(runsOn: Ec2Resource, database: Database, script: String) =
     new SqlActivity(
-      id = new UniquePipelineId("SqlActivity"),
+      id = PipelineObjectId("SqlActivity"),
       runsOn = runsOn,
       database = database,
       script = script,

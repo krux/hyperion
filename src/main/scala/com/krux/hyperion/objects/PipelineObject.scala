@@ -11,9 +11,9 @@ import scala.language.implicitConversions
  */
 trait PipelineObject {
 
-  implicit def uniquePipelineId2String(id: UniquePipelineId) = id.toString
+  implicit def uniquePipelineId2String(id: PipelineObjectId) = id.toString
 
-  def id: UniquePipelineId
+  def id: PipelineObjectId
   def objects: Iterable[PipelineObject] = None
   def serialize: AdpDataPipelineAbstractObject
 

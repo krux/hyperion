@@ -5,7 +5,7 @@ import com.krux.hyperion.objects.aws.{AdpPigActivity, AdpDataNode, AdpRef, AdpEm
 import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 case class PigActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: EmrCluster,
   generatedScriptsPath: Option[String],
   script: Option[String],
@@ -23,10 +23,19 @@ case class PigActivity private (
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Some(generatedScriptsPath))
   def withScript(script: String) = this.copy(script = Some(script))
@@ -81,7 +90,7 @@ case class PigActivity private (
 object PigActivity {
   def apply(runsOn: EmrCluster)(implicit hc: HyperionContext) =
     new PigActivity(
-      id = new UniquePipelineId("PigActivity"),
+      id = PipelineObjectId("PigActivity"),
       runsOn = runsOn,
       generatedScriptsPath = None,
       script = None,

@@ -9,7 +9,7 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
  * Shell command activity
  */
 case class JarActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: Ec2Resource,
   jar: Option[String],
   mainClass: Option[String],
@@ -27,10 +27,19 @@ case class JarActivity private (
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def withJar(jar: String) = this.copy(jar = Some(jar))
   def withMainClass(mainClass: String) = this.copy(mainClass = Some(mainClass))
@@ -95,7 +104,7 @@ case class JarActivity private (
 object JarActivity {
   def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new JarActivity(
-      id = new UniquePipelineId("JarActivity"),
+      id = PipelineObjectId("JarActivity"),
       runsOn = runsOn,
       jar = None,
       mainClass = None,

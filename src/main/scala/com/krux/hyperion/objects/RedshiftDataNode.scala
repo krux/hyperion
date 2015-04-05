@@ -6,7 +6,7 @@ import com.krux.hyperion.objects.aws.{AdpRedshiftDataNode, AdpJsonSerializer, Ad
  * The abstracted RedshiftDataNode
  */
 case class RedshiftDataNode private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   database: RedshiftDatabase,
   tableName: String,
   createTableSql: Option[String],
@@ -53,7 +53,7 @@ case class RedshiftDataNode private (
 object RedshiftDataNode {
   def apply(database: RedshiftDatabase, tableName: String) =
     new RedshiftDataNode(
-      id = new UniquePipelineId("RedshiftDataNode"),
+      id = PipelineObjectId("RedshiftDataNode"),
       database = database,
       tableName = tableName,
       createTableSql = None,

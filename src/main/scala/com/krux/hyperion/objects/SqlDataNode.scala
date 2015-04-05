@@ -9,7 +9,7 @@ import com.krux.hyperion.objects.sql.{TableQuery, SelectTableQuery, InsertTableQ
  * object for consistency with other database data node objects.
  */
 case class SqlDataNode (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   tableQuery: TableQuery,
   database: JdbcDatabase,
   preconditions: Seq[Precondition],
@@ -56,7 +56,7 @@ object SqlDataNode {
 
   def apply(tableQuery: TableQuery, database: JdbcDatabase) =
     new SqlDataNode(
-      id = new UniquePipelineId("SqlDataNode"),
+      id = PipelineObjectId("SqlDataNode"),
       tableQuery = tableQuery,
       database = database,
       preconditions = Seq(),

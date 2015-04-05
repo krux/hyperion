@@ -8,7 +8,7 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
  * Defines a spark activity
  */
 case class SparkActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: SparkCluster,
   steps: Seq[SparkStep],
   dependsOn: Seq[PipelineActivity],
@@ -18,8 +18,19 @@ case class SparkActivity private (
   onLateActionAlarms: Seq[SnsAlarm]
 ) extends EmrActivity {
 
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
+
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def withStepSeq(steps: Seq[SparkStep]) = this.copy(steps = steps)
   def withSteps(steps: SparkStep*) = this.copy(steps = steps)
@@ -70,7 +81,7 @@ case class SparkActivity private (
 object SparkActivity extends RunnableObject {
   def apply(runsOn: SparkCluster) =
     new SparkActivity(
-      id = new UniquePipelineId("SparkActivity"),
+      id = PipelineObjectId("SparkActivity"),
       runsOn = runsOn,
       steps = Seq(),
       dependsOn = Seq(),

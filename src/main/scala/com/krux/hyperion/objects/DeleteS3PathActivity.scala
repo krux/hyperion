@@ -12,7 +12,7 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
  * Activity to recursively delete files in an S3 path.
  */
 case class DeleteS3PathActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   s3Path: String,
   runsOn: Ec2Resource,
   stdout: Option[String],
@@ -26,10 +26,19 @@ case class DeleteS3PathActivity private (
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def withStdoutTo(out: String) = this.copy(stdout = Some(out))
   def withStderrTo(err: String) = this.copy(stderr = Some(err))
@@ -81,7 +90,7 @@ case class DeleteS3PathActivity private (
 object DeleteS3PathActivity {
   def apply(s3Path: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new DeleteS3PathActivity(
-      id = new UniquePipelineId("DeleteS3PathActivity"),
+      id = PipelineObjectId("DeleteS3PathActivity"),
       s3Path = s3Path,
       runsOn = runsOn,
       stdout = None,

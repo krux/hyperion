@@ -6,7 +6,7 @@ import com.krux.hyperion.objects.aws.AdpCsvDataFormat
  * CSV data format
  */
 case class CsvDataFormat private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   column: Seq[String],
   escapeChar: Option[String]
 ) extends DataFormat {
@@ -29,7 +29,7 @@ case class CsvDataFormat private (
 
 object CsvDataFormat {
   def apply() = new CsvDataFormat(
-    id = new UniquePipelineId("CsvDataFormat"),
+    id = PipelineObjectId("CsvDataFormat"),
     column = Seq(),
     escapeChar = None
   )

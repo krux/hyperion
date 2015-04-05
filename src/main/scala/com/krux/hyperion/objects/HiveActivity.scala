@@ -5,7 +5,7 @@ import com.krux.hyperion.objects.aws.{AdpHiveActivity, AdpDataNode, AdpRef, AdpE
 import com.krux.hyperion.objects.aws.AdpSnsAlarm
 
 case class HiveActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: EmrCluster,
   hiveScript: Option[String],
   scriptUri: Option[String],
@@ -22,10 +22,19 @@ case class HiveActivity private (
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def withHiveScript(hiveScript: String) = this.copy(hiveScript = Some(hiveScript))
   def withScriptUri(scriptUri: String) = this.copy(scriptUri = Some(scriptUri))
@@ -78,7 +87,7 @@ case class HiveActivity private (
 object HiveActivity {
   def apply(runsOn: EmrCluster)(implicit hc: HyperionContext) =
     new HiveActivity(
-      id = new UniquePipelineId("HiveActivity"),
+      id = PipelineObjectId("HiveActivity"),
       runsOn = runsOn,
       hiveScript = None,
       scriptUri = None,

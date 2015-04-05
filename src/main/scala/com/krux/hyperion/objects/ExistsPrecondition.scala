@@ -7,7 +7,7 @@ import com.krux.hyperion.objects.aws.AdpExistsPrecondition
  * Checks whether a data node object exists.
  */
 case class ExistsPrecondition private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   preconditionTimeout: Option[String],
   role: Option[String]
 )(
@@ -30,7 +30,7 @@ case class ExistsPrecondition private (
 object ExistsPrecondition {
   def apply()(implicit hc: HyperionContext) =
     new ExistsPrecondition(
-      id = new UniquePipelineId("ExistsPrecondition"),
+      id = PipelineObjectId("ExistsPrecondition"),
       preconditionTimeout = None,
       role = None
     )

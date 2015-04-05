@@ -9,7 +9,7 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
  * Redshift unload activity
  */
 case class RedshiftUnloadActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   database: RedshiftDatabase,
   script: String,
   s3Path: String,
@@ -32,7 +32,20 @@ case class RedshiftUnloadActivity private (
     ${unloadOptions.map(_.repr).flatten.mkString(" ")}
   """
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
+
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
+
 
   def withUnloadOptions(opts: RedshiftUnloadOption*) = this.copy(unloadOptions = opts)
 
@@ -79,7 +92,7 @@ case class RedshiftUnloadActivity private (
 object RedshiftUnloadActivity {
   def apply(database: RedshiftDatabase, script: String, s3Path: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new RedshiftUnloadActivity(
-      id = new UniquePipelineId("RedshiftUnloadActivity"),
+      id = PipelineObjectId("RedshiftUnloadActivity"),
       database = database,
       script = script,
       s3Path = s3Path,

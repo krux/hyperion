@@ -8,7 +8,7 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
  * Redshift copy activity
  */
 case class RedshiftCopyActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   input: S3DataNode,
   output: RedshiftDataNode,
   insertMode: RedshiftCopyActivity.InsertMode,
@@ -22,7 +22,20 @@ case class RedshiftCopyActivity private (
   onLateActionAlarms: Seq[SnsAlarm] = Seq()
 ) extends PipelineActivity {
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
+
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
+
 
   def withCopyOptions(opts: RedshiftCopyOption*) = this.copy(commandOptions = opts)
 
@@ -82,7 +95,7 @@ object RedshiftCopyActivity extends Enumeration with RunnableObject {
 
   def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode, runsOn: Ec2Resource) =
     new RedshiftCopyActivity(
-      id = new UniquePipelineId("RedshiftCopyActivity"),
+      id = PipelineObjectId("RedshiftCopyActivity"),
       input = input,
       output = output,
       insertMode = insertMode,

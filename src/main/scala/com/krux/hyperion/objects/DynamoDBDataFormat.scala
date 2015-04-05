@@ -6,7 +6,7 @@ import com.krux.hyperion.objects.aws.AdpDynamoDBDataFormat
  * DynamoDB data format
  */
 case class DynamoDBDataFormat private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   column: Seq[String]
 ) extends DataFormat {
 
@@ -26,7 +26,7 @@ case class DynamoDBDataFormat private (
 object DynamoDBDataFormat {
   def apply() =
     new DynamoDBDataFormat(
-      id = new UniquePipelineId("DynamoDBDataFormat"),
+      id = PipelineObjectId("DynamoDBDataFormat"),
       column = Seq()
     )
 }

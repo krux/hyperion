@@ -8,7 +8,7 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
  * Defines a MapReduce activity
  */
 case class MapReduceActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: EmrCluster,
   steps: Seq[MapReduceStep],
   dependsOn: Seq[PipelineActivity],
@@ -21,10 +21,19 @@ case class MapReduceActivity private (
   def withStepSeq(steps: Seq[MapReduceStep]) = this.copy(steps = steps)
   def withSteps(steps: MapReduceStep*) = this.copy(steps = steps)
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -72,7 +81,7 @@ case class MapReduceActivity private (
 object MapReduceActivity extends RunnableObject {
   def apply(runsOn: EmrCluster) =
     new MapReduceActivity(
-      id = new UniquePipelineId("MapReduceActivity"),
+      id = PipelineObjectId("MapReduceActivity"),
       runsOn = runsOn,
       steps = Seq(),
       dependsOn = Seq(),

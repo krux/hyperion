@@ -6,7 +6,7 @@ import com.krux.hyperion.objects.aws.AdpRegExDataFormat
  * RegEx data format
  */
 case class RegExDataFormat private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   inputRegEx: String,
   outputFormat: String,
   column: Seq[String]
@@ -29,7 +29,7 @@ case class RegExDataFormat private (
 
 object RegExDataFormat {
   def apply(inputRegEx: String, outputFormat: String) = new RegExDataFormat(
-    id = new UniquePipelineId("RegExDataFormat"),
+    id = PipelineObjectId("RegExDataFormat"),
     inputRegEx = inputRegEx,
     outputFormat = outputFormat,
     column = Seq()

@@ -19,7 +19,7 @@ import com.krux.hyperion.objects.aws.{AdpCopyActivity, AdpDataNode, AdpRef, AdpE
  * default CsvDataFormat for tasks involving both exporting to S3 and copy to redshift.
  */
 case class CopyActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   input: Copyable,
   output: Copyable,
   runsOn: Ec2Resource,
@@ -32,10 +32,19 @@ case class CopyActivity private (
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -84,7 +93,7 @@ object CopyActivity {
 
   def apply(input: Copyable, output: Copyable, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new CopyActivity(
-      id = new UniquePipelineId("CopyActivity"),
+      id = PipelineObjectId("CopyActivity"),
       input = input,
       output = output,
       runsOn = runsOn,

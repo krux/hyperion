@@ -14,7 +14,7 @@ import com.krux.hyperion.objects.aws.AdpShellCommandPrecondition
  *
  */
 case class ShellCommandPrecondition private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   command: String,
   scriptArgument: Seq[String],
   scriptUri: Option[String],
@@ -46,7 +46,7 @@ case class ShellCommandPrecondition private (
 object ShellCommandPrecondition {
   def apply(command: String)(implicit hc: HyperionContext) =
     new ShellCommandPrecondition(
-      id = new UniquePipelineId("ShellCommandPrecondition"),
+      id = PipelineObjectId("ShellCommandPrecondition"),
       command = command,
       scriptArgument = Seq(),
       scriptUri = None,

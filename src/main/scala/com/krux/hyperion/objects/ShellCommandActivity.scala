@@ -8,7 +8,7 @@ import com.krux.hyperion.objects.aws.AdpSnsAlarm
  * Shell command activity
  */
 case class ShellCommandActivity private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   runsOn: Ec2Resource,
   command: Option[String],
   scriptUri: Option[String],
@@ -25,10 +25,20 @@ case class ShellCommandActivity private (
   onLateActionAlarms: Seq[SnsAlarm]
 ) extends PipelineActivity {
 
-  @deprecated("use 'withName' instead of 'forClient'", "2015-04-04")
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def withName(name: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
+      case _ => NameClientObjectId(name, "")
+    }
+  )
 
-  def withName(name: String) = this.copy(id = new UniquePipelineId(name))
+  def forClient(client: String) = this.copy(
+    id = id match {
+      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
+      case _ => NameClientObjectId("", client)
+    }
+  )
+
 
   def withCommand(cmd: String) = this.copy(command = Some(cmd))
   def withScriptUri(uri: String) = this.copy(scriptUri = Some(uri))
@@ -98,7 +108,7 @@ case class ShellCommandActivity private (
 object ShellCommandActivity {
   def apply(runsOn: Ec2Resource) =
     new ShellCommandActivity(
-      id = new UniquePipelineId("ShellCommandActivity"),
+      id = PipelineObjectId("ShellCommandActivity"),
       runsOn = runsOn,
       command = None,
       scriptUri = None,

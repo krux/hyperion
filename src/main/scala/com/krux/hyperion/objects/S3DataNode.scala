@@ -19,9 +19,9 @@ object S3DataNode {
 
   def fromPath(s3Path: String): S3DataNode =
     if (s3Path.endsWith("/"))
-      S3Folder(new UniquePipelineId("S3DataNode"), s3Path, None)
+      S3Folder(PipelineObjectId("S3DataNode"), s3Path, None)
     else
-      S3File(new UniquePipelineId("S3DataNode"), s3Path, None)
+      S3File(PipelineObjectId("S3DataNode"), s3Path, None)
 
 }
 
@@ -29,7 +29,7 @@ object S3DataNode {
  * Defines data from s3
  */
 case class S3File(
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   filePath: String = "",
   dataFormat: Option[DataFormat] = None,
   preconditions: Seq[Precondition] = Seq(),
@@ -37,7 +37,7 @@ case class S3File(
   onFailAlarms: Seq[SnsAlarm] = Seq()
 ) extends S3DataNode {
 
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def forClient(client: String) = this.copy(id = PipelineObjectId(client))
   def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Some(fmt))
   def withFilePath(path: String) = this.copy(filePath = path)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -73,7 +73,7 @@ case class S3File(
  * Defines data from s3 directory
  */
 case class S3Folder(
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   directoryPath: String = "",
   dataFormat: Option[DataFormat] = None,
   preconditions: Seq[Precondition] = Seq(),
@@ -81,7 +81,7 @@ case class S3Folder(
   onFailAlarms: Seq[SnsAlarm] = Seq()
 ) extends S3DataNode {
 
-  def forClient(client: String) = this.copy(id = new UniquePipelineId(client))
+  def forClient(client: String) = this.copy(id = PipelineObjectId(client))
   def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Some(fmt))
   def withDirectoryPath(path: String) = this.copy(directoryPath = path)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)

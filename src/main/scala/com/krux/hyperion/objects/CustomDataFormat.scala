@@ -6,7 +6,7 @@ import com.krux.hyperion.objects.aws.AdpCustomDataFormat
  * Custom data format
  */
 case class CustomDataFormat private (
-  id: UniquePipelineId,
+  id: PipelineObjectId,
   column: Seq[String],
   columnSeparator: String,
   recordSeparator: String
@@ -31,7 +31,7 @@ case class CustomDataFormat private (
 
 object CustomDataFormat {
   def apply() = new CustomDataFormat(
-    id = new UniquePipelineId("CustomDataFormat"),
+    id = PipelineObjectId("CustomDataFormat"),
     column = Seq(),
     columnSeparator = ",",
     recordSeparator = "\n"
