@@ -43,8 +43,9 @@ object ExampleRedshiftLoad extends DataPipelineDef {
       RedshiftCopyActivity(
         input = S3DataNode.fromPath("s3://testing/testtab/").withDataFormat(s3Format),
         output = redshiftTable,
-        insertMode = RedshiftCopyActivity.OverwriteExisting
-      )(ec2Instance)
+        insertMode = RedshiftCopyActivity.OverwriteExisting,
+        runsOn = ec2Instance
+      )
     )
   }
 

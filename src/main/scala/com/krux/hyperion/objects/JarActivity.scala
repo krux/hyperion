@@ -92,7 +92,7 @@ case class JarActivity private (
 }
 
 object JarActivity {
-  def apply()(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new JarActivity(
       id = PipelineObjectId("JarActivity"),
       runsOn = runsOn,

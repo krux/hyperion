@@ -35,8 +35,6 @@ case class Ec2Resource private (
   def withSecurityGroupIds(securityGroupIds: String*) = this.copy(securityGroupIds = securityGroupIds)
   def withPublicIp() = this.copy(associatePublicIpAddress = true)
 
-  def run[T <: PipelineActivity](act: (Ec2Resource) => T) = act(this)
-
   def serialize = AdpEc2Resource(
     id = id,
     name =Some(id),

@@ -78,7 +78,7 @@ case class DeleteS3PathActivity private (
 }
 
 object DeleteS3PathActivity {
-  def apply(s3Path: String)(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply(s3Path: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new DeleteS3PathActivity(
       id = PipelineObjectId("DeleteS3PathActivity"),
       s3Path = s3Path,

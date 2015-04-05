@@ -33,8 +33,6 @@ case class MapReduceCluster private (
 
   def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
 
-  def run[T <: PipelineActivity](act: (MapReduceCluster) => T) = act(this)
-
   def serialize = AdpEmrCluster(
     id = id,
     name = Some(id),

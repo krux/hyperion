@@ -70,7 +70,7 @@ case class HiveCopyActivity private (
 }
 
 object HiveCopyActivity {
-  def apply()(runsOn: EmrCluster)(implicit hc: HyperionContext) =
+  def apply(runsOn: EmrCluster)(implicit hc: HyperionContext) =
     new HiveCopyActivity(
       id = PipelineObjectId("HiveCopyActivity"),
       runsOn = runsOn,

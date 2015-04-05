@@ -81,7 +81,7 @@ case class CopyActivity private (
 
 object CopyActivity {
 
-  def apply(input: Copyable, output: Copyable)(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply(input: Copyable, output: Copyable, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new CopyActivity(
       id = PipelineObjectId("CopyActivity"),
       input = input,
