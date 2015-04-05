@@ -78,7 +78,7 @@ case class PigActivity private (
 }
 
 object PigActivity {
-  def apply(runsOn: EmrCluster)(implicit hc: HyperionContext) =
+  def apply()(runsOn: EmrCluster)(implicit hc: HyperionContext) =
     new PigActivity(
       id = PipelineObjectId("PigActivity"),
       runsOn = runsOn,

@@ -75,7 +75,7 @@ case class HiveActivity private (
 }
 
 object HiveActivity {
-  def apply(runsOn: EmrCluster)(implicit hc: HyperionContext) =
+  def apply()(runsOn: EmrCluster)(implicit hc: HyperionContext) =
     new HiveActivity(
       id = PipelineObjectId("HiveActivity"),
       runsOn = runsOn,

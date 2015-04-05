@@ -79,7 +79,7 @@ case class RedshiftUnloadActivity private (
 }
 
 object RedshiftUnloadActivity {
-  def apply(database: RedshiftDatabase, script: String, s3Path: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply(database: RedshiftDatabase, script: String, s3Path: String)(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new RedshiftUnloadActivity(
       id = PipelineObjectId("RedshiftUnloadActivity"),
       database = database,

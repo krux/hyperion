@@ -31,6 +31,8 @@ case class SparkCluster private (
 
   def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
 
+  def run[T <: PipelineActivity](act: (SparkCluster) => T) = act(this)
+
   def serialize = AdpEmrCluster(
     id = id,
     name = Some(id),

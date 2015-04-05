@@ -69,7 +69,7 @@ case class SparkActivity private (
 }
 
 object SparkActivity extends RunnableObject {
-  def apply(runsOn: SparkCluster) =
+  def apply()(runsOn: SparkCluster) =
     new SparkActivity(
       id = PipelineObjectId("SparkActivity"),
       runsOn = runsOn,

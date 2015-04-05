@@ -78,7 +78,7 @@ case class GoogleStorageDownloadActivity private (
 }
 
 object GoogleStorageDownloadActivity {
-  def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply()(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new GoogleStorageDownloadActivity(
       id = PipelineObjectId("GoogleStorageDownloadActivity"),
       runsOn = runsOn,
@@ -164,7 +164,7 @@ case class GoogleStorageUploadActivity private (
 }
 
 object GoogleStorageUploadActivity {
-  def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply()(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new GoogleStorageUploadActivity(
       id = PipelineObjectId("GoogleStorageUploadActivity"),
       runsOn = runsOn,

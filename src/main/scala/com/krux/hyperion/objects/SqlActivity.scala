@@ -67,7 +67,7 @@ case class SqlActivity private (
 }
 
 object SqlActivity {
-  def apply(runsOn: Ec2Resource, database: Database, script: String) =
+  def apply(database: Database, script: String)(runsOn: Ec2Resource) =
     new SqlActivity(
       id = PipelineObjectId("SqlActivity"),
       runsOn = runsOn,
