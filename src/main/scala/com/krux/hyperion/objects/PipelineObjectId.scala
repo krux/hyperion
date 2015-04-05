@@ -6,17 +6,30 @@ trait PipelineObjectId
 
 object PipelineObjectId {
   def apply(seed: String) = RamdomisedObjectId(seed)
-  def apply(name: String, client: String) = NameClientObjectId(name, client)
+  def apply(name: String, group: String) = NameGroupObjectId(name, group)
   def fixed(seed: String) = FixedObjectId(seed)
+
+  def withName(name: String, id: PipelineObjectId) =
+    id match {
+      case NameGroupObjectId(_, c) => NameGroupObjectId(name, c)
+      case _ => NameGroupObjectId(name, "")
+    }
+
+  def withGroup(group: String, id: PipelineObjectId) =
+    id match {
+      case NameGroupObjectId(n, _) => NameGroupObjectId(n, group)
+      case _ => NameGroupObjectId("", group)
+    }
+
 }
 
-case class NameClientObjectId(name: String, client: String) extends PipelineObjectId {
+case class NameGroupObjectId(name: String, group: String) extends PipelineObjectId {
 
-  val uniqueId = (name, client) match {
+  val uniqueId = (name, group) match {
     case ("", "") => UUID.randomUUID.toString
-    case ("", c) => s"${c}_${UUID.randomUUID.toString}"
+    case ("", g) => s"${g}_${UUID.randomUUID.toString}"
     case (n, "") => s"${n}_${UUID.randomUUID.toString}"
-    case (n, c) => s"${n}_${c}_${UUID.randomUUID.toString}"
+    case (n, g) => s"${n}_${g}_${UUID.randomUUID.toString}"
   }
 
   override def toString = uniqueId

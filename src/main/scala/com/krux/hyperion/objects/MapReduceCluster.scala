@@ -27,8 +27,6 @@ case class MapReduceCluster private (
 
   val terminateAfter = hc.emrTerminateAfter
 
-  def forClient(client: String) = this.copy(id = PipelineObjectId(client))
-
   def withTaskInstanceCount(n: Int) = this.copy(taskInstanceCount = n)
 
   def serialize = AdpEmrCluster(

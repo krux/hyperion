@@ -25,19 +25,9 @@ case class GoogleStorageDownloadActivity private (
   implicit val hc: HyperionContext
 ) extends GoogleStorageActivity {
 
-  def withName(name: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
-      case _ => NameClientObjectId(name, "")
-    }
-  )
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
 
-  def forClient(client: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
-      case _ => NameClientObjectId("", client)
-    }
-  )
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
   def withInput(path: String) = this.copy(input = path)
@@ -121,19 +111,9 @@ case class GoogleStorageUploadActivity private (
   implicit val hc: HyperionContext
 ) extends GoogleStorageActivity {
 
-  def withName(name: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
-      case _ => NameClientObjectId(name, "")
-    }
-  )
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
 
-  def forClient(client: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
-      case _ => NameClientObjectId("", client)
-    }
-  )
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
   def withInput(in: S3DataNode) = this.copy(input = Some(in))

@@ -22,19 +22,9 @@ case class HiveActivity private (
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  def withName(name: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
-      case _ => NameClientObjectId(name, "")
-    }
-  )
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
 
-  def forClient(client: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
-      case _ => NameClientObjectId("", client)
-    }
-  )
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withHiveScript(hiveScript: String) = this.copy(hiveScript = Some(hiveScript))
   def withScriptUri(scriptUri: String) = this.copy(scriptUri = Some(scriptUri))

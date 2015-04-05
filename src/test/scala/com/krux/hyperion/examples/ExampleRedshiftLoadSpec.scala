@@ -67,7 +67,7 @@ class ExampleRedshiftLoadSpec extends WordSpec {
 
       val s3DataNode = objectsField(5)
       val s3DataNodeId: String = (s3DataNode \ "id").values.toString
-      assert(s3DataNodeId.startsWith("S3DataNode_"))
+      assert(s3DataNodeId.startsWith("S3Folder_"))
       val s3DataNodeShouldBe =
         ("id" -> s3DataNodeId) ~
         ("name" -> s3DataNodeId) ~

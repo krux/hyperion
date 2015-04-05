@@ -25,20 +25,9 @@ case class ShellCommandActivity private (
   onLateActionAlarms: Seq[SnsAlarm]
 ) extends PipelineActivity {
 
-  def withName(name: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
-      case _ => NameClientObjectId(name, "")
-    }
-  )
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
 
-  def forClient(client: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
-      case _ => NameClientObjectId("", client)
-    }
-  )
-
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withCommand(cmd: String) = this.copy(command = Some(cmd))
   def withScriptUri(uri: String) = this.copy(scriptUri = Some(uri))

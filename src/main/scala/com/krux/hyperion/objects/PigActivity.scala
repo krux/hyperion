@@ -23,19 +23,9 @@ case class PigActivity private (
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
-  def withName(name: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(_, c) => NameClientObjectId(name, c)
-      case _ => NameClientObjectId(name, "")
-    }
-  )
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
 
-  def forClient(client: String) = this.copy(
-    id = id match {
-      case NameClientObjectId(n, _) => NameClientObjectId(n, client)
-      case _ => NameClientObjectId("", client)
-    }
-  )
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Some(generatedScriptsPath))
   def withScript(script: String) = this.copy(script = Some(script))

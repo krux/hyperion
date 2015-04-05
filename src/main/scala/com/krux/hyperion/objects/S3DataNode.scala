@@ -11,17 +11,15 @@ trait S3DataNode extends Copyable {
   def asOutput(n: Integer): String = "${" + s"OUTPUT${n}_STAGING_DIR}"
 
   def withDataFormat(fmt: DataFormat): S3DataNode
-  def forClient(client: String): S3DataNode
+  def groupedBy(client: String): S3DataNode
 
 }
 
 object S3DataNode {
 
   def fromPath(s3Path: String): S3DataNode =
-    if (s3Path.endsWith("/"))
-      S3Folder(PipelineObjectId("S3DataNode"), s3Path, None)
-    else
-      S3File(PipelineObjectId("S3DataNode"), s3Path, None)
+    if (s3Path.endsWith("/")) S3Folder(s3Path)
+    else S3File(s3Path)
 
 }
 
@@ -30,14 +28,14 @@ object S3DataNode {
  */
 case class S3File(
   id: PipelineObjectId,
-  filePath: String = "",
-  dataFormat: Option[DataFormat] = None,
-  preconditions: Seq[Precondition] = Seq(),
-  onSuccessAlarms: Seq[SnsAlarm] = Seq(),
-  onFailAlarms: Seq[SnsAlarm] = Seq()
+  filePath: String,
+  dataFormat: Option[DataFormat],
+  preconditions: Seq[Precondition],
+  onSuccessAlarms: Seq[SnsAlarm],
+  onFailAlarms: Seq[SnsAlarm]
 ) extends S3DataNode {
 
-  def forClient(client: String) = this.copy(id = PipelineObjectId(client))
+  def groupedBy(client: String) = this.copy(id = PipelineObjectId(client))
   def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Some(fmt))
   def withFilePath(path: String) = this.copy(filePath = path)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -69,6 +67,18 @@ case class S3File(
 
 }
 
+object S3File {
+  def apply(filePath: String) =
+    new S3File(
+      id = PipelineObjectId("S3File"),
+      filePath = filePath,
+      dataFormat = None,
+      preconditions = Seq(),
+      onSuccessAlarms = Seq(),
+      onFailAlarms = Seq()
+    )
+}
+
 /**
  * Defines data from s3 directory
  */
@@ -81,7 +91,7 @@ case class S3Folder(
   onFailAlarms: Seq[SnsAlarm] = Seq()
 ) extends S3DataNode {
 
-  def forClient(client: String) = this.copy(id = PipelineObjectId(client))
+  def groupedBy(client: String) = this.copy(id = PipelineObjectId(client))
   def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Some(fmt))
   def withDirectoryPath(path: String) = this.copy(directoryPath = path)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -110,4 +120,16 @@ case class S3Folder(
       case alarms => Some(alarms.map(alarm => AdpRef[AdpSnsAlarm](alarm.id)))
     }
   )
+}
+
+object S3Folder {
+  def apply(directoryPath: String) =
+    new S3Folder(
+      id = PipelineObjectId("S3Folder"),
+      directoryPath = directoryPath,
+      dataFormat = None,
+      preconditions = Seq(),
+      onSuccessAlarms = Seq(),
+      onFailAlarms = Seq()
+    )
 }

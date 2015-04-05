@@ -52,7 +52,7 @@ object ExampleSpark extends DataPipelineDef {
       )
 
     val filterActivity = SparkActivity(sparkCluster)
-      .withName("filterActivity")
+      .named("filterActivity")
       .withSteps(filterStep)
       .onFail(mailAction)
 
@@ -72,7 +72,7 @@ object ExampleSpark extends DataPipelineDef {
       .withArgs(target, format(SparkActivity.scheduledStartTime - 3.days, "yyyy-MM-dd"))
 
     val scoreActivity = SparkActivity(sparkCluster)
-      .withName("scoreActivity")
+      .named("scoreActivity")
       .withSteps(scoreStep1, scoreStep2)
       .dependsOn(filterActivity)
       .onSuccess(mailAction)
