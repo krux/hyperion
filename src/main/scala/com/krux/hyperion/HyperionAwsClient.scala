@@ -35,8 +35,8 @@ class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String]
         if (force) {
           println("Delete the existing pipline")
           HyperionAwsClient.deletePipelineById(pipelineId)
-          Thread.sleep(15000)  // wait until the data pipeline is really deleted
-          createPipeline(false, tags)
+          Thread.sleep(10000)  // wait until the data pipeline is really deleted
+          createPipeline(true, tags)
         } else {
           println("User --force to force pipeline creation")
           None
