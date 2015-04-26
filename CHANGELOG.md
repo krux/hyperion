@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
-## 1.6.1 - 2015-04-26
+## 1.6.2 - 2015-04-26
 ### Changed
 - #40 - Hyperion CLI continue retry to delete the pipeline when --force is used
 
