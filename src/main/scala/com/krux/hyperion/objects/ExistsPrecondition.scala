@@ -20,7 +20,7 @@ case class ExistsPrecondition private (
 
   lazy val serialize = AdpExistsPrecondition(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     preconditionTimeout = preconditionTimeout,
     role = role.getOrElse(hc.resourceRole)
   )

@@ -17,7 +17,7 @@ case class TsvDataFormat private (
 
   lazy val serialize = AdpTsvDataFormat(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     column = column,
     escapeChar = escapeChar
   )

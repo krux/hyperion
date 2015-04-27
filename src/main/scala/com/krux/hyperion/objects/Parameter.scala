@@ -28,10 +28,10 @@ case class StringParameter(
     optional = false,
     allowedValues = allowedValues match {
       case Seq() => None
-      case values => Some(values)
+      case values => Option(values)
     },
     isArray = false,
-    `default` = Some(value)
+    `default` = Option(value)
   )
 
 }
@@ -51,10 +51,10 @@ case class IntegerParameter(
     optional = false,
     allowedValues = allowedValues match {
       case Seq() => None
-      case values => Some(values.map(_.toString))
+      case values => Option(values.map(_.toString))
     },
     isArray = false,
-    `default` = Some(value.toString)
+    `default` = Option(value.toString)
   )
 
 }
@@ -74,10 +74,10 @@ case class DoubleParameter(
     optional = false,
     allowedValues = allowedValues match {
       case Seq() => None
-      case values => Some(values.map(_.toString))
+      case values => Option(values.map(_.toString))
     },
     isArray = false,
-    `default` = Some(value.toString)
+    `default` = Option(value.toString)
   )
 
 }
@@ -96,7 +96,7 @@ case class S3KeyParameter(
     optional = false,
     allowedValues = None,
     isArray = false,
-    `default` = Some(value)
+    `default` = Option(value)
   )
 
 }

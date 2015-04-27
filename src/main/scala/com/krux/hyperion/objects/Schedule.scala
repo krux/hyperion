@@ -44,23 +44,23 @@ case class Schedule(
 
   @deprecated("Use 'every' instead of 'period'", "2015-04-01") def period(p: DpPeriod) = this.copy(period = p)
 
-  def until(dt: DateTime) = this.copy(end = Some(Right(dt)))
-  def stopAfter(occurrences: Int) = this.copy(end = Some(Left(occurrences)))
+  def until(dt: DateTime) = this.copy(end = Option(Right(dt)))
+  def stopAfter(occurrences: Int) = this.copy(end = Option(Left(occurrences)))
 
   lazy val serialize: AdpSchedule = start match {
     case Some(dt) =>
       AdpSchedule(
         id = id,
-        name = Some(id),
+        name = id.toOption,
         period = period.toString,
         startAt = None,
-        startDateTime = Some(dt),
+        startDateTime = Option(dt),
         endDateTime = end.flatMap {
-          case Right(dt) => Some(dt)
+          case Right(dt) => Option(dt)
           case _ => None
         },
         occurrences = end.flatMap {
-          case Left(occurrences) => Some(occurrences.toString)
+          case Left(occurrences) => Option(occurrences.toString)
           case _ => None
         }
       )
@@ -68,16 +68,16 @@ case class Schedule(
     case None =>
       AdpSchedule(
         id = id,
-        name = Some(id),
+        name = id.toOption,
         period = period.toString,
-        startAt = Some("FIRST_ACTIVATION_DATE_TIME"),
+        startAt = Option("FIRST_ACTIVATION_DATE_TIME"),
         startDateTime = None,
         endDateTime = end.flatMap {
-          case Right(dt) => Some(dt)
+          case Right(dt) => Option(dt)
           case _ => None
         },
         occurrences = end.flatMap {
-          case Left(occurrences) => Some(occurrences.toString)
+          case Left(occurrences) => Option(occurrences.toString)
           case _ => None
         }
       )
@@ -92,5 +92,5 @@ object Schedule {
 
   def timeSeries = Schedule(scheduleType = TimeSeries)
 
-  def onceAtActivation = Schedule(end = Some(Left(1)), scheduleType = Cron)
+  def onceAtActivation = Schedule(end = Option(Left(1)), scheduleType = Cron)
 }

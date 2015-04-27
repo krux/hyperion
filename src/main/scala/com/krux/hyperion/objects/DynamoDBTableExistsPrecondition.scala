@@ -19,7 +19,7 @@ case class DynamoDBTableExistsPrecondition private (
 
   lazy val serialize = AdpDynamoDBTableExistsPrecondition(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     preconditionTimeout = preconditionTimeout,
     role = role.getOrElse(hc.resourceRole),
     tableName = tableName

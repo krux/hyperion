@@ -13,13 +13,13 @@ class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String]
 
   def getPipelineId: Option[String] = {
     val idNameToIdPartial = Function.unlift((idName: PipelineIdName) =>
-      if (idName.getName == pipelineName) Some(idName.getId) else None
+      if (idName.getName == pipelineName) Option(idName.getId) else None
     )
     val ids = client.listPipelines().getPipelineIdList().collect(idNameToIdPartial).toList
     ids match {
       case x :: y :: other =>  // if using hyperion for all datapipeline management, this should never happen
         throw new Exception("Duplicated pipeline name")
-      case x :: Nil => Some(x)
+      case x :: Nil => Option(x)
       case Nil => None
     }
   }
@@ -71,10 +71,10 @@ class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String]
         } else if (putDefinitionResult.getValidationErrors.isEmpty()
               && putDefinitionResult.getValidationWarnings.isEmpty()) {
             println("Successfully created pipeline")
-            Some(pipelineId)
+            Option(pipelineId)
         } else {
             println("Successful with warnings")
-            Some(pipelineId)
+            Option(pipelineId)
         }
     }
   }

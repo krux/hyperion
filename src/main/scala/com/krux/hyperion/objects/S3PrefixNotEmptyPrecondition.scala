@@ -19,7 +19,7 @@ case class S3PrefixNotEmptyPrecondition private (
 
   lazy val serialize = AdpS3PrefixNotEmptyPrecondition(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     s3Prefix = s3Prefix,
     preconditionTimeout = preconditionTimeout,
     role = role.getOrElse(hc.resourceRole)

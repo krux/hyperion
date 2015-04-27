@@ -45,7 +45,7 @@ case class CopyActivity private (
 
   lazy val serialize = AdpCopyActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     input = input match {
       case n: S3DataNode => n.ref
       case n: SqlDataNode => n.ref

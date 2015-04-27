@@ -27,17 +27,17 @@ case class SqlDataNode (
 
   lazy val serialize = AdpSqlDataNode(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     table = tableQuery.table,
     username = database.username,
     `*password` = database.`*password`,
     connectionString = database.connectionString,
     selectQuery = tableQuery match {
-      case q: SelectTableQuery => Some(q.sql)
+      case q: SelectTableQuery => Option(q.sql)
       case _ => None
     },
     insertQuery = tableQuery match {
-      case q: InsertTableQuery => Some(q.sql)
+      case q: InsertTableQuery => Option(q.sql)
       case _ => None
     },
     precondition = seqToOption(preconditions)(_.ref),

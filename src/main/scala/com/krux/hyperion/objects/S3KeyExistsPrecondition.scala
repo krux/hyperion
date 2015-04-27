@@ -19,7 +19,7 @@ case class S3KeyExistsPrecondition private (
 
   lazy val serialize = AdpS3KeyExistsPrecondition(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     s3Key = s3Key,
     preconditionTimeout = preconditionTimeout,
     role = role.getOrElse(hc.resourceRole)

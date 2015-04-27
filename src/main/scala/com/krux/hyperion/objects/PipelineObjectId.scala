@@ -2,7 +2,9 @@ package com.krux.hyperion.objects
 
 import java.util.UUID
 
-trait PipelineObjectId
+trait PipelineObjectId {
+  def toOption: Option[String] = Option(this.toString)
+}
 
 object PipelineObjectId {
   def apply(seed: String) = RamdomisedObjectId(seed)
@@ -20,7 +22,6 @@ object PipelineObjectId {
       case NameGroupObjectId(n, _) => NameGroupObjectId(n, group)
       case _ => NameGroupObjectId("", group)
     }
-
 }
 
 case class NameGroupObjectId(name: String, group: String) extends PipelineObjectId {

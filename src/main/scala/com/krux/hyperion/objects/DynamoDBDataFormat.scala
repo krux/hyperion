@@ -14,7 +14,7 @@ case class DynamoDBDataFormat private (
 
   lazy val serialize = AdpDynamoDBDataFormat(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     column = column
   )
 

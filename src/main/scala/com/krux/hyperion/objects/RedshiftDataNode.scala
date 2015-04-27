@@ -20,18 +20,18 @@ case class RedshiftDataNode private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withCreateTableSql(createSql: String) = this.copy(createTableSql = Some(createSql))
-  def withSchema(theSchemaName: String) = this.copy(schemaName = Some(theSchemaName))
-  def withPrimaryKeys(pks: String*) = this.copy(primaryKeys = Some(pks))
+  def withCreateTableSql(createSql: String) = this.copy(createTableSql = Option(createSql))
+  def withSchema(theSchemaName: String) = this.copy(schemaName = Option(theSchemaName))
+  def withPrimaryKeys(pks: String*) = this.copy(primaryKeys = Option(pks))
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
 
-  override def objects: Iterable[PipelineObject] = Some(database)
+  override def objects: Iterable[PipelineObject] = Option(database)
 
   lazy val serialize = AdpRedshiftDataNode(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     createTableSql = createTableSql,
     database = database.ref,
     schemaName = schemaName,

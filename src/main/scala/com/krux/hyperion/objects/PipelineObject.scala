@@ -22,7 +22,7 @@ trait PipelineObject {
   def seqToOption[A, B](anySeq: Seq[A])(transform: A => B) = {
     anySeq match {
       case Seq() => None
-      case other => Some(anySeq.map(transform))
+      case other => Option(anySeq.map(transform))
     }
   }
 

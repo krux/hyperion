@@ -12,7 +12,7 @@ abstract class AdpDataPipelineAbstractObject extends AdpObject {
  */
 trait AdpDataPipelineDefaultObject extends AdpDataPipelineAbstractObject {
   val id: String = "Default"
-  val name: Option[String] = Some("Default")
+  val name: Option[String] = Option("Default")
   def fields: Map[String, Either[String, AdpRef[AdpDataPipelineObject]]]
 }
 

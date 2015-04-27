@@ -27,8 +27,8 @@ case class ShellCommandActivity private (
 
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withCommand(cmd: String) = this.copy(command = Some(cmd))
-  def withScriptUri(uri: String) = this.copy(scriptUri = Some(uri))
+  def withCommand(cmd: String) = this.copy(command = Option(cmd))
+  def withScriptUri(uri: String) = this.copy(scriptUri = Option(uri))
   def withArguments(args: String*) = this.copy(scriptArguments = args)
 
   def staged() = this.copy(stage = true)
@@ -37,8 +37,8 @@ case class ShellCommandActivity private (
   def withInput(inputs: S3DataNode*) = this.copy(input = inputs)
   def withOutput(outputs: S3DataNode*) = this.copy(output = outputs)
 
-  def withStdoutTo(out: String) = this.copy(stdout = Some(out))
-  def withStderrTo(err: String) = this.copy(stderr = Some(err))
+  def withStdoutTo(out: String) = this.copy(stdout = Option(out))
+  def withStderrTo(err: String) = this.copy(stderr = Option(err))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -50,7 +50,7 @@ case class ShellCommandActivity private (
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     command = command,
     scriptUri = scriptUri,
     scriptArgument = scriptArguments,

@@ -6,6 +6,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
+## 1.7.0 - Unreleased
+### Changed
+- #46 - Support remaining properties on resources
+- #45 - Support VPC by adding subnetId
+- Use Option to construct options instead of Some
+
 ## 1.6.2 - 2015-04-26
 ### Changed
 - #40 - Hyperion CLI continue retry to delete the pipeline when --force is used

@@ -25,8 +25,8 @@ case class DeleteS3PathActivity private (
 
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withStdoutTo(out: String) = this.copy(stdout = Some(out))
-  def withStderrTo(err: String) = this.copy(stderr = Some(err))
+  def withStdoutTo(out: String) = this.copy(stdout = Option(out))
+  def withStderrTo(err: String) = this.copy(stderr = Option(err))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -38,8 +38,8 @@ case class DeleteS3PathActivity private (
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
-    name = Some(id),
-    command = Some(s"aws s3 rm --recursive $s3Path"),
+    name = id.toOption,
+    command = Option(s"aws s3 rm --recursive $s3Path"),
     scriptUri = None,
     scriptArgument = None,
     input = None,

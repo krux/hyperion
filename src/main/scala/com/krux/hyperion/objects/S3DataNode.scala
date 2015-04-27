@@ -38,7 +38,7 @@ case class S3File(
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Some(fmt))
+  def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Option(fmt))
   def withFilePath(path: String) = this.copy(filePath = path)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
@@ -48,7 +48,7 @@ case class S3File(
 
   lazy val serialize = AdpS3FileDataNode(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     compression = None,
     dataFormat = dataFormat.map(_.ref),
     filePath = filePath,
@@ -87,7 +87,7 @@ case class S3Folder(
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Some(fmt))
+  def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Option(fmt))
   def withDirectoryPath(path: String) = this.copy(directoryPath = path)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
@@ -97,7 +97,7 @@ case class S3Folder(
 
   lazy val serialize = AdpS3DirectoryDataNode(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     compression = None,
     dataFormat = dataFormat.map(_.ref),
     directoryPath = directoryPath,

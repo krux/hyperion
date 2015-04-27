@@ -33,7 +33,7 @@ case class MapReduceActivity private (
 
   lazy val serialize = AdpEmrActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     input = None,
     output = None,
     preStepCommand = None,

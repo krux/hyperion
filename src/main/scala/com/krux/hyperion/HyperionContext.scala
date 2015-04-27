@@ -22,6 +22,7 @@ class HyperionContext(config: Config) {
   lazy val region = config.getString("hyperion.aws.region")
   lazy val accessKeyId = config.getString("hyperion.aws.access_key_id")
   lazy val accessKeySecret = config.getString("hyperion.aws.access_key_secret")
+  lazy val subnetId = Try(config.getString("hyperion.aws.subnet")).toOption
 
   lazy val ec2SecurityGroup = config.getString("hyperion.aws.ec2.securitygroup")
   lazy val ec2InstanceType = config.getString("hyperion.aws.ec2.instance.type")

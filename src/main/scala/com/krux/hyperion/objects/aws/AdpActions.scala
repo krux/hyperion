@@ -9,7 +9,7 @@ trait AdpAction extends AdpDataPipelineObject
  */
 class AdpTerminate extends AdpAction {
   val id = "TerminateAction"
-  val name = Some("TerminateTasks")
+  val name = Option("TerminateTasks")
   val `type` = "Terminate"
 }
 

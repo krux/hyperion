@@ -33,7 +33,7 @@ case class SqlActivity private (
 
   lazy val serialize = AdpSqlActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     database = database.ref,
     script = script,
     scriptArgument = scriptArgument,

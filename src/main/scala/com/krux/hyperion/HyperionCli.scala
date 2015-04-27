@@ -25,11 +25,11 @@ trait HyperionCli {
         .children(
           opt[Unit]("force").action { (_, c) => c.copy(force = true) },
           opt[Unit]("activate").action { (_, c) => c.copy(activate = true) },
-          opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Some(x)) },
+          opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
           opt[(String, String)]('t', "tags").valueName("<tag>").action { (x, c) =>
             val tag = x match {
               case (k, "") => (k, None)
-              case (k, v) => (k, Some(v))
+              case (k, v) => (k, Option(v))
             }
             c.copy(tags = c.tags + tag)
           } unbounded()

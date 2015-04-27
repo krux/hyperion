@@ -55,7 +55,8 @@ class ExampleSparkSpec extends WordSpec {
         ("taskInstanceCount" -> "1") ~
         ("terminateAfter" -> "8 hours") ~
         ("keyPair" -> "your-aws-key-pair") ~
-        ("type" -> "EmrCluster")
+        ("type" -> "EmrCluster") ~
+        ("region" -> "us-east-1")
       assert(sparkCluster === sparkClusterShouldBe)
 
       val snsAlarm = objectsField(2)

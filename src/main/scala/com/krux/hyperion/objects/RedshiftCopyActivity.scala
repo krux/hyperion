@@ -26,7 +26,7 @@ case class RedshiftCopyActivity private (
 
   def withCopyOptions(opts: RedshiftCopyOption*) = this.copy(commandOptions = opts)
 
-  def withTransformSql(sql: String) = this.copy(transformSql = Some(sql))
+  def withTransformSql(sql: String) = this.copy(transformSql = Option(sql))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -38,7 +38,7 @@ case class RedshiftCopyActivity private (
 
   lazy val serialize = AdpRedshiftCopyActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     input = input.ref,
     insertMode = insertMode.toString,
     output = output.ref,

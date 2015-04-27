@@ -17,7 +17,7 @@ case class CsvDataFormat private (
 
   lazy val serialize = AdpCsvDataFormat(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     column = column,
     escapeChar = None
   )

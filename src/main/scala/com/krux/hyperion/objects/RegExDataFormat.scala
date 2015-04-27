@@ -16,7 +16,7 @@ case class RegExDataFormat private (
 
   lazy val serialize = AdpRegExDataFormat(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     column = column,
     inputRegEx = inputRegEx,
     outputFormat = outputFormat

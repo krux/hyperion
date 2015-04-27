@@ -14,7 +14,7 @@ case class DynamoDBExportDataFormat private (
 
   lazy val serialize = AdpDynamoDBExportDataFormat(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     column = column
   )
 

@@ -29,7 +29,7 @@ case class GoogleStorageDownloadActivity private (
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
   def withInput(path: String) = this.copy(input = path)
-  def withOutput(out: S3DataNode) = this.copy(output = Some(out))
+  def withOutput(out: S3DataNode) = this.copy(output = Option(out))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -41,10 +41,10 @@ case class GoogleStorageDownloadActivity private (
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     command = None,
-    scriptUri = Some(s"${hc.scriptUri}gsutil/gsutil_download.sh"),
-    scriptArgument = Some(Seq(botoConfigUrl, input)),
+    scriptUri = Option(s"${hc.scriptUri}gsutil/gsutil_download.sh"),
+    scriptArgument = Option(Seq(botoConfigUrl, input)),
     input = None,
     output = output.map(out => Seq(out.ref)),
     stage = "true",
@@ -99,7 +99,7 @@ case class GoogleStorageUploadActivity private (
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
-  def withInput(in: S3DataNode) = this.copy(input = Some(in))
+  def withInput(in: S3DataNode) = this.copy(input = Option(in))
   def withOutput(path: String) = this.copy(output = path)
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
@@ -112,10 +112,10 @@ case class GoogleStorageUploadActivity private (
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     command = None,
-    scriptUri = Some(s"${hc.scriptUri}gsutil/gsutil_upload.sh"),
-    scriptArgument = Some(Seq(botoConfigUrl, output)),
+    scriptUri = Option(s"${hc.scriptUri}gsutil/gsutil_upload.sh"),
+    scriptArgument = Option(Seq(botoConfigUrl, output)),
     input = input.map(in => Seq(in.ref)),
     output = None,
     stage = "true",

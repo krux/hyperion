@@ -23,11 +23,11 @@ case class HiveCopyActivity private (
 
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withFilterSql(filterSql: String) = this.copy(filterSql = Some(filterSql))
-  def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Some(generatedScriptsPath))
+  def withFilterSql(filterSql: String) = this.copy(filterSql = Option(filterSql))
+  def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
 
-  def withInput(in: DataNode) = this.copy(input = Some(in))
-  def withOutput(out: DataNode) = this.copy(output = Some(out))
+  def withInput(in: DataNode) = this.copy(input = Option(in))
+  def withOutput(out: DataNode) = this.copy(output = Option(out))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -39,7 +39,7 @@ case class HiveCopyActivity private (
 
   lazy val serialize = AdpHiveCopyActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     filterSql = filterSql,
     generatedScriptsPath = generatedScriptsPath,
     input = input.map(_.ref).get,

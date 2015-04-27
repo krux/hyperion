@@ -29,15 +29,15 @@ case class JarActivity private (
 
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withJar(jar: String) = this.copy(jar = Some(jar))
-  def withMainClass(mainClass: String) = this.copy(mainClass = Some(mainClass))
+  def withJar(jar: String) = this.copy(jar = Option(jar))
+  def withMainClass(mainClass: String) = this.copy(mainClass = Option(mainClass))
   def withArguments(args: String*) = this.copy(arguments = args)
 
   def withInput(inputs: S3DataNode*) = this.copy(input = inputs)
   def withOutput(outputs: S3DataNode*) = this.copy(output = outputs)
 
-  def withStdoutTo(out: String) = this.copy(stdout = Some(out))
-  def withStderrTo(err: String) = this.copy(stderr = Some(err))
+  def withStdoutTo(out: String) = this.copy(stdout = Option(out))
+  def withStderrTo(err: String) = this.copy(stderr = Option(err))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -49,10 +49,10 @@ case class JarActivity private (
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     command = None,
-    scriptUri = Some(s"${hc.scriptUri}run-jar.sh"),
-    scriptArgument = Some(jar.toSeq ++ mainClass.toSeq ++ arguments),
+    scriptUri = Option(s"${hc.scriptUri}run-jar.sh"),
+    scriptArgument = Option(jar.toSeq ++ mainClass.toSeq ++ arguments),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
     stage = "true",

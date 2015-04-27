@@ -20,7 +20,8 @@ class AdpEc2ResourcesSpec extends WordSpec {
         securityGroups = Some(Seq("krux-periodic")),
         securityGroupIds = None,
         associatePublicIpAddress = None,
-        keyPair = None
+        keyPair = None,
+        subnetId = None
       )
 
       val objShouldBe = ("id" -> "theId") ~
@@ -34,9 +35,25 @@ class AdpEc2ResourcesSpec extends WordSpec {
 
   "AdpEmrCluster" should {
     "converts to json" in {
-      val testObj = AdpEmrCluster("theId", None, Seq("s3://blah1", "s3://blah2"), Some("3.3"),
-        Some("m3.xlarge"), Some("m3.xlarge"), Some("2"), Some("m3.xlarge"), Some("4"), "8 hours",
-        None)
+      val testObj = AdpEmrCluster(
+        id = "theId",
+        name = None,
+        bootstrapAction = Seq("s3://blah1", "s3://blah2"),
+        amiVersion = Some("3.3"),
+        masterInstanceType = Some("m3.xlarge"),
+        coreInstanceType = Some("m3.xlarge"),
+        coreInstanceCount = Some("2"),
+        taskInstanceType = Some("m3.xlarge"),
+        taskInstanceCount = Some("4"),
+        taskInstanceBidPrice = None,
+        terminateAfter = "8 hours",
+        keyPair = None,
+        region = None,
+        enableDebugging = None,
+        supportedProducts = None,
+        subnetId = None
+      )
+
       val objShoudBe = ("id" -> "theId") ~
         ("bootstrapAction" -> Seq("s3://blah1", "s3://blah2")) ~
         ("amiVersion" -> "3.3") ~

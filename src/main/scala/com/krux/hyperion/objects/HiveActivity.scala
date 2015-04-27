@@ -25,12 +25,12 @@ case class HiveActivity private (
 
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withHiveScript(hiveScript: String) = this.copy(hiveScript = Some(hiveScript))
-  def withScriptUri(scriptUri: String) = this.copy(scriptUri = Some(scriptUri))
-  def withScriptVariable(scriptVariable: String) = this.copy(scriptVariable = Some(scriptVariable))
+  def withHiveScript(hiveScript: String) = this.copy(hiveScript = Option(hiveScript))
+  def withScriptUri(scriptUri: String) = this.copy(scriptUri = Option(scriptUri))
+  def withScriptVariable(scriptVariable: String) = this.copy(scriptVariable = Option(scriptVariable))
 
-  def withInput(in: DataNode) = this.copy(input = Some(in))
-  def withOutput(out: DataNode) = this.copy(output = Some(out))
+  def withInput(in: DataNode) = this.copy(input = Option(in))
+  def withOutput(out: DataNode) = this.copy(output = Option(out))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -42,7 +42,7 @@ case class HiveActivity private (
 
   lazy val serialize = AdpHiveActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     hiveScript = hiveScript,
     scriptUri = scriptUri,
     scriptVariable = scriptVariable,

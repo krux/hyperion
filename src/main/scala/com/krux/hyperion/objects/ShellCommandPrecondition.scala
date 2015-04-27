@@ -28,7 +28,7 @@ case class ShellCommandPrecondition private (
 
   lazy val serialize = AdpShellCommandPrecondition(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     command = command,
     scriptArgument = scriptArgument,
     scriptUri = scriptUri,

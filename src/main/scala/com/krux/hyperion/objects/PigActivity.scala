@@ -26,13 +26,13 @@ case class PigActivity private (
 
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Some(generatedScriptsPath))
-  def withScript(script: String) = this.copy(script = Some(script))
-  def withScriptUri(scriptUri: String) = this.copy(scriptUri = Some(scriptUri))
-  def withScriptVariable(scriptVariable: String) = this.copy(scriptVariable = Some(scriptVariable))
+  def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
+  def withScript(script: String) = this.copy(script = Option(script))
+  def withScriptUri(scriptUri: String) = this.copy(scriptUri = Option(scriptUri))
+  def withScriptVariable(scriptVariable: String) = this.copy(scriptVariable = Option(scriptVariable))
 
-  def withInput(in: DataNode) = this.copy(input = Some(in))
-  def withOutput(out: DataNode) = this.copy(output = Some(out))
+  def withInput(in: DataNode) = this.copy(input = Option(in))
+  def withOutput(out: DataNode) = this.copy(output = Option(out))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
@@ -44,7 +44,7 @@ case class PigActivity private (
 
   lazy val serialize = AdpPigActivity(
     id = id,
-    name = Some(id),
+    name = id.toOption,
     generatedScriptsPath = generatedScriptsPath,
     script = script,
     scriptUri = scriptUri,

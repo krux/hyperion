@@ -1,0 +1,32 @@
+package com.krux.hyperion.examples
+
+import com.krux.hyperion.DataPipelineDef
+import com.krux.hyperion.Implicits._
+import com.krux.hyperion.objects.{Schedule, MapReduceCluster, S3DistCpActivity, PipelineObject}
+import com.krux.hyperion.expressions.DateTimeFunctions.format
+import com.krux.hyperion.expressions.ExpressionDSL._
+import com.krux.hyperion.HyperionContext
+import com.typesafe.config.ConfigFactory
+
+class ExampleS3DistCpActivity extends DataPipelineDef {
+
+  override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
+
+  override lazy val schedule = Schedule.onceAtActivation
+
+  override def workflow = {
+
+    // Resources
+    val cluster = MapReduceCluster().withTaskInstanceCount(1)
+
+    val input = "s3://krux-temp/seth/s3distcp/input/"
+    val output = "s3://krux-temp/seth/s3distcp/output/"
+
+    val copy1 = S3DistCpActivity("s3distcp", cluster, input, output)
+      .withOutputCodec("lzo")
+
+    Seq(copy1)
+
+  }
+
+}
