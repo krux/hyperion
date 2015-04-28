@@ -61,9 +61,18 @@ case class SparkCluster private (
     masterInstanceType = masterInstanceType,
     coreInstanceType = coreInstanceType,
     coreInstanceCount = Option(coreInstanceCount.toString),
-    taskInstanceType = taskInstanceType,
-    taskInstanceCount = Option(taskInstanceCount.toString),
-    taskInstanceBidPrice = taskInstanceBidPrice.map(_.toString),
+    taskInstanceType = taskInstanceCount match {
+      case 0 => None
+      case _ => taskInstanceType
+    },
+    taskInstanceCount = taskInstanceCount match {
+      case 0 => None
+      case _ => Option(taskInstanceCount.toString)
+    },
+    taskInstanceBidPrice = taskInstanceCount match {
+      case 0 => None
+      case _ => taskInstanceBidPrice.map(_.toString)
+    },
     terminateAfter = terminateAfter,
     keyPair = keyPair,
     region = region,

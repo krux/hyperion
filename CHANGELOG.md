@@ -6,7 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - TODO
 
-## 1.7.1 - Unreleased
+## 1.7.2 - 2015-04-28
+### Fixed
+- #51 - When taskInstanceCount == 0 need to make sure other taskInstance parameters are set to None
+
+## 1.7.1 - 2015-04-28
 ### Fixed
 - #48 - Pipeline blows up if sns.topic is not set
 
