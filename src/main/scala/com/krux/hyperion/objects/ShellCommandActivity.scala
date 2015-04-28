@@ -8,8 +8,7 @@ import com.krux.hyperion.objects.aws.AdpShellCommandActivity
 case class ShellCommandActivity private (
   id: PipelineObjectId,
   runsOn: Ec2Resource,
-  command: Option[String],
-  scriptUri: Option[String],
+  commandOrScriptUri: Either[String, String],
   scriptArguments: Seq[String],
   stage: Boolean,
   input: Seq[S3DataNode],
@@ -27,8 +26,8 @@ case class ShellCommandActivity private (
 
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withCommand(cmd: String) = this.copy(command = Option(cmd))
-  def withScriptUri(uri: String) = this.copy(scriptUri = Option(uri))
+  def withCommand(cmd: String) = this.copy(commandOrScriptUri = Left(cmd))
+  def withScriptUri(uri: String) = this.copy(commandOrScriptUri = Right(uri))
   def withArguments(args: String*) = this.copy(scriptArguments = args)
 
   def staged() = this.copy(stage = true)
@@ -51,8 +50,14 @@ case class ShellCommandActivity private (
   lazy val serialize = AdpShellCommandActivity(
     id = id,
     name = id.toOption,
-    command = command,
-    scriptUri = scriptUri,
+    command = commandOrScriptUri match {
+      case Left(command) => Some(command)
+      case _ => None
+    },
+    scriptUri = commandOrScriptUri match {
+      case Right(scriptUri) => Some(scriptUri)
+      case _ => None
+    },
     scriptArgument = scriptArguments,
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
@@ -73,8 +78,7 @@ object ShellCommandActivity {
     new ShellCommandActivity(
       id = PipelineObjectId("ShellCommandActivity"),
       runsOn = runsOn,
-      command = None,
-      scriptUri = None,
+      commandOrScriptUri = Left(""),
       scriptArguments = Seq(),
       stage = true,
       input = Seq(),
