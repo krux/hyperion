@@ -27,7 +27,7 @@ case class SparkCluster private (
   implicit val hc: HyperionContext
 ) extends EmrCluster {
 
-  assert(coreInstanceCount >= 1)
+  assert(coreInstanceCount >= 2)
   assert(taskInstanceCount >= 0)
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -48,7 +48,7 @@ case class SparkCluster private (
   def withSupportedProducts(products: String) = this.copy(supportedProducts = Option(products))
   def withSubnetId(id: String) = this.copy(subnetId = Option(id))
 
-  val instanceCount = 1 + coreInstanceCount + taskInstanceCount
+  lazy val instanceCount = 1 + coreInstanceCount + taskInstanceCount
 
   lazy val standardBootstrapAction: Seq[String] = s"s3://support.elasticmapreduce/spark/install-spark,-v,$sparkVersion,-x" ::
       hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env").toList

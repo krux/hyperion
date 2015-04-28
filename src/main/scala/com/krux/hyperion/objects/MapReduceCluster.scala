@@ -46,7 +46,7 @@ case class MapReduceCluster private (
   def withSupportedProducts(products: String) = this.copy(supportedProducts = Option(products))
   def withSubnetId(id: String) = this.copy(subnetId = Option(id))
 
-  val instanceCount = 1 + coreInstanceCount + taskInstanceCount
+  lazy val instanceCount = 1 + coreInstanceCount + taskInstanceCount
 
   lazy val standardBootstrapAction = hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env").toList
 
