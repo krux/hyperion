@@ -19,7 +19,6 @@ case class SparkActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withStepSeq(steps: Seq[SparkStep]) = this.copy(steps = steps)
   def withSteps(step: SparkStep*) = this.copy(steps = steps ++ step)
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)

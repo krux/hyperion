@@ -46,7 +46,7 @@ object ExampleSpark extends DataPipelineDef {
     val filterStep = SparkStep()
       .withJar(jar)
       .withMainClass("com.krux.hyperion.FilterJob")
-      .withArgs(
+      .withArguments(
         target,
         format(SparkActivity.scheduledStartTime - 3.days, "yyyy-MM-dd")
       )
@@ -60,7 +60,7 @@ object ExampleSpark extends DataPipelineDef {
     val scoreStep1 = SparkStep()
       .withJar(jar)
       .withMainClass("com.krux.hyperion.ScoreJob1")
-      .withArgs(
+      .withArguments(
         target,
         format(SparkActivity.scheduledStartTime - 3.days, "yyyy-MM-dd"),
         "denormalized"
@@ -69,7 +69,7 @@ object ExampleSpark extends DataPipelineDef {
     val scoreStep2 = SparkStep()
       .withJar(jar)
       .withMainClass("com.krux.hyperion.ScoreJob2")
-      .withArgs(target, format(SparkActivity.scheduledStartTime - 3.days, "yyyy-MM-dd"))
+      .withArguments(target, format(SparkActivity.scheduledStartTime - 3.days, "yyyy-MM-dd"))
 
     val scoreActivity = SparkActivity(sparkCluster)
       .named("scoreActivity")

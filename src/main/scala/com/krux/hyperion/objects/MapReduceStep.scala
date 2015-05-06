@@ -11,8 +11,7 @@ case class MapReduceStep(
 
   def withJar(jar: String) = this.copy(jar = jar)
   def withMainClass(mainClass: String) = this.copy(mainClass = mainClass)
-  def withArgs(arg: String*) = this.copy(args = args ++ arg)
-  def withArgSeq(args: Seq[String]) = this.copy(args = args)
+  def withArguments(arg: String*) = this.copy(args = args ++ arg)
 
   def toStepString = (jar +: mainClass +: args).mkString(",")
 
