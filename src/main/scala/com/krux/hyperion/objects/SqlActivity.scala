@@ -23,7 +23,7 @@ case class SqlActivity private (
   def withQueue(queue: String) = this.copy(queue = Option(queue))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
-  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
+  def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)

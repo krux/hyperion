@@ -25,7 +25,7 @@ case class RedshiftDataNode private (
   def withPrimaryKeys(pks: String*) = this.copy(primaryKeys = Option(pks))
 
   
-  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
+  def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
 

@@ -11,7 +11,7 @@ trait DataNode extends PipelineObject {
   def onSuccessAlarms: Seq[SnsAlarm]
   def onFailAlarms: Seq[SnsAlarm]
 
-  def whenMet(preconditions: Precondition*): DataNode
+  def whenMet(conditions: Precondition*): DataNode
   def onSuccess(alarms: SnsAlarm*): DataNode
   def onFail(alarms: SnsAlarm*): DataNode
 
