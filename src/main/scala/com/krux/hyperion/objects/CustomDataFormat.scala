@@ -7,20 +7,19 @@ import com.krux.hyperion.objects.aws.AdpCustomDataFormat
  */
 case class CustomDataFormat private (
   id: PipelineObjectId,
-  column: Seq[String],
+  columns: Seq[String],
   columnSeparator: String,
   recordSeparator: String
 ) extends DataFormat {
 
-  def withColumn(col: String*) = this.copy(column = column ++ col)
-  def withColumns(cols: Seq[String]) = this.copy(column = cols)
+  def withColumns(col: String*) = this.copy(columns = columns ++ col)
   def withColumnSeparator(columnSeparator: String) = this.copy(columnSeparator = columnSeparator)
   def withRecordSeparator(recordSeparator: String) = this.copy(recordSeparator = recordSeparator)
 
   lazy val serialize = AdpCustomDataFormat(
     id = id,
     name = id.toOption,
-    column = column,
+    column = columns,
     columnSeparator = columnSeparator,
     recordSeparator = recordSeparator
   )
@@ -30,7 +29,7 @@ case class CustomDataFormat private (
 object CustomDataFormat {
   def apply() = new CustomDataFormat(
     id = PipelineObjectId("CustomDataFormat"),
-    column = Seq(),
+    columns = Seq(),
     columnSeparator = ",",
     recordSeparator = "\n"
   )

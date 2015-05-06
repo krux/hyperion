@@ -7,16 +7,15 @@ import com.krux.hyperion.objects.aws.AdpDynamoDBExportDataFormat
  */
 case class DynamoDBExportDataFormat private (
   id: PipelineObjectId,
-  column: Seq[String]
+  columns: Seq[String]
 ) extends DataFormat {
 
-  def withColumn(col: String*) = this.copy(column = column ++ col)
-  def withColumns(cols: Seq[String]) = this.copy(column = cols)
+  def withColumns(col: String*) = this.copy(columns = columns ++ col)
 
   lazy val serialize = AdpDynamoDBExportDataFormat(
     id = id,
     name = id.toOption,
-    column = column
+    column = columns
   )
 
 }
@@ -25,6 +24,6 @@ object DynamoDBExportDataFormat {
   def apply() =
     new DynamoDBExportDataFormat(
       id = PipelineObjectId("DynamoDBExportDataFormat"),
-      column = Seq()
+      columns = Seq()
     )
 }

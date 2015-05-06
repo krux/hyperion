@@ -40,6 +40,7 @@ case class S3File(
 
   def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Option(fmt))
   def withFilePath(path: String) = this.copy(filePath = path)
+
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)

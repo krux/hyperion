@@ -23,8 +23,7 @@ case class RedshiftCopyActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withCopyOptions(opts: RedshiftCopyOption*) = this.copy(commandOptions = commandOptions ++ opts)
-
+  def withCommandOptions(opts: RedshiftCopyOption*) = this.copy(commandOptions = commandOptions ++ opts)
   def withTransformSql(sql: String) = this.copy(transformSql = Option(sql))
 
   def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)

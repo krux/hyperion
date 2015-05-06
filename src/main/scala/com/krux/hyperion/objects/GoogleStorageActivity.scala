@@ -24,7 +24,6 @@ case class GoogleStorageDownloadActivity private (
 ) extends GoogleStorageActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
@@ -95,7 +94,6 @@ case class GoogleStorageUploadActivity private (
 ) extends GoogleStorageActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)

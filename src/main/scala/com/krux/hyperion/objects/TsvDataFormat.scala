@@ -7,19 +7,18 @@ import com.krux.hyperion.objects.aws.AdpTsvDataFormat
  */
 case class TsvDataFormat private (
   id: PipelineObjectId,
-  column: Seq[String] = Seq(),
+  columns: Seq[String] = Seq(),
   escapeChar: Option[String] = None
 ) extends DataFormat {
 
-  def withColumn(col: String*) = this.copy(column = column ++ col)
-  def withColumns(cols: Seq[String]) = this.copy(column = cols)
+  def withColumns(col: String*) = this.copy(columns = columns ++ col)
 
   def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))
 
   lazy val serialize = AdpTsvDataFormat(
     id = id,
     name = id.toOption,
-    column = column,
+    column = columns,
     escapeChar = escapeChar
   )
 

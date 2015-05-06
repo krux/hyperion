@@ -23,7 +23,6 @@ case class ShellCommandActivity private (
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withCommand(cmd: String) = this.copy(commandOrScriptUri = Left(cmd))

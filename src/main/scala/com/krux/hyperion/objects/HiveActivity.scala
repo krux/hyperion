@@ -22,7 +22,6 @@ case class HiveActivity private (
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withHiveScript(hiveScript: String) = this.copy(hiveScript = Option(hiveScript))
