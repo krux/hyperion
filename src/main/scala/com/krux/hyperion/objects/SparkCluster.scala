@@ -33,6 +33,7 @@ case class SparkCluster private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
+  def withBootstrapAction(action: String*) = this.copy(bootstrapAction = bootstrapAction ++ action)
   def terminatingAfter(terminateAfter: String) = this.copy(terminateAfter = terminateAfter)
   def withAmiVersion(ver: String) = this.copy(amiVersion = ver)
   def withMasterInstanceType(instanceType: String) = this.copy(masterInstanceType = Option(instanceType))

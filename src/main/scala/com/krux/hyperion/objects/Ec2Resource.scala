@@ -32,8 +32,8 @@ case class Ec2Resource private (
   def withInstanceType(instanceType: String) = this.copy(instanceType = instanceType)
   def withRegion(region: String) = this.copy(region = Option(region))
   def withImageId(imageId: String) = this.copy(imageId = Option(imageId))
-  def withSecurityGroups(securityGroups: String*) = this.copy(securityGroups = securityGroups)
-  def withSecurityGroupIds(securityGroupIds: String*) = this.copy(securityGroupIds = securityGroupIds)
+  def withSecurityGroups(groups: String*) = this.copy(securityGroups = securityGroups ++ groups)
+  def withSecurityGroupIds(groupIds: String*) = this.copy(securityGroupIds = securityGroupIds ++ groupIds)
   def withPublicIp() = this.copy(associatePublicIpAddress = true)
   def withSubnetId(id: String) = this.copy(subnetId = Option(id))
 

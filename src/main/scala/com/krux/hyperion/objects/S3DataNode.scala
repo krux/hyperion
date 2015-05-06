@@ -40,9 +40,9 @@ case class S3File(
 
   def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Option(fmt))
   def withFilePath(path: String) = this.copy(filePath = path)
-  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
 
   override def objects: Iterable[PipelineObject] = dataFormat
 
@@ -89,9 +89,9 @@ case class S3Folder(
 
   def withDataFormat(fmt: DataFormat) = this.copy(dataFormat = Option(fmt))
   def withDirectoryPath(path: String) = this.copy(directoryPath = path)
-  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
 
   override def objects: Iterable[PipelineObject] = dataFormat
 

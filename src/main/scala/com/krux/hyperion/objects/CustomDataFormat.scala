@@ -12,6 +12,7 @@ case class CustomDataFormat private (
   recordSeparator: String
 ) extends DataFormat {
 
+  def withColumn(col: String*) = this.copy(column = column ++ col)
   def withColumns(cols: Seq[String]) = this.copy(column = cols)
   def withColumnSeparator(columnSeparator: String) = this.copy(columnSeparator = columnSeparator)
   def withRecordSeparator(recordSeparator: String) = this.copy(recordSeparator = recordSeparator)

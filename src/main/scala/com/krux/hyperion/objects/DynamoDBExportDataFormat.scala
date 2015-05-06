@@ -10,6 +10,7 @@ case class DynamoDBExportDataFormat private (
   column: Seq[String]
 ) extends DataFormat {
 
+  def withColumn(col: String*) = this.copy(column = column ++ col)
   def withColumns(cols: Seq[String]) = this.copy(column = cols)
 
   lazy val serialize = AdpDynamoDBExportDataFormat(

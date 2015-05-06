@@ -28,22 +28,22 @@ case class ShellCommandActivity private (
 
   def withCommand(cmd: String) = this.copy(commandOrScriptUri = Left(cmd))
   def withScriptUri(uri: String) = this.copy(commandOrScriptUri = Right(uri))
-  def withArguments(args: String*) = this.copy(scriptArguments = args)
+  def withArguments(args: String*) = this.copy(scriptArguments = scriptArguments ++ args)
 
   def staged() = this.copy(stage = true)
   def notStaged() = this.copy(stage = false)
 
-  def withInput(inputs: S3DataNode*) = this.copy(input = inputs)
-  def withOutput(outputs: S3DataNode*) = this.copy(output = outputs)
+  def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs)
+  def withOutput(outputs: S3DataNode*) = this.copy(output = output ++ outputs)
 
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))
   def withStderrTo(err: String) = this.copy(stderr = Option(err))
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
-  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
-  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
+  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
 
   override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ preconditions ++ input ++ output ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 

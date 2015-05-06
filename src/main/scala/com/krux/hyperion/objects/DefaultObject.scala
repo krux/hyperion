@@ -4,7 +4,7 @@ import com.krux.hyperion.objects.aws.{AdpDataPipelineDefaultObject, AdpDataPipel
 import com.krux.hyperion.HyperionContext
 
 case class DefaultObject(schedule: Schedule)(implicit val hc: HyperionContext)
-    extends PipelineObject {
+  extends PipelineObject {
 
   val id = DefaultObjectId
 

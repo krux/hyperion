@@ -18,12 +18,11 @@ case class SqlDataNode (
 ) extends Copyable {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
 
   lazy val serialize = AdpSqlDataNode(
     id = id,

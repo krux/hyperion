@@ -11,6 +11,7 @@ case class TsvDataFormat private (
   escapeChar: Option[String] = None
 ) extends DataFormat {
 
+  def withColumn(col: String*) = this.copy(column = column ++ col)
   def withColumns(cols: Seq[String]) = this.copy(column = cols)
 
   def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))

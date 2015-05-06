@@ -26,24 +26,23 @@ case class JarActivity private (
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withJar(jar: String) = this.copy(jar = Option(jar))
   def withMainClass(mainClass: String) = this.copy(mainClass = Option(mainClass))
-  def withArguments(args: String*) = this.copy(arguments = args)
+  def withArguments(args: String*) = this.copy(arguments = arguments ++ args)
 
-  def withInput(inputs: S3DataNode*) = this.copy(input = inputs)
-  def withOutput(outputs: S3DataNode*) = this.copy(output = outputs)
+  def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs)
+  def withOutput(outputs: S3DataNode*) = this.copy(output = output ++ outputs)
 
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))
   def withStderrTo(err: String) = this.copy(stderr = Option(err))
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
-  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
-  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
+  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
 
   override def objects: Iterable[PipelineObject] = Seq(runsOn) ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 

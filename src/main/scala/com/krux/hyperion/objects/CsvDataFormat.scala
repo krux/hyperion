@@ -11,8 +11,8 @@ case class CsvDataFormat private (
   escapeChar: Option[String]
 ) extends DataFormat {
 
+  def withColumn(col: String*) = this.copy(column = column ++ col)
   def withColumns(cols: Seq[String]) = this.copy(column = cols)
-
   def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))
 
   lazy val serialize = AdpCsvDataFormat(

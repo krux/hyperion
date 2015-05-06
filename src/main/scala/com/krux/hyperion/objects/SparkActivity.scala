@@ -17,17 +17,16 @@ case class SparkActivity private (
 ) extends EmrActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withStepSeq(steps: Seq[SparkStep]) = this.copy(steps = steps)
-  def withSteps(steps: SparkStep*) = this.copy(steps = steps)
+  def withSteps(step: SparkStep*) = this.copy(steps = steps ++ step)
 
-  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = activities)
-  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = alarms)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = alarms)
-  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = alarms)
+  def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
+  def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
+  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
+  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
+  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
 
   override def objects: Iterable[PipelineObject] =
     (runsOn +: dependsOn) ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
