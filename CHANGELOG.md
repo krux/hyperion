@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.8.0 - unreleased
 ### Changed
 - #54 - with* methods that take a sequence are now additive, and replaced withColumns(Seq[String]) with withColumns(String...)
+- #56 - reorganize objects into packages by type
 
 ## 1.7.2 - 2015-04-28
 ### Fixed
@@ -31,7 +32,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.6.0 - 2015-04-05
 ### Changed
-- #17 - Make pipline id transparent
+- #17 - Make pipeline id transparent
 - #35 - Use immutable Map for objects building
 
 ## 1.5.1 - 2015-04-02

@@ -7,7 +7,7 @@ trait PipelineObjectId {
 }
 
 object PipelineObjectId {
-  def apply(seed: String) = RamdomisedObjectId(seed)
+  def apply(seed: String) = RandomizedObjectId(seed)
   def apply(name: String, group: String) = NameGroupObjectId(name, group)
   def fixed(seed: String) = FixedObjectId(seed)
 
@@ -36,7 +36,7 @@ case class NameGroupObjectId(name: String, group: String) extends PipelineObject
   override def toString = uniqueId
 }
 
-case class RamdomisedObjectId(seed: String) extends PipelineObjectId {
+case class RandomizedObjectId(seed: String) extends PipelineObjectId {
 
   val uniqueId = seed + "_" + UUID.randomUUID.toString
 

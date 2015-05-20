@@ -3,7 +3,8 @@ package com.krux.hyperion
 import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.expressions.DpPeriodBuilder
 import com.krux.hyperion.expressions.{DateTimeRef, DateTimeExp, Expression}
-import com.krux.hyperion.objects.{S3DataNode, PipelineObjectId}
+import com.krux.hyperion.objects.PipelineObjectId
+import com.krux.hyperion.objects.datanode.S3DataNode
 import scala.language.implicitConversions
 import org.json4s.DefaultFormats
 

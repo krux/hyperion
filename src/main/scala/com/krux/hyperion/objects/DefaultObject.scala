@@ -3,6 +3,9 @@ package com.krux.hyperion.objects
 import com.krux.hyperion.objects.aws.{AdpDataPipelineDefaultObject, AdpDataPipelineObject, AdpRef}
 import com.krux.hyperion.HyperionContext
 
+/**
+ * Defines the overall behaviour of a data pipeline.
+ */
 case class DefaultObject(schedule: Schedule)(implicit val hc: HyperionContext)
   extends PipelineObject {
 

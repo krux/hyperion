@@ -2,8 +2,12 @@ package com.krux.hyperion.examples
 
 import com.krux.hyperion.DataPipelineDef
 import com.krux.hyperion.Implicits._
-import com.krux.hyperion.objects.{Schedule, SparkCluster, SparkStep, SnsAlarm, S3KeyParameter,
-  SparkActivity, PipelineObject, Parameter, StringParameter, IntegerParameter, DoubleParameter}
+import com.krux.hyperion.objects.action.SnsAlarm
+import com.krux.hyperion.objects.activity.{SparkStep, SparkActivity}
+import com.krux.hyperion.objects.resource.SparkCluster
+import com.krux.hyperion.objects.Schedule
+import com.krux.hyperion.objects.parameter.{S3KeyParameter, Parameter, StringParameter,
+  IntegerParameter, DoubleParameter}
 import com.krux.hyperion.expressions.DateTimeFunctions.format
 import com.krux.hyperion.expressions.ExpressionDSL._
 import com.krux.hyperion.HyperionContext

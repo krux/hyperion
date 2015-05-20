@@ -5,11 +5,12 @@ import scala.language.implicitConversions
 import org.json4s.JsonDSL._
 import org.json4s.{JValue, JArray}
 
-import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineObject}
 import com.amazonaws.services.datapipeline.model.{ParameterObject => AwsParameterObject}
+import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineObject}
 
 import com.krux.hyperion.objects.aws.{AdpJsonSerializer, AdpPipelineSerializer, AdpParameterSerializer}
-import com.krux.hyperion.objects.{PipelineObject, Schedule, DefaultObject, Parameter}
+import com.krux.hyperion.objects.parameter.Parameter
+import com.krux.hyperion.objects.{PipelineObject, Schedule, DefaultObject}
 
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait

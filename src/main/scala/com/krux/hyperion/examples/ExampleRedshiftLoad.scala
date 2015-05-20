@@ -4,6 +4,11 @@ import com.krux.hyperion.objects._
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.DataPipelineDef
 import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.objects.activity.RedshiftCopyActivity
+import com.krux.hyperion.objects.database.RedshiftDatabase
+import com.krux.hyperion.objects.dataformat.TsvDataFormat
+import com.krux.hyperion.objects.datanode.{S3DataNode, RedshiftDataNode}
+import com.krux.hyperion.objects.resource.Ec2Resource
 import com.typesafe.config.ConfigFactory
 
 /**
