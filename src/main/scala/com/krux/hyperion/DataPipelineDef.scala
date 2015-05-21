@@ -1,5 +1,9 @@
 package com.krux.hyperion
 
+import com.krux.hyperion.aws.{AdpParameterSerializer, AdpPipelineSerializer, AdpJsonSerializer}
+import com.krux.hyperion.common.{DefaultObject, PipelineObject}
+import com.krux.hyperion.parameter.Parameter
+
 import scala.language.implicitConversions
 
 import org.json4s.JsonDSL._
@@ -7,10 +11,6 @@ import org.json4s.{JValue, JArray}
 
 import com.amazonaws.services.datapipeline.model.{ParameterObject => AwsParameterObject}
 import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineObject}
-
-import com.krux.hyperion.objects.aws.{AdpJsonSerializer, AdpPipelineSerializer, AdpParameterSerializer}
-import com.krux.hyperion.objects.parameter.Parameter
-import com.krux.hyperion.objects.{PipelineObject, Schedule, DefaultObject}
 
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
@@ -35,7 +35,7 @@ trait DataPipelineDef extends HyperionCli {
 
   def objects: Iterable[PipelineObject] = workflow
     .foldLeft(Map[String, PipelineObject]())(flattenPipelineObjects)
-    .map(_._2)
+    .values
 
   private def flattenPipelineObjects(r: Map[String, PipelineObject], po: PipelineObject): Map[String, PipelineObject] =
     if (!r.contains(po.id.toString)) {
