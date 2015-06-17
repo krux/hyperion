@@ -60,9 +60,7 @@ object AdpParameterSerializer {
       case other => throw new Exception(s"$other has unexpected type")
     }
 
-    val x = new AwsParameterObject().withId(id).withAttributes(attributes)
-    println(x)
-    x
+    new AwsParameterObject().withId(id).withAttributes(attributes)
   }
 
   def apply[A <: AdpObject](obj: A)(implicit mf: Manifest[A]) = {
