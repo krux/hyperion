@@ -2,13 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.8.0 - 2015-06-17
+## 1.9.0 - 2015-06-17
+### Added
+- #59 - workflow DSL
+
+## 1.8.1 - 2015-06-09
 ### Changed
 - #54 - with* methods that take a sequence are now additive, and replaced withColumns(Seq[String]) with withColumns(String...)
 - #56 - reorganize objects into packages by type
-
-### Added
-- #59 - workflow DSL
 
 ## 1.7.2 - 2015-04-28
 ### Fixed
