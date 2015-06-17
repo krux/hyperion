@@ -78,7 +78,7 @@ object ExampleSpark extends DataPipelineDef {
       .withSteps(scoreStep1, scoreStep2)
       .onSuccess(mailAction)
 
-    filterActivity ~> scoreActivity
+    filterActivity :~> scoreActivity
 
   }
 

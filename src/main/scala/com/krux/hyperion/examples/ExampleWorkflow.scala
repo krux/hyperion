@@ -31,7 +31,7 @@ object ExampleWorkflow extends DataPipelineDef {
     // same time, at last run act6
     // Anoternative syntax would be:
     // act1 andThen (act2 and act3) andThen (act4 and act5) andThen act6
-    act1 ~> (act2 + act3) ~> (act4 + act5) ~> act6
+    act1 :~> (act2 + act3) :~> (act4 + act5) :~> act6
 
   }
 

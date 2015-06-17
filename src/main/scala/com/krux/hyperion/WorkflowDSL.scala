@@ -14,27 +14,37 @@ class WorkflowDSL(activities: Seq[PipelineActivity]) {
     for (act <- acts) assert(act.dependsOn.isEmpty)
   }
 
-  def ~>(act: PipelineActivity): Seq[PipelineActivity] = {
+  // assertNoDependencies(activities:_*)
+
+  def andThen(act: PipelineActivity): Seq[PipelineActivity] = {
     assertNoDependencies(act)
     Seq(act.dependsOn(activities:_*))
   }
 
-  def andThen(act: PipelineActivity): Seq[PipelineActivity] = this.~>(act)
+  def :~>(act: PipelineActivity): Seq[PipelineActivity] = this.andThen(act)
 
-  def ~>(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = {
+  def priorTo_:(act: PipelineActivity): Seq[PipelineActivity] = this.andThen(act)
+
+  def <~:(act: PipelineActivity): Seq[PipelineActivity] = this.priorTo_:(act)
+
+  def andThen(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = {
     assertNoDependencies(acts:_*)
     for (act <- acts) yield act.dependsOn(activities:_*)
   }
 
-  def andThen(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.~>(acts)
+  def :~>(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.andThen(acts)
 
-  def +(act: PipelineActivity): Seq[PipelineActivity] = activities :+ act
+  def priorTo_:(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.andThen(acts)
 
-  def and(act: PipelineActivity): Seq[PipelineActivity] = this.+(act)
+  def <~:(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.priorTo_:(acts)
 
-  def +(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = activities ++ acts
+  def and(act: PipelineActivity): Seq[PipelineActivity] = activities :+ act
 
-  def and(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.+(acts)
+  def +(act: PipelineActivity): Seq[PipelineActivity] = this.and(act)
+
+  def and(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = activities ++ acts
+
+  def +(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.and(acts)
 
 
 }
