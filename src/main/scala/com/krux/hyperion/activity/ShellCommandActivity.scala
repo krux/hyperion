@@ -78,6 +78,7 @@ case class ShellCommandActivity private (
 }
 
 object ShellCommandActivity extends RunnableObject {
+
   def apply(runsOn: Ec2Resource) =
     new ShellCommandActivity(
       id = PipelineObjectId("ShellCommandActivity"),
@@ -95,4 +96,5 @@ object ShellCommandActivity extends RunnableObject {
       onSuccessAlarms = Seq(),
       onLateActionAlarms = Seq()
     )
+
 }

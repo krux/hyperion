@@ -14,6 +14,7 @@ trait PipelineActivity extends PipelineObject {
   def named(name: String): PipelineActivity
 
   def dependsOn(activities: PipelineActivity*): PipelineActivity
+  def dependsOn: Seq[PipelineActivity]
   def whenMet(conditions: Precondition*): PipelineActivity
 
   def onFail(alarms: SnsAlarm*): PipelineActivity

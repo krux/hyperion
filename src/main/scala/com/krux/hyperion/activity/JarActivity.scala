@@ -73,6 +73,7 @@ case class JarActivity private (
 }
 
 object JarActivity extends RunnableObject {
+
   def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new JarActivity(
       id = PipelineObjectId("JarActivity"),
@@ -90,4 +91,5 @@ object JarActivity extends RunnableObject {
       onSuccessAlarms = Seq(),
       onLateActionAlarms = Seq()
     )
+
 }

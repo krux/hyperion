@@ -9,6 +9,7 @@ import com.krux.hyperion.expression.ExpressionDSL._
 import com.krux.hyperion.parameter._
 import com.krux.hyperion.resource.SparkCluster
 import com.typesafe.config.ConfigFactory
+import com.krux.hyperion.WorkflowDSL._
 
 object ExampleSpark extends DataPipelineDef {
 
@@ -75,10 +76,9 @@ object ExampleSpark extends DataPipelineDef {
     val scoreActivity = SparkActivity(sparkCluster)
       .named("scoreActivity")
       .withSteps(scoreStep1, scoreStep2)
-      .dependsOn(filterActivity)
       .onSuccess(mailAction)
 
-    Seq(scoreActivity)
+    filterActivity ~> scoreActivity
 
   }
 
