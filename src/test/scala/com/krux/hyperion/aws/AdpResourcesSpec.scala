@@ -35,7 +35,7 @@ class AdpEc2ResourcesSpec extends WordSpec {
 
   "AdpEmrCluster" should {
     "converts to json" in {
-      val testObj = AdpEmrCluster(
+      val testObj = new AdpEmrCluster(
         id = "theId",
         name = None,
         bootstrapAction = Seq("s3://blah1", "s3://blah2"),
