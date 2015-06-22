@@ -95,7 +95,21 @@ case class AdpEmrCluster(
   region: Option[String],
   enableDebugging: Option[String],
   supportedProducts: Option[String],
-  subnetId: Option[String]
+  subnetId: Option[String],
+  role: Option[String],
+  resourceRole: Option[String],
+  availabilityZone: Option[String],
+  coreInstanceBidPrice: Option[Double],
+  masterInstanceBidPrice: Option[Double],
+  useOnDemandOnLastAttempt: Option[Boolean],
+  visibleToAllUsers: Option[Boolean],
+  masterSecurityGroupId: Option[String],
+  slaveSecurityGroupId: Option[String],
+  additionalMasterSecurityGroupIds: Option[Seq[String]],
+  additionalSlaveSecurityGroupIds: Option[Seq[String]],
+  hadoopSchedulerType: Option[String],
+  actionOnResourceFailure: Option[String],
+  actionOnTaskFailure: Option[String]
 ) extends AdpResource {
 
   val `type` = "EmrCluster"

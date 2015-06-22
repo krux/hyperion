@@ -51,10 +51,24 @@ class AdpEc2ResourcesSpec extends WordSpec {
         region = None,
         enableDebugging = None,
         supportedProducts = None,
-        subnetId = None
+        subnetId = None,
+        role = None,
+        resourceRole = None,
+        availabilityZone = None,
+        coreInstanceBidPrice = None,
+        masterInstanceBidPrice = None,
+        useOnDemandOnLastAttempt = None,
+        visibleToAllUsers = None,
+        masterSecurityGroupId = None,
+        slaveSecurityGroupId = None,
+        additionalMasterSecurityGroupIds = None,
+        additionalSlaveSecurityGroupIds = None,
+        hadoopSchedulerType = None,
+        actionOnResourceFailure = None,
+        actionOnTaskFailure = None
       )
 
-      val objShoudBe = ("id" -> "theId") ~
+      val objShouldBe = ("id" -> "theId") ~
         ("bootstrapAction" -> Seq("s3://blah1", "s3://blah2")) ~
         ("amiVersion" -> "3.3") ~
         ("masterInstanceType" -> "m3.xlarge") ~
@@ -65,7 +79,7 @@ class AdpEc2ResourcesSpec extends WordSpec {
         ("terminateAfter" -> "8 hours") ~
         ("type" -> "EmrCluster")
 
-      assert(AdpJsonSerializer(testObj) === objShoudBe)
+      assert(AdpJsonSerializer(testObj) === objShouldBe)
     }
   }
 }
