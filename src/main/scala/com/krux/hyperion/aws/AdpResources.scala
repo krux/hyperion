@@ -33,6 +33,11 @@ trait AdpResource extends AdpDataPipelineObject {
  * @param keyPair The name of the key pair. If you launch an EC2 instance without specifying a key pair, you
  *                can't log on to it.
  * @param subnetId The ID of the subnet to launch the instance into.
+ * @param availabilityZone The Availability Zone in which to launch the EC2 instance.
+ * @param spotBidPrice The Spot Instance bid price for Ec2Resources. The maximum dollar amount for your Spot Instance bid and is a decimal value between 0 and 20.00 exclusive
+ * @param useOnDemandOnLastAttempt On the last attempt to request a resource, this option will make a request for On-Demand Instances rather than Spot. This ensures that if all previous attempts have failed that the last attempt is not interrupted in the middle by changes in the spot market. Default value is True.
+ * @param actionOnResourceFailure	Action to take when the resource fails.
+ * @param actionOnTaskFailure	Action to take when the task associated with this resource fails.
  */
 case class AdpEc2Resource(
   id: String,
@@ -47,7 +52,12 @@ case class AdpEc2Resource(
   securityGroupIds: Option[Seq[String]],
   associatePublicIpAddress: Option[String],
   keyPair: Option[String],
-  subnetId: Option[String]
+  subnetId: Option[String],
+  availabilityZone: Option[String],
+  spotBidPrice: Option[Double],
+  useOnDemandOnLastAttempt: Option[Boolean],
+  actionOnResourceFailure: Option[String],
+  actionOnTaskFailure: Option[String]
 ) extends AdpResource {
 
   val `type` = "Ec2Resource"

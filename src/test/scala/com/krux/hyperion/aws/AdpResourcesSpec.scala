@@ -21,7 +21,12 @@ class AdpEc2ResourcesSpec extends WordSpec {
         securityGroupIds = None,
         associatePublicIpAddress = None,
         keyPair = None,
-        subnetId = None
+        subnetId = None,
+        availabilityZone = None,
+        spotBidPrice = None,
+        useOnDemandOnLastAttempt = None,
+        actionOnResourceFailure = None,
+        actionOnTaskFailure = None
       )
 
       val objShouldBe = ("id" -> "theId") ~

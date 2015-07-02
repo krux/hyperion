@@ -19,7 +19,12 @@ case class Ec2Resource private (
   securityGroups: Seq[String],
   securityGroupIds: Seq[String],
   associatePublicIpAddress: Boolean,
-  subnetId: Option[String]
+  subnetId: Option[String],
+  availabilityZone: Option[String],
+  spotBidPrice: Option[Double],
+  useOnDemandOnLastAttempt: Option[Boolean],
+  actionOnResourceFailure: Option[ActionOnResourceFailure],
+  actionOnTaskFailure: Option[ActionOnTaskFailure]
 )(
   implicit val hc: HyperionContext
 ) extends ResourceObject {
@@ -37,6 +42,11 @@ case class Ec2Resource private (
   def withSecurityGroupIds(groupIds: String*) = this.copy(securityGroupIds = securityGroupIds ++ groupIds)
   def withPublicIp() = this.copy(associatePublicIpAddress = true)
   def withSubnetId(id: String) = this.copy(subnetId = Option(id))
+  def withActionOnResourceFailure(actionOnResourceFailure: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(actionOnResourceFailure))
+  def withActionOnTaskFailure(actionOnTaskFailure: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(actionOnTaskFailure))
+  def withAvailabilityZone(availabilityZone: String) = this.copy(availabilityZone = Option(availabilityZone))
+  def withSpotBidPrice(spotBidPrice: Double) = this.copy(spotBidPrice = Option(spotBidPrice))
+  def withUseOnDemandOnLastAttempt(useOnDemandOnLastAttempt: Boolean) = this.copy(useOnDemandOnLastAttempt = Option(useOnDemandOnLastAttempt))
 
   lazy val serialize = AdpEc2Resource(
     id = id,
@@ -44,17 +54,22 @@ case class Ec2Resource private (
     terminateAfter = terminateAfter,
     role = role,
     resourceRole = resourceRole,
-    imageId = Option(imageId.getOrElse(hc.ec2ImageId)),
+    imageId = imageId,
     instanceType = Option(instanceType),
-    region = Option(region.getOrElse(hc.region)),
+    region = region,
     securityGroups = securityGroups match {
       case Seq() => Option(Seq(hc.ec2SecurityGroup))
       case groups => Option(groups)
     },
     securityGroupIds = securityGroupIds,
-    associatePublicIpAddress = Option(associatePublicIpAddress.toString()),
+    associatePublicIpAddress = Option(associatePublicIpAddress.toString),
     keyPair = keyPair,
-    subnetId = subnetId
+    subnetId = subnetId,
+    availabilityZone = availabilityZone,
+    spotBidPrice = spotBidPrice,
+    useOnDemandOnLastAttempt = useOnDemandOnLastAttempt,
+    actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
+    actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
   )
 
   def ref: AdpRef[AdpEc2Resource] = AdpRef(serialize)
@@ -65,16 +80,21 @@ object Ec2Resource {
   def apply()(implicit hc: HyperionContext) = new Ec2Resource(
     id = PipelineObjectId("Ec2Resource"),
     terminateAfter = hc.ec2TerminateAfter,
-    role = None,
-    resourceRole = None,
+    role = Option(hc.role),
+    resourceRole = Option(hc.resourceRole),
     instanceType = hc.ec2InstanceType,
-    region = None,
-    imageId = None,
+    region = Option(hc.region),
+    imageId = Option(hc.ec2ImageId),
     keyPair = hc.keyPair,
     securityGroups = Seq(),
     securityGroupIds = Seq(),
     associatePublicIpAddress = false,
-    subnetId = None
+    subnetId = None,
+    availabilityZone = hc.availabilityZone,
+    spotBidPrice = None,
+    useOnDemandOnLastAttempt = None,
+    actionOnResourceFailure = None,
+    actionOnTaskFailure = None
   )
 
 }

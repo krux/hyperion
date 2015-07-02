@@ -56,7 +56,9 @@ class ExampleSparkSpec extends WordSpec {
         ("terminateAfter" -> "8 hours") ~
         ("keyPair" -> "your-aws-key-pair") ~
         ("type" -> "EmrCluster") ~
-        ("region" -> "us-east-1")
+        ("region" -> "us-east-1") ~
+        ("role" -> "DataPipelineDefaultRole") ~
+        ("resourceRole" -> "DataPipelineDefaultResourceRole")
       assert(sparkCluster === sparkClusterShouldBe)
 
       val snsAlarm = objectsField(2)

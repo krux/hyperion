@@ -44,7 +44,9 @@ class ExampleRedshiftLoadSpec extends WordSpec {
         ("securityGroups" -> Seq("your-security-group")) ~
         ("associatePublicIpAddress" -> "false") ~
         ("keyPair" -> "your-aws-key-pair") ~
-        ("type" -> "Ec2Resource")
+        ("type" -> "Ec2Resource") ~
+        ("role" -> "DataPipelineDefaultRole") ~
+        ("resourceRole" -> "DataPipelineDefaultResourceRole")
       assert(ec2 === ec2ShouldBe)
 
       val pipelineSchedule = objectsField(2)
