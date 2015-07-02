@@ -296,7 +296,7 @@ case class AdpPigActivity (
  *   {{{insert into output select * from input where lastModified in range (?, ?)}}}
  *   the script is not evaluated as an expression. In that situation, scriptArgument are useful
  *
- * @param sriptArgument a list of variables for the script
+ * @param scriptArgument a list of variables for the script
  *
  * @note that scriptUri is deliberately missing from this implementation, as there does not seem to
  * be any use case for now.

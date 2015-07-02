@@ -49,8 +49,8 @@ case class AdpDynamoDBDataNode (
   tableName: String,
   region: Option[String],
   dynamoDBDataFormat: Option[AdpRef[AdpDataFormat]],
-  readThroughputPercent: Option[Double],
-  writeThroughputPercent: Option[Double],
+  readThroughputPercent: Option[String],
+  writeThroughputPercent: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
