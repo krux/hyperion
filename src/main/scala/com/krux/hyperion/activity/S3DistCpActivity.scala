@@ -7,35 +7,68 @@ import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.EmrCluster
 
-case class S3DistCpActivity private (
-  id: PipelineObjectId,
-  runsOn: EmrCluster,
-  dependsOn: Seq[PipelineActivity],
-  preconditions: Seq[Precondition],
-  onFailAlarms: Seq[SnsAlarm],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onLateActionAlarms: Seq[SnsAlarm],
-  source: Option[S3DataNode] = None,
-  dest: Option[S3DataNode] = None,
-  sourcePattern: Option[String] = None,
-  groupBy: Option[String] = None,
-  targetSize: Option[Int] = None,
-  appendLastToFile: Boolean = false,
-  outputCodec: S3DistCpActivity.OutputCodec = S3DistCpActivity.OutputCodec.None,
-  s3ServerSideEncryption: Boolean = false,
-  deleteOnSuccess: Boolean = false,
-  disableMultipartUpload: Boolean = false,
-  chunkSize: Option[Int] = None,
-  numberFiles: Boolean = false,
-  startingIndex: Option[Int] = None,
-  outputManifest: Option[String] = None,
-  previousManifest: Option[String] = None,
-  requirePreviousManifest: Boolean = false,
-  copyFromManifest: Boolean = false,
-  endpoint: Option[String] = None,
-  storageClass: Option[StorageClass] = None,
-  sourcePrefixesFile: Option[String] = None
+class S3DistCpActivity private (
+  val id: PipelineObjectId,
+  val runsOn: EmrCluster,
+  val dependsOn: Seq[PipelineActivity] = Seq(),
+  val preconditions: Seq[Precondition] = Seq(),
+  val onFailAlarms: Seq[SnsAlarm] = Seq(),
+  val onSuccessAlarms: Seq[SnsAlarm] = Seq(),
+  val onLateActionAlarms: Seq[SnsAlarm] = Seq(),
+  val source: Option[S3DataNode] = None,
+  val dest: Option[S3DataNode] = None,
+  val sourcePattern: Option[String] = None,
+  val groupBy: Option[String] = None,
+  val targetSize: Option[Int] = None,
+  val appendLastToFile: Boolean = false,
+  val outputCodec: S3DistCpActivity.OutputCodec = S3DistCpActivity.OutputCodec.None,
+  val s3ServerSideEncryption: Boolean = false,
+  val deleteOnSuccess: Boolean = false,
+  val disableMultipartUpload: Boolean = false,
+  val chunkSize: Option[Int] = None,
+  val numberFiles: Boolean = false,
+  val startingIndex: Option[Int] = None,
+  val outputManifest: Option[String] = None,
+  val previousManifest: Option[String] = None,
+  val requirePreviousManifest: Boolean = false,
+  val copyFromManifest: Boolean = false,
+  val endpoint: Option[String] = None,
+  val storageClass: Option[StorageClass] = None,
+  val sourcePrefixesFile: Option[String] = None
 ) extends EmrActivity {
+
+  def copy(
+    id: PipelineObjectId = id,
+    runsOn: EmrCluster = runsOn,
+    dependsOn: Seq[PipelineActivity] = dependsOn,
+    preconditions: Seq[Precondition] = preconditions,
+    onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
+    onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
+    onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
+    source: Option[S3DataNode] = source,
+    dest: Option[S3DataNode] = dest,
+    sourcePattern: Option[String] = sourcePattern,
+    groupBy: Option[String] = groupBy,
+    targetSize: Option[Int] = targetSize,
+    appendLastToFile: Boolean = appendLastToFile,
+    outputCodec: S3DistCpActivity.OutputCodec = outputCodec,
+    s3ServerSideEncryption: Boolean = s3ServerSideEncryption,
+    deleteOnSuccess: Boolean = deleteOnSuccess,
+    disableMultipartUpload: Boolean = disableMultipartUpload,
+    chunkSize: Option[Int] = chunkSize,
+    numberFiles: Boolean = numberFiles,
+    startingIndex: Option[Int] = startingIndex,
+    outputManifest: Option[String] = outputManifest,
+    previousManifest: Option[String] = previousManifest,
+    requirePreviousManifest: Boolean = requirePreviousManifest,
+    copyFromManifest: Boolean = copyFromManifest,
+    endpoint: Option[String] = endpoint,
+    storageClass: Option[StorageClass] = storageClass,
+    sourcePrefixesFile: Option[String] = sourcePrefixesFile
+  ) = new S3DistCpActivity(id, runsOn, dependsOn, preconditions, onFailAlarms, onSuccessAlarms, onLateActionAlarms,
+    source, dest, sourcePattern, groupBy, targetSize, appendLastToFile, outputCodec, s3ServerSideEncryption,
+    deleteOnSuccess, disableMultipartUpload, chunkSize, numberFiles, startingIndex, outputManifest,
+    previousManifest, requirePreviousManifest, copyFromManifest, endpoint, storageClass, sourcePrefixesFile)
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
@@ -143,12 +176,7 @@ object S3DistCpActivity {
   def apply(runsOn: EmrCluster) =
     new S3DistCpActivity(
       id = PipelineObjectId("S3DistCpActivity"),
-      runsOn = runsOn,
-      dependsOn = Seq(),
-      preconditions = Seq(),
-      onFailAlarms = Seq(),
-      onSuccessAlarms = Seq(),
-      onLateActionAlarms = Seq()
+      runsOn = runsOn
     )
 
 }
