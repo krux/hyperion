@@ -1,108 +1,112 @@
 package com.krux.hyperion
 
+import com.amazonaws.regions.{Regions, Region}
 import com.amazonaws.services.datapipeline._
 import com.amazonaws.services.datapipeline.model._
 import com.krux.hyperion.DataPipelineDef._
 import scala.collection.JavaConversions._
 
-class HyperionAwsClient(pipelineDef: DataPipelineDef, customName: Option[String] = None) {
+class HyperionAwsClient(regionId: Option[String] = None) {
+  lazy val region: Region = regionId.map(r => Region.getRegion(Regions.fromName(r))).getOrElse(Regions.getCurrentRegion)
+  lazy val client: DataPipelineClient = new DataPipelineClient().withRegion(region)
 
-  lazy val client = HyperionAwsClient.client
+  case class ForPipelineId(pipelineId: String) {
+    def deletePipelineById(): Unit = {
+      println(s"Deleting pipeline $pipelineId")
+      client.deletePipeline(new DeletePipelineRequest().withPipelineId(pipelineId))
+    }
 
-  val pipelineName = customName.getOrElse(pipelineDef.pipelineName)
-
-  def getPipelineId: Option[String] = {
-    val idNameToIdPartial = Function.unlift((idName: PipelineIdName) =>
-      if (idName.getName == pipelineName) Option(idName.getId) else None
-    )
-    val ids = client.listPipelines().getPipelineIdList().collect(idNameToIdPartial).toList
-    ids match {
-      case x :: y :: other =>  // if using hyperion for all datapipeline management, this should never happen
-        throw new Exception("Duplicated pipeline name")
-      case x :: Nil => Option(x)
-      case Nil => None
+    def activatePipelineById(): Unit = {
+      println(s"Activating pipeline $pipelineId")
+      client.activatePipeline(new ActivatePipelineRequest().withPipelineId(pipelineId))
     }
   }
 
-  def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map()): Option[String] = {
+  case class ForPipelineDef(
+    pipelineDef: DataPipelineDef,
+    customName: Option[String] = None
+  ) {
 
-    println(s"Creating pipeline $pipelineName")
+    val pipelineName = customName.getOrElse(pipelineDef.pipelineName)
 
-    getPipelineId match {
+    def getPipelineId: Option[String] = {
+      val idNameToIdPartial = Function.unlift((idName: PipelineIdName) =>
+        if (idName.getName == pipelineName) Option(idName.getId) else None
+      )
 
-      case Some(pipelineId) =>
-        println("Pipeline already exists")
-        if (force) {
-          println("Delete the existing pipline")
-          HyperionAwsClient.deletePipelineById(pipelineId)
-          Thread.sleep(10000)  // wait until the data pipeline is really deleted
-          createPipeline(true, tags)
-        } else {
-          println("User --force to force pipeline creation")
-          None
-        }
+      client.listPipelines().getPipelineIdList.collect(idNameToIdPartial).toList match {
+        case x :: y :: other =>  // if using hyperion for all DataPipeline management, this should never happen
+          throw new Exception("Duplicated pipeline name")
+        case x :: Nil => Option(x)
+        case Nil => None
+      }
+    }
 
-      case None =>
-        val pipelineId = client.createPipeline(
+    def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map()): Option[String] = {
+
+      println(s"Creating pipeline $pipelineName")
+
+      getPipelineId match {
+
+        case Some(pipelineId) =>
+          println("Pipeline already exists")
+          if (force) {
+            println("Delete the existing pipline")
+            ForPipelineId(pipelineId).deletePipelineById()
+            Thread.sleep(10000)  // wait until the data pipeline is really deleted
+            createPipeline(force = true, tags)
+          } else {
+            println("User --force to force pipeline creation")
+            None
+          }
+
+        case None =>
+          val pipelineId = client.createPipeline(
             new CreatePipelineRequest()
               .withTags((pipelineDef.tags ++ tags).map { case (k, v) => new Tag().withKey(k).withValue(v.getOrElse("")) } )
               .withUniqueId(pipelineName)
               .withName(pipelineName)
           ).getPipelineId
-        println(s"Pipeline created: $pipelineId")
-        println("Uploading pipeline definition")
-        val pipelineObjects: Seq[PipelineObject] = pipelineDef
-        val paramObjects: Seq[ParameterObject] = pipelineDef
-        val putDefinitionResult = client.putPipelineDefinition(
-          new PutPipelineDefinitionRequest()
-            .withPipelineId(pipelineId)
-            .withPipelineObjects(pipelineObjects)
-            .withParameterObjects(paramObjects)
-        )
-        putDefinitionResult.getValidationErrors.flatMap(_.getErrors().map(e => s"ERROR: $e"))
-          .foreach(println)
-        putDefinitionResult.getValidationWarnings.flatMap(_.getWarnings().map(e => s"WARNING: $e"))
-          .foreach(println)
-        if (putDefinitionResult.getErrored) {
-          println("Failed to create pipeline")
-          println("Deleting the just created pipeline")
-          HyperionAwsClient.deletePipelineById(pipelineId)
-          None
-        } else if (putDefinitionResult.getValidationErrors.isEmpty()
-              && putDefinitionResult.getValidationWarnings.isEmpty()) {
+          println(s"Pipeline created: $pipelineId")
+          println("Uploading pipeline definition")
+          val pipelineObjects: Seq[PipelineObject] = pipelineDef
+          val paramObjects: Seq[ParameterObject] = pipelineDef
+          val putDefinitionResult = client.putPipelineDefinition(
+            new PutPipelineDefinitionRequest()
+              .withPipelineId(pipelineId)
+              .withPipelineObjects(pipelineObjects)
+              .withParameterObjects(paramObjects)
+          )
+          putDefinitionResult.getValidationErrors.flatMap(_.getErrors.map(e => s"ERROR: $e"))
+            .foreach(println)
+          putDefinitionResult.getValidationWarnings.flatMap(_.getWarnings.map(e => s"WARNING: $e"))
+            .foreach(println)
+          if (putDefinitionResult.getErrored) {
+            println("Failed to create pipeline")
+            println("Deleting the just created pipeline")
+            ForPipelineId(pipelineId).deletePipelineById()
+            None
+          } else if (putDefinitionResult.getValidationErrors.isEmpty
+            && putDefinitionResult.getValidationWarnings.isEmpty) {
             println("Successfully created pipeline")
             Option(pipelineId)
-        } else {
+          } else {
             println("Successful with warnings")
             Option(pipelineId)
-        }
-    }
-  }
-
-  private def pipelineNameAction(action: (String) => Unit): Unit =
-    getPipelineId match {
-      case Some(pipelineId) => action(pipelineId)
-      case None => println(s"Pipeline $pipelineName does not exist")
+          }
+      }
     }
 
-  def activatePipeline(): Unit = pipelineNameAction(HyperionAwsClient.activatePipelineById)
+    private def pipelineNameAction(): Option[ForPipelineId] =
+      getPipelineId match {
+        case Some(pipelineId) => Option(ForPipelineId(pipelineId))
+        case None => println(s"Pipeline $pipelineName does not exist"); None
+      }
 
-  def deletePipeline(): Unit = pipelineNameAction(HyperionAwsClient.deletePipelineById)
+    def activatePipeline(): Unit = pipelineNameAction().foreach(_.activatePipelineById())
 
-}
+    def deletePipeline(): Unit = pipelineNameAction().foreach(_.deletePipelineById())
 
-object HyperionAwsClient {
-
-  lazy val client = new DataPipelineClient
-
-  def deletePipelineById(pipelineId: String): Unit = {
-    println(s"Deleting pipeline $pipelineId")
-    client.deletePipeline(new DeletePipelineRequest().withPipelineId(pipelineId))
-  }
-
-  def activatePipelineById(pipelineId: String): Unit = {
-    println(s"Activating pipeline $pipelineId")
-    client.activatePipeline(new ActivatePipelineRequest().withPipelineId(pipelineId))
   }
 
 }

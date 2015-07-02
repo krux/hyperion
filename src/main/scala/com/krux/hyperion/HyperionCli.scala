@@ -14,6 +14,7 @@ trait HyperionCli {
     force: Boolean = false,
     pipelineId: Option[String] = None,
     customName: Option[String] = None,
+    region: Option[String] = None,
     tags: Map[String, Option[String]] = Map()
   )
 
@@ -26,6 +27,7 @@ trait HyperionCli {
           opt[Unit]("force").action { (_, c) => c.copy(force = true) },
           opt[Unit]("activate").action { (_, c) => c.copy(activate = true) },
           opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
+          opt[String]("region").valueName("<region>").action { (x, c) => c.copy(region = Option(x)) },
           opt[(String, String)]('t', "tags").valueName("<tag>").action { (x, c) =>
             val tag = x match {
               case (k, "") => (k, None)
@@ -39,17 +41,23 @@ trait HyperionCli {
     }
 
     parser.parse(args, Cli()).foreach { cli =>
-      lazy val awsClient = new HyperionAwsClient(pipelineDef, cli.customName)
+      val awsClient = new HyperionAwsClient(cli.region)
+      val awsClientForPipeline = awsClient.ForPipelineDef(pipelineDef, cli.customName)
+
       cli.mode match {
         case "generate" =>
           println(pretty(render(pipelineDef)))
+
         case "create" =>
-          val pipelineId = awsClient.createPipeline(cli.force, cli.tags)
-          if (cli.activate) pipelineId.foreach(HyperionAwsClient.activatePipelineById)
+          val pipelineId = awsClientForPipeline.createPipeline(cli.force, cli.tags)
+          if (cli.activate) pipelineId.map(awsClient.ForPipelineId).foreach(_.activatePipelineById())
+
         case "delete" =>
-          awsClient.deletePipeline()
+          awsClientForPipeline.deletePipeline()
+
         case "activate" =>
-          awsClient.activatePipeline()
+          awsClientForPipeline.activatePipeline()
+
         case _ =>
           parser.showUsageAsError
       }
