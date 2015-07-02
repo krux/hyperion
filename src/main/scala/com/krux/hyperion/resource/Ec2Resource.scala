@@ -3,25 +3,26 @@ package com.krux.hyperion.resource
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.{AdpRef, AdpEc2Resource}
 import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.parameter.ParameterOf
 
 /**
  * EC2 resource
  */
 case class Ec2Resource private (
   id: PipelineObjectId,
-  terminateAfter: String,
-  role: Option[String],
-  resourceRole: Option[String],
-  instanceType: String,
-  region: Option[String],
-  imageId: Option[String],
-  keyPair: Option[String],
-  securityGroups: Seq[String],
-  securityGroupIds: Seq[String],
+  terminateAfter: ParameterOf[String],
+  role: Option[ParameterOf[String]],
+  resourceRole: Option[ParameterOf[String]],
+  instanceType: ParameterOf[String],
+  region: Option[ParameterOf[String]],
+  imageId: Option[ParameterOf[String]],
+  keyPair: Option[ParameterOf[String]],
+  securityGroups: Seq[ParameterOf[String]],
+  securityGroupIds: Seq[ParameterOf[String]],
   associatePublicIpAddress: Boolean,
-  subnetId: Option[String],
-  availabilityZone: Option[String],
-  spotBidPrice: Option[Double],
+  subnetId: Option[ParameterOf[String]],
+  availabilityZone: Option[ParameterOf[String]],
+  spotBidPrice: Option[ParameterOf[Double]],
   useOnDemandOnLastAttempt: Option[Boolean],
   actionOnResourceFailure: Option[ActionOnResourceFailure],
   actionOnTaskFailure: Option[ActionOnTaskFailure]
@@ -32,20 +33,20 @@ case class Ec2Resource private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def terminatingAfter(terminateAfter: String) = this.copy(terminateAfter = terminateAfter)
-  def withRole(role: String) = this.copy(role = Option(role))
-  def withResourceRole(role: String) = this.copy(resourceRole = Option(role))
-  def withInstanceType(instanceType: String) = this.copy(instanceType = instanceType)
-  def withRegion(region: String) = this.copy(region = Option(region))
-  def withImageId(imageId: String) = this.copy(imageId = Option(imageId))
-  def withSecurityGroups(groups: String*) = this.copy(securityGroups = securityGroups ++ groups)
-  def withSecurityGroupIds(groupIds: String*) = this.copy(securityGroupIds = securityGroupIds ++ groupIds)
+  def terminatingAfter(terminateAfter: ParameterOf[String]) = this.copy(terminateAfter = terminateAfter)
+  def withRole(role: ParameterOf[String]) = this.copy(role = Option(role))
+  def withResourceRole(role: ParameterOf[String]) = this.copy(resourceRole = Option(role))
+  def withInstanceType(instanceType: ParameterOf[String]) = this.copy(instanceType = instanceType)
+  def withRegion(region: ParameterOf[String]) = this.copy(region = Option(region))
+  def withImageId(imageId: ParameterOf[String]) = this.copy(imageId = Option(imageId))
+  def withSecurityGroups(groups: ParameterOf[String]*) = this.copy(securityGroups = securityGroups ++ groups)
+  def withSecurityGroupIds(groupIds: ParameterOf[String]*) = this.copy(securityGroupIds = securityGroupIds ++ groupIds)
   def withPublicIp() = this.copy(associatePublicIpAddress = true)
-  def withSubnetId(id: String) = this.copy(subnetId = Option(id))
+  def withSubnetId(id: ParameterOf[String]) = this.copy(subnetId = Option(id))
   def withActionOnResourceFailure(actionOnResourceFailure: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(actionOnResourceFailure))
   def withActionOnTaskFailure(actionOnTaskFailure: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(actionOnTaskFailure))
-  def withAvailabilityZone(availabilityZone: String) = this.copy(availabilityZone = Option(availabilityZone))
-  def withSpotBidPrice(spotBidPrice: Double) = this.copy(spotBidPrice = Option(spotBidPrice))
+  def withAvailabilityZone(availabilityZone: ParameterOf[String]) = this.copy(availabilityZone = Option(availabilityZone))
+  def withSpotBidPrice(spotBidPrice: ParameterOf[Double]) = this.copy(spotBidPrice = Option(spotBidPrice))
   def withUseOnDemandOnLastAttempt(useOnDemandOnLastAttempt: Boolean) = this.copy(useOnDemandOnLastAttempt = Option(useOnDemandOnLastAttempt))
 
   lazy val serialize = AdpEc2Resource(
@@ -55,19 +56,19 @@ case class Ec2Resource private (
     role = role,
     resourceRole = resourceRole,
     imageId = imageId,
-    instanceType = Option(instanceType),
+    instanceType = Option(instanceType.toString),
     region = region,
     securityGroups = securityGroups match {
       case Seq() => Option(Seq(hc.ec2SecurityGroup))
-      case groups => Option(groups)
+      case groups => Option(groups.map(_.toString))
     },
-    securityGroupIds = securityGroupIds,
+    securityGroupIds = Option(securityGroupIds.map(_.toString)),
     associatePublicIpAddress = Option(associatePublicIpAddress.toString),
     keyPair = keyPair,
     subnetId = subnetId,
     availabilityZone = availabilityZone,
     spotBidPrice = spotBidPrice,
-    useOnDemandOnLastAttempt = useOnDemandOnLastAttempt,
+    useOnDemandOnLastAttempt = useOnDemandOnLastAttempt.map(_.toString),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
     actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
   )
@@ -80,11 +81,11 @@ object Ec2Resource {
   def apply()(implicit hc: HyperionContext) = new Ec2Resource(
     id = PipelineObjectId("Ec2Resource"),
     terminateAfter = hc.ec2TerminateAfter,
-    role = Option(hc.role),
-    resourceRole = Option(hc.resourceRole),
+    role = Option(ParameterOf.stringValue(hc.role)),
+    resourceRole = Option(ParameterOf.stringValue(hc.resourceRole)),
     instanceType = hc.ec2InstanceType,
-    region = Option(hc.region),
-    imageId = Option(hc.ec2ImageId),
+    region = Option(ParameterOf.stringValue(hc.region)),
+    imageId = Option(ParameterOf.stringValue(hc.ec2ImageId)),
     keyPair = hc.keyPair,
     securityGroups = Seq(),
     securityGroupIds = Seq(),

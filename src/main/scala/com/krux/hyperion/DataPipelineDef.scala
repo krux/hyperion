@@ -2,7 +2,7 @@ package com.krux.hyperion
 
 import com.krux.hyperion.aws.{AdpParameterSerializer, AdpPipelineSerializer, AdpJsonSerializer}
 import com.krux.hyperion.common.{DefaultObject, PipelineObject}
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.parameter.{ParameterOf, Parameter}
 
 import scala.language.implicitConversions
 
@@ -16,6 +16,7 @@ import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineO
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
  */
 trait DataPipelineDef extends HyperionCli {
+  import ParameterOf._
 
   def pipelineDef = this
 

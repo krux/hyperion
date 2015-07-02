@@ -2,6 +2,7 @@ package com.krux.hyperion.examples
 
 import com.krux.hyperion.activity.ShellCommandActivity
 import com.krux.hyperion.Implicits._
+import com.krux.hyperion.parameter.StringParameter
 import com.krux.hyperion.resource.Ec2Resource
 import com.krux.hyperion.WorkflowDSL._
 import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
@@ -15,9 +16,11 @@ object ExampleWorkflow extends DataPipelineDef {
     .startAtActivation
     .every(1.day)
 
+  lazy val instanceType = StringParameter("instanceType", "m2.xlarge")
+
   override def workflow = {
 
-    val ec2 = Ec2Resource()
+    val ec2 = Ec2Resource().withInstanceType(instanceType).withImageId("someid")
 
     // First activity
     val act1 = ShellCommandActivity(ec2).withCommand("run act1").named("act1")
