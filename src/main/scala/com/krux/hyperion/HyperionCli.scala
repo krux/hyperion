@@ -39,7 +39,17 @@ trait HyperionCli {
           } unbounded()
         )
       cmd("delete").action { (_, c) => c.copy(mode = "delete") }
+        .children(
+          opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
+          opt[String]("region").valueName("<region>").action { (x, c) => c.copy(region = Option(x)) },
+          opt[String]("role").valueName("<role-arn>").action { (x, c) => c.copy(roleArn = Option(x)) }
+        )
       cmd("activate").action { (_, c) => c.copy(mode = "activate") }
+        .children(
+          opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
+          opt[String]("region").valueName("<region>").action { (x, c) => c.copy(region = Option(x)) },
+          opt[String]("role").valueName("<role-arn>").action { (x, c) => c.copy(roleArn = Option(x)) }
+        )
     }
 
     parser.parse(args, Cli()).foreach { cli =>

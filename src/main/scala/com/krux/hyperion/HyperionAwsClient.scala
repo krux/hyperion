@@ -1,6 +1,6 @@
 package com.krux.hyperion
 
-import com.amazonaws.auth.{AWSCredentialsProvider, DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
+import com.amazonaws.auth.{DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
 import com.amazonaws.regions.{Regions, Region}
 import com.amazonaws.services.datapipeline._
 import com.amazonaws.services.datapipeline.model._
