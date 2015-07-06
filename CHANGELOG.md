@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - #74 - DataNode should return path using toString
 
+## 1.13.0 - UNRELEASED
+### Changed
+- #68 - No longer specify AWS keys in configuration for RedshiftUnloadActivity - now must specify as arguments to activity
+
 ## 1.12.0 - 2015-07-02
 ### Added
 - #64 - Supports non-default region

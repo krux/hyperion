@@ -22,7 +22,9 @@ case class RedshiftUnloadActivity private (
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
-  onLateActionAlarms: Seq[SnsAlarm]
+  onLateActionAlarms: Seq[SnsAlarm],
+  accessKeyId: String,
+  accessKeySecret: String
 )(
   implicit val hc: HyperionContext
 ) extends PipelineActivity {
@@ -31,8 +33,8 @@ case class RedshiftUnloadActivity private (
     UNLOAD ('${script.replaceAll("'", "\\\\\\\\'")}')
     TO '$s3Path'
     WITH CREDENTIALS AS
-    'aws_access_key_id=${hc.accessKeyId};aws_secret_access_key=${hc.accessKeySecret}'
-    ${unloadOptions.map(_.repr).flatten.mkString(" ")}
+    'aws_access_key_id=$accessKeyId;aws_secret_access_key=$accessKeySecret'
+    ${unloadOptions.flatMap(_.repr).mkString(" ")}
   """
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -74,8 +76,8 @@ case class RedshiftUnloadActivity private (
 
 object RedshiftUnloadActivity extends RunnableObject {
 
-  def apply(database: RedshiftDatabase, script: String, s3Path: String, runsOn: Ec2Resource)
-           (implicit hc: HyperionContext) =
+  def apply(database: RedshiftDatabase, script: String, s3Path: String,
+    accessKeyId: String, accessKeySecret: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new RedshiftUnloadActivity(
       id = PipelineObjectId("RedshiftUnloadActivity"),
       database = database,
@@ -87,7 +89,9 @@ object RedshiftUnloadActivity extends RunnableObject {
       preconditions = Seq(),
       onFailAlarms = Seq(),
       onSuccessAlarms = Seq(),
-      onLateActionAlarms = Seq()
+      onLateActionAlarms = Seq(),
+      accessKeyId = accessKeyId,
+      accessKeySecret = accessKeySecret
     )
 
 }
