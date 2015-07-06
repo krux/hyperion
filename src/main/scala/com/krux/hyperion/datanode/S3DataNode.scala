@@ -49,6 +49,8 @@ case class S3File(
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
 
+  override def toString: String = filePath
+
   override def objects: Iterable[PipelineObject] = dataFormat
 
   lazy val serialize = AdpS3FileDataNode(
@@ -97,6 +99,8 @@ case class S3Folder(
   def whenMet(preconditions: Precondition*) = this.copy(preconditions = preconditions ++ preconditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
+
+  override def toString: String = directoryPath
 
   override def objects: Iterable[PipelineObject] = dataFormat
 
