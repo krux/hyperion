@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.13.0 - UNRELEASED
+### Changed
+- #68 - No longer specify AWS keys in configuration for RedshiftUnloadActivity - now must specify as arguments to activity
+
 ## 1.12.0 - 2015-07-02
 ### Added
 - #64 - Supports non-default region
