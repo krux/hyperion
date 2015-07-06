@@ -1,13 +1,16 @@
-val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
-val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % "1.9.27"
+val awsSdkVersion = "1.9.35"
+
 val nscalaTimeArtifact      = "com.github.nscala-time" %% "nscala-time"               % "1.8.0"
 val json4sJacksonArtifact   = "org.json4s"             %% "json4s-jackson"            % "3.2.10"
 val scoptArtifact           = "com.github.scopt"       %% "scopt"                     % "3.3.0"
 val configArtifact          = "com.typesafe"           %  "config"                    % "1.2.1"
+val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % awsSdkVersion
+val awsStsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sts"          % awsSdkVersion
+val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
 
 import SonatypeKeys._
 
-val hyperionVersion = "1.13.0"
+val hyperionVersion = "1.14.0"
 
 // Import default settings. This changes `publishTo` settings to use the Sonatype repository and add several commands for publishing.
 sonatypeSettings
@@ -76,6 +79,7 @@ lazy val root = (project in file(".")).
     name := "hyperion",
     libraryDependencies ++= Seq(
       awsDatapipelineArtifact,
+      awsStsArtifact,
       nscalaTimeArtifact,
       json4sJacksonArtifact,
       scoptArtifact,

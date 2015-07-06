@@ -15,6 +15,7 @@ trait HyperionCli {
     pipelineId: Option[String] = None,
     customName: Option[String] = None,
     region: Option[String] = None,
+    roleArn: Option[String] = None,
     tags: Map[String, Option[String]] = Map()
   )
 
@@ -28,6 +29,7 @@ trait HyperionCli {
           opt[Unit]("activate").action { (_, c) => c.copy(activate = true) },
           opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
           opt[String]("region").valueName("<region>").action { (x, c) => c.copy(region = Option(x)) },
+          opt[String]("role").valueName("<role-arn>").action { (x, c) => c.copy(roleArn = Option(x)) },
           opt[(String, String)]('t', "tags").valueName("<tag>").action { (x, c) =>
             val tag = x match {
               case (k, "") => (k, None)
@@ -41,7 +43,7 @@ trait HyperionCli {
     }
 
     parser.parse(args, Cli()).foreach { cli =>
-      val awsClient = new HyperionAwsClient(cli.region)
+      val awsClient = new HyperionAwsClient(cli.region, cli.roleArn)
       val awsClientForPipeline = awsClient.ForPipelineDef(pipelineDef, cli.customName)
 
       cli.mode match {

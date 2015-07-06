@@ -1,14 +1,17 @@
 package com.krux.hyperion
 
+import com.amazonaws.auth.{DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
 import com.amazonaws.regions.{Regions, Region}
 import com.amazonaws.services.datapipeline._
 import com.amazonaws.services.datapipeline.model._
 import com.krux.hyperion.DataPipelineDef._
 import scala.collection.JavaConversions._
 
-class HyperionAwsClient(regionId: Option[String] = None) {
+class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String] = None) {
   lazy val region: Region = regionId.map(r => Region.getRegion(Regions.fromName(r))).getOrElse(Regions.getCurrentRegion)
-  lazy val client: DataPipelineClient = new DataPipelineClient().withRegion(region)
+  lazy val defaultProvider = new DefaultAWSCredentialsProviderChain()
+  lazy val stsProvider = roleArn.map(new STSAssumeRoleSessionCredentialsProvider(defaultProvider, _, "Hyperion Session"))
+  lazy val client: DataPipelineClient = new DataPipelineClient(stsProvider.getOrElse(defaultProvider)).withRegion(region)
 
   case class ForPipelineId(pipelineId: String) {
     def deletePipelineById(): Unit = {
