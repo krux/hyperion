@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.15.0 - UNRELEASED
+### Fixed
+- #78 - Strip trailing $ from MainClass
+
 ## 1.14.0 - 2015-07-06
 ### Added
 - #65 - Ability to use roles via STS assume-role
