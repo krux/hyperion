@@ -3,16 +3,31 @@ package com.krux.hyperion.activity
 /**
  * A MapReduce step that runs on MapReduce Cluster
  */
-case class MapReduceStep(
-  jar: String = "",
-  mainClass: String = "",
-  args: Seq[String] = Seq()
+case class MapReduceStep private (
+  jar: Option[String],
+  mainClass: Option[String],
+  args: Seq[String]
 ) {
 
-  def withJar(jar: String) = this.copy(jar = jar)
-  def withMainClass(mainClass: String) = this.copy(mainClass = mainClass)
+  def withJar(jar: String) = this.copy(jar = Option(jar))
+  def withMainClass(mainClass: Any): MapReduceStep = mainClass match {
+    case mc: String => this.copy(mainClass = Option(mc.stripSuffix("$")))
+    case mc: Class[_] => this.withMainClass(mc.getName)
+    case mc => this.withMainClass(mc.getClass)
+  }
   def withArguments(arg: String*) = this.copy(args = args ++ arg)
 
-  def toStepString = (jar +: mainClass +: args).mkString(",")
+  override def toString: String = (jar.toSeq ++ mainClass.toSeq ++ args).mkString(",")
 
 }
+
+object MapReduceStep {
+
+  def apply(): MapReduceStep = MapReduceStep(
+    jar = None,
+    mainClass = None,
+    args = Seq()
+  )
+
+}
+

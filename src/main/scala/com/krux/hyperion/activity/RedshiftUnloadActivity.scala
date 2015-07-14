@@ -25,8 +25,6 @@ case class RedshiftUnloadActivity private (
   onLateActionAlarms: Seq[SnsAlarm],
   accessKeyId: String,
   accessKeySecret: String
-)(
-  implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
   def unloadScript = s"""

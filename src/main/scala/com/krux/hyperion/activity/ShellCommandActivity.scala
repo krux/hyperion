@@ -65,7 +65,7 @@ case class ShellCommandActivity private (
     scriptArgument = scriptArguments,
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
-    stage = stage.toString(),
+    stage = stage.toString,
     stdout = stdout,
     stderr = stderr,
     runsOn = runsOn.ref,
