@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 /**
  * A MapReduce step that runs on MapReduce Cluster
  */
-case class MapReduceStep private(
+case class MapReduceStep private (
   jar: Option[String],
   mainClass: Option[String],
   args: Seq[String]
@@ -13,7 +13,7 @@ case class MapReduceStep private(
   def withMainClass(mainClass: String) = this.copy(mainClass = Option(mainClass.stripSuffix("$")))
   def withArguments(arg: String*) = this.copy(args = args ++ arg)
 
-  override def toString(): String = (jar.toSeq ++ mainClass.toSeq ++ args).mkString(",")
+  override def toString: String = (jar.toSeq ++ mainClass.toSeq ++ args).mkString(",")
 
 }
 

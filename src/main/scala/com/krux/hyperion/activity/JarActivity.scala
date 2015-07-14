@@ -14,6 +14,7 @@ import com.krux.hyperion.resource.Ec2Resource
 case class JarActivity private (
   id: PipelineObjectId,
   runsOn: Ec2Resource,
+  scriptUri: Option[String],
   jar: Option[String],
   mainClass: Option[String],
   arguments: Seq[String],
@@ -26,8 +27,6 @@ case class JarActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm]
-)(
-  implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -55,7 +54,7 @@ case class JarActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = Option(s"${hc.scriptUri}run-jar.sh"),
+    scriptUri = scriptUri,
     scriptArgument = Option(jar.toSeq ++ mainClass.toSeq ++ arguments),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
@@ -78,6 +77,7 @@ object JarActivity extends RunnableObject {
     new JarActivity(
       id = PipelineObjectId("JarActivity"),
       runsOn = runsOn,
+      scriptUri = Option(s"${hc.scriptUri}run-jar.sh"),
       jar = None,
       mainClass = None,
       arguments = Seq(),

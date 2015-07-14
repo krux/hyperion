@@ -5,7 +5,7 @@ import com.krux.hyperion.HyperionContext
 /**
  * A spark step that runs on Spark Cluster
  */
-case class SparkStep private(
+case class SparkStep private (
   jar: Option[String],
   mainClass: Option[String],
   args: Seq[String],
@@ -17,7 +17,7 @@ case class SparkStep private(
   def withMainClass(mainClass: String) = this.copy(mainClass = Option(mainClass.stripSuffix("$")))
   def withArguments(arg: String*) = this.copy(args = args ++ arg)
 
-  override def toString(): String = (scriptRunner.toSeq ++ jobRunner.toSeq ++ jar.toSeq ++ mainClass.toSeq ++ args).mkString(",")
+  override def toString: String = (scriptRunner.toSeq ++ jobRunner.toSeq ++ jar.toSeq ++ mainClass.toSeq ++ args).mkString(",")
 
 }
 
@@ -32,4 +32,3 @@ object SparkStep {
   )
 
 }
-

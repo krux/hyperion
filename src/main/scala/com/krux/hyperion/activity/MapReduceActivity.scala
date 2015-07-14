@@ -42,7 +42,7 @@ case class MapReduceActivity private (
     postStepCommand = None,
     actionOnResourceFailure = None,
     actionOnTaskFailure = None,
-    step = steps.map(_.toString()),
+    step = steps.map(_.toString),
     runsOn = runsOn.ref,
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
