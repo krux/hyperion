@@ -140,7 +140,7 @@ class S3DistCpActivity private (
     postStepCommand = None,
     actionOnResourceFailure = None,
     actionOnTaskFailure = None,
-    step = steps.map(_.toStepString),
+    step = steps.map(_.toString),
     runsOn = runsOn.ref,
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
