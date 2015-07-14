@@ -33,7 +33,12 @@ case class JarActivity private (
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withJar(jar: String) = this.copy(jar = Option(jar))
-  def withMainClass(mainClass: String) = this.copy(mainClass = Option(mainClass.stripSuffix("$")))
+  def withMainClass(mainClass: Any): JarActivity = mainClass match {
+    case mc: String => this.copy(mainClass = Option(mc.stripSuffix("$")))
+    case mc: Class[_] => this.withMainClass(mc.getName)
+    case mc => this.withMainClass(mc.getClass)
+  }
+
   def withArguments(args: String*) = this.copy(arguments = arguments ++ args)
 
   def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs)
