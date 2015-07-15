@@ -125,11 +125,7 @@ class S3DistCpActivity private (
     sourcePrefixesFile.map(s => Seq("--srcPrefixesFile", s))
   ).flatten.flatten
 
-  private def steps: Seq[MapReduceStep] = Seq(
-    MapReduceStep()
-      .withJar("/home/hadoop/lib/emr-s3distcp-1.0.jar")
-      .withArguments(arguments: _*)
-  )
+  private def steps: Seq[MapReduceStep] = Seq(MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar").withArguments(arguments: _*))
 
   lazy val serialize = AdpEmrActivity(
     id = id,

@@ -14,8 +14,8 @@ import com.krux.hyperion.resource.Ec2Resource
 case class JarActivity private (
   id: PipelineObjectId,
   runsOn: Ec2Resource,
+  jar: String,
   scriptUri: Option[String],
-  jar: Option[String],
   mainClass: Option[String],
   arguments: Seq[String],
   input: Seq[S3DataNode],
@@ -32,7 +32,6 @@ case class JarActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withJar(jar: String) = this.copy(jar = Option(jar))
   def withMainClass(mainClass: Any): JarActivity = mainClass match {
     case mc: String => this.copy(mainClass = Option(mc.stripSuffix("$")))
     case mc: Class[_] => this.withMainClass(mc.getName)
@@ -60,7 +59,7 @@ case class JarActivity private (
     name = id.toOption,
     command = None,
     scriptUri = scriptUri,
-    scriptArgument = Option(jar.toSeq ++ mainClass.toSeq ++ arguments),
+    scriptArgument = Option(Seq(jar) ++ mainClass.toSeq ++ arguments),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
     stage = "true",
@@ -78,12 +77,12 @@ case class JarActivity private (
 
 object JarActivity extends RunnableObject {
 
-  def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply(jar: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
     new JarActivity(
       id = PipelineObjectId("JarActivity"),
       runsOn = runsOn,
+      jar = jar,
       scriptUri = Option(s"${hc.scriptUri}run-jar.sh"),
-      jar = None,
       mainClass = None,
       arguments = Seq(),
       input = Seq(),
