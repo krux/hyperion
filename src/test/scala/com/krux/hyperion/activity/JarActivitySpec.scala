@@ -18,22 +18,22 @@ class JarActivitySpec extends WordSpec {
   "JarActivitySpec" should {
     "allow mainClass from a String" in {
       val name = "com.foo.MainClass"
-      val ja = JarActivity(ec2).withMainClass(name)
+      val ja = JarActivity("something.jar", ec2).withMainClass(name)
       assert(ja.mainClass == Some(name))
     }
 
     "allow mainClass an instance" in {
-      val ja = JarActivity(ec2).withMainClass(new SomeClass())
+      val ja = JarActivity("something.jar", ec2).withMainClass(new SomeClass())
       assert(ja.mainClass == Some("com.krux.hyperion.activity.JarActivitySpec$SomeClass"))
     }
 
     "allow mainClass an object" in {
-      val ja = JarActivity(ec2).withMainClass(SomeObject)
+      val ja = JarActivity("something.jar", ec2).withMainClass(SomeObject)
       assert(ja.mainClass == Some("com.krux.hyperion.activity.JarActivitySpec$SomeObject"))
     }
 
     "allow mainClass a Class" in {
-      val ja = JarActivity(ec2).withMainClass(SomeObject.getClass)
+      val ja = JarActivity("something.jar", ec2).withMainClass(SomeObject.getClass)
       assert(ja.mainClass == Some("com.krux.hyperion.activity.JarActivitySpec$SomeObject"))
     }
   }
