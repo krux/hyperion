@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.16.1 - 2015-07-15
+### Changed
+- #83 - Remove dependency assertion in WorkflowDSL
+
 ## 1.16.0 - 2015-07-15
 ### Fixed
 - #81 - Regression: --region parameter is now effectively required on non-EC2 instances due to call to `getCurrentRegion`.

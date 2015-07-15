@@ -8,18 +8,7 @@ import scala.language.implicitConversions
  */
 class WorkflowDSL(activities: Seq[PipelineActivity]) {
 
-  // assert that we are not mix the dependsOn approach with WorkFlowDSL, it will have unexpected
-  // behavior
-  private def assertNoDependencies(acts: PipelineActivity*) = {
-    for (act <- acts) assert(act.dependsOn.isEmpty)
-  }
-
-  // assertNoDependencies(activities:_*)
-
-  def andThen(act: PipelineActivity): Seq[PipelineActivity] = {
-    assertNoDependencies(act)
-    Seq(act.dependsOn(activities:_*))
-  }
+  def andThen(act: PipelineActivity): Seq[PipelineActivity] = Seq(act.dependsOn(activities:_*))
 
   def :~>(act: PipelineActivity): Seq[PipelineActivity] = this.andThen(act)
 
@@ -27,10 +16,7 @@ class WorkflowDSL(activities: Seq[PipelineActivity]) {
 
   def <~:(act: PipelineActivity): Seq[PipelineActivity] = this.priorTo_:(act)
 
-  def andThen(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = {
-    assertNoDependencies(acts:_*)
-    for (act <- acts) yield act.dependsOn(activities:_*)
-  }
+  def andThen(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = acts.map(_.dependsOn(activities:_*))
 
   def :~>(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.andThen(acts)
 
@@ -45,7 +31,6 @@ class WorkflowDSL(activities: Seq[PipelineActivity]) {
   def and(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = activities ++ acts
 
   def +(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.and(acts)
-
 
 }
 
