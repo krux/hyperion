@@ -13,7 +13,7 @@ trait PipelineActivity extends PipelineObject {
   def groupedBy(client: String): PipelineActivity
   def named(name: String): PipelineActivity
 
-  def dependsOn(activities: PipelineActivity*): PipelineActivity
+  private[hyperion] def dependsOn(activities: PipelineActivity*): PipelineActivity
   def dependsOn: Seq[PipelineActivity]
   def whenMet(conditions: Precondition*): PipelineActivity
 
