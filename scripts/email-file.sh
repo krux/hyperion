@@ -1,49 +1,19 @@
 #! /usr/bin/env bash
 
-usage() {
-  echo "usage: email-file.sh FILENAME FROM SUBJECT BODY TO CC?"
-  exit 3
-}
-
-FILENAME="$1"
-FROM="$2"
-SUBJECT="$3"
-BODY="$4"
-TO="$5"
+USAGE="usage: email-file.sh FILENAME FROM SUBJECT BODY TO CC?"
+INSTALL_MAILER=${INSTALL_MAILER:-sudo yum install -y mailx}
+MAILER="${MAILER:-mail}"
+FILENAME="${1?$USAGE}"
+FROM="${2?$USAGE}"
+SUBJECT="${3?$USAGE}"
+BODY="${4?$USAGE}"
+TO="${5?$USAGE}"
 CC="$6"
 
-if [ -z "$FILENAME" ]; then
-  echo "ERROR: FILENAME not specified"
-  usage
-fi
+: ${INPUT1_STAGING_DIR?$USAGE}
 
-if [ -z "$FROM" ]; then
-  echo "ERROR: FROM not specified"
-  usage
-fi
-
-if [ -z "$SUBJECT" ]; then
-  echo "ERROR: SUBJECT not specified"
-  usage
-fi
-
-if [ -z "$BODY" ]; then
-  echo "ERROR: BODY not specified"
-  usage
-fi
-
-if [ -z "$TO" ]; then
-  echo "ERROR: TO not specified"
-  usage
-fi
-
-if [ -n "$CC" ]; then
-  CC="-c $CC"
-fi
-
-if [ -z "${INPUT1_STAGING_DIR}" ]; then
-  echo "ERROR: INPUT1_STAGING_DIR must be set"
-  usage
+if [ -n "${CC}" ]; then
+  CC="-c ${CC}"
 fi
 
 set -xe
@@ -54,7 +24,7 @@ n=0
 
 for dir in ${INPUT1_STAGING_DIR} ${INPUT2_STAGING_DIR} ${INPUT3_STAGING_DIR} ${INPUT4_STAGING_DIR} ${INPUT5_STAGING_DIR} ${INPUT6_STAGING_DIR} ${INPUT7_STAGING_DIR} ${INPUT8_STAGING_DIR} ${INPUT9_STAGING_DIR} ${INPUT10_STAGING_DIR}; do
   # Decompress the files if required
-  find ${dir} -name *.gz | xargs gunzip
+  find ${dir} -name \*.gz | xargs gunzip
 
   # Figure out what this file should be called
   THISFILE="${BASENAME}"
@@ -63,19 +33,19 @@ for dir in ${INPUT1_STAGING_DIR} ${INPUT2_STAGING_DIR} ${INPUT3_STAGING_DIR} ${I
   fi
 
   # Merge the files
-  cat ${dir}/* > ${THISFILE}
+  cat ${dir}/* > "${THISFILE}"
 
   # Check whether the output should be compressed
   if [[ ${FILENAME} == *.gz ]]; then
     gzip ${THISFILE}
-    ATTACHMENTS="${ATTACHMENTS} -a ${THISFILE}.gz"
+    ATTACHMENTS="${ATTACHMENTS} -a '${THISFILE}.gz'"
   else
-    ATTACHMENTS="${ATTACHMENTS} -a ${THISFILE}"
+    ATTACHMENTS="${ATTACHMENTS} -a '${THISFILE}'"
   fi
 
   n=$((n+1))
 done
 
-sudo yum install -y mailx
+${INSTALL_MAILER}
 
-echo $BODY | mail -v ${ATTACHMENTS} -r $FROM -s "$SUBJECT" $CC $TO
+echo ${BODY} | ${MAILER} -v ${ATTACHMENTS} -r ${FROM} -s "$SUBJECT" ${CC} ${TO}

@@ -1,29 +1,12 @@
 #! /usr/bin/env bash
 
-usage() {
-  echo "usage: merge-files.sh OUTPUT_FILENAME HEADER?"
-  exit 3
-}
-
-if [ -z "$1" ]; then
-  echo "ERROR: output filename not specified"
-  usage
-fi
-
-if [ -z "${OUTPUT1_STAGING_DIR}" ]; then
-  echo "ERROR: OUTPUT1_STAGING_DIR must be set"
-  usage
-fi
-
-if [ -z "${INPUT1_STAGING_DIR}" ]; then
-  echo "ERROR: INPUT1_STAGING_DIR must be set"
-  usage
-fi
+USAGE="usage: merge-files.sh OUTPUT_FILENAME HEADER?"
+OUTPUT_FILENAME=${1?$USAGE}
+: ${INPUT1_STAGING_DIR?$USAGE} ${OUTPUT1_STAGING_DIR?$USAGE}
 
 set -xe
 
-# This is the file we produce
-BASENAME=$(basename $1 .gz)
+BASENAME=$(basename ${OUTPUT_FILENAME} .gz)
 MERGED_FILE="${OUTPUT1_STAGING_DIR}/${BASENAME}"
 
 # Add the header
@@ -41,7 +24,7 @@ for dir in ${INPUT1_STAGING_DIR} ${INPUT2_STAGING_DIR} ${INPUT3_STAGING_DIR} ${I
 done
 
 # Compress the output file if required
-if [[ $1 == *.gz ]]; then
+if [[ ${OUTPUT_FILENAME} == *.gz ]]; then
   gzip ${MERGED_FILE}
   MERGED_FILE="${MERGED_FILE}.gz"
 fi

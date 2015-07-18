@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-function setUp() {
+function cleanUp() {
   rm -rf inputs outputs
+}
+
+function setUp() {
+  cleanUp
   mkdir -p inputs/{1,2,3,4,5} outputs/{1,2}
   echo "1,2" | tee inputs/{1,2,3,4}/part-0000{1,2,3} > /dev/null
   gzip inputs/{1,2}/part-*
@@ -15,16 +19,17 @@ function fail() {
   exit 3
 }
 
+rm -rf test-logs
 mkdir -p test-logs
 
 setUp "1. No arguments"
 ./merge-files.sh > test-logs/1.out 2> test-logs/1.err
-[ $? -ne 3 ] && fail
+[ $? -ne 1 ] && fail
 echo "SUCCESS"
 
 setUp "2. No output directory"
 INPUT1_STAGING_DIR=inputs/5 ./merge-files.sh foo.tsv > test-logs/2.out 2> test-logs/2.err
-[ $? -ne 3 ] && fail
+[ $? -ne 1 ] && fail
 echo "SUCCESS"
 
 setUp "3. No input files"
@@ -121,3 +126,5 @@ INPUT1_STAGING_DIR=inputs/3 INPUT2_STAGING_DIR=inputs/4 OUTPUT1_STAGING_DIR=outp
 [ $(cat outputs/1/foo.tsv | head | grep column1,column2 | wc -l) -eq 0 ] && fail
 [ $(cat outputs/2/foo.tsv | head | grep column1,column2 | wc -l) -eq 0 ] && fail
 echo "SUCCESS"
+
+cleanUp
