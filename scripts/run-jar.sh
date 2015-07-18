@@ -9,7 +9,7 @@ set -x
 shift 1
 
 # Download the jar if it doesn't exist locally
-if [ -n ${LOCAL_JAR} ]; then
+if [ ! -f ${LOCAL_JAR} ]; then
   echo "Downloading ${REMOTE_JAR} to ${LOCAL_JAR}"
   aws s3 cp ${REMOTE_JAR} ${LOCAL_JAR}
 fi
