@@ -1,15 +1,22 @@
 #! /usr/bin/env bash
 
-REMOTE_JAR="$1"
-LOCAL_JAR=$(basename $REMOTE_JAR)
+REMOTE_JAR="${1?$0 JAR_LOCATION}"
+LOCAL_JAR=$(basename ${REMOTE_JAR})
 
+set -x
+
+# Remove the jar filename from the arguments
 shift 1
 
-echo "Downloading $REMOTE_JAR -> $LOCAL_JAR"
-[ -f "$LOCAL_JAR" ] || aws s3 cp $REMOTE_JAR $LOCAL_JAR
-[ -f "$LOCAL_JAR" ] || exit 3
+# Download the jar if it doesn't exist locally
+if [ -n ${LOCAL_JAR} ]; then
+  echo "Downloading ${REMOTE_JAR} to ${LOCAL_JAR}"
+  aws s3 cp ${REMOTE_JAR} ${LOCAL_JAR}
+fi
 
-echo "Running jar"
-echo java -cp $LOCAL_JAR $@ > runner.sh
-sh runner.sh
+# Ensure the local jar actually exists
+[ -f ${LOCAL_JAR} ] || exit 3
 
+# Run the jar itself.
+echo "Running jar ${LOCAL_JAR} $@"
+exec java -cp ${LOCAL_JAR} $@
