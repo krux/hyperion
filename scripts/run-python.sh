@@ -89,7 +89,7 @@ if [ -f ${REQUIREMENTS} ]; then
   echo "Setting up virtual environment"
   sudo easy_install virtualenv
 
-  virtualenv -v .
+  virtualenv -v .ENV
 
   source bin/activate
 
