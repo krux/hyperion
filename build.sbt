@@ -88,7 +88,8 @@ lazy val commonSettings = Seq(
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(name := "hyperion").
-  dependsOn(core)
+  dependsOn(core, activities).
+  aggregate(core, activities)
 
 lazy val core = (project in file("core")).
   settings(commonSettings: _*).
@@ -104,4 +105,11 @@ lazy val core = (project in file("core")).
       scalatestArtifact
     )
   )
+
+lazy val activities = (project in file("activities")).
+  settings(commonSettings: _*).
+  settings(
+    name := "hyperion-activities"
+  ).
+  dependsOn(core)
 
