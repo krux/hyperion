@@ -10,7 +10,7 @@ val scalatestArtifact       = "org.scalatest"          %% "scalatest"           
 
 import SonatypeKeys._
 
-val hyperionVersion = "1.18.0"
+val hyperionVersion = "2.0.0"
 
 // Import default settings. This changes `publishTo` settings to use the Sonatype repository and add several commands for publishing.
 sonatypeSettings
@@ -44,6 +44,11 @@ pomExtra := (
      <name>Kexin Xie</name>
      <url>http://github.com/realstraw</url>
    </developer>
+   <developer>
+     <id>sethyates</id>
+     <name>Seth Yates</name>
+     <url>http://github.com/sethyates</url>
+   </developer>
 </developers>
 )
 
@@ -58,11 +63,18 @@ site.includeScaladoc()
 
 lazy val commonSettings = Seq(
   organization := "com.krux",
-  scalacOptions ++= Seq("-deprecation", "-feature", "-Xlint", "-Xfatal-warnings"),
   version := hyperionVersion,
   scalaVersion := "2.11.6",
-  crossScalaVersions := Seq("2.10.4", "2.11.6"),
-  libraryDependencies += scalatestArtifact,
+  crossScalaVersions := Seq(
+    "2.10.4",
+    "2.11.6"
+  ),
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-feature",
+    "-Xlint",
+    "-Xfatal-warnings"
+  ),
   scalacOptions in (Compile, doc) <++= baseDirectory.map { (bd: File) =>
     Seq(
       "-sourcepath",
@@ -75,14 +87,21 @@ lazy val commonSettings = Seq(
 
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
+  settings(name := "hyperion").
+  dependsOn(core)
+
+lazy val core = (project in file("core")).
+  settings(commonSettings: _*).
   settings(
-    name := "hyperion",
+    name := "hyperion-core",
     libraryDependencies ++= Seq(
       awsDatapipelineArtifact,
       awsStsArtifact,
       nscalaTimeArtifact,
       json4sJacksonArtifact,
       scoptArtifact,
-      configArtifact
+      configArtifact,
+      scalatestArtifact
     )
   )
+
