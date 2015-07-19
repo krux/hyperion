@@ -25,8 +25,6 @@ case class Ec2Resource private (
   useOnDemandOnLastAttempt: Option[Boolean],
   actionOnResourceFailure: Option[ActionOnResourceFailure],
   actionOnTaskFailure: Option[ActionOnTaskFailure]
-)(
-  implicit val hc: HyperionContext
 ) extends ResourceObject {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -57,10 +55,7 @@ case class Ec2Resource private (
     imageId = imageId,
     instanceType = Option(instanceType),
     region = region,
-    securityGroups = securityGroups match {
-      case Seq() => Option(Seq(hc.ec2SecurityGroup))
-      case groups => Option(groups)
-    },
+    securityGroups = Option(securityGroups),
     securityGroupIds = securityGroupIds,
     associatePublicIpAddress = Option(associatePublicIpAddress.toString),
     keyPair = keyPair,
@@ -86,7 +81,7 @@ object Ec2Resource {
     region = Option(hc.ec2Region),
     imageId = Option(hc.ec2ImageId),
     keyPair = hc.ec2KeyPair,
-    securityGroups = Seq(),
+    securityGroups = Seq(hc.ec2SecurityGroup),
     securityGroupIds = Seq(),
     associatePublicIpAddress = false,
     subnetId = hc.ec2SubnetId,

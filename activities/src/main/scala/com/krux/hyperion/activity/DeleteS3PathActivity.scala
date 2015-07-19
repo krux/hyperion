@@ -21,8 +21,6 @@ case class DeleteS3PathActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm]
-)(
-  implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -61,7 +59,7 @@ case class DeleteS3PathActivity private (
 }
 
 object DeleteS3PathActivity extends RunnableObject {
-  def apply(s3Path: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply(s3Path: String, runsOn: Ec2Resource) =
     new DeleteS3PathActivity(
       id = PipelineObjectId("DeleteS3PathActivity"),
       s3Path = s3Path,

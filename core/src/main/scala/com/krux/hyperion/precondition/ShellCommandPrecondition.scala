@@ -22,9 +22,7 @@ case class ShellCommandPrecondition private (
   stdout: Option[String],
   stderr: Option[String],
   preconditionTimeout: Option[String],
-  role: Option[String]
-)(
-  implicit val hc: HyperionContext
+  role: String
 ) extends Precondition {
 
   lazy val serialize = AdpShellCommandPrecondition(
@@ -36,7 +34,7 @@ case class ShellCommandPrecondition private (
     stdout = stdout,
     stderr = stderr,
     preconditionTimeout = preconditionTimeout,
-    role = role.getOrElse(hc.resourceRole)
+    role = role
   )
 
 }
@@ -51,6 +49,6 @@ object ShellCommandPrecondition {
       stdout = None,
       stderr = None,
       preconditionTimeout = None,
-      role = None
+      role = hc.resourceRole
     )
 }

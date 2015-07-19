@@ -13,9 +13,7 @@ case class S3KeyExistsPrecondition private (
   id: PipelineObjectId,
   s3Key: String,
   preconditionTimeout: Option[String],
-  role: Option[String]
-)(
-  implicit val hc: HyperionContext
+  role: String
 ) extends Precondition {
 
   lazy val serialize = AdpS3KeyExistsPrecondition(
@@ -23,7 +21,7 @@ case class S3KeyExistsPrecondition private (
     name = id.toOption,
     s3Key = s3Key,
     preconditionTimeout = preconditionTimeout,
-    role = role.getOrElse(hc.resourceRole)
+    role = role
   )
 
 }
@@ -34,6 +32,6 @@ object S3KeyExistsPrecondition {
       id = PipelineObjectId("S3KeyExistsPrecondition"),
       s3Key = s3Key,
       preconditionTimeout = None,
-      role = None
+      role = hc.resourceRole
     )
 }
