@@ -13,9 +13,7 @@ case class S3PrefixNotEmptyPrecondition private (
   id: PipelineObjectId,
   s3Prefix: String,
   preconditionTimeout: Option[String],
-  role: Option[String]
-)(
-  implicit val hc: HyperionContext
+  role: String
 ) extends Precondition {
 
   lazy val serialize = AdpS3PrefixNotEmptyPrecondition(
@@ -23,7 +21,7 @@ case class S3PrefixNotEmptyPrecondition private (
     name = id.toOption,
     s3Prefix = s3Prefix,
     preconditionTimeout = preconditionTimeout,
-    role = role.getOrElse(hc.resourceRole)
+    role = role
   )
 
 }
@@ -34,6 +32,6 @@ object S3PrefixNotEmptyPrecondition {
       id = PipelineObjectId("S3PrefixNotEmptyPrecondition"),
       s3Prefix = s3Prefix,
       preconditionTimeout = None,
-      role = None
+      role = hc.resourceRole
     )
 }

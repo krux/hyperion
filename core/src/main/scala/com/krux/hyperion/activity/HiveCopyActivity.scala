@@ -25,8 +25,6 @@ case class HiveCopyActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm]
-)(
-  implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -63,7 +61,7 @@ case class HiveCopyActivity private (
 }
 
 object HiveCopyActivity extends RunnableObject {
-  def apply(runsOn: EmrCluster)(implicit hc: HyperionContext) =
+  def apply(runsOn: EmrCluster) =
     new HiveCopyActivity(
       id = PipelineObjectId("HiveCopyActivity"),
       runsOn = runsOn,

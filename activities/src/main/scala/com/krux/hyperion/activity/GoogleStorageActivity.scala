@@ -16,6 +16,7 @@ trait GoogleStorageActivity extends PipelineActivity
 case class GoogleStorageDownloadActivity private (
   id: PipelineObjectId,
   runsOn: Ec2Resource,
+  scriptUri: String,
   input: String,
   output: Option[S3DataNode],
   botoConfigUrl: String,
@@ -24,8 +25,6 @@ case class GoogleStorageDownloadActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm]
-)(
-  implicit val hc: HyperionContext
 ) extends GoogleStorageActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -47,7 +46,7 @@ case class GoogleStorageDownloadActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = Option(s"${hc.scriptUri}gsutil/gsutil_download.sh"),
+    scriptUri = Option(scriptUri),
     scriptArgument = Option(Seq(botoConfigUrl, input)),
     input = None,
     output = output.map(out => Seq(out.ref)),
@@ -69,6 +68,7 @@ object GoogleStorageDownloadActivity {
     new GoogleStorageDownloadActivity(
       id = PipelineObjectId("GoogleStorageDownloadActivity"),
       runsOn = runsOn,
+      scriptUri = s"${hc.scriptUri}gsutil/gsutil_download.sh",
       input = "",
       output = None,
       botoConfigUrl = "",
@@ -86,6 +86,7 @@ object GoogleStorageDownloadActivity {
 case class GoogleStorageUploadActivity private (
   id: PipelineObjectId,
   runsOn: Ec2Resource,
+  scriptUri: String,
   input: Option[S3DataNode],
   output: String,
   botoConfigUrl: String,
@@ -94,8 +95,6 @@ case class GoogleStorageUploadActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm]
-)(
-  implicit val hc: HyperionContext
 ) extends GoogleStorageActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -117,7 +116,7 @@ case class GoogleStorageUploadActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = Option(s"${hc.scriptUri}gsutil/gsutil_upload.sh"),
+    scriptUri = Option(scriptUri),
     scriptArgument = Option(Seq(botoConfigUrl, output)),
     input = input.map(in => Seq(in.ref)),
     output = None,
@@ -139,6 +138,7 @@ object GoogleStorageUploadActivity extends RunnableObject {
     new GoogleStorageUploadActivity(
       id = PipelineObjectId("GoogleStorageUploadActivity"),
       runsOn = runsOn,
+      scriptUri = s"${hc.scriptUri}gsutil/gsutil_upload.sh",
       input = None,
       output = "",
       botoConfigUrl = "",

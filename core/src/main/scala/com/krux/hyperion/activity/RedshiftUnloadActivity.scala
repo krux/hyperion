@@ -75,7 +75,7 @@ case class RedshiftUnloadActivity private (
 object RedshiftUnloadActivity extends RunnableObject {
 
   def apply(database: RedshiftDatabase, script: String, s3Path: String,
-    accessKeyId: String, accessKeySecret: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+    accessKeyId: String, accessKeySecret: String, runsOn: Ec2Resource) =
     new RedshiftUnloadActivity(
       id = PipelineObjectId("RedshiftUnloadActivity"),
       database = database,

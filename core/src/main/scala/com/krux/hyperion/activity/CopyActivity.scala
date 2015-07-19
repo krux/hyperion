@@ -32,8 +32,6 @@ case class CopyActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm]
-)(
-  implicit val hc: HyperionContext
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -69,7 +67,7 @@ case class CopyActivity private (
 
 object CopyActivity extends RunnableObject {
 
-  def apply(input: Copyable, output: Copyable, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+  def apply(input: Copyable, output: Copyable, runsOn: Ec2Resource) =
     new CopyActivity(
       id = PipelineObjectId("CopyActivity"),
       input = input,

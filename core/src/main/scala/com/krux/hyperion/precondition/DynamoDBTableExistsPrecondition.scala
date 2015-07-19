@@ -13,16 +13,14 @@ case class DynamoDBTableExistsPrecondition private (
   id: PipelineObjectId,
   tableName: String,
   preconditionTimeout: Option[String],
-  role: Option[String]
-)(
-  implicit val hc: HyperionContext
+  role: String
 ) extends Precondition {
 
   lazy val serialize = AdpDynamoDBTableExistsPrecondition(
     id = id,
     name = id.toOption,
     preconditionTimeout = preconditionTimeout,
-    role = role.getOrElse(hc.resourceRole),
+    role = role,
     tableName = tableName
   )
 
@@ -34,6 +32,6 @@ object DynamoDBTableExistsPrecondition {
       id = PipelineObjectId("DynamoDBTableExistsPrecondition"),
       tableName = tableName,
       preconditionTimeout = None,
-      role = None
+      role = hc.resourceRole
     )
 }

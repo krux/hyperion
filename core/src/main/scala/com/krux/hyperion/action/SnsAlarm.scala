@@ -13,8 +13,6 @@ case class SnsAlarm private (
   message: String,
   topicArn: Option[String],
   role: Option[String]
-)(
-  implicit val hc: HyperionContext
 ) extends PipelineObject {
 
   def withSubject(subject: String) = this.copy(subject = subject)

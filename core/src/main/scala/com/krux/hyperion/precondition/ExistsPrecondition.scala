@@ -10,19 +10,17 @@ import com.krux.hyperion.common.PipelineObjectId
 case class ExistsPrecondition private (
   id: PipelineObjectId,
   preconditionTimeout: Option[String],
-  role: Option[String]
-)(
-  implicit val hc: HyperionContext
+  role: String
 ) extends Precondition {
 
   def withPreconditionTimeOut(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
-  def withRole(role: String) = this.copy(role = Option(role))
+  def withRole(role: String) = this.copy(role = role)
 
   lazy val serialize = AdpExistsPrecondition(
     id = id,
     name = id.toOption,
     preconditionTimeout = preconditionTimeout,
-    role = role.getOrElse(hc.resourceRole)
+    role = role
   )
 
 }
@@ -32,6 +30,6 @@ object ExistsPrecondition {
     new ExistsPrecondition(
       id = PipelineObjectId("ExistsPrecondition"),
       preconditionTimeout = None,
-      role = None
+      role = hc.resourceRole
     )
 }
