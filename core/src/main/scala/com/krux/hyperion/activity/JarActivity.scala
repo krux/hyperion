@@ -82,7 +82,7 @@ object JarActivity extends RunnableObject {
       id = PipelineObjectId("JarActivity"),
       runsOn = runsOn,
       jar = jar,
-      scriptUri = Option(s"${hc.scriptUri}run-jar.sh"),
+      scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),
       mainClass = None,
       arguments = Seq(),
       input = Seq(),

@@ -80,7 +80,7 @@ object EmailFileActivity {
     new EmailFileActivity(
       id = PipelineObjectId("EmailFileActivity"),
       runsOn = runsOn,
-      scriptUri = Option(s"${hc.scriptUri}email-file.sh"),
+      scriptUri = Option(s"${hc.scriptUri}activities/email-file.sh"),
       filename = None,
       from = None,
       to = None,

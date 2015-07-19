@@ -68,7 +68,7 @@ object GoogleStorageDownloadActivity {
     new GoogleStorageDownloadActivity(
       id = PipelineObjectId("GoogleStorageDownloadActivity"),
       runsOn = runsOn,
-      scriptUri = s"${hc.scriptUri}gsutil/gsutil_download.sh",
+      scriptUri = s"${hc.scriptUri}activities/gsutil-download.sh",
       input = "",
       output = None,
       botoConfigUrl = "",
@@ -138,7 +138,7 @@ object GoogleStorageUploadActivity extends RunnableObject {
     new GoogleStorageUploadActivity(
       id = PipelineObjectId("GoogleStorageUploadActivity"),
       runsOn = runsOn,
-      scriptUri = s"${hc.scriptUri}gsutil/gsutil_upload.sh",
+      scriptUri = s"${hc.scriptUri}activities/gsutil-upload.sh",
       input = None,
       output = "",
       botoConfigUrl = "",

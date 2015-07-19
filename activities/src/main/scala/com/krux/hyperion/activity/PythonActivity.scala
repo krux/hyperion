@@ -94,7 +94,7 @@ object PythonActivity extends RunnableObject {
     new PythonActivity(
       id = PipelineObjectId("PythonActivity"),
       runsOn = runsOn,
-      scriptUri = Option(s"${hc.scriptUri}run-python.sh"),
+      scriptUri = Option(s"${hc.scriptUri}activities/run-python.sh"),
       pythonScriptUri = None,
       pythonScript = None,
       pythonModule = None,
