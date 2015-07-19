@@ -71,7 +71,7 @@ object MergeFilesActivity {
     new MergeFilesActivity(
       id = PipelineObjectId("MergeFilesActivity"),
       runsOn = runsOn,
-      scriptUri = Option(s"${hc.scriptUri}merge-files.sh"),
+      scriptUri = Option(s"${hc.scriptUri}activities/merge-files.sh"),
       filename = filename,
       header = None,
       input = Seq(),
