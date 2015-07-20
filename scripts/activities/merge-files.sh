@@ -24,9 +24,12 @@ set -xe
 
 BASENAME=$(basename ${OUTPUT_FILENAME} .gz)
 MERGED_FILE="${OUTPUT1_STAGING_DIR}/${BASENAME}"
-WORKING_DIR=$(mktemp -d)
+if [ -z "${WORKING_DIR}" ]; then
+  WORKING_DIR=$(mktemp -d)
+  add_on_exit rm -rf ${WORKING_DIR}
+fi
+
 cd ${WORKING_DIR}
-add_on_exit rm -rf ${WORKING_DIR}
 
 # Add the header
 if [ -n "$2" ]; then
