@@ -16,6 +16,9 @@ case class DynamoDBDataExistsPrecondition private (
   role: String
 ) extends Precondition {
 
+  def withPreconditionTimeOut(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def withRole(role: String) = this.copy(role = role)
+
   lazy val serialize = AdpDynamoDBDataExistsPrecondition(
     id = id,
     name = id.toOption,
@@ -32,6 +35,6 @@ object DynamoDBDataExistsPrecondition {
       id = PipelineObjectId("DynamoDBDataExistsPrecondition"),
       tableName = tableName,
       preconditionTimeout = None,
-      role = hc.resourceRole
+      role = hc.role
     )
 }

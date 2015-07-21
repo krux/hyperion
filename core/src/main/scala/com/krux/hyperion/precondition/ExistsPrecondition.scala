@@ -30,6 +30,6 @@ object ExistsPrecondition {
     new ExistsPrecondition(
       id = PipelineObjectId("ExistsPrecondition"),
       preconditionTimeout = None,
-      role = hc.resourceRole
+      role = hc.role
     )
 }

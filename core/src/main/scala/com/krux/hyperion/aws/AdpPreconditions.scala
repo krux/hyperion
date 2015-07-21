@@ -114,7 +114,7 @@ case class AdpShellCommandPrecondition(
   name: Option[String],
   preconditionTimeout: Option[String],
   role: String,
-  command: String,
+  command: Option[String],
   scriptArgument: Option[Seq[String]],
   scriptUri: Option[String],
   stdout: Option[String],
