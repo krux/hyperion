@@ -42,7 +42,7 @@ CURRENT_DIR=$(pwd)
 for dir in ${INPUT1_STAGING_DIR} ${INPUT2_STAGING_DIR} ${INPUT3_STAGING_DIR} ${INPUT4_STAGING_DIR} ${INPUT5_STAGING_DIR} ${INPUT6_STAGING_DIR} ${INPUT7_STAGING_DIR} ${INPUT8_STAGING_DIR} ${INPUT9_STAGING_DIR} ${INPUT10_STAGING_DIR}; do
   # Create a temporary working dir for this file
   if [ -z "${WORKING_DIR}" ]; then
-    WORKING_DIR=$(mktemp)
+    WORKING_DIR=$(mktemp -d)
     add_on_exit rm -rf ${WORKING_DIR}
   fi
   cd ${WORKING_DIR}
