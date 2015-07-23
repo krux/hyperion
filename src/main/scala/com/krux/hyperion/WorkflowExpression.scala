@@ -8,7 +8,6 @@ sealed abstract class WorkflowExpression {
   def toPipelineObjects: Iterable[PipelineActivity] = {
 
     def toPipelineObjectsRec(exp: WorkflowExpression): Set[PipelineActivity] = {
-
       exp match {
         case WorkflowActivityExpression(act) => Set(act)
         case WorkflowArrowExpression(left, right) =>
@@ -24,7 +23,6 @@ sealed abstract class WorkflowExpression {
           val rightDeps = toPipelineObjectsRec(right)
           leftDeps ++ rightDeps
       }
-
     }
 
     toPipelineObjectsRec(this)
