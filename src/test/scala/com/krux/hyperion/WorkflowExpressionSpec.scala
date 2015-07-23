@@ -26,9 +26,6 @@ class WorkflowExpressionSpec extends WordSpec {
       val dependencies = (act1 + act2) :~> ((act3 :~> act4) + act5) :~> act6
 
       val activities = dependencies.toPipelineObjects
-      activities.foreach { a =>
-        println(a.id.toString.take(4) + " dependsOn: " + a.dependsOn.map(_.id.toString.take(4)))
-      }
 
       activities.foreach { act =>
         act.id.toString.take(4) match {
@@ -69,7 +66,7 @@ class WorkflowExpressionSpec extends WordSpec {
       val act5 = ShellCommandActivity(ec2).withCommand("run act5").named("act5")
       val act6 = ShellCommandActivity(ec2).withCommand("run act6").named("act6")
 
-      // val dependencies = (act1 + act2) :~> ((act3 :~> act4) + act5) :~> act6
+      // equivalent to val dependencies = (act1 + act2) :~> ((act3 :~> act4) + act5) :~> act6
       val dependencies =
         (act1 :~> act3) +
         (act2 :~> act3) +
