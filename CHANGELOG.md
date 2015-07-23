@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.19.0
+### Fixed
+- #91 - workflow dsl broken when the right hand side of andThen have dependencies. Note that
+  `act1 + act2` is no longer the same as `Seq(act1, act2)` any more.
+
 ## 1.18.0 - 2015-07-19
 ## Added
 - #25 - Added a run-python runner script and PythonActivity
