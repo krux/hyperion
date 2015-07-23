@@ -26,6 +26,9 @@ class WorkflowExpressionSpec extends WordSpec {
       val dependencies = (act1 + act2) :~> ((act3 :~> act4) + act5) :~> act6
 
       val activities = dependencies.toPipelineObjects
+      activities.foreach { a =>
+        println(a.id.toString.take(4) + " dependsOn: " + a.dependsOn.map(_.id.toString.take(4)))
+      }
 
       activities.foreach { act =>
         act.id.toString.take(4) match {
@@ -57,6 +60,58 @@ class WorkflowExpressionSpec extends WordSpec {
 
     }
 
+    "produce correct dependencies with duplicates" in {
+
+      val act1 = ShellCommandActivity(ec2).withCommand("run act1").named("act1")
+      val act2 = ShellCommandActivity(ec2).withCommand("run act2").named("act2")
+      val act3 = ShellCommandActivity(ec2).withCommand("run act3").named("act3")
+      val act4 = ShellCommandActivity(ec2).withCommand("run act4").named("act4")
+      val act5 = ShellCommandActivity(ec2).withCommand("run act5").named("act5")
+      val act6 = ShellCommandActivity(ec2).withCommand("run act6").named("act6")
+
+      // val dependencies = (act1 + act2) :~> ((act3 :~> act4) + act5) :~> act6
+      val dependencies =
+        (act1 :~> act3) +
+        (act2 :~> act3) +
+        (act3 :~> act4) +
+        (act2 :~> act5) +
+        (act1 :~> act5) +
+        (act4 :~> act6) +
+        (act5 :~> act6)
+
+      val activities = dependencies.toPipelineObjects
+
+      activities.foreach { act =>
+        act.id.toString.take(4) match {
+          case "act1" =>
+            assert(act.dependsOn.size === 0)
+          case "act2" =>
+            assert(act.dependsOn.size === 0)
+          case "act3" =>
+            assert(act.dependsOn.size === 2)
+            val dependeeIds = act.dependsOn.map(_.id.toString.take(4)).toSet
+            assert(dependeeIds === Set("act1", "act2"))
+          case "act4" =>
+            assert(act.dependsOn.size === 1)
+            val dependeeIds = act.dependsOn.map(_.id.toString.take(4)).toSet
+            assert(dependeeIds === Set("act3"))
+          case "act5" =>
+            assert(act.dependsOn.size === 2)
+            val dependeeIds = act.dependsOn.map(_.id.toString.take(4)).toSet
+            assert(dependeeIds === Set("act1", "act2"))
+          case "act6" =>
+            assert(act.dependsOn.size === 2)
+            val dependeeIds = act.dependsOn.map(_.id.toString.take(4)).toSet
+            assert(dependeeIds === Set("act5", "act4"))
+          case _ =>
+            // this should never get executed
+            assert(true === false)
+        }
+      }
+
+    }
+
   }
+
 
 }

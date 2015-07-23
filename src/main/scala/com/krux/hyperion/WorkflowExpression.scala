@@ -14,14 +14,15 @@ sealed abstract class WorkflowExpression {
           val leftDeps = toPipelineObjectsRec(left)
           val rightDeps = toPipelineObjectsRec(right)
           // rightDeps now should depend on leftDeps
-          rightDeps.map { dependent =>
-            val dependees = dependent.dependsOn
-            dependent.dependsOn(leftDeps.toSeq:_*)
-          } ++ leftDeps
+          rightDeps.map(_.dependsOn(leftDeps.toSeq:_*)) ++ leftDeps
         case WorkflowPlusExpression(left, right) =>
           val leftDeps = toPipelineObjectsRec(left)
           val rightDeps = toPipelineObjectsRec(right)
-          leftDeps ++ rightDeps
+          (leftDeps ++ rightDeps).groupBy(_.id)
+            .map { case (id, acts) =>
+              acts.reduceLeft((a, b) => a.dependsOn(b.dependsOn:_*))
+            }
+            .toSet
       }
     }
 

@@ -6,9 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - #91 - workflow dsl broken when the right hand side of andThen have dependencies. Note that
   `act1 + act2` is no longer the same as `Seq(act1, act2)` any more.
+### Added
+- #101 - Allow workflow DLS to have duplicated activities.
 
 ## 1.18.0 - 2015-07-19
-## Added
+### Added
 - #25 - Added a run-python runner script and PythonActivity
 - #89 - Added an activity to email input staging folders
 - #90 - Added an activity to merge input staging folders and upload to output staging folders
