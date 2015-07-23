@@ -4,9 +4,7 @@ import scopt.OptionParser
 import org.json4s.jackson.JsonMethods._
 import com.krux.hyperion.DataPipelineDef._
 
-trait HyperionCli {
-
-  def pipelineDef: DataPipelineDef
+trait HyperionCli { this: DataPipelineDef =>
 
   case class Cli(
     mode: String = "generate",
@@ -52,28 +50,39 @@ trait HyperionCli {
         )
     }
 
-    parser.parse(args, Cli()).foreach { cli =>
+    parser.parse(args, Cli()).map { cli =>
       val awsClient = new HyperionAwsClient(cli.region, cli.roleArn)
-      val awsClientForPipeline = awsClient.ForPipelineDef(pipelineDef, cli.customName)
+      val awsClientForPipeline = awsClient.ForPipelineDef(this, cli.customName)
 
       cli.mode match {
         case "generate" =>
-          println(pretty(render(pipelineDef)))
+          println(pretty(render(this)))
+          0
 
         case "create" =>
-          val pipelineId = awsClientForPipeline.createPipeline(cli.force, cli.tags)
-          if (cli.activate) pipelineId.map(awsClient.ForPipelineId).foreach(_.activatePipelineById())
+          awsClientForPipeline.createPipeline(cli.force, cli.tags) match {
+            case Some(id) if cli.activate =>
+              if (awsClient.ForPipelineId(id).activatePipelineById()) 0 else 3
+
+            case None =>
+              3
+
+            case _ =>
+              0
+          }
 
         case "delete" =>
-          awsClientForPipeline.deletePipeline()
+          if (awsClientForPipeline.deletePipeline()) 0 else 3
 
         case "activate" =>
-          awsClientForPipeline.activatePipeline()
+          if (awsClientForPipeline.activatePipeline()) 0 else 3
 
         case _ =>
           parser.showUsageAsError
+          3
       }
-    }
+    }.foreach(System.exit)
   }
 
 }
+
