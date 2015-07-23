@@ -19,4 +19,4 @@ fi
 
 # Run the jar itself.
 echo "Running jar ${LOCAL_JAR} $@"
-exec java -cp ${LOCAL_JAR} $@
+echo java -cp ${LOCAL_JAR} $@ | exec sh

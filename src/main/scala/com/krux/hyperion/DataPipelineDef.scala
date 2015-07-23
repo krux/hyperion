@@ -17,8 +17,6 @@ import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineO
  */
 trait DataPipelineDef extends HyperionCli {
 
-  def pipelineDef = this
-
   private lazy val context = new HyperionContext()
 
   implicit def hc: HyperionContext = context
