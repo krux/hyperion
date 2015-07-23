@@ -6,8 +6,9 @@ import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.dataformat.TsvDataFormat
 import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
 import com.krux.hyperion.Implicits._
-import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
 import com.krux.hyperion.resource.Ec2Resource
+import com.krux.hyperion.WorkflowDSL._
+import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
 import com.typesafe.config.ConfigFactory
 
 /**
@@ -43,13 +44,11 @@ object ExampleRedshiftLoad extends DataPipelineDef {
       .withSchema("kexin")
       .withPrimaryKeys("publisher_id", "campaign_id", "month")
 
-    Some(
-      RedshiftCopyActivity(
-        input = S3DataNode.fromPath("s3://testing/testtab/").withDataFormat(s3Format),
-        output = redshiftTable,
-        insertMode = RedshiftCopyActivity.OverwriteExisting,
-        runsOn = ec2Instance
-      )
+    RedshiftCopyActivity(
+      input = S3DataNode.fromPath("s3://testing/testtab/").withDataFormat(s3Format),
+      output = redshiftTable,
+      insertMode = RedshiftCopyActivity.OverwriteExisting,
+      runsOn = ec2Instance
     )
   }
 

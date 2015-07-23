@@ -25,7 +25,7 @@ trait DataPipelineDef extends HyperionCli {
 
   def schedule: Schedule
 
-  def workflow: Iterable[PipelineObject]
+  def workflow: WorkflowExpression
 
   def defaultObject = DefaultObject(schedule)
 
@@ -34,6 +34,7 @@ trait DataPipelineDef extends HyperionCli {
   def parameters: Iterable[Parameter] = Seq()
 
   def objects: Iterable[PipelineObject] = workflow
+    .toPipelineObjects
     .foldLeft(Map[String, PipelineObject]())(flattenPipelineObjects)
     .values
 

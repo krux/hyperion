@@ -6,40 +6,28 @@ import scala.language.implicitConversions
 /**
  * See com.krux.hyperion.examples.ExampleWorkflow for usage
  */
-class WorkflowDSL(activities: Seq[PipelineActivity]) {
+class WorkflowDSL(left: WorkflowExpression) {
 
-  def andThen(act: PipelineActivity): Seq[PipelineActivity] = Seq(act.dependsOn(activities:_*))
+  def andThen(right: WorkflowExpression): WorkflowExpression = WorkflowArrowExpression(left, right)
+  def :~>(right: WorkflowExpression): WorkflowExpression = this.andThen(right)
 
-  def :~>(act: PipelineActivity): Seq[PipelineActivity] = this.andThen(act)
+  def priorTo_:(right: WorkflowExpression): WorkflowExpression = this.andThen(right)
+  def <~:(right: WorkflowExpression): WorkflowExpression = this.priorTo_:(right)
 
-  def priorTo_:(act: PipelineActivity): Seq[PipelineActivity] = this.andThen(act)
-
-  def <~:(act: PipelineActivity): Seq[PipelineActivity] = this.priorTo_:(act)
-
-  def andThen(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = acts.map(_.dependsOn(activities:_*))
-
-  def :~>(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.andThen(acts)
-
-  def priorTo_:(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.andThen(acts)
-
-  def <~:(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.priorTo_:(acts)
-
-  def and(act: PipelineActivity): Seq[PipelineActivity] = activities :+ act
-
-  def +(act: PipelineActivity): Seq[PipelineActivity] = this.and(act)
-
-  def and(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = activities ++ acts
-
-  def +(acts: Seq[PipelineActivity]): Seq[PipelineActivity] = this.and(acts)
+  def and(right: WorkflowExpression): WorkflowExpression = WorkflowPlusExpression(left, right)
+  def +(right: WorkflowExpression): WorkflowExpression = this.and(right)
 
 }
 
 object WorkflowDSL {
 
-  implicit def activity2WorkFlowDSL(act: PipelineActivity): WorkflowDSL =
-    new WorkflowDSL(Seq(act))
+  implicit def activity2WorkflowDSL(act: PipelineActivity): WorkflowDSL =
+    new WorkflowDSL(WorkflowActivityExpression(act))
 
-  implicit def activities2WorkFlowDSL(acts: Iterable[PipelineActivity]): WorkflowDSL =
-    new WorkflowDSL(acts.toSeq)
+  implicit def activity2WorkflowExpression(act: PipelineActivity): WorkflowExpression =
+    WorkflowActivityExpression(act)
+
+  implicit def expression2WorkflowDSL(exp: WorkflowExpression): WorkflowDSL =
+    new WorkflowDSL(exp)
 
 }
