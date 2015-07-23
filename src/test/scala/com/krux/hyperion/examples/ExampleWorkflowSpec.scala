@@ -13,7 +13,6 @@ class ExampleWorkflowSpec extends WordSpec {
 
     "produce correct pipeline JSON" in {
       val pipelineJson: JValue = ExampleWorkflow
-      print(pretty(render(pipelineJson)))
       val objectsField = (pipelineJson \ "objects").children.sortBy(o => (o \ "id").toString)
 
       assert(objectsField.size === 9)  // 6 activities, 1 default, 1 schedule, 1 ec2 resource
