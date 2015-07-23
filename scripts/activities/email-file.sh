@@ -62,9 +62,9 @@ for dir in ${INPUT1_STAGING_DIR} ${INPUT2_STAGING_DIR} ${INPUT3_STAGING_DIR} ${I
   # Check whether the output should be compressed
   if [[ ${FILENAME} == *.gz ]]; then
     gzip -f ${THISFILE}
-    ATTACHMENTS="${ATTACHMENTS} -a ${THISFILE}.gz"
+    ATTACHMENTS="${ATTACHMENTS} -a ${WORKING_DIR}/${THISFILE}.gz"
   else
-    ATTACHMENTS="${ATTACHMENTS} -a ${THISFILE}"
+    ATTACHMENTS="${ATTACHMENTS} -a ${WORKING_DIR}/${THISFILE}"
   fi
 
   n=$((n+1))

@@ -3,6 +3,7 @@ val awsSdkVersion = "1.9.35"
 val nscalaTimeArtifact      = "com.github.nscala-time" %% "nscala-time"               % "1.8.0"
 val json4sJacksonArtifact   = "org.json4s"             %% "json4s-jackson"            % "3.2.10"
 val scoptArtifact           = "com.github.scopt"       %% "scopt"                     % "3.3.0"
+val jschArtifact            = "com.jcraft"             %  "jsch"                      % "0.1.53"
 val configArtifact          = "com.typesafe"           %  "config"                    % "1.2.1"
 val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % awsSdkVersion
 val awsStsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sts"          % awsSdkVersion
@@ -89,7 +90,7 @@ lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(name := "hyperion").
   dependsOn(core, activities).
-  aggregate(core, activities)
+  aggregate(core, activities, contrib)
 
 lazy val core = (project in file("core")).
   settings(commonSettings: _*).
@@ -112,4 +113,20 @@ lazy val activities = (project in file("activities")).
     name := "hyperion-activities"
   ).
   dependsOn(core)
+
+lazy val contrib = (project in file("contrib")).
+  aggregate(contribActivity)
+
+lazy val contribActivity = (project in file("contrib/activity")).
+  aggregate(contribActivitySftp)
+
+lazy val contribActivitySftp = (project in file("contrib/activity/sftp")).
+  settings(commonSettings: _*).
+  settings(
+    name := "sftp-activity",
+    libraryDependencies ++= Seq(
+      scoptArtifact,
+      jschArtifact
+    )
+  )
 
