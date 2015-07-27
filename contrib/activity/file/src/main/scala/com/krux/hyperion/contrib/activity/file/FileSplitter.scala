@@ -10,7 +10,7 @@ case class FileSplitter(
   header: Option[String],
   numberOfLinesPerFile: Long = Long.MaxValue,
   numberOfBytesPerFile: Long = Long.MaxValue,
-  bufferSize: Int,
+  bufferSize: Long,
   compressed: Boolean,
   temporaryDirectory: File
 ) {
