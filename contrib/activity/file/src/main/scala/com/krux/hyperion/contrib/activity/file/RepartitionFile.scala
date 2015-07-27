@@ -23,26 +23,25 @@ object RepartitionFile {
       }
     }.getOrElse(options)
 
-  def applyDefaultFileChecks(options: Options): Options =
-    options.copy(inputs = options.inputs.flatMap { k =>
-      if (k.getName == "-") {
-        Seq(k)
-      } else if (k.isDirectory) {
-        k.listFiles(new FilenameFilter {
-          val matcher = options.pattern.map(pattern => FileSystems.getDefault.getPathMatcher(s"glob:$pattern"))
+  def applyDefaultFileChecks(options: Options): Options = options.copy(inputs = options.inputs.flatMap { k =>
+    if (k.getName == "-") {
+      Seq(k)
+    } else if (k.isDirectory) {
+      k.listFiles(new FilenameFilter {
+        val matcher = options.pattern.map(pattern => FileSystems.getDefault.getPathMatcher(s"glob:$pattern"))
 
-          override def accept(dir: File, name: String): Boolean = matcher.forall(_.matches(Paths.get(name)))
-        }).toSeq
-      } else if (k.isFile) {
-        if (k.canRead) {
-          Seq(k.getAbsoluteFile)
-        } else {
-          Seq() // TODO - throw exception
-        }
+        override def accept(dir: File, name: String): Boolean = matcher.forall(_.matches(Paths.get(name)))
+      }).toSeq
+    } else if (k.isFile) {
+      if (k.canRead) {
+        Seq(k.getAbsoluteFile)
       } else {
-        Seq()
+        Seq() // TODO - throw exception
       }
-    })
+    } else {
+      Seq()
+    }
+  })
 
   def applyDefaultNumberOfFiles(options: Options): Options =
     if (options.numberOfFiles.isEmpty && options.numberOfLinesPerFile.isEmpty && options.numberOfBytesPerFile.isEmpty) {
@@ -54,7 +53,7 @@ object RepartitionFile {
   def applyDefaultDirectory(options: Options): Options =
     if (options.outputDirectory.isEmpty) {
       if (System.getenv().containsKey("OUTPUT1_STAGING_DIR")) {
-        options.copy(outputDirectory = options.outputDirectory ++ (0 until 11).flatMap(n => stringToOptionalFile(System.getenv(s"OUTPUT${n}_STAGING_DIR"))))
+        options.copy(outputDirectory = options.outputDirectory ++ (1 until 11).flatMap(n => stringToOptionalFile(System.getenv(s"OUTPUT${n}_STAGING_DIR"))))
       } else {
         options.copy(outputDirectory = options.outputDirectory ++ stringToOptionalFile(System.getProperty("user.dir")))
       }
@@ -65,7 +64,7 @@ object RepartitionFile {
   def applyDefaultInputs(options: Options): Options =
     if (options.inputs.isEmpty) {
       if (System.getenv().containsKey("INPUT1_STAGING_DIR")) {
-        options.copy(inputs = options.inputs ++ (0 until 11).flatMap(n => stringToOptionalFile(s"INPUT${n}_STAGING_DIR")))
+        options.copy(inputs = options.inputs ++ (1 until 11).flatMap(n => stringToOptionalFile(System.getenv(s"INPUT${n}_STAGING_DIR"))))
       } else {
         options
       }
@@ -83,13 +82,18 @@ object RepartitionFile {
       applyDefaultNumberOfFilesCalculation _
     ).foldLeft(options) { case (acc, handler) => handler(acc) }
 
-  def checkOptions(options: Options): Option[Options] =
-    if ((options.numberOfFiles.isEmpty && options.numberOfLinesPerFile.isEmpty && options.numberOfBytesPerFile.isEmpty) ||
-      options.inputs.isEmpty || options.outputDirectory.isEmpty) {
-      None
-    } else {
-      Option(options)
-    }
+  def checkOptions(options: Options): Option[Options] = if (options.numberOfFiles.isEmpty && options.numberOfLinesPerFile.isEmpty && options.numberOfBytesPerFile.isEmpty) {
+    System.err.println("ERROR: Must specify at least one of -n, -C, -l")
+    None
+  } else if (options.inputs.isEmpty) {
+    System.err.println("ERROR: No inputs specified.")
+    None
+  } else if (options.outputDirectory.isEmpty) {
+    System.err.println("ERROR: No outputs specified.")
+    None
+  } else {
+    Option(options)
+  }
 
   def main(args: Array[String]): Unit = {
     val parser = new OptionParser[Options](s"hyperion-file-repartition-activity") {
