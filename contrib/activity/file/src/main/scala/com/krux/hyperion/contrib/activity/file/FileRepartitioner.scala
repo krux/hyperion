@@ -1,7 +1,7 @@
 package com.krux.hyperion.contrib.activity.file
 
 import java.io.File
-import java.nio.file.{StandardCopyOption, Files, Paths}
+import java.nio.file.{AtomicMoveNotSupportedException, StandardCopyOption, Files, Paths}
 
 case class FileRepartitioner(options: Options) {
 
@@ -61,7 +61,14 @@ case class FileRepartitioner(options: Options) {
       val source = Paths.get(f.getAbsolutePath)
       val dest = Paths.get(dir.getAbsolutePath, output)
       if (options.outputDirectory.size == 1) {
-        Files.move(source, dest, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
+        try {
+          // First try to atomically move
+          Files.move(source, dest, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
+        } catch {
+          case e: AtomicMoveNotSupportedException =>
+            // Try to non-atomically move
+            Files.move(source, dest, StandardCopyOption.REPLACE_EXISTING)
+        }
       } else if (options.link) {
         Files.createSymbolicLink(dest, source)
       } else {

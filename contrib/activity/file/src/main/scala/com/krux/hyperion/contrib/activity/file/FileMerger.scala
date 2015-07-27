@@ -1,6 +1,7 @@
 package com.krux.hyperion.contrib.activity.file
 
 import java.io._
+import java.util.zip.GZIPInputStream
 
 import org.apache.commons.io.IOUtils
 
@@ -27,13 +28,20 @@ case class FileMerger(destination: File, skipFirstLine: Boolean = false) {
 
   private def appendFile(output: OutputStream, source: File): OutputStream = {
     if (source.getName == "-") {
+      print("Merging stdin...")
       IOUtils.copy(doSkipFirstLine(System.in), output)
+      println("done")
     } else {
-      val input = new BufferedInputStream(new FileInputStream(source))
+      print(s"Merging ${source.getAbsolutePath}...")
+      val input = Option(new FileInputStream(source))
+        .map(s => if (source.getName.endsWith(".gz")) new GZIPInputStream(s) else s)
+        .map(s => new BufferedInputStream(s))
+        .get
       try {
         IOUtils.copy(doSkipFirstLine(input), output)
       } finally {
         IOUtils.closeQuietly(input)
+        println("done")
       }
     }
     output

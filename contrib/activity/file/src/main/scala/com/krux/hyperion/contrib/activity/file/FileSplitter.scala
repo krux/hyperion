@@ -40,7 +40,10 @@ case class FileSplitter(
     var read = input.read()
     while (read != -1) {
       if (needFile) {
-        splits += startNewFile()
+        val split = startNewFile()
+        splits += split
+
+        println(s"Creating split #${splits.size}: ${split.getAbsolutePath}")
         needFile = false
       }
 
