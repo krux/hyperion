@@ -34,7 +34,7 @@ case class FileSplitter(
 
   def split(source: File): Seq[File] = try {
     val splits = ListBuffer[File]()
-    val input = new BufferedInputStream(new FileInputStream(source), bufferSize)
+    val input = new BufferedInputStream(new FileInputStream(source), bufferSize.toInt)
     var needFile = true
 
     var read = input.read()
