@@ -28,7 +28,7 @@ case class ShellCommandPrecondition private (
   def withScriptArgument(argument: String*) = this.copy(scriptArgument = scriptArgument ++ argument)
   def withStdout(stdout: String) = this.copy(stdout = Option(stdout))
   def withStderr(stderr: String) = this.copy(stderr = Option(stderr))
-  def withPreconditionTimeOut(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def withPreconditionTimeout(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
   def withRole(role: String) = this.copy(role = role)
 
   lazy val serialize = AdpShellCommandPrecondition(

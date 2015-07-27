@@ -16,7 +16,7 @@ case class S3PrefixNotEmptyPrecondition private (
   role: String
 ) extends Precondition {
 
-  def withPreconditionTimeOut(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def withPreconditionTimeout(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
   def withRole(role: String) = this.copy(role = role)
 
   lazy val serialize = AdpS3PrefixNotEmptyPrecondition(
