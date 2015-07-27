@@ -5,7 +5,7 @@ import java.nio.file.{AtomicMoveNotSupportedException, StandardCopyOption, Files
 
 case class FileRepartitioner(options: Options) {
 
-  def repartition(): Boolean = moveFiles(split(merge()))
+  def repartition(): Boolean = moveFiles(nameFiles(split(merge())))
 
   private def merge(): File = options.inputs match {
     case Seq(one) => one
@@ -56,8 +56,8 @@ case class FileRepartitioner(options: Options) {
       }.toMap
   }
 
-  private def moveFiles(files: Seq[File]): Boolean = options.outputDirectory.forall { dir =>
-    nameFiles(files).foreach { case (f, output) =>
+  private def moveFiles(files: Map[File, String]): Boolean = options.outputDirectory.forall { dir =>
+    files.foreach { case (f, output) =>
       val source = Paths.get(f.getAbsolutePath)
       val dest = Paths.get(dir.getAbsolutePath, output)
       if (options.outputDirectory.size == 1) {
@@ -78,7 +78,7 @@ case class FileRepartitioner(options: Options) {
 
     true
   } match {
-    case true if !options.link && options.outputDirectory.size > 1 => files.forall(f => f.delete())
+    case true if !options.link && options.outputDirectory.size > 1 => files.keys.forall(f => f.delete())
     case x => x
   }
 

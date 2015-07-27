@@ -36,9 +36,11 @@ object RepartitionFile {
       if (k.canRead) {
         Seq(k.getAbsoluteFile)
       } else {
-        Seq() // TODO - throw exception
+        System.err.println(s"ERROR: Cannot read $k")
+        Seq()
       }
     } else {
+      System.err.println(s"ERROR: Cannot access $k")
       Seq()
     }
   })
@@ -82,10 +84,7 @@ object RepartitionFile {
       applyDefaultNumberOfFilesCalculation _
     ).foldLeft(options) { case (acc, handler) => handler(acc) }
 
-  def checkOptions(options: Options): Option[Options] = if (options.numberOfFiles.isEmpty && options.numberOfLinesPerFile.isEmpty && options.numberOfBytesPerFile.isEmpty) {
-    System.err.println("ERROR: Must specify at least one of -n, -C, -l")
-    None
-  } else if (options.inputs.isEmpty) {
+  def checkOptions(options: Options): Option[Options] = if (options.inputs.isEmpty) {
     System.err.println("ERROR: No inputs specified.")
     None
   } else if (options.outputDirectory.isEmpty) {
@@ -119,10 +118,10 @@ object RepartitionFile {
         .text("create N of files of roughly equal size").validate(x => if (x > 0) success else failure("Files must be positive"))
       opt[Long]('l', "lines").valueName("N").optional().action((x, c) => c.copy(numberOfLinesPerFile = Option(x)))
         .text("create smaller files than N number of lines").validate(x => if (x > 0) success else failure("Lines must be positive"))
-      opt[Long]('C', "line-bytes").valueName("N").optional().action((x, c) => c.copy(numberOfBytesPerFile = Option(x)))
-        .text("create smaller files than N number of bytes").validate(x => if (x > 0) success else failure("Bytes must be positive"))
-      opt[Int]('S', "buffer-size").valueName("N").optional().action((x, c) => c.copy(bufferSize = x))
-        .text("use N bytes for main memory buffer (default: 8192)").validate(x => if (x > 0) success else failure("Buffer size must be positive"))
+      opt[String]('C', "line-bytes").abbr("bytes").valueName("N").optional().action((x, c) => c.copy(numberOfBytesPerFile = Option(StorageUnit.parse(x))))
+        .text("create smaller files than N number of bytes")
+      opt[String]('S', "buffer-size").valueName("N").optional().action((x, c) => c.copy(bufferSize = StorageUnit.parse(x)))
+        .text("use N bytes for main memory buffer (default: 8192)")
       opt[File]('i', "input").valueName("PATH").optional().unbounded().action((x, c) => c.copy(inputs = c.inputs :+ x))
         .text("Use PATH as input.  If PATH is a directory, then all files within the directory are used as inputs.")
       opt[File]('o', "output").valueName("DIR").optional().unbounded().action((x, c) => c.copy(outputDirectory = c.outputDirectory :+ x))

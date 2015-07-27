@@ -10,7 +10,7 @@ case class Options(
   numberOfLinesPerFile: Option[Long] = None,
   numberOfBytesPerFile: Option[Long] = None,
   suffixLength: Int = 5,
-  bufferSize: Int = 8192,
+  bufferSize: Long = 8192,
   compressed: Boolean = false,
   link: Boolean = false,
   skipFirstLine: Boolean = false,
