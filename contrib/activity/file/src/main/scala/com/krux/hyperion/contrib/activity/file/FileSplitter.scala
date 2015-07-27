@@ -74,7 +74,11 @@ case class FileSplitter(
       .map(s => new FileState(Option(s)))
       .get
 
-    header.map(_.getBytes).foreach(fileState.outputStreamWriter.get.write)
+    header.map(_.getBytes).foreach { b =>
+      fileState.numberOfBytes += b.length
+      fileState.outputStreamWriter.get.write(b)
+      fileState.numberOfLines += 1
+    }
 
     file
   }
