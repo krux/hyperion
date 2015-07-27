@@ -5,22 +5,21 @@ val json4sJacksonArtifact   = "org.json4s"             %% "json4s-jackson"      
 val scoptArtifact           = "com.github.scopt"       %% "scopt"                     % "3.3.0"
 val jschArtifact            = "com.jcraft"             %  "jsch"                      % "0.1.53"
 val configArtifact          = "com.typesafe"           %  "config"                    % "1.2.1"
+val commonsIoArtifact       = "commons-io"             %  "commons-io"                % "2.4"
 val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % awsSdkVersion
 val awsStsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sts"          % awsSdkVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
-val commonsIoArtifact       = "commons-io"             %  "commons-io"                % "2.4"
-
-
-import SonatypeKeys._
 
 val hyperionVersion = "2.0.0"
 
 // Import default settings. This changes `publishTo` settings to use the Sonatype repository and add several commands for publishing.
+import SonatypeKeys._
+
 sonatypeSettings
 
 licenses += ("Apache-2.0", url("http://opensource.org/licenses/Apache-2.0"))
 
-// Publishing stuff for sonatype
+// Publishing stuff for Sonatype
 publishMavenStyle := true
 
 pomIncludeRepository := { _ => false }
@@ -88,6 +87,14 @@ lazy val commonSettings = Seq(
   test in assembly := {} // skip test during assembly
 )
 
+lazy val publishAssemblySettings = Seq(
+  artifact in (Compile, assembly) := {
+    val art = (artifact in (Compile, assembly)).value
+    art.copy(`classifier` = Some("assembly"))
+  },
+  addArtifact(artifact in (Compile, assembly), assembly)
+)
+
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(name := "hyperion").
@@ -126,6 +133,7 @@ lazy val contribActivityDefinition = (project in file("contrib/activity/definiti
 
 lazy val contribActivitySftp = (project in file("contrib/activity/sftp")).
   settings(commonSettings: _*).
+  settings(publishAssemblySettings: _*).
   settings(
     name := "hyperion-sftp-activity",
     libraryDependencies ++= Seq(
@@ -136,6 +144,7 @@ lazy val contribActivitySftp = (project in file("contrib/activity/sftp")).
 
 lazy val contribActivityFile = (project in file("contrib/activity/file")).
   settings(commonSettings: _*).
+  settings(publishAssemblySettings: _*).
   settings(
     name := "hyperion-file-activity",
     libraryDependencies ++= Seq(
