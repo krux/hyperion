@@ -118,7 +118,7 @@ object RepartitionFile {
         .text("create N of files of roughly equal size").validate(x => if (x > 0) success else failure("Files must be positive"))
       opt[Long]('l', "lines").valueName("N").optional().action((x, c) => c.copy(numberOfLinesPerFile = Option(x)))
         .text("create smaller files than N number of lines").validate(x => if (x > 0) success else failure("Lines must be positive"))
-      opt[String]('C', "line-bytes").abbr("bytes").valueName("N").optional().action((x, c) => c.copy(numberOfBytesPerFile = Option(StorageUnit.parse(x))))
+      opt[String]('C', "line-bytes").valueName("N").optional().action((x, c) => c.copy(numberOfBytesPerFile = Option(StorageUnit.parse(x))))
         .text("create smaller files than N number of bytes")
       opt[String]('S', "buffer-size").valueName("N").optional().action((x, c) => c.copy(bufferSize = StorageUnit.parse(x)))
         .text("use N bytes for main memory buffer (default: 8192)")
