@@ -8,6 +8,8 @@ val configArtifact          = "com.typesafe"           %  "config"              
 val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % awsSdkVersion
 val awsStsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sts"          % awsSdkVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
+val commonsIoArtifact       = "commons-io"             %  "commons-io"                % "2.4"
+
 
 import SonatypeKeys._
 
@@ -89,8 +91,16 @@ lazy val commonSettings = Seq(
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(name := "hyperion").
-  dependsOn(core, activities).
-  aggregate(core, activities, contrib)
+  dependsOn(
+    core,
+    contribActivityDefinition
+  ).
+  aggregate(
+    core,
+    contribActivityDefinition,
+    contribActivitySftp,
+    contribActivityFile
+  )
 
 lazy val core = (project in file("core")).
   settings(commonSettings: _*).
@@ -107,26 +117,30 @@ lazy val core = (project in file("core")).
     )
   )
 
-lazy val activities = (project in file("activities")).
+lazy val contribActivityDefinition = (project in file("contrib/activity/definition")).
   settings(commonSettings: _*).
   settings(
     name := "hyperion-activities"
   ).
   dependsOn(core)
 
-lazy val contrib = (project in file("contrib")).
-  aggregate(contribActivity)
-
-lazy val contribActivity = (project in file("contrib/activity")).
-  aggregate(contribActivitySftp)
-
 lazy val contribActivitySftp = (project in file("contrib/activity/sftp")).
   settings(commonSettings: _*).
   settings(
-    name := "sftp-activity",
+    name := "hyperion-sftp-activity",
     libraryDependencies ++= Seq(
       scoptArtifact,
       jschArtifact
+    )
+  )
+
+lazy val contribActivityFile = (project in file("contrib/activity/file")).
+  settings(commonSettings: _*).
+  settings(
+    name := "hyperion-file-activity",
+    libraryDependencies ++= Seq(
+      scoptArtifact,
+      commonsIoArtifact
     )
   )
 

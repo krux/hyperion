@@ -20,7 +20,7 @@ object SftpActivity {
     pattern: Option[String] = None
   )
 
-  def doActivity(options: Options): Unit = {
+  def apply(options: Options): Unit = {
     val ssh = new JSch()
 
     // Add the private key (PEM) identity
@@ -105,8 +105,8 @@ object SftpActivity {
   }
 
   def main(args: Array[String]): Unit = {
-    val parser = new OptionParser[Options](s"sftp-activity") {
-      head("SFTP Download/Upload Activity")
+    val parser = new OptionParser[Options](s"hyperion-sftp-activity") {
+      head("Hyperion SFTP Download/Upload Activity")
 
       opt[String]('u', "user").valueName("<username>").action { (x, c) => c.copy(username = x) }.required()
       opt[String]('p', "password").valueName("<password>").action { (x, c) => c.copy(password = Option(x)) }.optional()
@@ -130,7 +130,7 @@ object SftpActivity {
 
     parser.parse(args, Options()).foreach { options =>
       options.mode match {
-        case Some(direction) => doActivity(options)
+        case Some(direction) => this(options)
         case _ => parser.showUsageAsError
       }
     }
