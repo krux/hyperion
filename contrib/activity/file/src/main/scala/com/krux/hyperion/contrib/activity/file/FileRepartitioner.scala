@@ -20,7 +20,7 @@ case class FileRepartitioner(options: Options) {
     case Some(1) => Seq(file)
 
     case None =>
-      FileSplitter(
+      new FileSplitter(
         header = options.header,
         numberOfLinesPerFile = options.numberOfLinesPerFile.getOrElse(Long.MaxValue),
         numberOfBytesPerFile = options.numberOfBytesPerFile.getOrElse(Long.MaxValue),
@@ -30,7 +30,7 @@ case class FileRepartitioner(options: Options) {
       ).split(file)
 
     case Some(n) =>
-      FileSplitter(
+      new FileSplitter(
         header = options.header,
         numberOfLinesPerFile = Long.MaxValue,
         numberOfBytesPerFile = file.length() / n,

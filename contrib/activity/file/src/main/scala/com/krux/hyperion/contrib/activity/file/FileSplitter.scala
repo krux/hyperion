@@ -6,7 +6,7 @@ import org.apache.commons.io.IOUtils
 
 import scala.collection.mutable.ListBuffer
 
-case class FileSplitter(
+class FileSplitter(
   header: Option[String],
   numberOfLinesPerFile: Long = Long.MaxValue,
   numberOfBytesPerFile: Long = Long.MaxValue,

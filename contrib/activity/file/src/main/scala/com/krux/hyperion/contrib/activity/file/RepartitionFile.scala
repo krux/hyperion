@@ -82,7 +82,7 @@ object RepartitionFile {
       applyDefaultNumberOfFiles _,
       applyDefaultFileChecks _,
       applyDefaultNumberOfFilesCalculation _
-    ).foldLeft(options) { case (acc, handler) => handler(acc) }
+    ).foldLeft(options)((acc, handler) => handler(acc))
 
   def checkOptions(options: Options): Option[Options] = if (options.inputs.isEmpty) {
     System.err.println("ERROR: No inputs specified.")
