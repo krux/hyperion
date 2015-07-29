@@ -68,11 +68,10 @@ class FileSplitter(
 
     val file = File.createTempFile("split-", ".tmp", temporaryDirectory)
 
-    fileState = Option(new FileOutputStream(file, true))
-      .map(s => if (compressed) new GZIPOutputStream(s) else s)
-      .map(s => new BufferedOutputStream(s))
-      .map(s => new FileState(Option(s)))
-      .get
+    fileState = new FileState(Option(new BufferedOutputStream({
+      val s = new FileOutputStream(file, true)
+      if (compressed) new GZIPOutputStream(s) else s
+    })))
 
     header.map(_.getBytes).foreach { b =>
       fileState.numberOfBytes += b.length

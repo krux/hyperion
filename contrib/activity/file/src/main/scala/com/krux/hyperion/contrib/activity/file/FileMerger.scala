@@ -33,10 +33,12 @@ case class FileMerger(destination: File, skipFirstLine: Boolean = false) {
       println("done")
     } else {
       print(s"Merging ${source.getAbsolutePath}...")
-      val input = Option(new FileInputStream(source))
-        .map(s => if (source.getName.endsWith(".gz")) new GZIPInputStream(s) else s)
-        .map(s => new BufferedInputStream(s))
-        .get
+
+      val input = new BufferedInputStream({
+        val s = new FileInputStream(source)
+        if (source.getName.endsWith(".gz")) new GZIPInputStream(s) else s
+      })
+
       try {
         IOUtils.copy(doSkipFirstLine(input), output)
       } finally {
