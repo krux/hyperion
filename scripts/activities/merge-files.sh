@@ -4,10 +4,32 @@ USAGE="usage: merge-files.sh OUTPUT_FILENAME HEADER?"
 OUTPUT_FILENAME=${1?$USAGE}
 : ${INPUT1_STAGING_DIR?$USAGE} ${OUTPUT1_STAGING_DIR?$USAGE}
 
+declare -a on_exit_items
+
+function on_exit() {
+  for i in "${on_exit_items[@]}"; do
+    eval ${i}
+  done
+}
+
+function add_on_exit() {
+  local n=${#on_exit_items[*]}
+  on_exit_items[$n]="$*"
+  if [[ ${n} -eq 0 ]]; then
+    trap on_exit EXIT
+  fi
+}
+
 set -xe
 
 BASENAME=$(basename ${OUTPUT_FILENAME} .gz)
 MERGED_FILE="${OUTPUT1_STAGING_DIR}/${BASENAME}"
+if [ -z "${WORKING_DIR}" ]; then
+  WORKING_DIR=$(mktemp -d)
+  add_on_exit rm -rf ${WORKING_DIR}
+fi
+
+cd ${WORKING_DIR}
 
 # Add the header
 if [ -n "$2" ]; then
@@ -34,3 +56,4 @@ for dir in ${OUTPUT2_STAGING_DIR} ${OUTPUT3_STAGING_DIR} ${OUTPUT4_STAGING_DIR} 
   # XXX TODO - could we just ln the files?
   cp ${MERGED_FILE} ${dir}/
 done
+

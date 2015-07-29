@@ -16,6 +16,9 @@ case class S3KeyExistsPrecondition private (
   role: String
 ) extends Precondition {
 
+  def withPreconditionTimeout(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def withRole(role: String) = this.copy(role = role)
+
   lazy val serialize = AdpS3KeyExistsPrecondition(
     id = id,
     name = id.toOption,
@@ -32,6 +35,6 @@ object S3KeyExistsPrecondition {
       id = PipelineObjectId("S3KeyExistsPrecondition"),
       s3Key = s3Key,
       preconditionTimeout = None,
-      role = hc.resourceRole
+      role = hc.role
     )
 }

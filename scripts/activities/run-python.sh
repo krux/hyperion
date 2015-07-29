@@ -2,12 +2,31 @@
 
 # Usage: $0 s3://something.{py,gz} (-r requirements.pip)? (-m module)? (-i index-url)? (--extra-index-url url)? script.py? -- args
 
-set -x
+declare -a on_exit_items
+
+function on_exit() {
+  for i in "${on_exit_items[@]}"; do
+    eval ${i}
+  done
+}
+
+function add_on_exit() {
+  local n=${#on_exit_items[*]}
+  on_exit_items[$n]="$*"
+  if [[ ${n} -eq 0 ]]; then
+    trap on_exit EXIT
+  fi
+}
+
+set -xe
 
 PY_REMOTE=${1?Python URL required}; shift
 PY_LOCAL="$(basename ${PY_REMOTE})"
 PY_EXT="${PY_LOCAL##*.}"
 REQUIREMENTS="requirements.pip"
+WORKING_DIR=$(mktemp -d)
+cd ${WORKING_DIR}
+add_on_exit rm -rf ${WORKING_DIR}
 
 while [[ $# > 0 ]]; do
   key=$1; shift
@@ -100,3 +119,4 @@ fi
 echo "Executing script ${PY_MODULE} ${PY_SCRIPT} $@"
 
 python ${PY_MODULE} ${PY_SCRIPT} $@
+

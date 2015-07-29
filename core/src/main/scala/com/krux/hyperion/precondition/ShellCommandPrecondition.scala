@@ -7,48 +7,59 @@ import com.krux.hyperion.common.PipelineObjectId
 /**
  * A Unix/Linux shell command that can be run as a precondition.
  *
- * @param command The command to run. This value and any associated parameters must function in the environment from which you are running the Task Runner.
+ * @param commandOrScriptUri The command to run or an Amazon S3 URI path for a file to download and run as a shell command. scriptUri cannot use parameters, use command instead.
  * @param scriptArgument A list of arguments to pass to the shell script.
- * @param scriptUri An Amazon S3 URI path for a file to download and run as a shell command. Only one scriptUri or command field should be present. scriptUri cannot use parameters, use command instead.
  * @param stdout The Amazon S3 path that receives redirected output from the command. If you use the runsOn field, this must be an Amazon S3 path because of the transitory nature of the resource running your activity. However if you specify the workerGroup field, a local file path is permitted.
  * @param stderr The Amazon S3 path that receives redirected system error messages from the command. If you use the runsOn field, this must be an Amazon S3 path because of the transitory nature of the resource running your activity. However if you specify the workerGroup field, a local file path is permitted.
  *
  */
 case class ShellCommandPrecondition private (
   id: PipelineObjectId,
-  command: String,
+  commandOrScriptUri: Either[String, String],
   scriptArgument: Seq[String],
-  scriptUri: Option[String],
   stdout: Option[String],
   stderr: Option[String],
   preconditionTimeout: Option[String],
   role: String
 ) extends Precondition {
 
+  def withCommand(cmd: String) = this.copy(commandOrScriptUri = Left(cmd))
+  def withScriptUri(scriptUri: String) = this.copy(commandOrScriptUri = Right(scriptUri))
+  def withScriptArgument(argument: String*) = this.copy(scriptArgument = scriptArgument ++ argument)
+  def withStdout(stdout: String) = this.copy(stdout = Option(stdout))
+  def withStderr(stderr: String) = this.copy(stderr = Option(stderr))
+  def withPreconditionTimeout(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def withRole(role: String) = this.copy(role = role)
+
   lazy val serialize = AdpShellCommandPrecondition(
     id = id,
     name = id.toOption,
-    command = command,
-    scriptArgument = scriptArgument,
-    scriptUri = scriptUri,
-    stdout = stdout,
-    stderr = stderr,
     preconditionTimeout = preconditionTimeout,
-    role = role
+    role = role,
+    command = commandOrScriptUri match {
+      case Left(command) => Some(command)
+      case _ => None
+    },
+    scriptArgument = scriptArgument,
+    scriptUri = commandOrScriptUri match {
+      case Right(scriptUri) => Some(scriptUri)
+      case _ => None
+    },
+    stdout = stdout,
+    stderr = stderr
   )
 
 }
 
 object ShellCommandPrecondition {
-  def apply(command: String)(implicit hc: HyperionContext) =
+  def apply()(implicit hc: HyperionContext) =
     new ShellCommandPrecondition(
       id = PipelineObjectId("ShellCommandPrecondition"),
-      command = command,
+      commandOrScriptUri = Left(""),
       scriptArgument = Seq(),
-      scriptUri = None,
       stdout = None,
       stderr = None,
       preconditionTimeout = None,
-      role = hc.resourceRole
+      role = hc.role
     )
 }
