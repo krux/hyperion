@@ -1,5 +1,6 @@
 package com.krux.hyperion.examples
 
+import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.action.SnsAlarm
@@ -14,7 +15,7 @@ import com.krux.hyperion.WorkflowDSL._
 object ExampleSpark extends DataPipelineDef {
 
   val target = "the-target"
-  val jar = "s3://sample-jars/sample-jar-assembly-current.jar"
+  val jar = S3Uri("s3://sample-jars/sample-jar-assembly-current.jar")
 
   override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
 

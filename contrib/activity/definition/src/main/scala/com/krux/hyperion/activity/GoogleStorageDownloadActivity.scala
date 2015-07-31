@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
+import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
@@ -16,7 +16,7 @@ case class GoogleStorageDownloadActivity private (
   scriptUri: String,
   input: String,
   output: Option[S3DataNode],
-  botoConfigUrl: String,
+  botoConfigUrl: S3Uri,
   runsOn: Either[Ec2Resource, WorkerGroup],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
@@ -35,7 +35,6 @@ case class GoogleStorageDownloadActivity private (
 
   def withInput(path: String) = this.copy(input = path)
   def withOutput(out: S3DataNode) = this.copy(output = Option(out))
-  def withBotoConfigUrl(url: String) = this.copy(botoConfigUrl = url)
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
@@ -55,7 +54,7 @@ case class GoogleStorageDownloadActivity private (
     name = id.toOption,
     command = None,
     scriptUri = Option(scriptUri),
-    scriptArgument = Option(Seq(botoConfigUrl, input)),
+    scriptArgument = Option(Seq(botoConfigUrl.ref, input)),
     stdout = None,
     stderr = None,
     stage = Option("true"),
@@ -78,19 +77,19 @@ case class GoogleStorageDownloadActivity private (
 }
 
 object GoogleStorageDownloadActivity {
-  def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
-    apply(Left(runsOn))
+  def apply(botoConfigUrl: S3Uri, runsOn: Ec2Resource)(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
+    apply(botoConfigUrl, Left(runsOn))
 
-  def apply(runsOn: WorkerGroup)(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
-    apply(Right(runsOn))
+  def apply(botoConfigUrl: S3Uri, runsOn: WorkerGroup)(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
+    apply(botoConfigUrl, Right(runsOn))
 
-  private def apply(runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
+  private def apply(botoConfigUrl: S3Uri, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
     new GoogleStorageDownloadActivity(
       id = PipelineObjectId(GoogleStorageDownloadActivity.getClass),
       scriptUri = s"${hc.scriptUri}activities/gsutil-download.sh",
       input = "",
       output = None,
-      botoConfigUrl = "",
+      botoConfigUrl = botoConfigUrl,
       runsOn = runsOn,
       dependsOn = Seq(),
       preconditions = Seq(),

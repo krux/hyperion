@@ -11,7 +11,7 @@ import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
 class SplitMergeFilesActivity private (
   val id: PipelineObjectId,
   val scriptUri: Option[String],
-  val jar: String,
+  val jarUri: String,
   val mainClass: String,
   val filename: String,
   val header: Option[String],
@@ -44,7 +44,7 @@ class SplitMergeFilesActivity private (
   def copy(
     id: PipelineObjectId = id,
     scriptUri: Option[String] = scriptUri,
-    jar: String = jar,
+    jarUri: String = jarUri,
     mainClass: String = mainClass,
     filename: String = filename,
     header: Option[String] = header,
@@ -73,7 +73,7 @@ class SplitMergeFilesActivity private (
     retryDelay: Option[String] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SplitMergeFilesActivity(id,
-    scriptUri, jar, mainClass,
+    scriptUri, jarUri, mainClass,
     filename, header, compressedOutput, skipFirstInputLine, linkOutputs,
     suffixLength, numberOfFiles, linesPerFile, bytesPerFile, bufferSize,
     pattern, input, output, stdout, stderr, runsOn, dependsOn,
@@ -133,7 +133,7 @@ class SplitMergeFilesActivity private (
     name = id.toOption,
     command = None,
     scriptUri = scriptUri,
-    scriptArgument = Option(Seq(jar, mainClass) ++ arguments),
+    scriptArgument = Option(Seq(jarUri, mainClass) ++ arguments),
     stdout = stdout,
     stderr = stderr,
     stage = Option("true"),
@@ -165,7 +165,7 @@ object SplitMergeFilesActivity {
     new SplitMergeFilesActivity(
       id = PipelineObjectId(SplitMergeFilesActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),
-      jar = s"${hc.scriptUri}activities/hyperion-contrib-activity-file-assembly-current.jar",
+      jarUri = s"${hc.scriptUri}activities/hyperion-contrib-activity-file-assembly-current.jar",
       mainClass = "com.krux.hyperion.contrib.activity.file.RepartitionFile",
       filename = filename,
       header = None,

@@ -2,12 +2,12 @@ package com.krux.hyperion.precondition
 
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpShellCommandPrecondition
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId}
 
 /**
  * A Unix/Linux shell command that can be run as a precondition.
  *
- * @param commandOrScriptUri The command to run or an Amazon S3 URI path for a file to download and run as a shell command. scriptUri cannot use parameters, use command instead.
+ * @param script The command to run or an Amazon S3 URI path for a file to download and run as a shell command. scriptUri cannot use parameters, use command instead.
  * @param scriptArgument A list of arguments to pass to the shell script.
  * @param stdout The Amazon S3 path that receives redirected output from the command. If you use the runsOn field, this must be an Amazon S3 path because of the transitory nature of the resource running your activity. However if you specify the workerGroup field, a local file path is permitted.
  * @param stderr The Amazon S3 path that receives redirected system error messages from the command. If you use the runsOn field, this must be an Amazon S3 path because of the transitory nature of the resource running your activity. However if you specify the workerGroup field, a local file path is permitted.
@@ -15,7 +15,7 @@ import com.krux.hyperion.common.PipelineObjectId
  */
 case class ShellCommandPrecondition private (
   id: PipelineObjectId,
-  commandOrScriptUri: Either[String, String],
+  script: Either[S3Uri, String],
   scriptArgument: Seq[String],
   stdout: Option[String],
   stderr: Option[String],
@@ -23,8 +23,8 @@ case class ShellCommandPrecondition private (
   preconditionTimeout: Option[String]
 ) extends Precondition {
 
-  def withCommand(cmd: String) = this.copy(commandOrScriptUri = Left(cmd))
-  def withScriptUri(scriptUri: String) = this.copy(commandOrScriptUri = Right(scriptUri))
+  def withScript(cmd: String) = this.copy(script = Right(cmd))
+  def withScript(uri: S3Uri) = this.copy(script = Left(uri))
   def withScriptArgument(argument: String*) = this.copy(scriptArgument = scriptArgument ++ argument)
   def withStdout(stdout: String) = this.copy(stdout = Option(stdout))
   def withStderr(stderr: String) = this.copy(stderr = Option(stderr))
@@ -34,14 +34,8 @@ case class ShellCommandPrecondition private (
   lazy val serialize = AdpShellCommandPrecondition(
     id = id,
     name = id.toOption,
-    command = commandOrScriptUri match {
-      case Left(command) => Some(command)
-      case _ => None
-    },
-    scriptUri = commandOrScriptUri match {
-      case Right(scriptUri) => Some(scriptUri)
-      case _ => None
-    },
+    command = script.right.toOption,
+    scriptUri = script.left.toOption.map(_.ref),
     scriptArgument = scriptArgument,
     stdout = stdout,
     stderr = stderr,
@@ -52,10 +46,14 @@ case class ShellCommandPrecondition private (
 }
 
 object ShellCommandPrecondition {
-  def apply()(implicit hc: HyperionContext) =
+  def apply(uri: S3Uri)(implicit hc: HyperionContext): ShellCommandPrecondition = apply(Left(uri))
+
+  def apply(script: String)(implicit hc: HyperionContext): ShellCommandPrecondition = apply(Right(script))
+
+  private def apply(script: Either[S3Uri, String])(implicit hc: HyperionContext): ShellCommandPrecondition =
     new ShellCommandPrecondition(
       id = PipelineObjectId(ShellCommandPrecondition.getClass),
-      commandOrScriptUri = Left(""),
+      script = script,
       scriptArgument = Seq(),
       stdout = None,
       stderr = None,

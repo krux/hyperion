@@ -1,6 +1,6 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpPigActivity
@@ -16,9 +16,8 @@ import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
  */
 case class PigActivity private (
   id: PipelineObjectId,
-  script: Option[String],
-  scriptUri: Option[String],
-  scriptVariable: Option[String],
+  script: Either[S3Uri, String],
+  scriptVariables: Seq[String],
   generatedScriptsPath: Option[String],
   stage: Option[Boolean],
   input: Option[DataNode],
@@ -42,9 +41,9 @@ case class PigActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withScript(script: String) = this.copy(script = Option(script))
-  def withScriptUri(scriptUri: String) = this.copy(scriptUri = Option(scriptUri))
-  def withScriptVariable(scriptVariable: String) = this.copy(scriptVariable = Option(scriptVariable))
+  def withScript(script: String) = this.copy(script = Right(script))
+  def withScript(script: S3Uri) = this.copy(script = Left(script))
+  def withScriptVariable(scriptVariable: String*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
   def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(true))
   def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(true))
@@ -68,9 +67,9 @@ case class PigActivity private (
   lazy val serialize = new AdpPigActivity(
     id = id,
     name = id.toOption,
-    script = script,
-    scriptUri = scriptUri,
-    scriptVariable = scriptVariable,
+    script = script.right.toOption,
+    scriptUri = script.left.toOption.map(_.ref),
+    scriptVariable = seqToOption(scriptVariables)(_.toString),
     generatedScriptsPath = generatedScriptsPath,
     stage = stage.toString,
     input = input.map(_.ref),
@@ -94,16 +93,19 @@ case class PigActivity private (
 }
 
 object PigActivity extends RunnableObject {
-  def apply(runsOn: EmrCluster): PigActivity = apply(Left(runsOn))
+  def apply(script: String, runsOn: EmrCluster): PigActivity = apply(Right(script), Left(runsOn))
 
-  def apply(runsOn: WorkerGroup): PigActivity = apply(Right(runsOn))
+  def apply(script: S3Uri, runsOn: EmrCluster): PigActivity = apply(Left(script), Left(runsOn))
 
-  private def apply(runsOn: Either[EmrCluster, WorkerGroup]): PigActivity =
+  def apply(script: String, runsOn: WorkerGroup): PigActivity = apply(Right(script), Right(runsOn))
+
+  def apply(script: S3Uri, runsOn: WorkerGroup): PigActivity = apply(Left(script), Right(runsOn))
+
+  private def apply(script: Either[S3Uri, String], runsOn: Either[EmrCluster, WorkerGroup]): PigActivity =
     new PigActivity(
       id = PipelineObjectId(PigActivity.getClass),
-      script = None,
-      scriptUri = None,
-      scriptVariable = None,
+      script = script,
+      scriptVariables = Seq(),
       generatedScriptsPath = None,
       stage = None,
       input = None,

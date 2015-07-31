@@ -1,11 +1,11 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.aws.{AdpRef, AdpShellScriptConfig}
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
+import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 
 case class ShellScriptConfig(
   id: PipelineObjectId,
-  scriptUri: String,
+  scriptUri: S3Uri,
   scriptArguments: Seq[String]
 ) extends PipelineObject {
 
@@ -14,7 +14,7 @@ case class ShellScriptConfig(
   lazy val serialize = AdpShellScriptConfig(
     id = id,
     name = id.toOption,
-    scriptUri = scriptUri,
+    scriptUri = scriptUri.ref,
     scriptArgument = scriptArguments match {
       case Seq() => None
       case args => Option(args)
@@ -25,7 +25,7 @@ case class ShellScriptConfig(
 }
 
 object ShellScriptConfig {
-  def apply(scriptUri: String): ShellScriptConfig =
+  def apply(scriptUri: S3Uri): ShellScriptConfig =
     new ShellScriptConfig(
       id = PipelineObjectId(ShellScriptConfig.getClass),
       scriptUri = scriptUri,

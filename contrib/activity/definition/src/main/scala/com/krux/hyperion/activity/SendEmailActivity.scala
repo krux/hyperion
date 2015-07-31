@@ -11,7 +11,7 @@ import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
 class SendEmailActivity private (
   val id: PipelineObjectId,
   val scriptUri: Option[String],
-  val jar: String,
+  val jarUri: String,
   val mainClass: String,
   val host: Option[String],
   val port: Option[Int],
@@ -72,7 +72,7 @@ class SendEmailActivity private (
   def copy(
     id: PipelineObjectId = id,
     scriptUri: Option[String] = scriptUri,
-    jar: String = jar,
+    jarUri: String = jarUri,
     mainClass: String = mainClass,
     host: Option[String] = host,
     port: Option[Int] = port,
@@ -100,7 +100,7 @@ class SendEmailActivity private (
     maximumRetries: Option[Int] = maximumRetries,
     retryDelay: Option[String] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
-  ) = new SendEmailActivity(id, scriptUri, jar, mainClass, host, port, username, password,
+  ) = new SendEmailActivity(id, scriptUri, jarUri, mainClass, host, port, username, password,
     from, to, cc, bcc, subject, body, starttls, debug, input, stdout, stderr, runsOn, dependsOn,
     preconditions, onFailAlarms, onSuccessAlarms, onLateActionAlarms, attemptTimeout, lateAfterTimeout,
     maximumRetries, retryDelay, failureAndRerunMode)
@@ -127,7 +127,7 @@ class SendEmailActivity private (
     name = id.toOption,
     command = None,
     scriptUri = scriptUri,
-    scriptArgument = Option(Seq(jar, mainClass) ++ arguments),
+    scriptArgument = Option(Seq(jarUri, mainClass) ++ arguments),
     stdout = stdout,
     stderr = stderr,
     stage = Option("true"),
@@ -160,7 +160,7 @@ object SendEmailActivity {
       id = PipelineObjectId(SendEmailActivity.getClass),
       runsOn = runsOn,
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),
-      jar = s"${hc.scriptUri}activities/hyperion-contrib-activity-email-assembly-current.jar",
+      jarUri = s"${hc.scriptUri}activities/hyperion-contrib-activity-email-assembly-current.jar",
       mainClass = "com.krux.hyperion.contrib.activity.email.SendEmailActivity",
       host = None,
       port = None,

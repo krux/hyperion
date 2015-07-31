@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
+import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
@@ -14,7 +14,7 @@ import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
 class SftpUploadActivity private (
   val id: PipelineObjectId,
   val scriptUri: Option[String],
-  val jar: String,
+  val jarUri: String,
   val mainClass: String,
   val host: String,
   val port: Option[Int],
@@ -66,7 +66,7 @@ class SftpUploadActivity private (
   def copy(
     id: PipelineObjectId = id,
     scriptUri: Option[String] = scriptUri,
-    jar: String = jar,
+    jarUri: String = jarUri,
     mainClass: String = mainClass,
     host: String = host,
     port: Option[Int] = port,
@@ -90,7 +90,7 @@ class SftpUploadActivity private (
     retryDelay: Option[String] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SftpUploadActivity(
-    id, scriptUri, jar, mainClass, host, port, username, password, identity, pattern, input, output, stdout, stderr,
+    id, scriptUri, jarUri, mainClass, host, port, username, password, identity, pattern, input, output, stdout, stderr,
     runsOn, dependsOn, preconditions, onFailAlarms, onSuccessAlarms, onLateActionAlarms, attemptTimeout,
     lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
@@ -114,7 +114,7 @@ class SftpUploadActivity private (
     name = id.toOption,
     command = None,
     scriptUri = scriptUri,
-    scriptArgument = Option(Seq(jar, mainClass) ++ arguments),
+    scriptArgument = Option(Seq(jarUri, mainClass) ++ arguments),
     stdout = stdout,
     stderr = stderr,
     stage = Option("true"),
@@ -148,7 +148,7 @@ object SftpUploadActivity extends RunnableObject {
     new SftpUploadActivity(
       id = PipelineObjectId(SftpUploadActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),
-      jar = s"${hc.scriptUri}activities/hyperion-contrib-activity-sftp-assembly-current.jar",
+      jarUri = s"${hc.scriptUri}activities/hyperion-contrib-activity-sftp-assembly-current.jar",
       mainClass = "com.krux.hyperion.contrib.activity.sftp.SftpActivity",
       host = host,
       port = None,

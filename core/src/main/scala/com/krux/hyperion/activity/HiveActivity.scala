@@ -1,6 +1,6 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpHiveActivity
 import com.krux.hyperion.datanode.DataNode
@@ -18,9 +18,8 @@ import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
  */
 case class HiveActivity private (
   id: PipelineObjectId,
-  hiveScript: Option[String],
-  scriptUri: Option[String],
-  scriptVariable: Option[String],
+  hiveScript: Either[S3Uri, String],
+  scriptVariables: Seq[String],
   stage: Option[Boolean],
   input: Option[DataNode],
   output: Option[DataNode],
@@ -43,9 +42,9 @@ case class HiveActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withHiveScript(hiveScript: String) = this.copy(hiveScript = Option(hiveScript))
-  def withScriptUri(scriptUri: String) = this.copy(scriptUri = Option(scriptUri))
-  def withScriptVariable(scriptVariable: String) = this.copy(scriptVariable = Option(scriptVariable))
+  def withHiveScript(hiveScript: String) = this.copy(hiveScript = Right(hiveScript))
+  def withScriptUri(scriptUri: S3Uri) = this.copy(hiveScript = Left(scriptUri))
+  def withScriptVariable(scriptVariable: String*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(true))
   def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(true))
   def withHadoopQueue(queue: String) = this.copy(hadoopQueue = Option(queue))
@@ -68,9 +67,9 @@ case class HiveActivity private (
   lazy val serialize = new AdpHiveActivity(
     id = id,
     name = id.toOption,
-    hiveScript = hiveScript,
-    scriptUri = scriptUri,
-    scriptVariable = scriptVariable,
+    hiveScript = hiveScript.right.toOption,
+    scriptUri = hiveScript.left.toOption.map(_.ref),
+    scriptVariable = seqToOption(scriptVariables)(_.toString),
     stage = stage.map(_.toString),
     input = input.map(_.ref),
     output = output.map(_.ref),
@@ -93,16 +92,15 @@ case class HiveActivity private (
 }
 
 object HiveActivity extends RunnableObject {
-  def apply(runsOn: EmrCluster): HiveActivity = apply(Left(runsOn))
+  def apply(hiveScript: Either[S3Uri, String], runsOn: EmrCluster): HiveActivity = apply(hiveScript, Left(runsOn))
 
-  def apply(runsOn: WorkerGroup): HiveActivity = apply(Right(runsOn))
+  def apply(hiveScript: Either[S3Uri, String], runsOn: WorkerGroup): HiveActivity = apply(hiveScript, Right(runsOn))
 
-  private def apply(runsOn: Either[EmrCluster, WorkerGroup]): HiveActivity =
+  private def apply(hiveScript: Either[S3Uri, String], runsOn: Either[EmrCluster, WorkerGroup]): HiveActivity =
     new HiveActivity(
       id = PipelineObjectId(HiveActivity.getClass),
-      hiveScript = None,
-      scriptUri = None,
-      scriptVariable = None,
+      hiveScript = hiveScript,
+      scriptVariables = Seq(),
       stage = None,
       input = None,
       output = None,

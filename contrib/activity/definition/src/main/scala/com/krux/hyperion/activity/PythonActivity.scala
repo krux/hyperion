@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
+import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
@@ -14,7 +14,7 @@ import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
 class PythonActivity private (
   val id: PipelineObjectId,
   val scriptUri: Option[String],
-  val pythonScriptUri: Option[String],
+  val pythonScriptUri: Option[S3Uri],
   val pythonScript: Option[String],
   val pythonModule: Option[String],
   val pythonRequirements: Option[String],
@@ -41,7 +41,7 @@ class PythonActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withScriptUri(pythonScriptUri: String) = this.copy(pythonScriptUri = Option(pythonScriptUri))
+  def withScriptUri(pythonScriptUri: S3Uri) = this.copy(pythonScriptUri = Option(pythonScriptUri))
   def withScript(pythonScript: String) = this.copy(pythonScript = Option(pythonScript))
   def withModule(pythonModule: String) = this.copy(pythonModule = Option(pythonModule))
   def withRequirements(pythonRequirements: String) = this.copy(pythonRequirements = Option(pythonRequirements))
@@ -67,7 +67,7 @@ class PythonActivity private (
   def copy(
     id: PipelineObjectId = id,
     scriptUri: Option[String] = scriptUri,
-    pythonScriptUri: Option[String] = pythonScriptUri,
+    pythonScriptUri: Option[S3Uri] = pythonScriptUri,
     pythonScript: Option[String] = pythonScript,
     pythonModule: Option[String] = pythonModule,
     pythonRequirements: Option[String] = pythonRequirements,
@@ -97,7 +97,7 @@ class PythonActivity private (
   override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def scriptArguments = Seq(
-    pythonScriptUri.map(Seq(_)),
+    pythonScriptUri.map(Seq(_).map(_.ref)),
     pythonScript.map(Seq(_)),
     pythonRequirements.map(Seq("-r", _)),
     pythonModule.map(Seq("-m", _)),
@@ -133,15 +133,15 @@ class PythonActivity private (
 
 object PythonActivity extends RunnableObject {
 
-  def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext): PythonActivity = apply(Left(runsOn))
+  def apply(pythonScriptUri: S3Uri, runsOn: Ec2Resource)(implicit hc: HyperionContext): PythonActivity = apply(pythonScriptUri, Left(runsOn))
 
-  def apply(runsOn: WorkerGroup)(implicit hc: HyperionContext): PythonActivity = apply(Right(runsOn))
+  def apply(pythonScriptUri: S3Uri, runsOn: WorkerGroup)(implicit hc: HyperionContext): PythonActivity = apply(pythonScriptUri, Right(runsOn))
 
-  private def apply(runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): PythonActivity =
+  private def apply(pythonScriptUri: S3Uri, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): PythonActivity =
     new PythonActivity(
       id = PipelineObjectId(PythonActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-python.sh"),
-      pythonScriptUri = None,
+      pythonScriptUri = Option(pythonScriptUri),
       pythonScript = None,
       pythonModule = None,
       pythonRequirements = None,

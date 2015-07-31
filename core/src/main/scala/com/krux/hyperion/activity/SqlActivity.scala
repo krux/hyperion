@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
@@ -13,7 +13,7 @@ import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
  */
 case class SqlActivity private (
   id: PipelineObjectId,
-  scriptOrScriptUri: Either[String, String],
+  script: Either[S3Uri, String],
   scriptArgument: Seq[String],
   database: RedshiftDatabase,
   queue: Option[String],
@@ -33,8 +33,8 @@ case class SqlActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withScript(script: String) = this.copy(scriptOrScriptUri = Left(script))
-  def withScriptUri(uri: String) = this.copy(scriptOrScriptUri = Right(uri))
+  def withScript(script: String) = this.copy(script = Right(script))
+  def withScript(uri: S3Uri) = this.copy(script = Left(uri))
   def withArguments(arg: String*) = this.copy(scriptArgument = scriptArgument ++ arg)
   def withQueue(queue: String) = this.copy(queue = Option(queue))
 
@@ -55,8 +55,8 @@ case class SqlActivity private (
   lazy val serialize = AdpSqlActivity(
     id = id,
     name = id.toOption,
-    script = scriptOrScriptUri.left.toOption,
-    scriptUri = scriptOrScriptUri.right.toOption,
+    script = script.right.toOption,
+    scriptUri = script.left.toOption.map(_.toString),
     scriptArgument = scriptArgument,
     database = database.ref,
     queue = queue,
@@ -76,16 +76,22 @@ case class SqlActivity private (
 }
 
 object SqlActivity extends RunnableObject {
+  def apply(database: RedshiftDatabase, script: S3Uri, runsOn: Ec2Resource): SqlActivity =
+    apply(database, Left(script), Left(runsOn))
+
   def apply(database: RedshiftDatabase, script: String, runsOn: Ec2Resource): SqlActivity =
-    apply(database, script, Left(runsOn))
+    apply(database, Right(script), Left(runsOn))
+
+  def apply(database: RedshiftDatabase, script: S3Uri, runsOn: WorkerGroup): SqlActivity =
+    apply(database, Left(script), Right(runsOn))
 
   def apply(database: RedshiftDatabase, script: String, runsOn: WorkerGroup): SqlActivity =
-    apply(database, script, Right(runsOn))
+    apply(database, Right(script), Right(runsOn))
 
-  private def apply(database: RedshiftDatabase, script: String, runsOn: Either[Ec2Resource, WorkerGroup]): SqlActivity =
+  private def apply(database: RedshiftDatabase, script: Either[S3Uri, String], runsOn: Either[Ec2Resource, WorkerGroup]): SqlActivity =
     new SqlActivity(
       id = PipelineObjectId(SqlActivity.getClass),
-      scriptOrScriptUri = Left(script),
+      script = script,
       scriptArgument = Seq(),
       database = database,
       queue = None,

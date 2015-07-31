@@ -1,6 +1,6 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
@@ -13,8 +13,8 @@ import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
  */
 case class JarActivity private (
   id: PipelineObjectId,
-  jar: String,
-  scriptUri: Option[String],
+  jarUri: S3Uri,
+  scriptUri: Option[S3Uri],
   mainClass: Option[String],
   arguments: Seq[String],
   stdout: Option[String],
@@ -62,8 +62,8 @@ case class JarActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = scriptUri,
-    scriptArgument = Option(Seq(jar) ++ mainClass.toSeq ++ arguments),
+    scriptUri = scriptUri.map(_.ref),
+    scriptArgument = Option(Seq(jarUri.ref) ++ mainClass.toSeq ++ arguments),
     stdout = stdout,
     stderr = stderr,
     stage = stage.map(_.toString),
@@ -87,15 +87,15 @@ case class JarActivity private (
 
 object JarActivity extends RunnableObject {
 
-  def apply(jar: String, runsOn: Ec2Resource)(implicit hc: HyperionContext): JarActivity = apply(jar, Left(runsOn))
+  def apply(jarUri: S3Uri, runsOn: Ec2Resource)(implicit hc: HyperionContext): JarActivity = apply(jarUri, Left(runsOn))
 
-  def apply(jar: String, runsOn: WorkerGroup)(implicit hc: HyperionContext): JarActivity = apply(jar, Right(runsOn))
+  def apply(jarUri: S3Uri, runsOn: WorkerGroup)(implicit hc: HyperionContext): JarActivity = apply(jarUri, Right(runsOn))
 
-  private def apply(jar: String, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): JarActivity =
+  private def apply(jarUri: S3Uri, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): JarActivity =
     new JarActivity(
       id = PipelineObjectId(JarActivity.getClass),
-      jar = jar,
-      scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),
+      jarUri = jarUri,
+      scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       mainClass = None,
       arguments = Seq(),
       stdout = None,

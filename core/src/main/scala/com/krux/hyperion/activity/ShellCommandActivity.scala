@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
@@ -12,7 +12,7 @@ import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
  */
 case class ShellCommandActivity private (
   id: PipelineObjectId,
-  commandOrScriptUri: Either[String, String],
+  script: Either[S3Uri, String],
   scriptArguments: Seq[String],
   stdout: Option[String],
   stderr: Option[String],
@@ -35,8 +35,8 @@ case class ShellCommandActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withCommand(cmd: String) = this.copy(commandOrScriptUri = Left(cmd))
-  def withScriptUri(uri: String) = this.copy(commandOrScriptUri = Right(uri))
+  def withScript(cmd: String) = this.copy(script = Right(cmd))
+  def withScript(uri: S3Uri) = this.copy(script = Left(uri))
   def withArguments(args: String*) = this.copy(scriptArguments = scriptArguments ++ args)
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))
   def withStderrTo(err: String) = this.copy(stderr = Option(err))
@@ -60,8 +60,8 @@ case class ShellCommandActivity private (
   lazy val serialize = AdpShellCommandActivity(
     id = id,
     name = id.toOption,
-    command = commandOrScriptUri.left.toOption,
-    scriptUri = commandOrScriptUri.right.toOption,
+    command = script.right.toOption,
+    scriptUri = script.left.toOption.map(_.ref),
     scriptArgument = scriptArguments,
     stdout = stdout,
     stderr = stderr,
@@ -85,14 +85,18 @@ case class ShellCommandActivity private (
 
 object ShellCommandActivity extends RunnableObject {
 
-  def apply(runsOn: Ec2Resource): ShellCommandActivity = apply(Left(runsOn))
+  def apply(script: S3Uri, runsOn: Ec2Resource): ShellCommandActivity = apply(Left(script), Left(runsOn))
 
-  def apply(runsOn: WorkerGroup): ShellCommandActivity = apply(Right(runsOn))
+  def apply(script: String, runsOn: Ec2Resource): ShellCommandActivity = apply(Right(script), Left(runsOn))
 
-  private def apply(runsOn: Either[Ec2Resource, WorkerGroup]): ShellCommandActivity =
+  def apply(script: S3Uri, runsOn: WorkerGroup): ShellCommandActivity = apply(Left(script), Right(runsOn))
+
+  def apply(script: String, runsOn: WorkerGroup): ShellCommandActivity = apply(Right(script), Right(runsOn))
+
+  private def apply(script: Either[S3Uri, String], runsOn: Either[Ec2Resource, WorkerGroup]): ShellCommandActivity =
     new ShellCommandActivity(
       id = PipelineObjectId(ShellCommandActivity.getClass),
-      commandOrScriptUri = Left(""),
+      script = script,
       scriptArguments = Seq(),
       stdout = None,
       stderr = None,
