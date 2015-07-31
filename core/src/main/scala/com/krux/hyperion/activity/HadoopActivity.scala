@@ -30,6 +30,7 @@ case class HadoopActivity(
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
+  def withMainClass(mainClass: Any) = this.copy(mainClass = ActivityHelper.getMainClass(mainClass))
   def withHadoopQueue(queue: String) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))

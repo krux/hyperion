@@ -38,7 +38,7 @@ case class JarActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withMainClass(mainClass: Any): JarActivity = this.copy(mainClass = getMainClass(mainClass))
+  def withMainClass(mainClass: Any) = this.copy(mainClass = ActivityHelper.getMainClass(mainClass))
   def withArguments(args: String*) = this.copy(arguments = arguments ++ args)
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))
   def withStderrTo(err: String) = this.copy(stderr = Option(err))

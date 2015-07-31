@@ -13,12 +13,7 @@ case class SparkStep private (
   jobRunner: Option[String]
 ) {
 
-  def withMainClass(mainClass: Any): SparkStep = mainClass match {
-    case mc: String => this.copy(mainClass = Option(mc.stripSuffix("$")))
-    case mc: Class[_] => this.withMainClass(mc.getCanonicalName)
-    case mc => this.withMainClass(mc.getClass)
-  }
-
+  def withMainClass(mainClass: Any) = this.copy(mainClass = ActivityHelper.getMainClass(mainClass))
   def withArguments(arg: String*) = this.copy(args = args ++ arg)
 
   override def toString: String = (scriptRunner.toSeq ++ jobRunner.toSeq ++ Seq(jar) ++ mainClass.toSeq ++ args).mkString(",")

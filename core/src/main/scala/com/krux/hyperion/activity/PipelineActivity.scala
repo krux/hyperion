@@ -24,10 +24,4 @@ trait PipelineActivity extends PipelineObject {
   def serialize: AdpActivity
   def ref: AdpRef[AdpActivity] = AdpRef(serialize)
 
-  def getMainClass(mainClass: Any): Option[String] = mainClass match {
-    case mc: String => Option(mc.stripSuffix("$"))
-    case mc: Class[_] => getMainClass(mc.getCanonicalName)
-    case mc => getMainClass(mc.getClass)
-  }
-
 }

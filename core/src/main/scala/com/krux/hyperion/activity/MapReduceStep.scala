@@ -9,12 +9,7 @@ case class MapReduceStep private (
   args: Seq[String]
 ) {
 
-  def withMainClass(mainClass: Any): MapReduceStep = mainClass match {
-    case mc: String => this.copy(mainClass = Option(mc.stripSuffix("$")))
-    case mc: Class[_] => this.withMainClass(mc.getCanonicalName)
-    case mc => this.withMainClass(mc.getClass)
-  }
-
+  def withMainClass(mainClass: Any) = this.copy(mainClass = ActivityHelper.getMainClass(mainClass))
   def withArguments(arg: String*) = this.copy(args = args ++ arg)
 
   override def toString: String = (Seq(jar) ++ mainClass.toSeq ++ args).mkString(",")
