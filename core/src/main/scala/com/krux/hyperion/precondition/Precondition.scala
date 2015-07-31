@@ -20,7 +20,7 @@ trait Precondition extends PipelineObject {
   /**
    * The IAM role to use for this precondition.
    */
-  def role: Option[String]
+  def role: String
 
   def serialize: AdpPrecondition
 

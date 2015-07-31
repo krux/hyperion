@@ -13,11 +13,11 @@ trait AdpDatabase extends AdpDataPipelineObject {
   /** The properties of the JDBC connections for this database. */
   def jdbcProperties: Option[Seq[String]]
 
-  /** The password to connect to the database. */
-  def `*password`: String
-
   /** The user name to connect to the database. */
   def username: String
+
+  /** The password to connect to the database. */
+  def `*password`: String
 }
 
 /**
@@ -36,9 +36,9 @@ case class AdpRedshiftDatabase(
   clusterId: String,
   connectionString: Option[String],
   databaseName: Option[String],
-  jdbcProperties: Option[Seq[String]],
+  username: String,
   `*password`: String,
-  username: String
+  jdbcProperties: Option[Seq[String]]
 ) extends AdpDatabase {
 
   val `type` = "RedshiftDatabase"
@@ -55,11 +55,12 @@ case class AdpJdbcDatabase(
   id: String,
   name: Option[String],
   connectionString: String,
-  jdbcDriverClass: String,
   databaseName: Option[String],
-  jdbcProperties: Option[Seq[String]],
+  username: String,
   `*password`: String,
-  username: String
+  jdbcDriverJarUri: Option[String],
+  jdbcDriverClass: String,
+  jdbcProperties: Option[Seq[String]]
 ) extends AdpDatabase {
 
   val `type` = "JdbcDatabase"
@@ -74,8 +75,8 @@ case class AdpRdsDatabase(
   name: Option[String],
   databaseName: Option[String],
   jdbcProperties: Option[Seq[String]],
-  `*password`: String,
-  username: String
+  username: String,
+  `*password`: String
 ) extends AdpDatabase {
 
   val `type` = "RdsDatabase"

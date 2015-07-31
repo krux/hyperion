@@ -13,8 +13,6 @@ case class SnsAlarm private (
   message: String,
   topicArn: Option[String],
   role: Option[String]
-)(
-  implicit val hc: HyperionContext
 ) extends PipelineObject {
 
   def withSubject(subject: String) = this.copy(subject = subject)
@@ -38,7 +36,7 @@ case class SnsAlarm private (
 object SnsAlarm {
   def apply()(implicit hc: HyperionContext) =
     new SnsAlarm(
-      id = PipelineObjectId("SnsAlarm"),
+      id = PipelineObjectId(SnsAlarm.getClass),
       subject = "",
       message = "",
       topicArn = hc.snsTopic,

@@ -31,7 +31,7 @@ case class CustomDataFormat private (
 object CustomDataFormat {
 
   def apply() = new CustomDataFormat(
-    id = PipelineObjectId("CustomDataFormat"),
+    id = PipelineObjectId(CustomDataFormat.getClass),
     columns = Seq(),
     columnSeparator = ",",
     recordSeparator = "\n"

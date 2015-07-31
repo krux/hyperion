@@ -20,6 +20,9 @@ case class DefaultObject(schedule: Schedule)(implicit val hc: HyperionContext)
            "role" -> Left(hc.role),
            "resourceRole" -> Left(hc.resourceRole),
            "schedule" -> Right(schedule.ref)
+         // TODO - workerGroup
+         // TODO - preActivityTaskConfig
+         // TODO - postActivityTaskConfig
          )
      }
 

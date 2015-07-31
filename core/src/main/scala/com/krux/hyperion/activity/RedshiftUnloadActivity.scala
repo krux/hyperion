@@ -6,25 +6,31 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlActivity
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.Ec2Resource
+import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
 
 /**
  * Unload result of the given sql script from redshift to given s3Path.
  */
 case class RedshiftUnloadActivity private (
   id: PipelineObjectId,
-  database: RedshiftDatabase,
   script: String,
   s3Path: String,
-  runsOn: Ec2Resource,
+  database: RedshiftDatabase,
   unloadOptions: Seq[RedshiftUnloadOption],
+  queue: Option[String],
+  runsOn: Either[Ec2Resource, WorkerGroup],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
   accessKeyId: String,
-  accessKeySecret: String
+  accessKeySecret: String,
+  attemptTimeout: Option[String],
+  lateAfterTimeout: Option[String],
+  maximumRetries: Option[Int],
+  retryDelay: Option[String],
+  failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
   def unloadScript = s"""
@@ -41,14 +47,22 @@ case class RedshiftUnloadActivity private (
   def withUnloadOptions(opts: RedshiftUnloadOption*) =
     this.copy(unloadOptions = unloadOptions ++ opts)
 
+  def withQueue(queue: String) = this.copy(queue = Option(queue))
+
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
+  def withAttemptTimeout(timeout: String) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: String) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: String) = this.copy(retryDelay = Option(delay))
+  def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   override def objects: Iterable[PipelineObject] =
-    Seq(database, runsOn) ++
+    runsOn.left.toSeq ++
+    Seq(database) ++
     dependsOn ++
     preconditions ++
     onFailAlarms ++
@@ -58,16 +72,23 @@ case class RedshiftUnloadActivity private (
   lazy val serialize = AdpSqlActivity(
     id = id,
     name = id.toOption,
-    database = database.ref,
-    script = unloadScript,
+    script = Option(unloadScript),
+    scriptUri = None,
     scriptArgument = None,
-    queue = None,
-    runsOn = runsOn.ref,
+    database = database.ref,
+    queue = queue,
+    workerGroup = runsOn.right.toOption.map(_.ref),
+    runsOn = runsOn.left.toOption.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
-    onLateAction = seqToOption(onLateActionAlarms)(_.ref)
+    onLateAction = seqToOption(onLateActionAlarms)(_.ref),
+    attemptTimeout = attemptTimeout,
+    lateAfterTimeout = lateAfterTimeout,
+    maximumRetries = maximumRetries.map(_.toString),
+    retryDelay = retryDelay,
+    failureAndRerunMode = failureAndRerunMode.map(_.toString)
   )
 
 }
@@ -75,12 +96,21 @@ case class RedshiftUnloadActivity private (
 object RedshiftUnloadActivity extends RunnableObject {
 
   def apply(database: RedshiftDatabase, script: String, s3Path: String,
-    accessKeyId: String, accessKeySecret: String, runsOn: Ec2Resource)(implicit hc: HyperionContext) =
+    accessKeyId: String, accessKeySecret: String, runsOn: Ec2Resource): RedshiftUnloadActivity =
+    apply(database, script, s3Path, accessKeyId, accessKeySecret, Left(runsOn))
+
+  def apply(database: RedshiftDatabase, script: String, s3Path: String,
+    accessKeyId: String, accessKeySecret: String, runsOn: WorkerGroup): RedshiftUnloadActivity =
+    apply(database, script, s3Path, accessKeyId, accessKeySecret, Right(runsOn))
+
+  private def apply(database: RedshiftDatabase, script: String, s3Path: String,
+    accessKeyId: String, accessKeySecret: String, runsOn: Either[Ec2Resource, WorkerGroup]): RedshiftUnloadActivity =
     new RedshiftUnloadActivity(
-      id = PipelineObjectId("RedshiftUnloadActivity"),
-      database = database,
+      id = PipelineObjectId(RedshiftUnloadActivity.getClass),
       script = script,
       s3Path = s3Path,
+      database = database,
+      queue = None,
       runsOn = runsOn,
       unloadOptions = Seq(),
       dependsOn = Seq(),
@@ -89,7 +119,12 @@ object RedshiftUnloadActivity extends RunnableObject {
       onSuccessAlarms = Seq(),
       onLateActionAlarms = Seq(),
       accessKeyId = accessKeyId,
-      accessKeySecret = accessKeySecret
+      accessKeySecret = accessKeySecret,
+      attemptTimeout = None,
+      lateAfterTimeout = None,
+      maximumRetries = None,
+      retryDelay = None,
+      failureAndRerunMode = None
     )
 
 }

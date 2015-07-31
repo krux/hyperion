@@ -27,7 +27,7 @@ case class CsvDataFormat private (
 
 object CsvDataFormat {
   def apply() = new CsvDataFormat(
-    id = PipelineObjectId("CsvDataFormat"),
+    id = PipelineObjectId(CsvDataFormat.getClass),
     columns = Seq(),
     escapeChar = None
   )

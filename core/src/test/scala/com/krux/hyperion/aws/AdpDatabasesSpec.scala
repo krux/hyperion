@@ -8,14 +8,14 @@ class AdpDatabasesSpec extends WordSpec {
   "AdpRedshiftDatabase" should {
     "converts to Json" in {
       val testObj = AdpRedshiftDatabase(
-        "red",
-        None,
-        "datascience-redshift-id",
-        None,
-        Some("dbname"),
-        None,
-        "supersecretpassword",
-        "notsosupersecretuser"
+        id = "red",
+        name = None,
+        clusterId = "datascience-redshift-id",
+        connectionString = None,
+        databaseName = Option("dbname"),
+        `*password` = "supersecretpassword",
+        username = "notsosupersecretuser",
+        jdbcProperties = None
       )
       val objShoudBe = ("id" -> "red") ~
         ("clusterId" -> "datascience-redshift-id") ~
@@ -34,11 +34,12 @@ class AdpDatabasesSpec extends WordSpec {
         id = "jdbc",
         name = None,
         connectionString = "datascience-mysql",
-        jdbcDriverClass = "mysql",
-        databaseName = Some("dbname"),
-        jdbcProperties = None,
+        databaseName = Option("dbname"),
+        username = "notsosupersecretuser",
         `*password` = "supersecretpassword",
-        username = "notsosupersecretuser"
+        jdbcDriverJarUri = None,
+        jdbcDriverClass = "mysql",
+        jdbcProperties = None
       )
       val objShoudBe = ("id" -> "jdbc") ~
         ("connectionString" -> "datascience-mysql") ~
@@ -57,7 +58,7 @@ class AdpDatabasesSpec extends WordSpec {
       val testObj = AdpRdsDatabase(
         id = "rds",
         name = None,
-        databaseName = Some("datascience-rds"),
+        databaseName = Option("datascience-rds"),
         jdbcProperties = None,
         `*password` = "supersecretpassword",
         username = "notsosupersecretuser"

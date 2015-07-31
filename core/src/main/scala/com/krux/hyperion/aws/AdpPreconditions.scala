@@ -5,16 +5,17 @@ package com.krux.hyperion.aws
  * The activity cannot run until all its conditions are met.
  */
 trait AdpPrecondition extends AdpDataPipelineObject {
-  /**
-   * The precondition will be retried until the retryTimeout with a gap of retryDelay between attempts.
-   * Time period; for example, "1 hour".
-   */
-  def preconditionTimeout: Option[String]
 
   /**
    * The IAM role to use for this precondition.
    */
   def role: String
+
+  /**
+   * The precondition will be retried until the retryTimeout with a gap of retryDelay between attempts.
+   * Time period; for example, "1 hour".
+   */
+  def preconditionTimeout: Option[String]
 }
 
 /**
@@ -25,9 +26,9 @@ trait AdpPrecondition extends AdpDataPipelineObject {
 case class AdpDynamoDBDataExistsPrecondition (
   id: String,
   name: Option[String],
-  preconditionTimeout: Option[String],
+  tableName: String,
   role: String,
-  tableName: String
+  preconditionTimeout: Option[String]
 ) extends AdpPrecondition {
 
   val `type` = "DynamoDBDataExists"
@@ -42,9 +43,9 @@ case class AdpDynamoDBDataExistsPrecondition (
 case class AdpDynamoDBTableExistsPrecondition(
   id: String,
   name: Option[String],
-  preconditionTimeout: Option[String],
+  tableName: String,
   role: String,
-  tableName: String
+  preconditionTimeout: Option[String]
 ) extends AdpPrecondition {
 
   val `type` = "DynamoDBTableExists"
@@ -57,8 +58,8 @@ case class AdpDynamoDBTableExistsPrecondition(
 case class AdpExistsPrecondition(
   id: String,
   name: Option[String],
-  preconditionTimeout: Option[String],
-  role: String
+  role: String,
+  preconditionTimeout: Option[String]
 ) extends AdpPrecondition {
 
   val `type` = "Exists"
@@ -73,9 +74,9 @@ case class AdpExistsPrecondition(
 case class AdpS3KeyExistsPrecondition(
   id: String,
   name: Option[String],
-  preconditionTimeout: Option[String],
+  s3Key: String,
   role: String,
-  s3Key: String
+  preconditionTimeout: Option[String]
 ) extends AdpPrecondition {
 
   val `type` = "S3KeyExists"
@@ -90,9 +91,9 @@ case class AdpS3KeyExistsPrecondition(
 case class AdpS3PrefixNotEmptyPrecondition(
   id: String,
   name: Option[String],
-  preconditionTimeout: Option[String],
+  s3Prefix: String,
   role: String,
-  s3Prefix: String
+  preconditionTimeout: Option[String]
 ) extends AdpPrecondition {
 
   val `type` = "S3PrefixNotEmpty"
@@ -112,13 +113,13 @@ case class AdpS3PrefixNotEmptyPrecondition(
 case class AdpShellCommandPrecondition(
   id: String,
   name: Option[String],
-  preconditionTimeout: Option[String],
-  role: String,
-  command: String,
-  scriptArgument: Option[Seq[String]],
+  command: Option[String],
   scriptUri: Option[String],
+  scriptArgument: Option[Seq[String]],
   stdout: Option[String],
-  stderr: Option[String]
+  stderr: Option[String],
+  role: String,
+  preconditionTimeout: Option[String]
 ) extends AdpPrecondition {
 
   val `type` = "ShellCommandPrecondition"

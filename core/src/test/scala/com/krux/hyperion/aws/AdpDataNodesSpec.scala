@@ -16,6 +16,7 @@ class AdpDataNodesSpec extends WordSpec {
         dataFormat = Some(AdpRef(tsvFormat)),
         directoryPath = "s3://blah/blah",
         manifestFilePath = None,
+        workerGroup = None,
         precondition = None,
         onSuccess = None,
         onFail = None
@@ -38,6 +39,7 @@ class AdpDataNodesSpec extends WordSpec {
         dataFormat = Some(AdpRef(tsvFormat)),
         filePath = "s3://blah/blah/dir/",
         manifestFilePath = None,
+        workerGroup = None,
         precondition = None,
         onSuccess = None,
         onFail = None
@@ -62,6 +64,7 @@ class AdpDataNodesSpec extends WordSpec {
         schemaName = Some("public"),
         tableName = "myTable",
         primaryKeys = None,
+        workerGroup = None,
         precondition = None,
         onSuccess = None,
         onFail = None

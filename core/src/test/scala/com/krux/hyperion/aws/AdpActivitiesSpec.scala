@@ -11,12 +11,18 @@ class AdpActivitiesSpec extends WordSpec {
         name = None,
         input = AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"),
         output = AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode"),
-        runsOn = AdpRef.withRefObjId[AdpEc2Resource]("MyEc2Resource"),
+        workerGroup = None,
+        runsOn = Option(AdpRef.withRefObjId[AdpEc2Resource]("MyEc2Resource")),
         dependsOn = None,
         precondition = None,
         onFail = None,
         onSuccess = None,
-        onLateAction = None
+        onLateAction = None,
+        attemptTimeout = None,
+        lateAfterTimeout = None,
+        maximumRetries = None,
+        retryDelay = None,
+        failureAndRerunMode = None
       )
       val objShouldBe = ("id" -> "GenericCopyActivity") ~
         ("input" -> ("ref" -> "MyS3DataNode")) ~
@@ -32,18 +38,24 @@ class AdpActivitiesSpec extends WordSpec {
       val testObj = AdpRedshiftCopyActivity(
         id = "S3ToRedshiftCopyActivity",
         name = None,
-        input = AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"),
         insertMode = "KEEP_EXISTING",
-        output = AdpRef.withRefObjId[AdpDataNode]("MyRedshiftDataNode"),
-        runsOn = AdpRef.withRefObjId[AdpEc2Resource]("MyEc2Resource"),
         transformSql = None,
-        commandOptions = Some(Seq("EMPTYASNULL", "IGNOREBLANKLINES")),
         queue = None,
+        commandOptions = Option(Seq("EMPTYASNULL", "IGNOREBLANKLINES")),
+        input = AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"),
+        output = AdpRef.withRefObjId[AdpDataNode]("MyRedshiftDataNode"),
+        workerGroup = None,
+        runsOn = Option(AdpRef.withRefObjId[AdpEc2Resource]("MyEc2Resource")),
         dependsOn = None,
         precondition = None,
         onFail = None,
         onSuccess = None,
-        onLateAction = None
+        onLateAction = None,
+        attemptTimeout = None,
+        lateAfterTimeout = None,
+        maximumRetries = None,
+        retryDelay = None,
+        failureAndRerunMode = None
       )
       val objShouldBe = ("id" -> "S3ToRedshiftCopyActivity") ~
         ("input" -> ("ref" -> "MyS3DataNode")) ~
@@ -61,26 +73,32 @@ class AdpActivitiesSpec extends WordSpec {
       val testObj = AdpEmrActivity(
         id = "MyEmrActivity",
         name = None,
-        runsOn = AdpRef.withRefObjId[AdpEmrCluster]("MyEmrCluster"),
-        preStepCommand = Some(Seq("scp remoteFiles localFiles")),
-        postStepCommand = Some(Seq("scp localFiles remoteFiles")),
-        actionOnResourceFailure = None,
-        actionOnTaskFailure = None,
         step = Seq(
           "s3://myBucket/myPath/myStep.jar,firstArg,secondArg",
           "s3://myBucket/myPath/myOtherStep.jar,anotherArg"
         ),
-        input = Some(AdpRef.withRefObjId[AdpS3DataNode]("MyS3Input")),
-        output = Some(AdpRef.withRefObjId[AdpS3DataNode]("MyS3Output")),
+        preStepCommand = Option(Seq("scp remoteFiles localFiles")),
+        postStepCommand = Option(Seq("scp localFiles remoteFiles")),
+        input = Option(Seq(AdpRef.withRefObjId[AdpS3DataNode]("MyS3Input"))),
+        output = Option(Seq(AdpRef.withRefObjId[AdpS3DataNode]("MyS3Output"))),
+        workerGroup = None,
+        runsOn = Option(AdpRef.withRefObjId[AdpEmrCluster]("MyEmrCluster")),
         dependsOn = None,
         precondition = None,
         onFail = None,
         onSuccess = None,
-        onLateAction = None
+        onLateAction = None,
+        attemptTimeout = None,
+        lateAfterTimeout = None,
+        maximumRetries = None,
+        retryDelay = None,
+        failureAndRerunMode = None,
+        actionOnResourceFailure = None,
+        actionOnTaskFailure = None
       )
       val objShouldBe = ("id" -> "MyEmrActivity") ~
-        ("input" ->  ("ref" -> "MyS3Input")) ~
-        ("output" -> ("ref" -> "MyS3Output")) ~
+        ("input" ->  Seq(("ref" -> "MyS3Input"))) ~
+        ("output" -> Seq(("ref" -> "MyS3Output"))) ~
         ("preStepCommand" -> Seq("scp remoteFiles localFiles")) ~
         ("postStepCommand" -> Seq("scp localFiles remoteFiles")) ~
         ("runsOn" -> ("ref" -> "MyEmrCluster")) ~
@@ -94,21 +112,30 @@ class AdpActivitiesSpec extends WordSpec {
 
   "AdpHiveActivity" should {
     "converts to json" in {
-      val testObj = AdpHiveActivity(
+      val testObj = new AdpHiveActivity(
         id = "HiveActivity",
         name = None,
-        hiveScript = Some("SELECT * FROM TABLE"),
+        hiveScript = Option("SELECT * FROM TABLE"),
         scriptUri = None,
         scriptVariable = None,
-        input = AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"),
-        output = AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode"),
-        stage = "true",
-        runsOn = AdpRef.withRefObjId[AdpEmrCluster]("MyEc2Resource"),
+        hadoopQueue = None,
+        stage = Option("true"),
+        input = Option(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode")),
+        output = Option(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode")),
+        preActivityTaskConfig = None,
+        postActivityTaskConfig = None,
+        workerGroup = None,
+        runsOn = Option(AdpRef.withRefObjId[AdpEmrCluster]("MyEc2Resource")),
         dependsOn = None,
         precondition = None,
         onFail = None,
         onSuccess = None,
-        onLateAction = None
+        onLateAction = None,
+        attemptTimeout = None,
+        lateAfterTimeout = None,
+        maximumRetries = None,
+        retryDelay = None,
+        failureAndRerunMode = None
       )
       val objShouldBe = ("id" -> "HiveActivity") ~
         ("hiveScript" -> "SELECT * FROM TABLE") ~
@@ -126,16 +153,26 @@ class AdpActivitiesSpec extends WordSpec {
       val testObj = AdpHiveCopyActivity(
         id = "HiveCopyActivity",
         name = None,
-        filterSql = Some("SELECT * FROM TABLE"),
+        filterSql = Option("SELECT * FROM TABLE"),
         generatedScriptsPath = None,
-        input = AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"),
-        output = AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode"),
-        runsOn = AdpRef.withRefObjId[AdpEmrCluster]("MyEmrResource"),
+        stage = None,
+        input = Option(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode")),
+        output = Option(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode")),
+        hadoopQueue = None,
+        preActivityTaskConfig = None,
+        postActivityTaskConfig = None,
+        workerGroup = None,
+        runsOn = Option(AdpRef.withRefObjId[AdpEmrCluster]("MyEmrResource")),
         dependsOn = None,
         precondition = None,
         onFail = None,
         onSuccess = None,
-        onLateAction = None
+        onLateAction = None,
+        attemptTimeout = None,
+        lateAfterTimeout = None,
+        maximumRetries = None,
+        retryDelay = None,
+        failureAndRerunMode = None
       )
       val objShouldBe = ("id" -> "HiveCopyActivity") ~
         ("filterSql" -> "SELECT * FROM TABLE") ~
@@ -149,22 +186,31 @@ class AdpActivitiesSpec extends WordSpec {
 
   "AdpPigActivity" should {
     "converts to json" in {
-      val testObj = AdpPigActivity(
+      val testObj = new AdpPigActivity(
         id = "PigActivity",
         name = None,
-        generatedScriptsPath = None,
-        script = Some("SELECT * FROM TABLE"),
+        script = Option("SELECT * FROM TABLE"),
         scriptUri = None,
         scriptVariable = None,
-        input = AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"),
-        output = AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode"),
+        generatedScriptsPath = None,
         stage = "true",
-        runsOn = AdpRef.withRefObjId[AdpEmrCluster]("MyEmrResource"),
+        input = Option(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode")),
+        output = Option(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode")),
+        hadoopQueue = None,
+        preActivityTaskConfig = None,
+        postActivityTaskConfig = None,
+        workerGroup = None,
+        runsOn = Option(AdpRef.withRefObjId[AdpEmrCluster]("MyEmrResource")),
         dependsOn = None,
         precondition = None,
         onFail = None,
         onSuccess = None,
-        onLateAction = None
+        onLateAction = None,
+        attemptTimeout = None,
+        lateAfterTimeout = None,
+        maximumRetries = None,
+        retryDelay = None,
+        failureAndRerunMode = None
       )
       val objShouldBe = ("id" -> "PigActivity") ~
         ("script" -> "SELECT * FROM TABLE") ~
@@ -182,16 +228,23 @@ class AdpActivitiesSpec extends WordSpec {
       val testObj = AdpSqlActivity(
         id = "SqlActivity",
         name = None,
-        database = AdpRef.withRefObjId[AdpDatabase]("MyDatabase"),
-        script = "Script",
+        script = Option("Script"),
+        scriptUri = None,
         scriptArgument = None,
-        queue = Some("yes"),
-        runsOn = AdpRef.withRefObjId[AdpEc2Resource]("MyEc2Resource"),
+        database = AdpRef.withRefObjId[AdpDatabase]("MyDatabase"),
+        queue = Option("yes"),
+        workerGroup = None,
+        runsOn = Option(AdpRef.withRefObjId[AdpEc2Resource]("MyEc2Resource")),
         dependsOn = None,
         precondition = None,
         onFail = None,
         onSuccess = None,
-        onLateAction = None
+        onLateAction = None,
+        attemptTimeout = None,
+        lateAfterTimeout = None,
+        maximumRetries = None,
+        retryDelay = None,
+        failureAndRerunMode = None
       )
       val objShouldBe = ("id" -> "SqlActivity") ~
         ("database" -> ("ref" -> "MyDatabase")) ~
@@ -208,25 +261,31 @@ class AdpActivitiesSpec extends WordSpec {
       val testObj = AdpShellCommandActivity(
         id = "ShellCommandActivity",
         name = None,
-        command = Some("rm -rf /"),
+        command = Option("rm -rf /"),
         scriptUri = None,
         scriptArgument = None,
-        input = Some(Seq(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"))),
-        output = Some(Seq(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode"))),
-        stage = "true",
-        stdout = Some("log.out"),
-        stderr = Some("log.err"),
-        runsOn = AdpRef.withRefObjId[AdpEc2Resource]("MyEc2Resource"),
+        stdout = Option("log.out"),
+        stderr = Option("log.err"),
+        stage = Option("true"),
+        input = Option(Seq(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"))),
+        output = Option(Seq(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode"))),
+        workerGroup = None,
+        runsOn = Option(AdpRef.withRefObjId[AdpEc2Resource]("MyEc2Resource")),
         dependsOn = None,
         precondition = None,
         onFail = None,
         onSuccess = None,
-        onLateAction = None
+        onLateAction = None,
+        attemptTimeout = None,
+        lateAfterTimeout = None,
+        maximumRetries = None,
+        retryDelay = None,
+        failureAndRerunMode = None
       )
       val objShouldBe = ("id" -> "ShellCommandActivity") ~
         ("command" -> "rm -rf /") ~
-        ("input" -> Seq(("ref" -> "MyS3DataNode"))) ~
-        ("output" -> Seq(("ref" -> "MyOtherS3DataNode"))) ~
+        ("input" -> Seq("ref" -> "MyS3DataNode")) ~
+        ("output" -> Seq("ref" -> "MyOtherS3DataNode")) ~
         ("stage" -> "true") ~
         ("stdout" -> "log.out") ~
         ("stderr" -> "log.err") ~

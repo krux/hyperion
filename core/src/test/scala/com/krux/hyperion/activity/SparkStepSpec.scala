@@ -24,17 +24,17 @@ class SparkStepSpec extends WordSpec {
 
     "allow mainClass an instance" in {
       val ja = JarActivity("something.jar", ec2).withMainClass(new SomeClass())
-      assert(ja.mainClass == Some("com.krux.hyperion.activity.SparkStepSpec$SomeClass"))
+      assert(ja.mainClass == Some("com.krux.hyperion.activity.SparkStepSpec.SomeClass"))
     }
 
     "allow mainClass an object" in {
       val ja = JarActivity("something.jar", ec2).withMainClass(SomeObject)
-      assert(ja.mainClass == Some("com.krux.hyperion.activity.SparkStepSpec$SomeObject"))
+      assert(ja.mainClass == Some("com.krux.hyperion.activity.SparkStepSpec.SomeObject"))
     }
 
     "allow mainClass a Class" in {
       val ja = JarActivity("something.jar", ec2).withMainClass(SomeObject.getClass)
-      assert(ja.mainClass == Some("com.krux.hyperion.activity.SparkStepSpec$SomeObject"))
+      assert(ja.mainClass == Some("com.krux.hyperion.activity.SparkStepSpec.SomeObject"))
     }
   }
 }

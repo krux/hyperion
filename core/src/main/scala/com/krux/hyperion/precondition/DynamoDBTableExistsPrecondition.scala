@@ -12,18 +12,19 @@ import com.krux.hyperion.common.PipelineObjectId
 case class DynamoDBTableExistsPrecondition private (
   id: PipelineObjectId,
   tableName: String,
-  preconditionTimeout: Option[String],
-  role: Option[String]
-)(
-  implicit val hc: HyperionContext
+  role: String,
+  preconditionTimeout: Option[String]
 ) extends Precondition {
+
+  def withPreconditionTimeout(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def withRole(role: String) = this.copy(role = role)
 
   lazy val serialize = AdpDynamoDBTableExistsPrecondition(
     id = id,
     name = id.toOption,
-    preconditionTimeout = preconditionTimeout,
-    role = role.getOrElse(hc.resourceRole),
-    tableName = tableName
+    tableName = tableName,
+    role = role,
+    preconditionTimeout = preconditionTimeout
   )
 
 }
@@ -31,9 +32,9 @@ case class DynamoDBTableExistsPrecondition private (
 object DynamoDBTableExistsPrecondition {
   def apply(tableName: String)(implicit hc: HyperionContext) =
     new DynamoDBTableExistsPrecondition(
-      id = PipelineObjectId("DynamoDBTableExistsPrecondition"),
+      id = PipelineObjectId(DynamoDBTableExistsPrecondition.getClass),
       tableName = tableName,
-      preconditionTimeout = None,
-      role = None
+      role = hc.role,
+      preconditionTimeout = None
     )
 }

@@ -12,18 +12,19 @@ import com.krux.hyperion.common.PipelineObjectId
 case class S3KeyExistsPrecondition private (
   id: PipelineObjectId,
   s3Key: String,
-  preconditionTimeout: Option[String],
-  role: Option[String]
-)(
-  implicit val hc: HyperionContext
+  role: String,
+  preconditionTimeout: Option[String]
 ) extends Precondition {
+
+  def withPreconditionTimeout(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def withRole(role: String) = this.copy(role = role)
 
   lazy val serialize = AdpS3KeyExistsPrecondition(
     id = id,
     name = id.toOption,
     s3Key = s3Key,
-    preconditionTimeout = preconditionTimeout,
-    role = role.getOrElse(hc.resourceRole)
+    role = role,
+    preconditionTimeout = preconditionTimeout
   )
 
 }
@@ -31,9 +32,9 @@ case class S3KeyExistsPrecondition private (
 object S3KeyExistsPrecondition {
   def apply(s3Key: String)(implicit hc: HyperionContext) =
     new S3KeyExistsPrecondition(
-      id = PipelineObjectId("S3KeyExistsPrecondition"),
+      id = PipelineObjectId(S3KeyExistsPrecondition.getClass),
       s3Key = s3Key,
-      preconditionTimeout = None,
-      role = None
+      role = hc.role,
+      preconditionTimeout = None
     )
 }

@@ -27,7 +27,7 @@ case class RegExDataFormat private (
 
 object RegExDataFormat {
   def apply(inputRegEx: String, outputFormat: String) = new RegExDataFormat(
-    id = PipelineObjectId("RegExDataFormat"),
+    id = PipelineObjectId(RegExDataFormat.getClass),
     inputRegEx = inputRegEx,
     outputFormat = outputFormat,
     columns = Seq()

@@ -9,29 +9,30 @@ import com.krux.hyperion.common.PipelineObjectId
  */
 case class Ec2Resource private (
   id: PipelineObjectId,
-  terminateAfter: String,
+  instanceType: String,
+  imageId: Option[String],
   role: Option[String],
   resourceRole: Option[String],
-  instanceType: String,
-  region: Option[String],
-  imageId: Option[String],
+  runAsUser: Option[String],
   keyPair: Option[String],
+  region: Option[String],
+  availabilityZone: Option[String],
+  subnetId: Option[String],
+  associatePublicIpAddress: Boolean,
   securityGroups: Seq[String],
   securityGroupIds: Seq[String],
-  associatePublicIpAddress: Boolean,
-  subnetId: Option[String],
-  availabilityZone: Option[String],
   spotBidPrice: Option[Double],
   useOnDemandOnLastAttempt: Option[Boolean],
+  initTimeout: Option[String],
+  terminateAfter: String,
   actionOnResourceFailure: Option[ActionOnResourceFailure],
   actionOnTaskFailure: Option[ActionOnTaskFailure]
-)(
-  implicit val hc: HyperionContext
 ) extends ResourceObject {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
+  def runAsUser(user: String) = this.copy(runAsUser = Option(user))
   def terminatingAfter(terminateAfter: String) = this.copy(terminateAfter = terminateAfter)
   def withRole(role: String) = this.copy(role = Option(role))
   def withResourceRole(role: String) = this.copy(resourceRole = Option(role))
@@ -47,27 +48,27 @@ case class Ec2Resource private (
   def withAvailabilityZone(availabilityZone: String) = this.copy(availabilityZone = Option(availabilityZone))
   def withSpotBidPrice(spotBidPrice: Double) = this.copy(spotBidPrice = Option(spotBidPrice))
   def withUseOnDemandOnLastAttempt(useOnDemandOnLastAttempt: Boolean) = this.copy(useOnDemandOnLastAttempt = Option(useOnDemandOnLastAttempt))
+  def withInitTimeout(timeout: String) = this.copy(initTimeout = Option(timeout))
 
   lazy val serialize = AdpEc2Resource(
     id = id,
     name = id.toOption,
-    terminateAfter = terminateAfter,
+    instanceType = Option(instanceType),
+    imageId = imageId,
     role = role,
     resourceRole = resourceRole,
-    imageId = imageId,
-    instanceType = Option(instanceType),
-    region = region,
-    securityGroups = securityGroups match {
-      case Seq() => Option(Seq(hc.ec2SecurityGroup))
-      case groups => Option(groups)
-    },
-    securityGroupIds = securityGroupIds,
-    associatePublicIpAddress = Option(associatePublicIpAddress.toString),
+    runAsUser = runAsUser,
     keyPair = keyPair,
-    subnetId = subnetId,
+    region = region,
     availabilityZone = availabilityZone,
+    subnetId = subnetId,
+    associatePublicIpAddress = Option(associatePublicIpAddress.toString),
+    securityGroups = Option(securityGroups),
+    securityGroupIds = securityGroupIds,
     spotBidPrice = spotBidPrice,
     useOnDemandOnLastAttempt = useOnDemandOnLastAttempt,
+    initTimeout = initTimeout,
+    terminateAfter = Option(terminateAfter),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
     actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
   )
@@ -78,21 +79,23 @@ case class Ec2Resource private (
 object Ec2Resource {
 
   def apply()(implicit hc: HyperionContext) = new Ec2Resource(
-    id = PipelineObjectId("Ec2Resource"),
-    terminateAfter = hc.ec2TerminateAfter,
+    id = PipelineObjectId(Ec2Resource.getClass),
+    instanceType = hc.ec2InstanceType,
+    imageId = Option(hc.ec2ImageId),
     role = Option(hc.ec2Role),
     resourceRole = Option(hc.ec2ResourceRole),
-    instanceType = hc.ec2InstanceType,
-    region = Option(hc.ec2Region),
-    imageId = Option(hc.ec2ImageId),
+    runAsUser = None,
     keyPair = hc.ec2KeyPair,
-    securityGroups = Seq(),
-    securityGroupIds = Seq(),
-    associatePublicIpAddress = false,
-    subnetId = hc.ec2SubnetId,
+    region = Option(hc.ec2Region),
     availabilityZone = hc.ec2AvailabilityZone,
+    subnetId = hc.ec2SubnetId,
+    associatePublicIpAddress = false,
+    securityGroups = Seq(hc.ec2SecurityGroup),
+    securityGroupIds = Seq(),
     spotBidPrice = None,
     useOnDemandOnLastAttempt = None,
+    initTimeout = None,
+    terminateAfter = hc.ec2TerminateAfter,
     actionOnResourceFailure = None,
     actionOnTaskFailure = None
   )

@@ -12,18 +12,19 @@ import com.krux.hyperion.common.PipelineObjectId
 case class S3PrefixNotEmptyPrecondition private (
   id: PipelineObjectId,
   s3Prefix: String,
-  preconditionTimeout: Option[String],
-  role: Option[String]
-)(
-  implicit val hc: HyperionContext
+  role: String,
+  preconditionTimeout: Option[String]
 ) extends Precondition {
+
+  def withPreconditionTimeout(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def withRole(role: String) = this.copy(role = role)
 
   lazy val serialize = AdpS3PrefixNotEmptyPrecondition(
     id = id,
     name = id.toOption,
     s3Prefix = s3Prefix,
-    preconditionTimeout = preconditionTimeout,
-    role = role.getOrElse(hc.resourceRole)
+    role = role,
+    preconditionTimeout = preconditionTimeout
   )
 
 }
@@ -31,9 +32,9 @@ case class S3PrefixNotEmptyPrecondition private (
 object S3PrefixNotEmptyPrecondition {
   def apply(s3Prefix: String)(implicit hc: HyperionContext) =
     new S3PrefixNotEmptyPrecondition(
-      id = PipelineObjectId("S3PrefixNotEmptyPrecondition"),
+      id = PipelineObjectId(S3PrefixNotEmptyPrecondition.getClass),
       s3Prefix = s3Prefix,
-      preconditionTimeout = None,
-      role = None
+      role = hc.role,
+      preconditionTimeout = None
     )
 }

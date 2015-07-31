@@ -5,6 +5,7 @@ import com.krux.hyperion.aws.{AdpS3FileDataNode, AdpS3DirectoryDataNode}
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.dataformat.DataFormat
 import com.krux.hyperion.precondition.Precondition
+import com.krux.hyperion.resource.WorkerGroup
 
 trait S3DataNode extends Copyable {
 
@@ -34,6 +35,7 @@ case class S3File(
   id: PipelineObjectId,
   filePath: String,
   dataFormat: Option[DataFormat],
+  workerGroup: Option[WorkerGroup],
   preconditions: Seq[Precondition],
   onSuccessAlarms: Seq[SnsAlarm],
   onFailAlarms: Seq[SnsAlarm]
@@ -60,6 +62,7 @@ case class S3File(
     dataFormat = dataFormat.map(_.ref),
     filePath = filePath,
     manifestFilePath = None,
+    workerGroup = workerGroup.map(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref)
@@ -68,11 +71,16 @@ case class S3File(
 }
 
 object S3File {
-  def apply(filePath: String) =
+  def apply(filePath: String): S3File = apply(filePath, None)
+
+  def apply(filePath: String, workerGroup: WorkerGroup): S3File = apply(filePath, Option(workerGroup))
+
+  def apply(filePath: String, runsOn: Option[WorkerGroup]): S3File =
     new S3File(
-      id = PipelineObjectId("S3File"),
+      id = PipelineObjectId(S3File.getClass),
       filePath = filePath,
       dataFormat = None,
+      workerGroup = runsOn,
       preconditions = Seq(),
       onSuccessAlarms = Seq(),
       onFailAlarms = Seq()
@@ -86,6 +94,7 @@ case class S3Folder(
   id: PipelineObjectId,
   directoryPath: String = "",
   dataFormat: Option[DataFormat] = None,
+  workerGroup: Option[WorkerGroup],
   preconditions: Seq[Precondition] = Seq(),
   onSuccessAlarms: Seq[SnsAlarm] = Seq(),
   onFailAlarms: Seq[SnsAlarm] = Seq()
@@ -111,6 +120,7 @@ case class S3Folder(
     dataFormat = dataFormat.map(_.ref),
     directoryPath = directoryPath,
     manifestFilePath = None,
+    workerGroup = workerGroup.map(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref)
@@ -118,11 +128,16 @@ case class S3Folder(
 }
 
 object S3Folder {
-  def apply(directoryPath: String) =
+  def apply(directoryPath: String): S3Folder = apply(directoryPath, None)
+
+  def apply(directoryPath: String, workerGroup: WorkerGroup): S3Folder = apply(directoryPath, Option(workerGroup))
+
+  def apply(directoryPath: String, runsOn: Option[WorkerGroup]): S3Folder =
     new S3Folder(
-      id = PipelineObjectId("S3Folder"),
+      id = PipelineObjectId(S3Folder.getClass),
       directoryPath = directoryPath,
       dataFormat = None,
+      workerGroup = runsOn,
       preconditions = Seq(),
       onSuccessAlarms = Seq(),
       onFailAlarms = Seq()

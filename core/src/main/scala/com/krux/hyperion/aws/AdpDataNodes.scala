@@ -13,6 +13,11 @@ package com.krux.hyperion.aws
  * @param onSuccess The SnsAlarm to use when the current instance succeeds.
  */
 trait AdpDataNode extends AdpDataPipelineObject {
+  /**
+   * The worker group. This is used for routing tasks.
+   * If you provide a runsOn value and workerGroup exists, workerGroup is ignored.
+   */
+  def workerGroup: Option[String]
 
   /**
    * A list of precondition objects that must be true for the data node to be valid.
@@ -51,6 +56,7 @@ case class AdpDynamoDBDataNode (
   dynamoDBDataFormat: Option[AdpRef[AdpDataFormat]],
   readThroughputPercent: Option[Double],
   writeThroughputPercent: Option[Double],
+  workerGroup: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -86,7 +92,8 @@ trait AdpS3DataNode extends AdpDataNode {
 
 }
 
-/** You must provide either a filePath or directoryPath value.
+/**
+ * You must provide either a filePath or directoryPath value.
  */
 case class AdpS3DirectoryDataNode(
   id: String,
@@ -95,12 +102,14 @@ case class AdpS3DirectoryDataNode(
   dataFormat: Option[AdpRef[AdpDataFormat]],
   directoryPath: String,
   manifestFilePath: Option[String],
+  workerGroup: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
 ) extends AdpS3DataNode
 
-/** You must provide either a filePath or directoryPath value.
+/**
+ * You must provide either a filePath or directoryPath value.
  */
 case class AdpS3FileDataNode(
   id: String,
@@ -109,6 +118,7 @@ case class AdpS3FileDataNode(
   dataFormat: Option[AdpRef[AdpDataFormat]],
   filePath: String,
   manifestFilePath: Option[String],
+  workerGroup: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -130,6 +140,7 @@ case class AdpRedshiftDataNode(
   schemaName: Option[String],
   tableName: String,
   primaryKeys: Option[Seq[String]],
+  workerGroup: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -147,9 +158,6 @@ case class AdpRedshiftDataNode(
  *   "type" : "MySqlDataNode",
  *   "schedule" : { "ref" : "CopyPeriod" },
  *   "table" : "adEvents",
- *   "username": "user_name",
- *   "*password": "my_password",
- *   "connectionString": "jdbc:mysql://mysqlinstance-rds.example.us-east-1.rds.amazonaws.com:3306/database_name",
  *   "selectQuery" : "select * from #{table} where eventTime >= '#{@scheduledStartTime.format('YYYY-MM-dd HH:mm:ss')}' and eventTime < '#{@scheduledEndTime.format('YYYY-MM-dd HH:mm:ss')}'"
  * }
  * }}}
@@ -157,12 +165,11 @@ case class AdpRedshiftDataNode(
 case class AdpSqlDataNode(
   id: String,
   name: Option[String],
+  database: AdpRef[AdpDatabase],
   table: String,
-  username: String,
-  `*password`: String,
-  connectionString: String,
   selectQuery: Option[String],
   insertQuery: Option[String],
+  workerGroup: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]

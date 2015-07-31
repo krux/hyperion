@@ -30,9 +30,8 @@ case class DynamoDBExportDataFormat private (
 }
 
 object DynamoDBExportDataFormat {
-  def apply() =
-    new DynamoDBExportDataFormat(
-      id = PipelineObjectId("DynamoDBExportDataFormat"),
-      columns = Seq()
-    )
+  def apply() = new DynamoDBExportDataFormat(
+    id = PipelineObjectId(DynamoDBExportDataFormat.getClass),
+    columns = Seq()
+  )
 }

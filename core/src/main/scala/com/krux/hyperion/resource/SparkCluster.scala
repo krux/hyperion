@@ -9,161 +9,163 @@ import com.krux.hyperion.common.PipelineObjectId
  */
 class SparkCluster private (
   val id: PipelineObjectId,
-  val bootstrapAction: Seq[String],
-  val amiVersion: String,
-  val masterInstanceType: Option[String],
-  val coreInstanceType: Option[String],
-  val coreInstanceCount: Int,
-  val taskInstanceType: Option[String],
-  val taskInstanceCount: Int,
-  val taskInstanceBidPrice: Option[Double],
-  val terminateAfter: String,
-  val keyPair: Option[String],
-  val region: Option[String],
   val sparkVersion: String,
-  val enableDebugging: Option[Boolean],
+  val amiVersion: String,
   val supportedProducts: Option[String],
-  val subnetId: Option[String],
-  val role: Option[String],
-  val resourceRole: Option[String],
-  val availabilityZone: Option[String],
-  val coreInstanceBidPrice: Option[Double],
+  val standardBootstrapAction: Seq[String],
+  val bootstrapAction: Seq[String],
+  val enableDebugging: Option[Boolean],
+  val hadoopSchedulerType: Option[SchedulerType],
+  val keyPair: Option[String],
   val masterInstanceBidPrice: Option[Double],
+  val masterInstanceType: Option[String],
+  val coreInstanceBidPrice: Option[Double],
+  val coreInstanceCount: Int,
+  val coreInstanceType: Option[String],
+  val taskInstanceBidPrice: Option[Double],
+  val taskInstanceCount: Int,
+  val taskInstanceType: Option[String],
+  val region: Option[String],
+  val availabilityZone: Option[String],
+  val resourceRole: Option[String],
+  val role: Option[String],
+  val subnetId: Option[String],
+  val masterSecurityGroupId: Option[String],
+  val additionalMasterSecurityGroupIds: Seq[String],
+  val slaveSecurityGroupId: Option[String],
+  val additionalSlaveSecurityGroupIds: Seq[String],
   val useOnDemandOnLastAttempt: Option[Boolean],
   val visibleToAllUsers: Option[Boolean],
-  val masterSecurityGroupId: Option[String],
-  val slaveSecurityGroupId: Option[String],
-  val additionalMasterSecurityGroupIds: Seq[String],
-  val additionalSlaveSecurityGroupIds: Seq[String],
-  val hadoopSchedulerType: Option[SchedulerType],
+  val initTimeout: Option[String],
+  val terminateAfter: String,
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
   val actionOnTaskFailure: Option[ActionOnTaskFailure]
-)(
-  implicit val hc: HyperionContext
 ) extends EmrCluster {
 
   assert(coreInstanceCount >= 2)
   assert(taskInstanceCount >= 0)
 
   def copy(id: PipelineObjectId = id,
-    bootstrapAction: Seq[String] = bootstrapAction,
-    amiVersion: String = amiVersion,
-    masterInstanceType: Option[String] = masterInstanceType,
-    coreInstanceType: Option[String] = coreInstanceType,
-    coreInstanceCount: Int = coreInstanceCount,
-    taskInstanceType: Option[String] = taskInstanceType,
-    taskInstanceCount: Int = taskInstanceCount,
-    taskInstanceBidPrice: Option[Double] = taskInstanceBidPrice,
-    terminateAfter: String = terminateAfter,
-    keyPair: Option[String] = keyPair,
-    region: Option[String] = region,
     sparkVersion: String = sparkVersion,
-    enableDebugging: Option[Boolean] = enableDebugging,
+    amiVersion: String = amiVersion,
     supportedProducts: Option[String] = supportedProducts,
-    subnetId: Option[String] = subnetId,
-    role: Option[String] = role,
-    resourceRole: Option[String] = resourceRole,
-    availabilityZone: Option[String] = availabilityZone,
-    coreInstanceBidPrice: Option[Double] = coreInstanceBidPrice,
+    standardBootstrapAction: Seq[String] = standardBootstrapAction,
+    bootstrapAction: Seq[String] = bootstrapAction,
+    enableDebugging: Option[Boolean] = enableDebugging,
+    hadoopSchedulerType: Option[SchedulerType] = hadoopSchedulerType,
+    keyPair: Option[String] = keyPair,
     masterInstanceBidPrice: Option[Double] = masterInstanceBidPrice,
+    masterInstanceType: Option[String] = masterInstanceType,
+    coreInstanceBidPrice: Option[Double] = coreInstanceBidPrice,
+    coreInstanceCount: Int = coreInstanceCount,
+    coreInstanceType: Option[String] = coreInstanceType,
+    taskInstanceBidPrice: Option[Double] = taskInstanceBidPrice,
+    taskInstanceCount: Int = taskInstanceCount,
+    taskInstanceType: Option[String] = taskInstanceType,
+    region: Option[String] = region,
+    availabilityZone: Option[String] = availabilityZone,
+    resourceRole: Option[String] = resourceRole,
+    role: Option[String] = role,
+    subnetId: Option[String] = subnetId,
+    masterSecurityGroupId: Option[String] = masterSecurityGroupId,
+    additionalMasterSecurityGroupIds: Seq[String] = additionalMasterSecurityGroupIds,
+    slaveSecurityGroupId: Option[String] = slaveSecurityGroupId,
+    additionalSlaveSecurityGroupIds: Seq[String] = additionalSlaveSecurityGroupIds,
     useOnDemandOnLastAttempt: Option[Boolean] = useOnDemandOnLastAttempt,
     visibleToAllUsers: Option[Boolean] = visibleToAllUsers,
-    masterSecurityGroupId: Option[String] = masterSecurityGroupId,
-    slaveSecurityGroupId: Option[String] = slaveSecurityGroupId,
-    additionalMasterSecurityGroupIds: Seq[String] = additionalMasterSecurityGroupIds,
-    additionalSlaveSecurityGroupIds: Seq[String] = additionalSlaveSecurityGroupIds,
-    hadoopSchedulerType: Option[SchedulerType] = hadoopSchedulerType,
+    initTimeout: Option[String] = initTimeout,
+    terminateAfter: String = terminateAfter,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
-    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure) = new SparkCluster(id, bootstrapAction,
-    amiVersion, masterInstanceType, coreInstanceType, coreInstanceCount,
-    taskInstanceType, taskInstanceCount, taskInstanceBidPrice, terminateAfter,
-    keyPair, region, sparkVersion, enableDebugging, supportedProducts, subnetId,
-    role, resourceRole, availabilityZone, coreInstanceBidPrice, masterInstanceBidPrice,
-    useOnDemandOnLastAttempt, visibleToAllUsers, masterSecurityGroupId, slaveSecurityGroupId,
-    additionalMasterSecurityGroupIds, additionalSlaveSecurityGroupIds, hadoopSchedulerType,
+    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure
+  ) = new SparkCluster(id, sparkVersion, amiVersion, supportedProducts, standardBootstrapAction, bootstrapAction,
+    enableDebugging, hadoopSchedulerType, keyPair, masterInstanceBidPrice, masterInstanceType,
+    coreInstanceBidPrice, coreInstanceCount, coreInstanceType,
+    taskInstanceBidPrice, taskInstanceCount, taskInstanceType, region, availabilityZone, resourceRole, role, subnetId,
+    masterSecurityGroupId, additionalMasterSecurityGroupIds, slaveSecurityGroupId, additionalSlaveSecurityGroupIds,
+    useOnDemandOnLastAttempt, visibleToAllUsers, initTimeout, terminateAfter,
     actionOnResourceFailure, actionOnTaskFailure)
+
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withBootstrapAction(action: String*) = this.copy(bootstrapAction = bootstrapAction ++ action)
-  def terminatingAfter(terminateAfter: String) = this.copy(terminateAfter = terminateAfter)
+  def withSparkVersion(sparkVersion: String) = this.copy(sparkVersion = sparkVersion)
   def withAmiVersion(ver: String) = this.copy(amiVersion = ver)
-  def withMasterInstanceType(instanceType: String) = this.copy(masterInstanceType = Option(instanceType))
-  def withMasterInstanceBidPrice(masterInstanceBidPrice: Double) = this.copy(masterInstanceBidPrice= Option(masterInstanceBidPrice))
-  def withMasterSecurityGroupId(masterSecurityGroupId: String) = this.copy(masterSecurityGroupId = Option(masterSecurityGroupId))
-  def withAdditionalMasterSecurityGroupIds(securityGroupId: String*) = this.copy(additionalMasterSecurityGroupIds = additionalMasterSecurityGroupIds ++ securityGroupId)
-  def withCoreInstanceType(instanceType: String) = this.copy(coreInstanceType = Option(instanceType))
-  def withCoreInstanceCount(instanceCount: Int) = this.copy(coreInstanceCount = instanceCount)
-  def withCoreInstanceBidPrice(coreInstanceBidPrice: Double) = this.copy(coreInstanceBidPrice = Option(coreInstanceBidPrice))
-  def withTaskInstanceType(instanceType: String) = this.copy(taskInstanceType = Option(instanceType))
-  def withTaskInstanceCount(instanceCount: Int) = this.copy(taskInstanceCount = instanceCount)
-  def withTaskInstanceBidPrice(bid: Double) = this.copy(taskInstanceBidPrice = Option(bid))
-  def withSlaveSecurityGroupId(slaveSecurityGroupId: String) = this.copy(slaveSecurityGroupId = Option(slaveSecurityGroupId))
-  def withAdditionalSlaveSecurityGroupIds(securityGroupId: String*) = this.copy(additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIds ++ securityGroupId)
+  def withSupportedProducts(products: String) = this.copy(supportedProducts = Option(products))
+  def withBootstrapAction(action: String*) = this.copy(bootstrapAction = bootstrapAction ++ action)
+  def withDebuggingEnabled() = this.copy(enableDebugging = Option(true))
+  def withHadoopSchedulerType(hadoopSchedulerType: SchedulerType) = this.copy(hadoopSchedulerType = Option(hadoopSchedulerType))
   def withKeyPair(keyPair: String) = this.copy(keyPair = Option(keyPair))
+  def withMasterInstanceBidPrice(masterInstanceBidPrice: Double) = this.copy(masterInstanceBidPrice= Option(masterInstanceBidPrice))
+  def withMasterInstanceType(instanceType: String) = this.copy(masterInstanceType = Option(instanceType))
+  def withCoreInstanceBidPrice(coreInstanceBidPrice: Double) = this.copy(coreInstanceBidPrice = Option(coreInstanceBidPrice))
+  def withCoreInstanceCount(instanceCount: Int) = this.copy(coreInstanceCount = instanceCount)
+  def withCoreInstanceType(instanceType: String) = this.copy(coreInstanceType = Option(instanceType))
+  def withTaskInstanceBidPrice(bid: Double) = this.copy(taskInstanceBidPrice = Option(bid))
+  def withTaskInstanceCount(instanceCount: Int) = this.copy(taskInstanceCount = instanceCount)
+  def withTaskInstanceType(instanceType: String) = this.copy(taskInstanceType = Option(instanceType))
   def withRegion(region: String) = this.copy(region = Option(region))
   def withAvailabilityZone(availabilityZone: String) = this.copy(availabilityZone = Option(availabilityZone))
+  def withResourceRole(role: String) = this.copy(resourceRole = Option(role))
+  def withRole(role: String) = this.copy(role = Option(role))
   def withSubnetId(id: String) = this.copy(subnetId = Option(id))
-  def withSparkVersion(sparkVersion: String) = this.copy(sparkVersion = sparkVersion)
-  def withDebuggingEnabled() = this.copy(enableDebugging = Option(true))
-  def withSupportedProducts(products: String) = this.copy(supportedProducts = Option(products))
+  def withMasterSecurityGroupId(masterSecurityGroupId: String) = this.copy(masterSecurityGroupId = Option(masterSecurityGroupId))
+  def withAdditionalMasterSecurityGroupIds(securityGroupId: String*) = this.copy(additionalMasterSecurityGroupIds = additionalMasterSecurityGroupIds ++ securityGroupId)
+  def withSlaveSecurityGroupId(slaveSecurityGroupId: String) = this.copy(slaveSecurityGroupId = Option(slaveSecurityGroupId))
+  def withAdditionalSlaveSecurityGroupIds(securityGroupIds: String*) = this.copy(additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIds ++ securityGroupIds)
   def withUseOnDemandOnLastAttempt(useOnDemandOnLastAttempt: Boolean) = this.copy(useOnDemandOnLastAttempt = Option(useOnDemandOnLastAttempt))
   def withVisibleToAllUsers(visibleToAllUsers: Boolean) = this.copy(visibleToAllUsers = Option(visibleToAllUsers))
-  def withHadoopSchedulerType(hadoopSchedulerType: SchedulerType) = this.copy(hadoopSchedulerType = Option(hadoopSchedulerType))
+  def withInitTimeout(timeout: String) = this.copy(initTimeout = Option(timeout))
+  def terminatingAfter(terminateAfter: String) = this.copy(terminateAfter = terminateAfter)
   def withActionOnResourceFailure(actionOnResourceFailure: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(actionOnResourceFailure))
   def withActionOnTaskFailure(actionOnTaskFailure: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(actionOnTaskFailure))
-  def withRole(role: String) = this.copy(role = Option(role))
-  def withResourceRole(role: String) = this.copy(resourceRole = Option(role))
 
   lazy val instanceCount = 1 + coreInstanceCount + taskInstanceCount
-
-  lazy val standardBootstrapAction: Seq[String] = s"s3://support.elasticmapreduce/spark/install-spark,-v,$sparkVersion,-x" ::
-      hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env").toList
 
   lazy val serialize = new AdpEmrCluster(
     id = id,
     name = id.toOption,
-    bootstrapAction = standardBootstrapAction ++ bootstrapAction,
     amiVersion = Option(amiVersion),
+    supportedProducts = supportedProducts,
+    bootstrapAction = Seq(s"s3://support.elasticmapreduce/spark/install-spark,-v,$sparkVersion,-x") ++ standardBootstrapAction ++ bootstrapAction,
+    enableDebugging = enableDebugging.map(_.toString),
+    hadoopSchedulerType = hadoopSchedulerType.map(_.toString),
+    keyPair = keyPair,
+    masterInstanceBidPrice = masterInstanceBidPrice,
     masterInstanceType = masterInstanceType,
-    coreInstanceType = coreInstanceType,
+    coreInstanceBidPrice = coreInstanceBidPrice,
     coreInstanceCount = Option(coreInstanceCount.toString),
-    taskInstanceType = taskInstanceCount match {
+    coreInstanceType = coreInstanceType,
+    taskInstanceBidPrice = taskInstanceCount match {
       case 0 => None
-      case _ => taskInstanceType
+      case _ => taskInstanceBidPrice.map(_.toString)
     },
     taskInstanceCount = taskInstanceCount match {
       case 0 => None
       case _ => Option(taskInstanceCount.toString)
     },
-    taskInstanceBidPrice = taskInstanceCount match {
+    taskInstanceType = taskInstanceCount match {
       case 0 => None
-      case _ => taskInstanceBidPrice.map(_.toString)
+      case _ => taskInstanceType
     },
-    terminateAfter = terminateAfter,
-    keyPair = keyPair,
     region = region,
-    enableDebugging = enableDebugging.map(_.toString),
-    supportedProducts = supportedProducts,
-    subnetId = subnetId,
-    role = role,
-    resourceRole = resourceRole,
     availabilityZone = availabilityZone,
-    coreInstanceBidPrice = coreInstanceBidPrice,
-    masterInstanceBidPrice = masterInstanceBidPrice,
-    useOnDemandOnLastAttempt = useOnDemandOnLastAttempt,
-    visibleToAllUsers = visibleToAllUsers,
+    resourceRole = resourceRole,
+    role = role,
+    subnetId = subnetId,
     masterSecurityGroupId = masterSecurityGroupId,
-    slaveSecurityGroupId = slaveSecurityGroupId,
     additionalMasterSecurityGroupIds = additionalMasterSecurityGroupIds match {
       case Seq() => None
       case groupIds => Option(groupIds)
     },
+    slaveSecurityGroupId = slaveSecurityGroupId,
     additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIds match {
       case Seq() => None
       case groupIds => Option(groupIds)
     },
-    hadoopSchedulerType = hadoopSchedulerType.map(_.toString),
+    useOnDemandOnLastAttempt = useOnDemandOnLastAttempt,
+    visibleToAllUsers = visibleToAllUsers,
+    initTimeout = initTimeout,
+    terminateAfter = Option(terminateAfter),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
     actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
   )
@@ -173,34 +175,36 @@ class SparkCluster private (
 object SparkCluster {
 
   def apply()(implicit hc: HyperionContext) = new SparkCluster(
-    id = PipelineObjectId("SparkCluster"),
-    bootstrapAction = Seq(),
-    amiVersion = hc.emrAmiVersion,
-    masterInstanceType = Option(hc.emrInstanceType),
-    coreInstanceType = Option(hc.emrInstanceType),
-    coreInstanceCount = 2,
-    taskInstanceType = Option(hc.emrInstanceType),
-    taskInstanceCount = 0,
-    taskInstanceBidPrice = None,
-    terminateAfter = hc.emrTerminateAfter,
-    keyPair = hc.emrKeyPair,
-    region = Option(hc.emrRegion),
+    id = PipelineObjectId(SparkCluster.getClass),
     sparkVersion = hc.emrSparkVersion,
-    enableDebugging = None,
+    amiVersion = hc.emrAmiVersion,
     supportedProducts = None,
-    subnetId = hc.emrSubnetId,
-    role = Option(hc.emrRole),
-    resourceRole = Option(hc.emrResourceRole),
-    availabilityZone = hc.emrAvailabilityZone,
-    coreInstanceBidPrice = None,
+    standardBootstrapAction = hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env").toList,
+    bootstrapAction = Seq(),
+    enableDebugging = None,
+    hadoopSchedulerType = None,
+    keyPair = hc.emrKeyPair,
     masterInstanceBidPrice = None,
+    masterInstanceType = Option(hc.emrInstanceType),
+    coreInstanceBidPrice = None,
+    coreInstanceCount = 2,
+    coreInstanceType = Option(hc.emrInstanceType),
+    taskInstanceBidPrice = None,
+    taskInstanceCount = 0,
+    taskInstanceType = Option(hc.emrInstanceType),
+    region = Option(hc.emrRegion),
+    availabilityZone = hc.emrAvailabilityZone,
+    resourceRole = Option(hc.emrResourceRole),
+    role = Option(hc.emrRole),
+    subnetId = hc.emrSubnetId,
+    masterSecurityGroupId = None,
+    additionalMasterSecurityGroupIds = Seq(),
+    slaveSecurityGroupId = None,
+    additionalSlaveSecurityGroupIds = Seq(),
     useOnDemandOnLastAttempt = None,
     visibleToAllUsers = None,
-    masterSecurityGroupId = None,
-    slaveSecurityGroupId = None,
-    additionalMasterSecurityGroupIds = Seq(),
-    additionalSlaveSecurityGroupIds = Seq(),
-    hadoopSchedulerType = None,
+    initTimeout = None,
+    terminateAfter = hc.emrTerminateAfter,
     actionOnResourceFailure = None,
     actionOnTaskFailure = None
   )

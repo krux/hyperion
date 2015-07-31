@@ -41,16 +41,16 @@ package com.krux.hyperion.aws
 trait AdpActivity extends AdpDataPipelineObject {
 
   /**
+   * The worker group. This is used for routing tasks.
+   * If you provide a runsOn value and workerGroup exists, workerGroup is ignored.
+   */
+  def workerGroup: Option[String]
+
+  /**
    * One or more references to other Activities that must reach the FINISHED state before this
    * activity will start.
    */
   def dependsOn: Option[Seq[AdpRef[AdpActivity]]]
-
-  /**
-   * The computational resource to run the activity or command. For example, an Amazon EC2 instance
-   * or Amazon EMR cluster.
-   */
-  def runsOn: AdpRef[AdpResource]
 
   /**
    * A condition that must be met before the object can run. To specify multiple conditions,
@@ -73,6 +73,37 @@ trait AdpActivity extends AdpDataPipelineObject {
    */
   def onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
 
+  /**
+   * The timeout time interval for an object attempt. If an attempt does not complete within the start time
+   * plus this time interval, AWS Data Pipeline marks the attempt as failed and your retry settings
+   * determine the next steps taken.
+   */
+  def attemptTimeout: Option[String]
+
+  /**
+   * The time period in which the object run must start. If the object does not start within the scheduled
+   * start time plus this time interval, it is considered late
+   */
+  def lateAfterTimeout: Option[String]
+
+  /**
+   * The maximum number of times to retry the action. The default value is 2, which results in 3 tries
+   * total (1 original attempt plus 2 retries). The maximum value is 5 (6 total attempts).
+   */
+  def maximumRetries: Option[String]
+
+  /**
+   * The timeout duration between two retry attempts. The default is 10 minutes.
+   */
+  def retryDelay: Option[String]
+
+  /**
+   * Determines whether pipeline object failures and rerun commands cascade through pipeline object dependencies
+   *
+   * Possible values include cascade and none.
+   */
+  def failureAndRerunMode: Option[String]
+
 }
 
 /**
@@ -90,12 +121,18 @@ case class AdpCopyActivity (
   name: Option[String],
   input: AdpRef[AdpDataNode],
   output: AdpRef[AdpDataNode],
-  runsOn: AdpRef[AdpEc2Resource],
+  workerGroup: Option[String],
+  runsOn: Option[AdpRef[AdpEc2Resource]],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  attemptTimeout: Option[String],
+  lateAfterTimeout: Option[String],
+  maximumRetries: Option[String],
+  retryDelay: Option[String],
+  failureAndRerunMode: Option[String]
 ) extends AdpActivity {
 
   val `type` = "CopyActivity"
@@ -123,18 +160,24 @@ case class AdpCopyActivity (
 case class AdpRedshiftCopyActivity (
   id: String,
   name: Option[String],
-  input: AdpRef[AdpDataNode],
   insertMode: String,
-  output: AdpRef[AdpDataNode],
   transformSql: Option[String],
-  commandOptions: Option[Seq[String]],
   queue: Option[String],
-  runsOn: AdpRef[AdpEc2Resource],
+  commandOptions: Option[Seq[String]],
+  input: AdpRef[AdpDataNode],
+  output: AdpRef[AdpDataNode],
+  workerGroup: Option[String],
+  runsOn: Option[AdpRef[AdpEc2Resource]],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  attemptTimeout: Option[String],
+  lateAfterTimeout: Option[String],
+  maximumRetries: Option[String],
+  retryDelay: Option[String],
+  failureAndRerunMode: Option[String]
 ) extends AdpActivity {
 
   val `type` = "RedshiftCopyActivity"
@@ -142,7 +185,7 @@ case class AdpRedshiftCopyActivity (
 }
 
 /**
- * Runs an Amazon EMR cluster.
+ * Runs an Amazon EMR job.
  *
  * AWS Data Pipeline uses a different format for steps than Amazon EMR, for example AWS Data
  * Pipeline uses comma-separated arguments after the JAR name in the EmrActivity step field.
@@ -163,22 +206,57 @@ case class AdpRedshiftCopyActivity (
 case class AdpEmrActivity (
   id: String,
   name: Option[String],
-  input: Option[AdpRef[AdpDataNode]],
-  output: Option[AdpRef[AdpDataNode]],
+  step: Seq[String],
   preStepCommand: Option[Seq[String]],
   postStepCommand: Option[Seq[String]],
-  actionOnResourceFailure: Option[String],
-  actionOnTaskFailure: Option[String],
-  step: Seq[String],
-  runsOn: AdpRef[AdpEmrCluster],
+  input: Option[Seq[AdpRef[AdpDataNode]]],
+  output: Option[Seq[AdpRef[AdpDataNode]]],
+  workerGroup: Option[String],
+  runsOn: Option[AdpRef[AdpEmrCluster]],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  attemptTimeout: Option[String],
+  lateAfterTimeout: Option[String],
+  maximumRetries: Option[String],
+  retryDelay: Option[String],
+  failureAndRerunMode: Option[String],
+  actionOnResourceFailure: Option[String],
+  actionOnTaskFailure: Option[String]
 ) extends AdpActivity {
 
   val `type` = "EmrActivity"
+
+}
+
+case class AdpHadoopActivity (
+  id: String,
+  name: Option[String],
+  jarUri: String,
+  mainClass: Option[String],
+  argument: Option[Seq[String]],
+  hadoopQueue: Option[String],
+  preActivityTaskConfig: Option[AdpRef[AdpShellScriptConfig]],
+  postActivityTaskConfig: Option[AdpRef[AdpShellScriptConfig]],
+  workerGroup: Option[String],
+  runsOn: Option[AdpRef[AdpEmrCluster]],
+  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
+  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  attemptTimeout: Option[String],
+  lateAfterTimeout: Option[String],
+  maximumRetries: Option[String],
+  retryDelay: Option[String],
+  failureAndRerunMode: Option[String]
+  // XXX - no evidence this is supported actionOnResourceFailure: Option[String],
+  // XXX - no evidence this is supported actionOnTaskFailure: Option[String]
+) extends AdpActivity {
+
+  val `type` = "HadoopActivity"
 
 }
 
@@ -201,21 +279,30 @@ case class AdpEmrActivity (
  *                       Expressions and Functions.
  * @param stage Determines whether staging is enabled. Not permitted with Hive 11, so use an Amazon EMR AMI version 3.2.0 or greater.
  */
-case class AdpHiveActivity (
-  id: String,
-  name: Option[String],
-  hiveScript: Option[String],
-  scriptUri: Option[String],
-  scriptVariable: Option[String],
-  input: AdpRef[AdpDataNode],
-  output: AdpRef[AdpDataNode],
-  stage: String,
-  runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
-  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
-  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+class AdpHiveActivity (
+  val id: String,
+  val name: Option[String],
+  val hiveScript: Option[String],
+  val scriptUri: Option[String],
+  val scriptVariable: Option[String],
+  val stage: Option[String],
+  val input: Option[AdpRef[AdpDataNode]],
+  val output: Option[AdpRef[AdpDataNode]],
+  val hadoopQueue: Option[String],
+  val preActivityTaskConfig: Option[AdpRef[AdpShellScriptConfig]],
+  val postActivityTaskConfig: Option[AdpRef[AdpShellScriptConfig]],
+  val workerGroup: Option[String],
+  val runsOn: Option[AdpRef[AdpEmrCluster]],
+  val dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  val precondition: Option[Seq[AdpRef[AdpPrecondition]]],
+  val onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  val onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  val onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  val attemptTimeout: Option[String],
+  val lateAfterTimeout: Option[String],
+  val maximumRetries: Option[String],
+  val retryDelay: Option[String],
+  val failureAndRerunMode: Option[String]
 ) extends AdpActivity {
 
   val `type` = "HiveActivity"
@@ -236,14 +323,24 @@ case class AdpHiveCopyActivity (
   name: Option[String],
   filterSql: Option[String],
   generatedScriptsPath: Option[String],
-  input: AdpRef[AdpDataNode],
-  output: AdpRef[AdpDataNode],
-  runsOn: AdpRef[AdpEmrCluster],
+  stage: Option[String],
+  input: Option[AdpRef[AdpDataNode]],
+  output: Option[AdpRef[AdpDataNode]],
+  hadoopQueue: Option[String],
+  preActivityTaskConfig: Option[AdpRef[AdpShellScriptConfig]],
+  postActivityTaskConfig: Option[AdpRef[AdpShellScriptConfig]],
+  workerGroup: Option[String],
+  runsOn: Option[AdpRef[AdpEmrCluster]],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  attemptTimeout: Option[String],
+  lateAfterTimeout: Option[String],
+  maximumRetries: Option[String],
+  retryDelay: Option[String],
+  failureAndRerunMode: Option[String]
 ) extends AdpActivity {
 
   val `type` = "HiveCopyActivity"
@@ -265,22 +362,31 @@ case class AdpHiveCopyActivity (
  *              staged-data tables, such as {{{\$\{INPUT1\}}}} and {{{\$\{OUTPUT1\}}}}.
  *
  */
-case class AdpPigActivity (
-  id: String,
-  name: Option[String],
-  generatedScriptsPath: Option[String],
-  script: Option[String],
-  scriptUri: Option[String],
-  scriptVariable: Option[String],
-  input: AdpRef[AdpDataNode],
-  output: AdpRef[AdpDataNode],
-  stage: String,
-  runsOn: AdpRef[AdpEmrCluster],
-  dependsOn: Option[Seq[AdpRef[AdpActivity]]],
-  precondition: Option[Seq[AdpRef[AdpPrecondition]]],
-  onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+class AdpPigActivity (
+  val id: String,
+  val name: Option[String],
+  val script: Option[String],
+  val scriptUri: Option[String],
+  val scriptVariable: Option[String],
+  val generatedScriptsPath: Option[String],
+  val stage: String,
+  val input: Option[AdpRef[AdpDataNode]],
+  val output: Option[AdpRef[AdpDataNode]],
+  val hadoopQueue: Option[String],
+  val preActivityTaskConfig: Option[AdpRef[AdpShellScriptConfig]],
+  val postActivityTaskConfig: Option[AdpRef[AdpShellScriptConfig]],
+  val workerGroup: Option[String],
+  val runsOn: Option[AdpRef[AdpEmrCluster]],
+  val dependsOn: Option[Seq[AdpRef[AdpActivity]]],
+  val precondition: Option[Seq[AdpRef[AdpPrecondition]]],
+  val onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  val onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  val onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  val attemptTimeout: Option[String],
+  val lateAfterTimeout: Option[String],
+  val maximumRetries: Option[String],
+  val retryDelay: Option[String],
+  val failureAndRerunMode: Option[String]
 ) extends AdpActivity {
 
   val `type` = "PigActivity"
@@ -296,7 +402,7 @@ case class AdpPigActivity (
  *   {{{insert into output select * from input where lastModified in range (?, ?)}}}
  *   the script is not evaluated as an expression. In that situation, scriptArgument are useful
  *
- * @param sriptArgument a list of variables for the script
+ * @param scriptArgument a list of variables for the script
  *
  * @note that scriptUri is deliberately missing from this implementation, as there does not seem to
  * be any use case for now.
@@ -304,16 +410,23 @@ case class AdpPigActivity (
 case class AdpSqlActivity (
   id: String,
   name: Option[String],
-  database: AdpRef[AdpDatabase],
-  script: String,
+  script: Option[String],
+  scriptUri: Option[String],
   scriptArgument: Option[Seq[String]],
+  database: AdpRef[AdpDatabase],
   queue: Option[String],
-  runsOn: AdpRef[AdpEc2Resource],
+  workerGroup: Option[String],
+  runsOn: Option[AdpRef[AdpEc2Resource]],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  attemptTimeout: Option[String],
+  lateAfterTimeout: Option[String],
+  maximumRetries: Option[String],
+  retryDelay: Option[String],
+  failureAndRerunMode: Option[String]
 ) extends AdpActivity {
 
   val `type` = "SqlActivity"
@@ -339,17 +452,23 @@ case class AdpShellCommandActivity (
   command: Option[String],
   scriptUri: Option[String],
   scriptArgument: Option[Seq[String]],
-  input: Option[Seq[AdpRef[AdpDataNode]]],
-  output: Option[Seq[AdpRef[AdpDataNode]]],
-  stage: String,
   stdout: Option[String],
   stderr: Option[String],
-  runsOn: AdpRef[AdpEc2Resource],
+  stage: Option[String],
+  input: Option[Seq[AdpRef[AdpDataNode]]],
+  output: Option[Seq[AdpRef[AdpDataNode]]],
+  workerGroup: Option[String],
+  runsOn: Option[AdpRef[AdpEc2Resource]],
   dependsOn: Option[Seq[AdpRef[AdpActivity]]],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
-  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]]
+  onLateAction: Option[Seq[AdpRef[AdpSnsAlarm]]],
+  attemptTimeout: Option[String],
+  lateAfterTimeout: Option[String],
+  maximumRetries: Option[String],
+  retryDelay: Option[String],
+  failureAndRerunMode: Option[String]
 ) extends AdpActivity {
 
   val `type` = "ShellCommandActivity"

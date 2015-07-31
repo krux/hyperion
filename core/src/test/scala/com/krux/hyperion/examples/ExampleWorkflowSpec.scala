@@ -64,7 +64,6 @@ class ExampleWorkflowSpec extends WordSpec {
         ("id" -> act1Id) ~
         ("name" -> act1Id) ~
         ("command" -> "run act1") ~
-        ("stage" -> "true") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
         ("type" -> "ShellCommandActivity")
       assert(act1ShouldBe === act1)
@@ -76,7 +75,6 @@ class ExampleWorkflowSpec extends WordSpec {
         ("id" -> act2Id) ~
         ("name" -> act2Id) ~
         ("command" -> "run act2") ~
-        ("stage" -> "true") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
         ("dependsOn" -> List("ref" -> act1Id)) ~
         ("type" -> "ShellCommandActivity")
@@ -89,7 +87,6 @@ class ExampleWorkflowSpec extends WordSpec {
         ("id" -> act3Id) ~
         ("name" -> act3Id) ~
         ("command" -> "run act3") ~
-        ("stage" -> "true") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
         ("dependsOn" -> List("ref" -> act1Id)) ~
         ("type" -> "ShellCommandActivity")
@@ -102,7 +99,6 @@ class ExampleWorkflowSpec extends WordSpec {
         ("id" -> act4Id) ~
         ("name" -> act4Id) ~
         ("command" -> "run act4") ~
-        ("stage" -> "true") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
         ("dependsOn" -> List("ref" -> act2Id, "ref" -> act3Id, "ref" -> act1Id)) ~
         ("type" -> "ShellCommandActivity")
@@ -115,7 +111,6 @@ class ExampleWorkflowSpec extends WordSpec {
         ("id" -> act5Id) ~
         ("name" -> act5Id) ~
         ("command" -> "run act5") ~
-        ("stage" -> "true") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
         ("dependsOn" -> List("ref" -> act2Id, "ref" -> act3Id, "ref" -> act1Id)) ~
         ("type" -> "ShellCommandActivity")
@@ -128,9 +123,8 @@ class ExampleWorkflowSpec extends WordSpec {
         ("id" -> act6Id) ~
         ("name" -> act6Id) ~
         ("command" -> "run act6") ~
-        ("stage" -> "true") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
-        ("dependsOn" -> List("ref" -> act4Id, "ref" -> act3Id, "ref" -> act5Id, "ref" -> act2Id, "ref" -> act1Id)) ~
+        ("dependsOn" -> List("ref" -> act1Id, "ref" -> act3Id, "ref" -> act4Id, "ref" -> act5Id, "ref" -> act2Id)) ~
         ("type" -> "ShellCommandActivity")
       assert(act6ShouldBe === act6)
 

@@ -10,15 +10,17 @@ trait JdbcDatabase extends Database {
 
   def id: PipelineObjectId
 
+  def connectionString: String
+
+  def databaseName: Option[String] = None
+
   def username: String
 
   def `*password`: String
 
-  def connectionString: String
+  def jdbcDriverJarUri: Option[String] = None
 
   def jdbcDriverClass: String
-
-  def databaseName: Option[String] = None
 
   def jdbcProperties: Seq[String] = Seq()
 
@@ -26,11 +28,12 @@ trait JdbcDatabase extends Database {
     id = id,
     name = id.toOption,
     connectionString = connectionString,
-    jdbcDriverClass = jdbcDriverClass,
     databaseName = databaseName,
-    jdbcProperties = jdbcProperties,
+    username = username,
     `*password` = `*password`,
-    username = username
+    jdbcDriverJarUri = jdbcDriverJarUri,
+    jdbcDriverClass = jdbcDriverClass,
+    jdbcProperties = jdbcProperties
   )
 
 }

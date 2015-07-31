@@ -15,7 +15,7 @@ case class SparkStep private (
 
   def withMainClass(mainClass: Any): SparkStep = mainClass match {
     case mc: String => this.copy(mainClass = Option(mc.stripSuffix("$")))
-    case mc: Class[_] => this.withMainClass(mc.getName)
+    case mc: Class[_] => this.withMainClass(mc.getCanonicalName)
     case mc => this.withMainClass(mc.getClass)
   }
 

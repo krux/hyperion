@@ -27,6 +27,6 @@ case class TsvDataFormat private (
 
 object TsvDataFormat {
 
-  def apply() = new TsvDataFormat(PipelineObjectId("TsvDataFormat"))
+  def apply() = new TsvDataFormat(PipelineObjectId(TsvDataFormat.getClass))
 
 }

@@ -21,9 +21,9 @@ trait RedshiftDatabase extends Database {
     clusterId = clusterId,
     connectionString = None,
     databaseName = Option(databaseName),
-    jdbcProperties = None,
+    username = username,
     `*password` = `*password`,
-    username = username
+    jdbcProperties = None
   )
 
   override def ref: AdpRef[AdpRedshiftDatabase] = AdpRef(serialize)

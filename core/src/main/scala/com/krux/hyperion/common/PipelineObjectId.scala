@@ -7,6 +7,7 @@ trait PipelineObjectId {
 }
 
 object PipelineObjectId {
+  def apply[T](klass: Class[T]) = RandomizedObjectId(klass.getSimpleName.stripSuffix("$"))
   def apply(seed: String) = RandomizedObjectId(seed)
   def apply(name: String, group: String) = NameGroupObjectId(name, group)
   def fixed(seed: String) = FixedObjectId(seed)

@@ -6,8 +6,20 @@ package com.krux.hyperion.aws
  * ref: http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-resources.html
  */
 trait AdpResource extends AdpDataPipelineObject {
-  def terminateAfter: String
+  /**
+   * The amount of time to wait before terminating the resource.
+   */
+  def terminateAfter: Option[String]
+
+  /**
+   * The name of the key pair. If you launch an EC2 instance without specifying a key pair, you can't log on to it.
+   */
   def keyPair: Option[String]
+
+  /**
+   * The code for the region that the EC2 instance should run in. By default, the instance runs in the same region
+   * as the pipeline. You can run the instance in the same region as a dependent data set.
+   */
   def region: Option[String]
 }
 
@@ -42,20 +54,22 @@ trait AdpResource extends AdpDataPipelineObject {
 case class AdpEc2Resource(
   id: String,
   name: Option[String],
-  terminateAfter: String,
+  instanceType: Option[String],
+  imageId: Option[String],
   role: Option[String],
   resourceRole: Option[String],
-  imageId: Option[String],
-  instanceType: Option[String],
+  runAsUser: Option[String],
+  keyPair: Option[String],
   region: Option[String],
+  availabilityZone: Option[String],
+  subnetId: Option[String],
+  associatePublicIpAddress: Option[String],
   securityGroups: Option[Seq[String]],
   securityGroupIds: Option[Seq[String]],
-  associatePublicIpAddress: Option[String],
-  keyPair: Option[String],
-  subnetId: Option[String],
-  availabilityZone: Option[String],
   spotBidPrice: Option[Double],
   useOnDemandOnLastAttempt: Option[Boolean],
+  initTimeout: Option[String],
+  terminateAfter: Option[String],
   actionOnResourceFailure: Option[String],
   actionOnTaskFailure: Option[String]
 ) extends AdpResource {
@@ -92,32 +106,33 @@ case class AdpEc2Resource(
 class AdpEmrCluster(
   val id: String,
   val name: Option[String],
-  val bootstrapAction: Seq[String],
   val amiVersion: Option[String],
-  val masterInstanceType: Option[String],
-  val coreInstanceType: Option[String],
-  val coreInstanceCount: Option[String],
-  val taskInstanceType: Option[String],
-  val taskInstanceCount: Option[String],
-  val taskInstanceBidPrice: Option[String],
-  val terminateAfter: String,
-  val keyPair: Option[String],
-  val region: Option[String],
-  val enableDebugging: Option[String],
   val supportedProducts: Option[String],
-  val subnetId: Option[String],
-  val role: Option[String],
-  val resourceRole: Option[String],
-  val availabilityZone: Option[String],
-  val coreInstanceBidPrice: Option[Double],
+  val bootstrapAction: Seq[String],
+  val enableDebugging: Option[String],
+  val hadoopSchedulerType: Option[String],
+  val keyPair: Option[String],
   val masterInstanceBidPrice: Option[Double],
+  val masterInstanceType: Option[String],
+  val coreInstanceBidPrice: Option[Double],
+  val coreInstanceCount: Option[String],
+  val coreInstanceType: Option[String],
+  val taskInstanceBidPrice: Option[String],
+  val taskInstanceCount: Option[String],
+  val taskInstanceType: Option[String],
+  val region: Option[String],
+  val availabilityZone: Option[String],
+  val resourceRole: Option[String],
+  val role: Option[String],
+  val subnetId: Option[String],
+  val masterSecurityGroupId: Option[String],
+  val additionalMasterSecurityGroupIds: Option[Seq[String]],
+  val slaveSecurityGroupId: Option[String],
+  val additionalSlaveSecurityGroupIds: Option[Seq[String]],
   val useOnDemandOnLastAttempt: Option[Boolean],
   val visibleToAllUsers: Option[Boolean],
-  val masterSecurityGroupId: Option[String],
-  val slaveSecurityGroupId: Option[String],
-  val additionalMasterSecurityGroupIds: Option[Seq[String]],
-  val additionalSlaveSecurityGroupIds: Option[Seq[String]],
-  val hadoopSchedulerType: Option[String],
+  val initTimeout: Option[String],
+  val terminateAfter: Option[String],
   val actionOnResourceFailure: Option[String],
   val actionOnTaskFailure: Option[String]
 ) extends AdpResource {
