@@ -133,11 +133,11 @@ class PythonActivity private (
 
 object PythonActivity extends RunnableObject {
 
-  def apply(jar: String, runsOn: Ec2Resource)(implicit hc: HyperionContext): PythonActivity = apply(jar, Left(runsOn))
+  def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext): PythonActivity = apply(Left(runsOn))
 
-  def apply(jar: String, runsOn: WorkerGroup)(implicit hc: HyperionContext): PythonActivity = apply(jar, Right(runsOn))
+  def apply(runsOn: WorkerGroup)(implicit hc: HyperionContext): PythonActivity = apply(Right(runsOn))
 
-  private def apply(jar: String, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): PythonActivity =
+  private def apply(runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): PythonActivity =
     new PythonActivity(
       id = PipelineObjectId(PythonActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-python.sh"),
