@@ -9,13 +9,15 @@ class AdpDataNodesSpec extends WordSpec {
 
   "AdpS3DirectoryDataNode" should {
     "converts to Json" in {
-      val testObj = AdpS3DirectoryDataNode(
+      val testObj = AdpS3DataNode(
         id = "s3dn",
         name = None,
-        compression = Some("gzip"),
+        directoryPath = Option("s3://blah/blah"),
+        filePath = None,
         dataFormat = Some(AdpRef(tsvFormat)),
-        directoryPath = "s3://blah/blah",
         manifestFilePath = None,
+        compression = Some("gzip"),
+        s3EncryptionType = None,
         workerGroup = None,
         precondition = None,
         onSuccess = None,
@@ -32,13 +34,15 @@ class AdpDataNodesSpec extends WordSpec {
 
   "AdpS3FileDataNode" should {
     "converts to Json" in {
-      val testObj = AdpS3FileDataNode(
+      val testObj = AdpS3DataNode(
         id = "s3dn",
         name = None,
-        compression = Some("gzip"),
+        directoryPath = None,
+        filePath = Option("s3://blah/blah/dir/"),
         dataFormat = Some(AdpRef(tsvFormat)),
-        filePath = "s3://blah/blah/dir/",
         manifestFilePath = None,
+        compression = Some("gzip"),
+        s3EncryptionType = None,
         workerGroup = None,
         precondition = None,
         onSuccess = None,

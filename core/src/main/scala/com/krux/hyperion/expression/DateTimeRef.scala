@@ -13,7 +13,4 @@ object DateTimeRef extends Enumeration {
   val ScheduledStartTime = Value("@scheduledStartTime")
   // The date and time that the run was scheduled to end.
   val ScheduledEndTime = Value("@scheduledEndTime")
-  // The last time that Task Runner, or other code that is processing the tasks, called the
-  // ReportTaskProgress API.
-  val reportProgressTime = Value("@reportProgressTime")
 }

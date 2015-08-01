@@ -1,7 +1,7 @@
 package com.krux.hyperion
 
 import com.krux.hyperion.aws.{AdpParameterSerializer, AdpPipelineSerializer, AdpJsonSerializer}
-import com.krux.hyperion.common.{DefaultObject, PipelineObject}
+import com.krux.hyperion.common.{S3UriHelper, S3Uri, DefaultObject, PipelineObject}
 import com.krux.hyperion.parameter.Parameter
 
 import scala.language.implicitConversions
@@ -15,7 +15,7 @@ import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineO
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
  */
-trait DataPipelineDef extends HyperionCli {
+trait DataPipelineDef extends HyperionCli with S3UriHelper {
 
   private lazy val context = new HyperionContext()
 
@@ -47,6 +47,7 @@ trait DataPipelineDef extends HyperionCli {
     case objName if objName.endsWith("$") => objName.dropRight(1)
     case className => className
   }
+
 }
 
 object DataPipelineDef {

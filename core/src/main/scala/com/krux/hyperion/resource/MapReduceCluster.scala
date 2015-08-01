@@ -3,6 +3,7 @@ package com.krux.hyperion.resource
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpEmrCluster
 import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.expression.DpPeriod
 
 /**
  * Launch a map reduce cluster
@@ -35,8 +36,8 @@ class MapReduceCluster private (
   val additionalSlaveSecurityGroupIds: Seq[String],
   val useOnDemandOnLastAttempt: Option[Boolean],
   val visibleToAllUsers: Option[Boolean],
-  val initTimeout: Option[String],
-  val terminateAfter: String,
+  val initTimeout: Option[DpPeriod],
+  val terminateAfter: Option[DpPeriod],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
   val actionOnTaskFailure: Option[ActionOnTaskFailure]
 ) extends EmrCluster {
@@ -71,8 +72,8 @@ class MapReduceCluster private (
     additionalSlaveSecurityGroupIds: Seq[String] = additionalSlaveSecurityGroupIds,
     useOnDemandOnLastAttempt: Option[Boolean] = useOnDemandOnLastAttempt,
     visibleToAllUsers: Option[Boolean] = visibleToAllUsers,
-    initTimeout: Option[String] = initTimeout,
-    terminateAfter: String = terminateAfter,
+    initTimeout: Option[DpPeriod] = initTimeout,
+    terminateAfter: Option[DpPeriod] = terminateAfter,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
     actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure
   ) = new MapReduceCluster(id, amiVersion, supportedProducts, standardBootstrapAction, bootstrapAction, enableDebugging,
@@ -111,8 +112,8 @@ class MapReduceCluster private (
   def withAdditionalSlaveSecurityGroupIds(securityGroupIds: String*) = this.copy(additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIds ++ securityGroupIds)
   def withUseOnDemandOnLastAttempt(useOnDemandOnLastAttempt: Boolean) = this.copy(useOnDemandOnLastAttempt = Option(useOnDemandOnLastAttempt))
   def withVisibleToAllUsers(visibleToAllUsers: Boolean) = this.copy(visibleToAllUsers = Option(visibleToAllUsers))
-  def withInitTimeout(timeout: String) = this.copy(initTimeout = Option(timeout))
-  def terminatingAfter(terminateAfter: String) = this.copy(terminateAfter = terminateAfter)
+  def withInitTimeout(timeout: DpPeriod) = this.copy(initTimeout = Option(timeout))
+  def terminatingAfter(terminateAfter: DpPeriod) = this.copy(terminateAfter = Option(terminateAfter))
   def withActionOnResourceFailure(actionOnResourceFailure: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(actionOnResourceFailure))
   def withActionOnTaskFailure(actionOnTaskFailure: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(actionOnTaskFailure))
 
@@ -161,8 +162,8 @@ class MapReduceCluster private (
     },
     useOnDemandOnLastAttempt = useOnDemandOnLastAttempt,
     visibleToAllUsers = visibleToAllUsers,
-    initTimeout = initTimeout,
-    terminateAfter = Option(terminateAfter),
+    initTimeout = initTimeout.map(_.toString),
+    terminateAfter = terminateAfter.map(_.toString),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
     actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
   )

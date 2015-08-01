@@ -14,6 +14,9 @@ case class CustomDataFormat private (
   recordSeparator: String
 ) extends DataFormat {
 
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+
   def withColumns(col: String*) = this.copy(columns = columns ++ col)
   def withColumnSeparator(columnSeparator: String) = this.copy(columnSeparator = columnSeparator)
   def withRecordSeparator(recordSeparator: String) = this.copy(recordSeparator = recordSeparator)

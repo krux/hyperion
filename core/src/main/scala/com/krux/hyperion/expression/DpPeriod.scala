@@ -1,39 +1,75 @@
 package com.krux.hyperion.expression
 
 /**
- * All supported data pipeline period units
- */
-object PeriodUnit extends Enumeration {
-
-  type PeriodUnit = Value
-
-  val Year = Value("years")
-  val Month = Value("months")
-  val Week = Value("weeks")
-  val Day = Value("days")
-  val Hour = Value("hours")
-  val Minute = Value("minutes")
-
-}
-
-
-/**
  * Indicates how often a scheduled event should run. It's expressed in the format "N
  * [years|months|weeks|days|hours|minutes]", where N is a positive integer value.
  *
  * The minimum period is 15 minutes and the maximum period is 3 years.
  */
-case class DpPeriod(n: Int, unit: PeriodUnit.PeriodUnit) {
+sealed trait DpPeriod {
+  def n: Int
+  def unit: String
 
-  assert(
-    unit match {
-      case PeriodUnit.Minute => n > 15
-      case PeriodUnit.Year => n > 0 && n <= 3
-      case _ => n > 0
+  override def toString: String = s"$n $unit"
+}
+
+case class Year(n: Int) extends DpPeriod {
+  val unit = "years"
+
+  require(0 < n && n <= 3, "Years must be between 1 and 3")
+}
+
+case class Month(n: Int) extends DpPeriod {
+  val unit = "months"
+
+  require(0 < n && n <= 36, "Months must be between 1 and 36")
+}
+
+case class Week(n: Int) extends DpPeriod {
+  val unit = "weeks"
+
+  require(0 < n && n <= 156, "Weeks must be between 1 and 156")
+}
+
+case class Day(n: Int) extends DpPeriod {
+  val unit = "days"
+
+  require(0 < n && n <= 1095, "Days must be between 1 and 1095")
+}
+
+case class Hour(n: Int) extends DpPeriod {
+  val unit = "hours"
+
+  require(0 < n && n <= 26280, "Hours must be between 1 and 26280")
+}
+
+case class Minute(n: Int) extends DpPeriod {
+  val unit = "minutes"
+
+  require(10 <= n && n <= 1576800, "Minutes must be between 10 and 1576800")
+}
+
+/**
+ * All supported data pipeline period units
+ */
+object DpPeriod {
+
+  def apply(s: String): DpPeriod = {
+    s.trim.toLowerCase.split(' ').toList match {
+      case amount :: unit :: Nil => unit match {
+        case "year"   | "years"   => Year(amount.toInt)
+        case "month"  | "months"  => Month(amount.toInt)
+        case "week"   | "weeks"   => Week(amount.toInt)
+        case "day"    | "days"    => Day(amount.toInt)
+        case "hour"   | "hours"   => Hour(amount.toInt)
+        case "minute" | "minutes" => Minute(amount.toInt)
+        case _ => throw new NumberFormatException(s"Cannot parse $s as a time period - $unit is not recognized")
+      }
+
+      case amount :: Nil => Hour(amount.toInt)
+      case _ => throw new NumberFormatException(s"Cannot parse $s as a time period")
     }
-  )
-
-  override def toString = s"$n $unit"
+  }
 }
 
 /**
@@ -41,21 +77,19 @@ case class DpPeriod(n: Int, unit: PeriodUnit.PeriodUnit) {
  */
 class DpPeriodBuilder(n: Int) {
 
-  import PeriodUnit._
-
-  def year = DpPeriod(n, Year)
+  def year = Year(n)
   def years = this.year
 
-  def month = DpPeriod(n, Month)
+  def month = Month(n)
   def months = this.month
 
-  def week = DpPeriod(n, Week)
+  def week = Week(n)
   def weeks = this.week
 
-  def day = DpPeriod(n, Day)
+  def day = Day(n)
   def days = this.day
 
-  def hour = DpPeriod(n, Hour)
+  def hour = Hour(n)
   def hours = this.hour
 
 }

@@ -16,7 +16,7 @@ case class RedshiftDataNode private (
   tableName: String,
   createTableSql: Option[String],
   schemaName: Option[String],
-  primaryKeys: Option[Seq[String]],
+  primaryKeys: Seq[String],
   workerGroup: Option[WorkerGroup],
   preconditions: Seq[Precondition],
   onSuccessAlarms: Seq[SnsAlarm],
@@ -28,7 +28,7 @@ case class RedshiftDataNode private (
 
   def withCreateTableSql(createSql: String) = this.copy(createTableSql = Option(createSql))
   def withSchema(name: String) = this.copy(schemaName = Option(name))
-  def withPrimaryKeys(pks: String*) = this.copy(primaryKeys = Option(pks))
+  def withPrimaryKeys(pks: String*) = this.copy(primaryKeys = primaryKeys ++ pks)
 
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
@@ -43,7 +43,7 @@ case class RedshiftDataNode private (
     database = database.ref,
     schemaName = schemaName,
     tableName = tableName,
-    primaryKeys = primaryKeys,
+    primaryKeys = seqToOption(primaryKeys)(_.toString),
     workerGroup = workerGroup.map(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
@@ -65,7 +65,7 @@ object RedshiftDataNode {
       tableName = tableName,
       createTableSql = None,
       schemaName = None,
-      primaryKeys = None,
+      primaryKeys = Seq(),
       workerGroup = runsOn,
       preconditions = Seq(),
       onSuccessAlarms = Seq(),

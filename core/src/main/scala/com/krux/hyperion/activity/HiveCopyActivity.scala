@@ -1,10 +1,11 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpHiveCopyActivity
 import com.krux.hyperion.datanode.DataNode
+import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
 
@@ -16,10 +17,9 @@ import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
 case class HiveCopyActivity private (
   id: PipelineObjectId,
   filterSql: Option[String],
-  generatedScriptsPath: Option[String],
-  stage: Option[Boolean],
-  input: Option[DataNode],
-  output: Option[DataNode],
+  generatedScriptsPath: Option[S3Uri],
+  input: DataNode,
+  output: DataNode,
   hadoopQueue: Option[String],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
@@ -29,10 +29,10 @@ case class HiveCopyActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[String],
-  lateAfterTimeout: Option[String],
+  attemptTimeout: Option[DpPeriod],
+  lateAfterTimeout: Option[DpPeriod],
   maximumRetries: Option[Int],
-  retryDelay: Option[String],
+  retryDelay: Option[DpPeriod],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
@@ -40,9 +40,7 @@ case class HiveCopyActivity private (
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withFilterSql(filterSql: String) = this.copy(filterSql = Option(filterSql))
-  def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
-  def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(true))
-  def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(true))
+  def withGeneratedScriptsPath(generatedScriptsPath: S3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
   def withHadoopQueue(queue: String) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
@@ -52,22 +50,21 @@ case class HiveCopyActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: String) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: String) = this.copy(lateAfterTimeout = Option(timeout))
+  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
   def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: String) = this.copy(retryDelay = Option(delay))
+  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
   lazy val serialize = AdpHiveCopyActivity(
     id = id,
     name = id.toOption,
     filterSql = filterSql,
-    generatedScriptsPath = generatedScriptsPath,
-    stage = stage.map(_.toString),
-    input = input.map(_.ref),
-    output = output.map(_.ref),
+    generatedScriptsPath = generatedScriptsPath.map(_.ref),
+    input = Option(input.ref),
+    output = Option(output.ref),
     hadoopQueue = hadoopQueue,
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
@@ -78,27 +75,29 @@ case class HiveCopyActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout,
-    lateAfterTimeout = lateAfterTimeout,
+    attemptTimeout = attemptTimeout.map(_.toString),
+    lateAfterTimeout = lateAfterTimeout.map(_.toString),
     maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay,
+    retryDelay = retryDelay.map(_.toString),
     failureAndRerunMode = failureAndRerunMode.map(_.toString)
   )
 }
 
 object HiveCopyActivity extends RunnableObject {
-  def apply(runsOn: EmrCluster): HiveCopyActivity = apply(Left(runsOn))
+  def apply(input: DataNode,
+    output: DataNode, runsOn: EmrCluster): HiveCopyActivity = apply(input, output, Left(runsOn))
 
-  def apply(runsOn: WorkerGroup): HiveCopyActivity = apply(Right(runsOn))
+  def apply(input: DataNode,
+    output: DataNode, runsOn: WorkerGroup): HiveCopyActivity = apply(input, output, Right(runsOn))
 
-  private def apply(runsOn: Either[EmrCluster, WorkerGroup]): HiveCopyActivity =
+  private def apply(input: DataNode,
+    output: DataNode, runsOn: Either[EmrCluster, WorkerGroup]): HiveCopyActivity =
     new HiveCopyActivity(
       id = PipelineObjectId(HiveCopyActivity.getClass),
       filterSql = None,
       generatedScriptsPath = None,
-      stage = None,
-      input = None,
-      output = None,
+      input = input,
+      output = output,
       hadoopQueue = None,
       preActivityTaskConfig = None,
       postActivityTaskConfig = None,

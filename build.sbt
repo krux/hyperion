@@ -68,10 +68,10 @@ site.includeScaladoc()
 lazy val commonSettings = Seq(
   organization := "com.krux",
   version := hyperionVersion,
-  scalaVersion := "2.11.6",
+  scalaVersion := "2.11.7",
   crossScalaVersions := Seq(
     "2.10.4",
-    "2.11.6"
+    "2.11.7"
   ),
   scalacOptions ++= Seq(
     "-deprecation",

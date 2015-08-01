@@ -1,6 +1,6 @@
 package com.krux.hyperion.datanode
 
-trait TableQuery {
+sealed trait TableQuery {
   def table: String
   def columns: List[String]
   def columnsString = columns.mkString(", ")

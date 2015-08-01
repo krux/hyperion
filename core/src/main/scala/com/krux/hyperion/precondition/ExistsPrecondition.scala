@@ -3,6 +3,7 @@ package com.krux.hyperion.precondition
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpExistsPrecondition
 import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.expression.DpPeriod
 
 /**
  * Checks whether a data node object exists.
@@ -10,17 +11,20 @@ import com.krux.hyperion.common.PipelineObjectId
 case class ExistsPrecondition private (
   id: PipelineObjectId,
   role: String,
-  preconditionTimeout: Option[String]
+  preconditionTimeout: Option[DpPeriod]
 ) extends Precondition {
 
-  def withPreconditionTimeout(timeout: String) = this.copy(preconditionTimeout = Option(timeout))
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+
   def withRole(role: String) = this.copy(role = role)
+  def withPreconditionTimeout(timeout: DpPeriod) = this.copy(preconditionTimeout = Option(timeout))
 
   lazy val serialize = AdpExistsPrecondition(
     id = id,
     name = id.toOption,
     role = role,
-    preconditionTimeout = preconditionTimeout
+    preconditionTimeout = preconditionTimeout.map(_.toString)
   )
 
 }

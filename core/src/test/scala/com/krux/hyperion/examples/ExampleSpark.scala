@@ -15,7 +15,7 @@ import com.krux.hyperion.WorkflowDSL._
 object ExampleSpark extends DataPipelineDef {
 
   val target = "the-target"
-  val jar = S3Uri("s3://sample-jars/sample-jar-assembly-current.jar")
+  val jar = s3 / "sample-jars" / "sample-jar-assembly-current.jar"
 
   override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
 
@@ -26,7 +26,7 @@ object ExampleSpark extends DataPipelineDef {
     .every(1.day)
     .stopAfter(3)
 
-  val location = S3KeyParameter("S3Location", "s3://your-location/")
+  val location = S3KeyParameter("S3Location", s3"your-location")
   val instanceType = StringParameter("InstanceType", "c3.8xlarge")
   val instanceCount = IntegerParameter("InstanceCount", 8)
   val instanceBid = DoubleParameter("InstanceBid", 3.40)

@@ -2,8 +2,12 @@ package com.krux.hyperion.common
 
 import java.util.UUID
 
-trait PipelineObjectId {
+trait PipelineObjectId extends Ordered[PipelineObjectId] {
+
   def toOption: Option[String] = Option(this.toString)
+
+  def compare(that: PipelineObjectId): Int =  this.toString.compare(that.toString)
+
 }
 
 object PipelineObjectId {
@@ -49,8 +53,14 @@ case class FixedObjectId(seed: String) extends PipelineObjectId {
   override def toString = seed
 }
 
-object ScheduleObjectId extends PipelineObjectId { override def toString = "PipelineSchedule" }
+object ScheduleObjectId extends PipelineObjectId {
+  override val toString = "PipelineSchedule"
+}
 
-object TerminateObjectId extends PipelineObjectId { override def toString = "TerminateAction" }
+object TerminateObjectId extends PipelineObjectId {
+  override val toString = "TerminateAction"
+}
 
-object DefaultObjectId extends PipelineObjectId { override def toString = "Default" }
+object DefaultObjectId extends PipelineObjectId {
+  override val toString = "Default"
+}

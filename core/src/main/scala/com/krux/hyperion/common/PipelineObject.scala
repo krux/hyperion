@@ -6,7 +6,7 @@ import scala.language.implicitConversions
 /**
  * The base trait of krux data pipeline objects.
  */
-trait PipelineObject {
+trait PipelineObject extends Ordered[PipelineObject] {
 
   implicit def uniquePipelineId2String(id: PipelineObjectId): String = id.toString
   implicit def seq2Option[A](anySeq: Seq[A]): Option[Seq[A]] = seqToOption(anySeq)(x => x)
@@ -22,5 +22,7 @@ trait PipelineObject {
       case other => Option(anySeq.map(transform))
     }
   }
+
+  def compare(that: PipelineObject): Int =  this.id.compare(that.id)
 
 }

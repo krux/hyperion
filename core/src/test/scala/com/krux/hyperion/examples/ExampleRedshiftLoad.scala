@@ -1,7 +1,7 @@
 package com.krux.hyperion.examples
 
 import com.krux.hyperion.activity.RedshiftCopyActivity
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId}
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.dataformat.TsvDataFormat
 import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
@@ -45,7 +45,7 @@ object ExampleRedshiftLoad extends DataPipelineDef {
       .withPrimaryKeys("publisher_id", "campaign_id", "month")
 
     RedshiftCopyActivity(
-      input = S3DataNode.fromPath("s3://testing/testtab/").withDataFormat(s3Format),
+      input = S3DataNode(s3"testing/testtab/").withDataFormat(s3Format),
       output = redshiftTable,
       insertMode = RedshiftCopyActivity.OverwriteExisting,
       runsOn = ec2Instance

@@ -155,7 +155,6 @@ class AdpActivitiesSpec extends WordSpec {
         name = None,
         filterSql = Option("SELECT * FROM TABLE"),
         generatedScriptsPath = None,
-        stage = None,
         input = Option(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode")),
         output = Option(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode")),
         hadoopQueue = None,

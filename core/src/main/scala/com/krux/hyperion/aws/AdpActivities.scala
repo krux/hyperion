@@ -323,7 +323,6 @@ case class AdpHiveCopyActivity (
   name: Option[String],
   filterSql: Option[String],
   generatedScriptsPath: Option[String],
-  stage: Option[String],
   input: Option[AdpRef[AdpDataNode]],
   output: Option[AdpRef[AdpDataNode]],
   hadoopQueue: Option[String],

@@ -100,7 +100,7 @@ class ExampleWorkflowSpec extends WordSpec {
         ("name" -> act4Id) ~
         ("command" -> "run act4") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
-        ("dependsOn" -> List("ref" -> act2Id, "ref" -> act3Id, "ref" -> act1Id)) ~
+        ("dependsOn" -> List("ref" -> act1Id, "ref" -> act2Id, "ref" -> act3Id)) ~
         ("type" -> "ShellCommandActivity")
       assert(act4ShouldBe === act4)
 
@@ -112,7 +112,7 @@ class ExampleWorkflowSpec extends WordSpec {
         ("name" -> act5Id) ~
         ("command" -> "run act5") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
-        ("dependsOn" -> List("ref" -> act2Id, "ref" -> act3Id, "ref" -> act1Id)) ~
+        ("dependsOn" -> List("ref" -> act1Id, "ref" -> act2Id, "ref" -> act3Id)) ~
         ("type" -> "ShellCommandActivity")
       assert(act5ShouldBe === act5)
 
@@ -124,7 +124,7 @@ class ExampleWorkflowSpec extends WordSpec {
         ("name" -> act6Id) ~
         ("command" -> "run act6") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
-        ("dependsOn" -> List("ref" -> act1Id, "ref" -> act3Id, "ref" -> act4Id, "ref" -> act5Id, "ref" -> act2Id)) ~
+        ("dependsOn" -> List("ref" -> act1Id, "ref" -> act2Id, "ref" -> act3Id, "ref" -> act4Id, "ref" -> act5Id)) ~
         ("type" -> "ShellCommandActivity")
       assert(act6ShouldBe === act6)
 

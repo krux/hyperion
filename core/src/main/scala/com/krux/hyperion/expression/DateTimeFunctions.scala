@@ -13,6 +13,15 @@ trait DateTimeFunctions {
   private def genDateTimeSubFunc(funcName: String, args: String*) =
     new DateTimeExp(s"$funcName(${args.mkString(",")})")
 
+  def minusYears(myDateTime: DateTimeExp, daysToSub: Int) =
+    genDateTimeSubFunc("minusYears", myDateTime.content, daysToSub.toString)
+
+  def minusMonths(myDateTime: DateTimeExp, daysToSub: Int) =
+    genDateTimeSubFunc("minusMonths", myDateTime.content, daysToSub.toString)
+
+  def minusWeeks(myDateTime: DateTimeExp, daysToSub: Int) =
+    genDateTimeSubFunc("minusWeeks", myDateTime.content, daysToSub.toString)
+
   def minusDays(myDateTime: DateTimeExp, daysToSub: Int) =
     genDateTimeSubFunc("minusDays", myDateTime.content, daysToSub.toString)
 
@@ -21,15 +30,6 @@ trait DateTimeFunctions {
 
   def minusMinutes(myDateTime: DateTimeExp, daysToSub: Int) =
     genDateTimeSubFunc("minusMinutes", myDateTime.content, daysToSub.toString)
-
-  def minusMonths(myDateTime: DateTimeExp, daysToSub: Int) =
-    genDateTimeSubFunc("minusMonths", myDateTime.content, daysToSub.toString)
-
-  def minusWeeks(myDateTime: DateTimeExp, daysToSub: Int) =
-    genDateTimeSubFunc("minusWeeks", myDateTime.content, daysToSub.toString)
-
-  def minusYears(myDateTime: DateTimeExp, daysToSub: Int) =
-    genDateTimeSubFunc("minusYears", myDateTime.content, daysToSub.toString)
 
 }
 

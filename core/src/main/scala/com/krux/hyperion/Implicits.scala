@@ -1,7 +1,8 @@
 package com.krux.hyperion
 
 import com.github.nscala_time.time.Imports._
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.S3Uri.S3StringContext
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriodBuilder
 import com.krux.hyperion.expression.{DateTimeRef, DateTimeExp, Expression}
@@ -25,10 +26,11 @@ object Implicits {
   implicit def expression2String(exp: Expression): String = exp.toString
 
   // Convert to relevant PipelineObject
-  implicit def string2S3DataNode(s3path: String): S3DataNode =
-    S3DataNode.fromPath(s3path)
+  implicit def string2S3DataNode(s3path: String): S3DataNode = S3DataNode(S3Uri(s3path))
 
-  implicit def string2UniquePipelineId(prefix: String): PipelineObjectId =
-    PipelineObjectId(prefix)
+  implicit def string2S3Uri(s3path: String): S3Uri = S3Uri(s3path)
 
+  implicit def string2UniquePipelineId(prefix: String): PipelineObjectId = PipelineObjectId(prefix)
+
+  implicit def stringContext2S3UriHelper(sc: StringContext): S3StringContext = S3StringContext(sc)
 }

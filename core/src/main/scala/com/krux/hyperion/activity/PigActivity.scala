@@ -5,6 +5,7 @@ import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpPigActivity
 import com.krux.hyperion.datanode.DataNode
+import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
 
@@ -18,7 +19,7 @@ case class PigActivity private (
   id: PipelineObjectId,
   script: Either[S3Uri, String],
   scriptVariables: Seq[String],
-  generatedScriptsPath: Option[String],
+  generatedScriptsPath: Option[S3Uri],
   stage: Option[Boolean],
   input: Option[DataNode],
   output: Option[DataNode],
@@ -31,20 +32,18 @@ case class PigActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[String],
-  lateAfterTimeout: Option[String],
+  attemptTimeout: Option[DpPeriod],
+  lateAfterTimeout: Option[DpPeriod],
   maximumRetries: Option[Int],
-  retryDelay: Option[String],
+  retryDelay: Option[DpPeriod],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withScript(script: String) = this.copy(script = Right(script))
-  def withScript(script: S3Uri) = this.copy(script = Left(script))
   def withScriptVariable(scriptVariable: String*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
-  def withGeneratedScriptsPath(generatedScriptsPath: String) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
+  def withGeneratedScriptsPath(generatedScriptsPath: S3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
   def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(true))
   def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(true))
   def withHadoopQueue(queue: String) = this.copy(hadoopQueue = Option(queue))
@@ -56,10 +55,10 @@ case class PigActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: String) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: String) = this.copy(lateAfterTimeout = Option(timeout))
+  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
   def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: String) = this.copy(retryDelay = Option(delay))
+  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
@@ -70,7 +69,7 @@ case class PigActivity private (
     script = script.right.toOption,
     scriptUri = script.left.toOption.map(_.ref),
     scriptVariable = seqToOption(scriptVariables)(_.toString),
-    generatedScriptsPath = generatedScriptsPath,
+    generatedScriptsPath = generatedScriptsPath.map(_.ref),
     stage = stage.toString,
     input = input.map(_.ref),
     output = output.map(_.ref),
@@ -84,10 +83,10 @@ case class PigActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout,
-    lateAfterTimeout = lateAfterTimeout,
+    attemptTimeout = attemptTimeout.map(_.toString),
+    lateAfterTimeout = lateAfterTimeout.map(_.toString),
     maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay,
+    retryDelay = retryDelay.map(_.toString),
     failureAndRerunMode = failureAndRerunMode.map(_.toString)
   )
 }

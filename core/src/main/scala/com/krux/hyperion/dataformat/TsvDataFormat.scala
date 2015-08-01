@@ -12,8 +12,10 @@ case class TsvDataFormat private (
   escapeChar: Option[String] = None
 ) extends DataFormat {
 
-  def withColumns(col: String*) = this.copy(columns = columns ++ col)
+  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
+  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
+  def withColumns(col: String*) = this.copy(columns = columns ++ col)
   def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))
 
   lazy val serialize = AdpTsvDataFormat(
