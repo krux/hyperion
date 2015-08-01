@@ -5,6 +5,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
+import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.parameter.StringParameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
 
@@ -19,7 +21,7 @@ class SftpDownloadActivity private (
   val host: String,
   val port: Option[Int],
   val username: Option[String],
-  val password: Option[String],
+  val password: Option[StringParameter],
   val identity: Option[String],
   val pattern: Option[String],
   val input: Option[String],
@@ -32,10 +34,10 @@ class SftpDownloadActivity private (
   val onFailAlarms: Seq[SnsAlarm],
   val onSuccessAlarms: Seq[SnsAlarm],
   val onLateActionAlarms: Seq[SnsAlarm],
-  val attemptTimeout: Option[String],
-  val lateAfterTimeout: Option[String],
+  val attemptTimeout: Option[DpPeriod],
+  val lateAfterTimeout: Option[DpPeriod],
   val maximumRetries: Option[Int],
-  val retryDelay: Option[String],
+  val retryDelay: Option[DpPeriod],
   val failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends SftpActivity {
 
@@ -44,7 +46,7 @@ class SftpDownloadActivity private (
 
   def withPort(port: Int) = this.copy(port = Option(port))
   def withUsername(username: String) = this.copy(username = Option(username))
-  def withPassword(password: String) = this.copy(password = Option(password))
+  def withPassword(password: StringParameter) = this.copy(password = Option(password))
   def withIdentity(identity: String) = this.copy(identity = Option(identity))
   def withPattern(pattern: String) = this.copy(pattern = Option(pattern))
   def withInput(input: String) = this.copy(input = Option(input))
@@ -57,6 +59,11 @@ class SftpDownloadActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
+  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
+  def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def copy(
     id: PipelineObjectId = id,
@@ -66,7 +73,7 @@ class SftpDownloadActivity private (
     host: String = host,
     port: Option[Int] = port,
     username: Option[String] = username,
-    password: Option[String] = password,
+    password: Option[StringParameter] = password,
     identity: Option[String] = identity,
     pattern: Option[String] = pattern,
     input: Option[String] = input,
@@ -79,10 +86,10 @@ class SftpDownloadActivity private (
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
     onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
     onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
-    attemptTimeout: Option[String] = attemptTimeout,
-    lateAfterTimeout: Option[String] = lateAfterTimeout,
+    attemptTimeout: Option[DpPeriod] = attemptTimeout,
+    lateAfterTimeout: Option[DpPeriod] = lateAfterTimeout,
     maximumRetries: Option[Int] = maximumRetries,
-    retryDelay: Option[String] = retryDelay,
+    retryDelay: Option[DpPeriod] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SftpDownloadActivity(
     id, scriptUri, jarUri, mainClass, host, port, username, password, identity, pattern, input, output,
@@ -97,7 +104,7 @@ class SftpDownloadActivity private (
     Option(Seq("--host", host)),
     port.map(p => Seq("--port", p.toString)),
     username.map(u => Seq("--user", u)),
-    password.map(p => Seq("--password", p)),
+    password.map(p => Seq("--password", p.toString)),
     identity.map(i => Seq("--identity", i)),
     pattern.map(p => Seq("--pattern", p)),
     input.map(in => Seq("--source", in)),
@@ -122,10 +129,10 @@ class SftpDownloadActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout,
-    lateAfterTimeout = lateAfterTimeout,
+    attemptTimeout = attemptTimeout.map(_.toString),
+    lateAfterTimeout = lateAfterTimeout.map(_.toString),
     maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay,
+    retryDelay = retryDelay.map(_.toString),
     failureAndRerunMode = failureAndRerunMode.map(_.toString)
   )
 

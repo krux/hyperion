@@ -4,6 +4,7 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
 import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
+import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{ActionOnTaskFailure, ActionOnResourceFailure, WorkerGroup, EmrCluster}
 
@@ -37,10 +38,10 @@ class S3DistCpActivity private (
   val onFailAlarms: Seq[SnsAlarm],
   val onSuccessAlarms: Seq[SnsAlarm],
   val onLateActionAlarms: Seq[SnsAlarm],
-  val attemptTimeout: Option[String],
-  val lateAfterTimeout: Option[String],
+  val attemptTimeout: Option[DpPeriod],
+  val lateAfterTimeout: Option[DpPeriod],
   val maximumRetries: Option[Int],
-  val retryDelay: Option[String],
+  val retryDelay: Option[DpPeriod],
   val failureAndRerunMode: Option[FailureAndRerunMode],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
   val actionOnTaskFailure: Option[ActionOnTaskFailure]
@@ -76,10 +77,10 @@ class S3DistCpActivity private (
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
     onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
     onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
-    attemptTimeout: Option[String] = attemptTimeout,
-    lateAfterTimeout: Option[String] = lateAfterTimeout,
+    attemptTimeout: Option[DpPeriod] = attemptTimeout,
+    lateAfterTimeout: Option[DpPeriod] = lateAfterTimeout,
     maximumRetries: Option[Int] = maximumRetries,
-    retryDelay: Option[String] = retryDelay,
+    retryDelay: Option[DpPeriod] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
     actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure
@@ -122,10 +123,10 @@ class S3DistCpActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: String) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: String) = this.copy(lateAfterTimeout = Option(timeout))
+  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
   def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: String) = this.copy(retryDelay = Option(delay))
+  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
   def withActionOnResourceFailure(action: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(action))
   def withActionOnTaskFailure(action: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(action))
@@ -172,10 +173,10 @@ class S3DistCpActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout,
-    lateAfterTimeout = lateAfterTimeout,
+    attemptTimeout = attemptTimeout.map(_.toString),
+    lateAfterTimeout = lateAfterTimeout.map(_.toString),
     maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay,
+    retryDelay = retryDelay.map(_.toString),
     failureAndRerunMode = failureAndRerunMode.map(_.toString),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
     actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
@@ -185,7 +186,7 @@ class S3DistCpActivity private (
 
 object S3DistCpActivity {
 
-  trait OutputCodec
+  sealed trait OutputCodec
 
   object OutputCodec {
     object Gzip extends OutputCodec {

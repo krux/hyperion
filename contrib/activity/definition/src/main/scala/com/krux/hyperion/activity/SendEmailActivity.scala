@@ -5,6 +5,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
+import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.parameter.StringParameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
 
@@ -16,7 +18,7 @@ class SendEmailActivity private (
   val host: Option[String],
   val port: Option[Int],
   val username: Option[String],
-  val password: Option[String],
+  val password: Option[StringParameter],
   val from: Option[String],
   val to: Seq[String],
   val cc: Seq[String],
@@ -34,10 +36,10 @@ class SendEmailActivity private (
   val onFailAlarms: Seq[SnsAlarm],
   val onSuccessAlarms: Seq[SnsAlarm],
   val onLateActionAlarms: Seq[SnsAlarm],
-  val attemptTimeout: Option[String],
-  val lateAfterTimeout: Option[String],
+  val attemptTimeout: Option[DpPeriod],
+  val lateAfterTimeout: Option[DpPeriod],
   val maximumRetries: Option[Int],
-  val retryDelay: Option[String],
+  val retryDelay: Option[DpPeriod],
   val failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
@@ -47,7 +49,7 @@ class SendEmailActivity private (
   def withHost(host: String) = this.copy(host = Option(host))
   def withPort(port: Int) = this.copy(port = Option(port))
   def withUsername(username: String) = this.copy(username = Option(username))
-  def withPassword(password: String) = this.copy(password = Option(password))
+  def withPassword(password: StringParameter) = this.copy(password = Option(password))
   def withFrom(from: String) = this.copy(from = Option(from))
   def withTo(to: String) = this.copy(to = this.to :+ to)
   def withCc(cc: String) = this.copy(cc = this.cc :+ cc)
@@ -63,10 +65,10 @@ class SendEmailActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: String) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: String) = this.copy(lateAfterTimeout = Option(timeout))
+  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
   def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: String) = this.copy(retryDelay = Option(delay))
+  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def copy(
@@ -77,7 +79,7 @@ class SendEmailActivity private (
     host: Option[String] = host,
     port: Option[Int] = port,
     username: Option[String] = username,
-    password: Option[String] = password,
+    password: Option[StringParameter] = password,
     from: Option[String] = from,
     to: Seq[String] = to,
     cc: Seq[String] = cc,
@@ -95,10 +97,10 @@ class SendEmailActivity private (
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
     onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
     onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
-    attemptTimeout: Option[String] = attemptTimeout,
-    lateAfterTimeout: Option[String] = lateAfterTimeout,
+    attemptTimeout: Option[DpPeriod] = attemptTimeout,
+    lateAfterTimeout: Option[DpPeriod] = lateAfterTimeout,
     maximumRetries: Option[Int] = maximumRetries,
-    retryDelay: Option[String] = retryDelay,
+    retryDelay: Option[DpPeriod] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SendEmailActivity(id, scriptUri, jarUri, mainClass, host, port, username, password,
     from, to, cc, bcc, subject, body, starttls, debug, input, stdout, stderr, runsOn, dependsOn,
@@ -111,7 +113,7 @@ class SendEmailActivity private (
     host.map(h => Seq("-H", h)),
     port.map(p => Seq("-P", p.toString)),
     username.map(u => Seq("-u", u)),
-    password.map(p => Seq("-p", p)),
+    password.map(p => Seq("-p", p.toString)),
     from.map(f => Seq("--from", f)),
     Option(to.flatMap(t => Seq("--to", t))),
     Option(cc.flatMap(c => Seq("--cc", c))),
@@ -140,10 +142,10 @@ class SendEmailActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout,
-    lateAfterTimeout = lateAfterTimeout,
+    attemptTimeout = attemptTimeout.map(_.toString),
+    lateAfterTimeout = lateAfterTimeout.map(_.toString),
     maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay,
+    retryDelay = retryDelay.map(_.toString),
     failureAndRerunMode = failureAndRerunMode.map(_.toString)
   )
 
