@@ -10,7 +10,7 @@ val scalatestArtifact       = "org.scalatest"          %% "scalatest"           
 
 import SonatypeKeys._
 
-val hyperionVersion = "1.19.1"
+val hyperionVersion = "1.19.2"
 
 // Import default settings. This changes `publishTo` settings to use the Sonatype repository and add several commands for publishing.
 sonatypeSettings
