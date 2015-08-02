@@ -8,7 +8,7 @@ import com.krux.hyperion.activity.{SparkActivity, SparkStep}
 import com.krux.hyperion.expression.DateTimeFunctions.format
 import com.krux.hyperion.expression.ExpressionDSL._
 import com.krux.hyperion.parameter._
-import com.krux.hyperion.resource.SparkCluster
+import com.krux.hyperion.resource.{WorkerGroup, SparkCluster}
 import com.typesafe.config.ConfigFactory
 import com.krux.hyperion.WorkflowDSL._
 
@@ -38,12 +38,12 @@ object ExampleSpark extends DataPipelineDef {
     // Actions
     val mailAction = SnsAlarm()
       .withSubject("Something happened at #{node.@scheduledStartTime}")
-      .withMessage(s"Some message ${instanceCount} x ${instanceType} @ ${instanceBid} for ${location}")
+      .withMessage(s"Some message $instanceCount x $instanceType @ $instanceBid for $location")
       .withTopicArn("arn:aws:sns:us-east-1:28619EXAMPLE:ExampleTopic")
       .withRole("DataPipelineDefaultResourceRole")
 
     // Resources
-    val sparkCluster = SparkCluster().withTaskInstanceCount(1)
+    implicit val sparkCluster = SparkCluster().withTaskInstanceCount(1)
 
     // First activity
     val filterStep = SparkStep(jar)
@@ -53,7 +53,7 @@ object ExampleSpark extends DataPipelineDef {
         format(SparkActivity.scheduledStartTime - 3.days, "yyyy-MM-dd")
       )
 
-    val filterActivity = SparkActivity(sparkCluster)
+    val filterActivity = SparkActivity()
       .named("filterActivity")
       .withSteps(filterStep)
       .onFail(mailAction)
@@ -71,7 +71,7 @@ object ExampleSpark extends DataPipelineDef {
       .withMainClass("com.krux.hyperion.ScoreJob2")
       .withArguments(target, format(SparkActivity.scheduledStartTime - 3.days, "yyyy-MM-dd"))
 
-    val scoreActivity = SparkActivity(sparkCluster)
+    val scoreActivity = SparkActivity()
       .named("scoreActivity")
       .withSteps(scoreStep1, scoreStep2)
       .onSuccess(mailAction)

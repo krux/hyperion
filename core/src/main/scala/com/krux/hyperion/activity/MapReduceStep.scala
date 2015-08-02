@@ -5,14 +5,14 @@ package com.krux.hyperion.activity
  */
 case class MapReduceStep private (
   jarUri: String,
-  mainClass: Option[String],
+  mainClass: Option[MainClass],
   args: Seq[String]
 ) {
 
-  def withMainClass(mainClass: Any) = this.copy(mainClass = ActivityHelper.getMainClass(mainClass))
+  def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
   def withArguments(arg: String*) = this.copy(args = args ++ arg)
 
-  override def toString: String = (Seq(jarUri) ++ mainClass.toSeq ++ args).mkString(",")
+  override def toString: String = (Seq(jarUri) ++ mainClass.map(_.toString).toSeq ++ args).mkString(",")
 
 }
 

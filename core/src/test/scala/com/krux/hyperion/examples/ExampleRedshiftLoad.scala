@@ -33,7 +33,7 @@ object ExampleRedshiftLoad extends DataPipelineDef {
 
   override def workflow = {
 
-    val ec2Instance = Ec2Resource()
+    implicit val ec2Instance = Ec2Resource()
 
     val s3Format = TsvDataFormat()
 
@@ -47,8 +47,7 @@ object ExampleRedshiftLoad extends DataPipelineDef {
     RedshiftCopyActivity(
       input = S3DataNode(s3"testing/testtab/").withDataFormat(s3Format),
       output = redshiftTable,
-      insertMode = RedshiftCopyActivity.OverwriteExisting,
-      runsOn = ec2Instance
+      insertMode = RedshiftCopyActivity.OverwriteExisting
     )
   }
 

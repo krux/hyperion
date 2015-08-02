@@ -6,7 +6,7 @@ import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{ActionOnTaskFailure, ActionOnResourceFailure, WorkerGroup, EmrCluster}
+import com.krux.hyperion.resource._
 
 class S3DistCpActivity private (
   val id: PipelineObjectId,
@@ -32,7 +32,7 @@ class S3DistCpActivity private (
   val sourcePrefixesFile: Option[String],
   val preStepCommands: Seq[String],
   val postStepCommands: Seq[String],
-  val runsOn: Either[EmrCluster, WorkerGroup],
+  val runsOn: Resource[EmrCluster],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
   val onFailAlarms: Seq[SnsAlarm],
@@ -71,7 +71,7 @@ class S3DistCpActivity private (
     sourcePrefixesFile: Option[String] = sourcePrefixesFile,
     preStepCommands: Seq[String] = preStepCommands,
     postStepCommands: Seq[String] = postStepCommands,
-    runsOn: Either[EmrCluster, WorkerGroup] = runsOn,
+    runsOn: Resource[EmrCluster] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
@@ -131,7 +131,7 @@ class S3DistCpActivity private (
   def withActionOnResourceFailure(action: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(action))
   def withActionOnTaskFailure(action: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(action))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def arguments: Seq[String] = Seq(
     source.map(s => Seq("--src", s.toString)),
@@ -166,8 +166,8 @@ class S3DistCpActivity private (
     postStepCommand = seqToOption(postStepCommands)(_.toString),
     input = None,
     output = None,
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -184,7 +184,7 @@ class S3DistCpActivity private (
 
 }
 
-object S3DistCpActivity {
+object S3DistCpActivity extends RunnableObject {
 
   sealed trait OutputCodec
 
@@ -206,11 +206,7 @@ object S3DistCpActivity {
     }
   }
 
-  def apply(runsOn: EmrCluster): S3DistCpActivity = apply(Left(runsOn))
-
-  def apply(runsOn: WorkerGroup): S3DistCpActivity = apply(Right(runsOn))
-
-  private def apply(runsOn: Either[EmrCluster, WorkerGroup]): S3DistCpActivity =
+  def apply()(runsOn: Resource[EmrCluster]): S3DistCpActivity =
     new S3DistCpActivity(
       id = PipelineObjectId(S3DistCpActivity.getClass),
       source = None,

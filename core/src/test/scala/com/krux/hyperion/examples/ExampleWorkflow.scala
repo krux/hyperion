@@ -17,15 +17,15 @@ object ExampleWorkflow extends DataPipelineDef {
 
   override def workflow = {
 
-    val ec2 = Ec2Resource()
+    implicit val ec2 = Ec2Resource()
 
     // First activity
-    val act1 = ShellCommandActivity("run act1", ec2).named("act1")
-    val act2 = ShellCommandActivity("run act2", ec2).named("act2")
-    val act3 = ShellCommandActivity("run act3", ec2).named("act3")
-    val act4 = ShellCommandActivity("run act4", ec2).named("act4")
-    val act5 = ShellCommandActivity("run act5", ec2).named("act5")
-    val act6 = ShellCommandActivity("run act6", ec2).named("act6")
+    val act1 = ShellCommandActivity("run act1").named("act1")
+    val act2 = ShellCommandActivity("run act2").named("act2")
+    val act3 = ShellCommandActivity("run act3").named("act3")
+    val act4 = ShellCommandActivity("run act4").named("act4")
+    val act5 = ShellCommandActivity("run act5").named("act5")
+    val act6 = ShellCommandActivity("run act6").named("act6")
 
     // run act1 first, and then run act2 and act3 at the same time, and then run act4 and act5 the
     // same time, at last run act6

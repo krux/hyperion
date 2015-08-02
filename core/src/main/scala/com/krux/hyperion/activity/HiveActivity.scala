@@ -6,7 +6,7 @@ import com.krux.hyperion.aws.AdpHiveActivity
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, EmrCluster}
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveActivity makes it easier to set up an Amzon EMR
@@ -19,14 +19,14 @@ import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
  */
 case class HiveActivity private (
   id: PipelineObjectId,
-  hiveScript: Either[S3Uri, String],
+  hiveScript: Script,
   scriptVariables: Seq[String],
   input: DataNode,
   output: DataNode,
   hadoopQueue: Option[String],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
-  runsOn: Either[EmrCluster, WorkerGroup],
+  runsOn: Resource[EmrCluster],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -58,13 +58,13 @@ case class HiveActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
   lazy val serialize = new AdpHiveActivity(
     id = id,
     name = id.toOption,
-    hiveScript = hiveScript.right.toOption,
-    scriptUri = hiveScript.left.toOption.map(_.ref),
+    hiveScript = hiveScript.content,
+    scriptUri = hiveScript.uri.map(_.ref),
     scriptVariable = seqToOption(scriptVariables)(_.toString),
     stage = Option("true"),
     input = Option(input.ref),
@@ -72,8 +72,8 @@ case class HiveActivity private (
     hadoopQueue = hadoopQueue,
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -88,14 +88,7 @@ case class HiveActivity private (
 }
 
 object HiveActivity extends RunnableObject {
-  def apply(hiveScript: Either[S3Uri, String], input: DataNode,
-    output: DataNode, runsOn: EmrCluster): HiveActivity = apply(hiveScript, input, output, Left(runsOn))
-
-  def apply(hiveScript: Either[S3Uri, String], input: DataNode,
-    output: DataNode, runsOn: WorkerGroup): HiveActivity = apply(hiveScript, input, output, Right(runsOn))
-
-  private def apply(hiveScript: Either[S3Uri, String], input: DataNode,
-    output: DataNode, runsOn: Either[EmrCluster, WorkerGroup]): HiveActivity =
+  def apply(input: DataNode, output: DataNode, hiveScript: Script)(implicit runsOn: Resource[EmrCluster]): HiveActivity =
     new HiveActivity(
       id = PipelineObjectId(HiveActivity.getClass),
       hiveScript = hiveScript,

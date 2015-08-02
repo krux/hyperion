@@ -6,7 +6,7 @@ import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{ActionOnTaskFailure, ActionOnResourceFailure, WorkerGroup, EmrCluster}
+import com.krux.hyperion.resource._
 
 /**
  * Runs map reduce steps on an Amazon EMR cluster
@@ -18,7 +18,7 @@ case class MapReduceActivity private (
   postStepCommands: Seq[String],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
-  runsOn: Either[EmrCluster, WorkerGroup],
+  runsOn: Resource[EmrCluster],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -55,7 +55,7 @@ case class MapReduceActivity private (
   def withActionOnResourceFailure(action: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(action))
   def withActionOnTaskFailure(action: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(action))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   lazy val serialize = AdpEmrActivity(
     id = id,
@@ -65,8 +65,8 @@ case class MapReduceActivity private (
     postStepCommand = seqToOption(postStepCommands)(_.toString),
     input = seqToOption(inputs)(_.ref),
     output = seqToOption(outputs)(_.ref),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -84,11 +84,7 @@ case class MapReduceActivity private (
 }
 
 object MapReduceActivity extends RunnableObject {
-  def apply(runsOn: EmrCluster): MapReduceActivity = apply(Left(runsOn))
-
-  def apply(runsOn: WorkerGroup): MapReduceActivity = apply(Right(runsOn))
-
-  private def apply(runsOn: Either[EmrCluster, WorkerGroup]): MapReduceActivity =
+  private def apply()(implicit runsOn: Resource[EmrCluster]): MapReduceActivity =
     new MapReduceActivity(
       id = PipelineObjectId(MapReduceActivity.getClass),
       steps = Seq(),

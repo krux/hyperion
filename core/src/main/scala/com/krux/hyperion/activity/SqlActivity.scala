@@ -6,7 +6,7 @@ import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Runs an SQL query on a RedShift cluster. If the query writes out to a table that does not exist,
@@ -14,11 +14,11 @@ import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
  */
 case class SqlActivity private (
   id: PipelineObjectId,
-  script: Either[S3Uri, String],
+  script: Script,
   scriptArgument: Seq[String],
   database: RedshiftDatabase,
   queue: Option[String],
-  runsOn: Either[Ec2Resource, WorkerGroup],
+  runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -49,18 +49,18 @@ case class SqlActivity private (
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   override def objects: Iterable[PipelineObject] =
-    runsOn.left.toSeq ++ Seq(database) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+    runsOn.toSeq ++ Seq(database) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   lazy val serialize = AdpSqlActivity(
     id = id,
     name = id.toOption,
-    script = script.right.toOption,
-    scriptUri = script.left.toOption.map(_.toString),
+    script = script.content,
+    scriptUri = script.uri.map(_.toString),
     scriptArgument = scriptArgument,
     database = database.ref,
     queue = queue,
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -75,19 +75,7 @@ case class SqlActivity private (
 }
 
 object SqlActivity extends RunnableObject {
-  def apply(database: RedshiftDatabase, script: S3Uri, runsOn: Ec2Resource): SqlActivity =
-    apply(database, Left(script), Left(runsOn))
-
-  def apply(database: RedshiftDatabase, script: String, runsOn: Ec2Resource): SqlActivity =
-    apply(database, Right(script), Left(runsOn))
-
-  def apply(database: RedshiftDatabase, script: S3Uri, runsOn: WorkerGroup): SqlActivity =
-    apply(database, Left(script), Right(runsOn))
-
-  def apply(database: RedshiftDatabase, script: String, runsOn: WorkerGroup): SqlActivity =
-    apply(database, Right(script), Right(runsOn))
-
-  private def apply(database: RedshiftDatabase, script: Either[S3Uri, String], runsOn: Either[Ec2Resource, WorkerGroup]): SqlActivity =
+  def apply(database: RedshiftDatabase, script: Script)(implicit runsOn: Resource[Ec2Resource]): SqlActivity =
     new SqlActivity(
       id = PipelineObjectId(SqlActivity.getClass),
       script = script,

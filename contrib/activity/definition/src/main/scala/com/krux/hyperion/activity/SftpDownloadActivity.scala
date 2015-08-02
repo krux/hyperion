@@ -8,7 +8,7 @@ import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.parameter.StringParameter
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Shell command activity that runs a given Jar
@@ -28,7 +28,7 @@ class SftpDownloadActivity private (
   val output: Option[S3DataNode],
   val stdout: Option[String],
   val stderr: Option[String],
-  val runsOn: Either[Ec2Resource, WorkerGroup],
+  val runsOn: Resource[Ec2Resource],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
   val onFailAlarms: Seq[SnsAlarm],
@@ -80,7 +80,7 @@ class SftpDownloadActivity private (
     output: Option[S3DataNode] = output,
     stdout: Option[String] = stdout,
     stderr: Option[String] = stderr,
-    runsOn: Either[Ec2Resource, WorkerGroup] = runsOn,
+    runsOn: Resource[Ec2Resource] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
@@ -97,7 +97,7 @@ class SftpDownloadActivity private (
     attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def arguments: Seq[String] = Seq(
     Option(Seq("download")),
@@ -122,8 +122,8 @@ class SftpDownloadActivity private (
     stage = Option("true"),
     input = None,
     output = output.map(o => Seq(o.ref)),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -140,13 +140,7 @@ class SftpDownloadActivity private (
 
 object SftpDownloadActivity extends RunnableObject {
 
-  def apply(host: String, runsOn: Ec2Resource)(implicit hc: HyperionContext): SftpDownloadActivity =
-    apply(host, Left(runsOn))
-
-  def apply(host: String, runsOn: WorkerGroup)(implicit hc: HyperionContext): SftpDownloadActivity =
-    apply(host, Right(runsOn))
-
-  private def apply(host: String, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): SftpDownloadActivity =
+  def apply(host: String)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): SftpDownloadActivity =
     new SftpDownloadActivity(
       id = PipelineObjectId(SftpDownloadActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),

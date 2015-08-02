@@ -5,7 +5,7 @@ import com.krux.hyperion.aws._
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, EmrCluster}
 
 /**
  * Runs a MapReduce job on a cluster. The cluster can be an EMR cluster managed by AWS Data Pipeline
@@ -17,12 +17,12 @@ import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
 case class HadoopActivity private (
   id: PipelineObjectId,
   jarUri: String,
-  mainClass: Option[String],
+  mainClass: Option[MainClass],
   argument: Seq[String],
   hadoopQueue: Option[String],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
-  runsOn: Either[EmrCluster, WorkerGroup],
+  runsOn: Resource[EmrCluster],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -38,7 +38,7 @@ case class HadoopActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withMainClass(mainClass: Any) = this.copy(mainClass = ActivityHelper.getMainClass(mainClass))
+  def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
   def withHadoopQueue(queue: String) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
@@ -54,19 +54,19 @@ case class HadoopActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
   lazy val serialize = AdpHadoopActivity(
     id = id,
     name = id.toOption,
     jarUri = jarUri,
-    mainClass = mainClass,
+    mainClass = mainClass.map(_.toString),
     argument: Seq[String],
     hadoopQueue = hadoopQueue,
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -81,12 +81,8 @@ case class HadoopActivity private (
 
 }
 
-object HadoopActivity {
-  def apply(jarUri: String, runsOn: EmrCluster): HadoopActivity = apply(jarUri, Left(runsOn))
-
-  def apply(jarUri: String, runsOn: WorkerGroup): HadoopActivity = apply(jarUri, Right(runsOn))
-
-  private def apply(jarUri: String, runsOn: Either[EmrCluster, WorkerGroup]): HadoopActivity = new HadoopActivity(
+object HadoopActivity extends RunnableObject {
+  def apply(jarUri: String)(implicit runsOn: Resource[EmrCluster]): HadoopActivity = new HadoopActivity(
     id = PipelineObjectId(HadoopActivity.getClass),
     jarUri = jarUri,
     mainClass = None,

@@ -8,7 +8,7 @@ import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.parameter.StringParameter
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Shell command activity that runs a given Jar
@@ -28,7 +28,7 @@ class SftpUploadActivity private (
   val output: Option[String],
   val stdout: Option[String],
   val stderr: Option[String],
-  val runsOn: Either[Ec2Resource, WorkerGroup],
+  val runsOn: Resource[Ec2Resource],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
   val onFailAlarms: Seq[SnsAlarm],
@@ -80,7 +80,7 @@ class SftpUploadActivity private (
     output: Option[String] = output,
     stdout: Option[String] = stdout,
     stderr: Option[String] = stderr,
-    runsOn: Either[Ec2Resource, WorkerGroup] = runsOn,
+    runsOn: Resource[Ec2Resource] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
@@ -97,7 +97,7 @@ class SftpUploadActivity private (
     lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def arguments: Seq[String] = Seq(
     Option(Seq("upload")),
@@ -122,8 +122,8 @@ class SftpUploadActivity private (
     stage = Option("true"),
     input = input.map(i => Seq(i.ref)),
     output = None,
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -140,13 +140,7 @@ class SftpUploadActivity private (
 
 object SftpUploadActivity extends RunnableObject {
 
-  def apply(host: String, runsOn: Ec2Resource)(implicit hc: HyperionContext): SftpUploadActivity =
-    apply(host, Left(runsOn))
-
-  def apply(host: String, runsOn: WorkerGroup)(implicit hc: HyperionContext): SftpUploadActivity =
-    apply(host, Right(runsOn))
-
-  private def apply(host: String, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): SftpUploadActivity =
+  def apply(host: String)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): SftpUploadActivity =
     new SftpUploadActivity(
       id = PipelineObjectId(SftpUploadActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),

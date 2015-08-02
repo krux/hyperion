@@ -8,7 +8,7 @@ import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.parameter.StringParameter
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Unload result of the given sql script from redshift to given s3Path.
@@ -20,7 +20,7 @@ case class RedshiftUnloadActivity private (
   database: RedshiftDatabase,
   unloadOptions: Seq[RedshiftUnloadOption],
   queue: Option[String],
-  runsOn: Either[Ec2Resource, WorkerGroup],
+  runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -66,7 +66,7 @@ case class RedshiftUnloadActivity private (
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   override def objects: Iterable[PipelineObject] =
-    runsOn.left.toSeq ++
+    runsOn.toSeq ++
     Seq(database) ++
     dependsOn ++
     preconditions ++
@@ -82,8 +82,8 @@ case class RedshiftUnloadActivity private (
     scriptArgument = None,
     database = database.ref,
     queue = queue,
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -101,15 +101,7 @@ case class RedshiftUnloadActivity private (
 object RedshiftUnloadActivity extends RunnableObject {
 
   def apply(database: RedshiftDatabase, script: String, s3Path: S3Uri,
-    accessKeyId: StringParameter, accessKeySecret: StringParameter, runsOn: Ec2Resource): RedshiftUnloadActivity =
-    apply(database, script, s3Path, accessKeyId, accessKeySecret, Left(runsOn))
-
-  def apply(database: RedshiftDatabase, script: String, s3Path: S3Uri,
-    accessKeyId: StringParameter, accessKeySecret: StringParameter, runsOn: WorkerGroup): RedshiftUnloadActivity =
-    apply(database, script, s3Path, accessKeyId, accessKeySecret, Right(runsOn))
-
-  private def apply(database: RedshiftDatabase, script: String, s3Path: S3Uri,
-    accessKeyId: StringParameter, accessKeySecret: StringParameter, runsOn: Either[Ec2Resource, WorkerGroup]): RedshiftUnloadActivity =
+    accessKeyId: StringParameter, accessKeySecret: StringParameter)(implicit runsOn: Resource[Ec2Resource]): RedshiftUnloadActivity =
     new RedshiftUnloadActivity(
       id = PipelineObjectId(RedshiftUnloadActivity.getClass),
       script = script,

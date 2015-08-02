@@ -7,7 +7,7 @@ import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Google Storage Upload activity
@@ -18,7 +18,7 @@ case class GoogleStorageUploadActivity private (
   input: Option[S3DataNode],
   output: String,
   botoConfigUrl: S3Uri,
-  runsOn: Either[Ec2Resource, WorkerGroup],
+  runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -48,7 +48,7 @@ case class GoogleStorageUploadActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ dependsOn
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ dependsOn
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
@@ -61,8 +61,8 @@ case class GoogleStorageUploadActivity private (
     stage = Option("true"),
     input = input.map(in => Seq(in.ref)),
     output = None,
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -78,11 +78,7 @@ case class GoogleStorageUploadActivity private (
 }
 
 object GoogleStorageUploadActivity extends RunnableObject {
-  def apply(botoConfigUrl: S3Uri, runsOn: Ec2Resource)(implicit hc: HyperionContext): GoogleStorageUploadActivity = apply(botoConfigUrl, Left(runsOn))
-
-  def apply(botoConfigUrl: S3Uri, runsOn: WorkerGroup)(implicit hc: HyperionContext): GoogleStorageUploadActivity = apply(botoConfigUrl, Right(runsOn))
-
-  private def apply(botoConfigUrl: S3Uri, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): GoogleStorageUploadActivity =
+  def apply(botoConfigUrl: S3Uri)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): GoogleStorageUploadActivity =
     new GoogleStorageUploadActivity(
       id = PipelineObjectId(GoogleStorageUploadActivity.getClass),
       scriptUri = s"${hc.scriptUri}activities/gsutil-upload.sh",

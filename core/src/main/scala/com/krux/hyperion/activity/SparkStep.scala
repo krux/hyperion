@@ -8,16 +8,16 @@ import com.krux.hyperion.common.S3Uri
  */
 case class SparkStep private (
   jarUri: S3Uri,
-  mainClass: Option[String],
+  mainClass: Option[MainClass],
   args: Seq[String],
   scriptRunner: Option[String],
   jobRunner: Option[String]
 ) {
 
-  def withMainClass(mainClass: Any) = this.copy(mainClass = ActivityHelper.getMainClass(mainClass))
+  def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
   def withArguments(arg: String*) = this.copy(args = args ++ arg)
 
-  override def toString: String = (scriptRunner.toSeq ++ jobRunner.toSeq ++ Seq(jarUri.ref) ++ mainClass.toSeq ++ args).mkString(",")
+  override def toString: String = (scriptRunner.toSeq ++ jobRunner.toSeq ++ Seq(jarUri.ref) ++ mainClass.map(_.toString).toSeq ++ args).mkString(",")
 
 }
 

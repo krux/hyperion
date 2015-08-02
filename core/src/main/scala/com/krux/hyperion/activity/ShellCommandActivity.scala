@@ -6,21 +6,21 @@ import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Runs a command or script
  */
 case class ShellCommandActivity private (
   id: PipelineObjectId,
-  script: Either[S3Uri, String],
+  script: Script,
   scriptArguments: Seq[String],
   stdout: Option[String],
   stderr: Option[String],
   stage: Option[Boolean],
   input: Seq[S3DataNode],
   output: Seq[S3DataNode],
-  runsOn: Either[Ec2Resource, WorkerGroup],
+  runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -54,21 +54,21 @@ case class ShellCommandActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ preconditions ++ input ++ output ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ preconditions ++ input ++ output ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
     name = id.toOption,
-    command = script.right.toOption,
-    scriptUri = script.left.toOption.map(_.ref),
+    command = script.content,
+    scriptUri = script.uri.map(_.ref),
     scriptArgument = scriptArguments,
     stdout = stdout,
     stderr = stderr,
     stage = stage.map(_.toString),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -84,15 +84,7 @@ case class ShellCommandActivity private (
 
 object ShellCommandActivity extends RunnableObject {
 
-  def apply(script: S3Uri, runsOn: Ec2Resource): ShellCommandActivity = apply(Left(script), Left(runsOn))
-
-  def apply(script: String, runsOn: Ec2Resource): ShellCommandActivity = apply(Right(script), Left(runsOn))
-
-  def apply(script: S3Uri, runsOn: WorkerGroup): ShellCommandActivity = apply(Left(script), Right(runsOn))
-
-  def apply(script: String, runsOn: WorkerGroup): ShellCommandActivity = apply(Right(script), Right(runsOn))
-
-  private def apply(script: Either[S3Uri, String], runsOn: Either[Ec2Resource, WorkerGroup]): ShellCommandActivity =
+  def apply(script: Script)(implicit runsOn: Resource[Ec2Resource]): ShellCommandActivity =
     new ShellCommandActivity(
       id = PipelineObjectId(ShellCommandActivity.getClass),
       script = script,

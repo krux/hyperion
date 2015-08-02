@@ -7,7 +7,7 @@ import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Shell command activity that runs a given Jar
@@ -16,14 +16,14 @@ case class JarActivity private (
   id: PipelineObjectId,
   jarUri: S3Uri,
   scriptUri: Option[S3Uri],
-  mainClass: Option[String],
+  mainClass: Option[MainClass],
   arguments: Seq[String],
   stdout: Option[String],
   stderr: Option[String],
   stage: Option[Boolean],
   input: Seq[S3DataNode],
   output: Seq[S3DataNode],
-  runsOn: Either[Ec2Resource, WorkerGroup],
+  runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -39,7 +39,7 @@ case class JarActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
-  def withMainClass(mainClass: Any) = this.copy(mainClass = ActivityHelper.getMainClass(mainClass))
+  def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
   def withArguments(args: String*) = this.copy(arguments = arguments ++ args)
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))
   def withStderrTo(err: String) = this.copy(stderr = Option(err))
@@ -57,21 +57,21 @@ case class JarActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
     name = id.toOption,
     command = None,
     scriptUri = scriptUri.map(_.ref),
-    scriptArgument = Option(Seq(jarUri.ref) ++ mainClass.toSeq ++ arguments),
+    scriptArgument = Option(Seq(jarUri.ref) ++ mainClass.map(_.toString).toSeq ++ arguments),
     stdout = stdout,
     stderr = stderr,
     stage = stage.map(_.toString),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -88,11 +88,7 @@ case class JarActivity private (
 
 object JarActivity extends RunnableObject {
 
-  def apply(jarUri: S3Uri, runsOn: Ec2Resource)(implicit hc: HyperionContext): JarActivity = apply(jarUri, Left(runsOn))
-
-  def apply(jarUri: S3Uri, runsOn: WorkerGroup)(implicit hc: HyperionContext): JarActivity = apply(jarUri, Right(runsOn))
-
-  private def apply(jarUri: S3Uri, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): JarActivity =
+  def apply(jarUri: S3Uri)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): JarActivity =
     new JarActivity(
       id = PipelineObjectId(JarActivity.getClass),
       jarUri = jarUri,

@@ -7,7 +7,7 @@ import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 class SplitMergeFilesActivity private (
   val id: PipelineObjectId,
@@ -29,7 +29,7 @@ class SplitMergeFilesActivity private (
   val output: Seq[S3DataNode],
   val stdout: Option[String],
   val stderr: Option[String],
-  val runsOn: Either[Ec2Resource, WorkerGroup],
+  val runsOn: Resource[Ec2Resource],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
   val onFailAlarms: Seq[SnsAlarm],
@@ -62,7 +62,7 @@ class SplitMergeFilesActivity private (
     output: Seq[S3DataNode] = output,
     stdout: Option[String] = stdout,
     stderr: Option[String] = stderr,
-    runsOn: Either[Ec2Resource, WorkerGroup] = runsOn,
+    runsOn: Resource[Ec2Resource] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
@@ -113,7 +113,7 @@ class SplitMergeFilesActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def arguments: Seq[String] = Seq(
     if (compressedOutput) Option(Seq("-z")) else None,
@@ -140,8 +140,8 @@ class SplitMergeFilesActivity private (
     stage = Option("true"),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -156,13 +156,9 @@ class SplitMergeFilesActivity private (
 
 }
 
-object SplitMergeFilesActivity {
+object SplitMergeFilesActivity extends RunnableObject {
 
-  def apply(filename: String, runsOn: Ec2Resource)(implicit hc: HyperionContext): SplitMergeFilesActivity = apply(filename, Left(runsOn))
-
-  def apply(filename: String, runsOn: WorkerGroup)(implicit hc: HyperionContext): SplitMergeFilesActivity = apply(filename, Right(runsOn))
-
-  private def apply(filename: String, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): SplitMergeFilesActivity =
+  def apply(filename: String)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): SplitMergeFilesActivity =
     new SplitMergeFilesActivity(
       id = PipelineObjectId(SplitMergeFilesActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),

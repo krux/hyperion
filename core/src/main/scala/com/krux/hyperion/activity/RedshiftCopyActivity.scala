@@ -7,7 +7,7 @@ import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Copies data directly from DynamoDB or Amazon S3 to Amazon Redshift. You can load data into a new
@@ -21,7 +21,7 @@ case class RedshiftCopyActivity private (
   commandOptions: Seq[RedshiftCopyOption],
   input: S3DataNode,
   output: RedshiftDataNode,
-  runsOn: Either[Ec2Resource, WorkerGroup],
+  runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -52,7 +52,7 @@ case class RedshiftCopyActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   lazy val serialize = AdpRedshiftCopyActivity(
     id = id,
@@ -63,8 +63,8 @@ case class RedshiftCopyActivity private (
     commandOptions = seqToOption(commandOptions)(_.repr).map(_.flatten),
     input = input.ref,
     output = output.ref,
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -86,14 +86,7 @@ object RedshiftCopyActivity extends Enumeration with RunnableObject {
   val OverwriteExisting = Value("OVERWRITE_EXISTING")
   val Truncate = Value("TRUNCATE")
 
-  def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode,
-    runsOn: Ec2Resource)(implicit hc: HyperionContext): RedshiftCopyActivity = apply(input, output, insertMode, Left(runsOn))
-
-  def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode,
-    runsOn: WorkerGroup)(implicit hc: HyperionContext): RedshiftCopyActivity = apply(input, output, insertMode, Right(runsOn))
-
-  private def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode,
-    runsOn: Either[Ec2Resource, WorkerGroup]): RedshiftCopyActivity =
+  def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode)(implicit runsOn: Resource[Ec2Resource]): RedshiftCopyActivity =
     new RedshiftCopyActivity(
       id = PipelineObjectId(RedshiftCopyActivity.getClass),
       insertMode = insertMode,

@@ -7,7 +7,7 @@ import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * Shell command activity that runs a given python script
@@ -26,7 +26,7 @@ class PythonActivity private (
   val output: Seq[S3DataNode],
   val stdout: Option[String],
   val stderr: Option[String],
-  val runsOn: Either[Ec2Resource, WorkerGroup],
+  val runsOn: Resource[Ec2Resource],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
   val onFailAlarms: Seq[SnsAlarm],
@@ -79,7 +79,7 @@ class PythonActivity private (
     output: Seq[S3DataNode] = output,
     stdout: Option[String] = stdout,
     stderr: Option[String] = stderr,
-    runsOn: Either[Ec2Resource, WorkerGroup] = runsOn,
+    runsOn: Resource[Ec2Resource] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
@@ -95,7 +95,7 @@ class PythonActivity private (
     onFailAlarms, onSuccessAlarms, onLateActionAlarms, attemptTimeout, lateAfterTimeout, maximumRetries,
     retryDelay, failureAndRerunMode)
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def scriptArguments = Seq(
     pythonScriptUri.map(Seq(_).map(_.ref)),
@@ -116,8 +116,8 @@ class PythonActivity private (
     stage = Option("true"),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -134,11 +134,7 @@ class PythonActivity private (
 
 object PythonActivity extends RunnableObject {
 
-  def apply(pythonScriptUri: S3Uri, runsOn: Ec2Resource)(implicit hc: HyperionContext): PythonActivity = apply(pythonScriptUri, Left(runsOn))
-
-  def apply(pythonScriptUri: S3Uri, runsOn: WorkerGroup)(implicit hc: HyperionContext): PythonActivity = apply(pythonScriptUri, Right(runsOn))
-
-  private def apply(pythonScriptUri: S3Uri, runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): PythonActivity =
+  def apply(pythonScriptUri: S3Uri)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): PythonActivity =
     new PythonActivity(
       id = PipelineObjectId(PythonActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-python.sh"),

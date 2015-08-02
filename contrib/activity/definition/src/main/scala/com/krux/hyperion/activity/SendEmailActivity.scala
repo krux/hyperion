@@ -8,7 +8,7 @@ import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.parameter.StringParameter
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 class SendEmailActivity private (
   val id: PipelineObjectId,
@@ -30,7 +30,7 @@ class SendEmailActivity private (
   val input: Seq[S3DataNode],
   val stdout: Option[String],
   val stderr: Option[String],
-  val runsOn: Either[Ec2Resource, WorkerGroup],
+  val runsOn: Resource[Ec2Resource],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
   val onFailAlarms: Seq[SnsAlarm],
@@ -91,7 +91,7 @@ class SendEmailActivity private (
     input: Seq[S3DataNode] = input,
     stdout: Option[String] = stdout,
     stderr: Option[String] = stderr,
-    runsOn: Either[Ec2Resource, WorkerGroup] = runsOn,
+    runsOn: Resource[Ec2Resource] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
@@ -107,7 +107,7 @@ class SendEmailActivity private (
     preconditions, onFailAlarms, onSuccessAlarms, onLateActionAlarms, attemptTimeout, lateAfterTimeout,
     maximumRetries, retryDelay, failureAndRerunMode)
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ input ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def arguments: Seq[String] = Seq(
     host.map(h => Seq("-H", h)),
@@ -135,8 +135,8 @@ class SendEmailActivity private (
     stage = Option("true"),
     input = seqToOption(input)(_.ref),
     output = None,
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -151,13 +151,9 @@ class SendEmailActivity private (
 
 }
 
-object SendEmailActivity {
+object SendEmailActivity extends RunnableObject {
 
-  def apply(runsOn: Ec2Resource)(implicit hc: HyperionContext): SendEmailActivity = apply(Left(runsOn))
-
-  def apply(runsOn: WorkerGroup)(implicit hc: HyperionContext): SendEmailActivity = apply(Right(runsOn))
-
-  private def apply(runsOn: Either[Ec2Resource, WorkerGroup])(implicit hc: HyperionContext): SendEmailActivity =
+  def apply()(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): SendEmailActivity =
     new SendEmailActivity(
       id = PipelineObjectId(SendEmailActivity.getClass),
       runsOn = runsOn,

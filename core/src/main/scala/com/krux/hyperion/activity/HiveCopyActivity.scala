@@ -7,7 +7,7 @@ import com.krux.hyperion.aws.AdpHiveCopyActivity
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, EmrCluster}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, EmrCluster}
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveCopyActivity makes it easier to copy data between
@@ -23,7 +23,7 @@ case class HiveCopyActivity private (
   hadoopQueue: Option[String],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
-  runsOn: Either[EmrCluster, WorkerGroup],
+  runsOn: Resource[EmrCluster],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -56,7 +56,7 @@ case class HiveCopyActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
   lazy val serialize = AdpHiveCopyActivity(
     id = id,
@@ -68,8 +68,8 @@ case class HiveCopyActivity private (
     hadoopQueue = hadoopQueue,
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -84,14 +84,7 @@ case class HiveCopyActivity private (
 }
 
 object HiveCopyActivity extends RunnableObject {
-  def apply(input: DataNode,
-    output: DataNode, runsOn: EmrCluster): HiveCopyActivity = apply(input, output, Left(runsOn))
-
-  def apply(input: DataNode,
-    output: DataNode, runsOn: WorkerGroup): HiveCopyActivity = apply(input, output, Right(runsOn))
-
-  private def apply(input: DataNode,
-    output: DataNode, runsOn: Either[EmrCluster, WorkerGroup]): HiveCopyActivity =
+  def apply(input: DataNode, output: DataNode)(implicit runsOn: Resource[EmrCluster]): HiveCopyActivity =
     new HiveCopyActivity(
       id = PipelineObjectId(HiveCopyActivity.getClass),
       filterSql = None,

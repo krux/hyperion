@@ -6,7 +6,7 @@ import com.krux.hyperion.aws.AdpCopyActivity
 import com.krux.hyperion.datanode.Copyable
 import com.krux.hyperion.expression.DpPeriod
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
 /**
  * The activity that copies data from one data node to the other.
@@ -25,7 +25,7 @@ case class CopyActivity private (
   id: PipelineObjectId,
   input: Copyable,
   output: Copyable,
-  runsOn: Either[Ec2Resource, WorkerGroup],
+  runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -52,15 +52,15 @@ case class CopyActivity private (
   def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
-  override def objects: Iterable[PipelineObject] = runsOn.left.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   lazy val serialize = AdpCopyActivity(
     id = id,
     name = id.toOption,
     input = input.ref,
     output = output.ref,
-    workerGroup = runsOn.right.toOption.map(_.ref),
-    runsOn = runsOn.left.toOption.map(_.ref),
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref),
@@ -76,11 +76,7 @@ case class CopyActivity private (
 
 object CopyActivity extends RunnableObject {
 
-  def apply(input: Copyable, output: Copyable, runsOn: Ec2Resource): CopyActivity = apply(input, output, Left(runsOn))
-
-  def apply(input: Copyable, output: Copyable, runsOn: WorkerGroup): CopyActivity = apply(input, output, Right(runsOn))
-
-  private def apply(input: Copyable, output: Copyable, runsOn: Either[Ec2Resource, WorkerGroup]): CopyActivity =
+  def apply(input: Copyable, output: Copyable)(implicit runsOn: Resource[Ec2Resource]): CopyActivity =
     new CopyActivity(
       id = PipelineObjectId(CopyActivity.getClass),
       input = input,
