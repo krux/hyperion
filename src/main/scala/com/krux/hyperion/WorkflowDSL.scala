@@ -21,11 +21,20 @@ class WorkflowDSL(left: WorkflowExpression) {
 
 object WorkflowDSL {
 
-  implicit def activity2WorkflowDSL(act: PipelineActivity): WorkflowDSL =
-    new WorkflowDSL(WorkflowActivityExpression(act))
+  implicit def activitySet2WorkflowExpression(act: Set[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(act)
+
+  implicit def activityIterable2WorkflowExpression(act: Iterable[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(act.toSet)
+
+  implicit def activitySeq2WorkflowExpression(act: Seq[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(act.toSet)
 
   implicit def activity2WorkflowExpression(act: PipelineActivity): WorkflowExpression =
-    WorkflowActivityExpression(act)
+    WorkflowActivityExpression(Set(act))
+
+  implicit def activity2WorkflowDSL(act: PipelineActivity): WorkflowDSL =
+    new WorkflowDSL(WorkflowActivityExpression(Set(act)))
 
   implicit def expression2WorkflowDSL(exp: WorkflowExpression): WorkflowDSL =
     new WorkflowDSL(exp)
