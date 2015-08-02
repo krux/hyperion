@@ -206,7 +206,7 @@ object S3DistCpActivity extends RunnableObject {
     }
   }
 
-  def apply()(runsOn: Resource[EmrCluster]): S3DistCpActivity =
+  def apply()(implicit runsOn: Resource[EmrCluster]): S3DistCpActivity =
     new S3DistCpActivity(
       id = PipelineObjectId(S3DistCpActivity.getClass),
       source = None,

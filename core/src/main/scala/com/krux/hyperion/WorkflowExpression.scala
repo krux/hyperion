@@ -1,5 +1,7 @@
 package com.krux.hyperion
 
+import scala.language.implicitConversions
+
 import com.krux.hyperion.activity.PipelineActivity
 
 sealed abstract class WorkflowExpression {
@@ -36,3 +38,19 @@ case class WorkflowActivityExpression(act: Set[PipelineActivity]) extends Workfl
 case class WorkflowArrowExpression(left: WorkflowExpression, right: WorkflowExpression) extends WorkflowExpression
 
 case class WorkflowPlusExpression(left: WorkflowExpression, right: WorkflowExpression) extends WorkflowExpression
+
+object WorkflowExpression {
+
+  implicit def activitySet2WorkflowExpression(act: Set[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(act)
+
+  implicit def activityIterable2WorkflowExpression(act: Iterable[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(act.toSet)
+
+  implicit def activitySeq2WorkflowExpression(act: Seq[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(act.toSet)
+
+  implicit def activity2WorkflowExpression(act: PipelineActivity): WorkflowExpression =
+    WorkflowActivityExpression(Set(act))
+
+}
