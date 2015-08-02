@@ -31,9 +31,17 @@ sealed abstract class WorkflowExpression {
     toPipelineObjectsRec(this)
   }
 
+  def andThen(right: WorkflowExpression): WorkflowExpression = WorkflowArrowExpression(this, right)
+  def :~>(right: WorkflowExpression): WorkflowExpression = this.andThen(right)
+
+  def priorTo_:(right: WorkflowExpression): WorkflowExpression = this.andThen(right)
+  def <~:(right: WorkflowExpression): WorkflowExpression = this.priorTo_:(right)
+
+  def and(right: WorkflowExpression): WorkflowExpression = WorkflowPlusExpression(this, right)
+  def +(right: WorkflowExpression): WorkflowExpression = this.and(right)
 }
 
-case class WorkflowActivityExpression(act: Set[PipelineActivity]) extends WorkflowExpression
+case class WorkflowActivityExpression(activities: Set[PipelineActivity]) extends WorkflowExpression
 
 case class WorkflowArrowExpression(left: WorkflowExpression, right: WorkflowExpression) extends WorkflowExpression
 
@@ -41,16 +49,16 @@ case class WorkflowPlusExpression(left: WorkflowExpression, right: WorkflowExpre
 
 object WorkflowExpression {
 
-  implicit def activitySet2WorkflowExpression(act: Set[PipelineActivity]): WorkflowExpression =
-    WorkflowActivityExpression(act)
+  implicit def activitySet2WorkflowExpression(activities: Set[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(activities)
 
-  implicit def activityIterable2WorkflowExpression(act: Iterable[PipelineActivity]): WorkflowExpression =
-    WorkflowActivityExpression(act.toSet)
+  implicit def activityIterable2WorkflowExpression(activities: Iterable[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(activities.toSet)
 
-  implicit def activitySeq2WorkflowExpression(act: Seq[PipelineActivity]): WorkflowExpression =
-    WorkflowActivityExpression(act.toSet)
+  implicit def activitySeq2WorkflowExpression(activities: Seq[PipelineActivity]): WorkflowExpression =
+    WorkflowActivityExpression(activities.toSet)
 
-  implicit def activity2WorkflowExpression(act: PipelineActivity): WorkflowExpression =
-    WorkflowActivityExpression(Set(act))
+  implicit def activity2WorkflowExpression(activity: PipelineActivity): WorkflowExpression =
+    WorkflowActivityExpression(Set(activity))
 
 }
