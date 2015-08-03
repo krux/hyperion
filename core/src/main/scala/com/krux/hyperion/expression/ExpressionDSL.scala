@@ -10,7 +10,7 @@ object ExpressionDSL {
     new DateTimeExpDSL(new DateTimeExp(dt.toString))
 
   class DateTimeExpDSL(dt: DateTimeExp) {
-    def - (period: DpPeriod): DateTimeExp = {
+    def - (period: Duration): DateTimeExp = {
       period match {
         case Minute(n) => DateTimeFunctions.minusMinutes(dt, n)
         case Hour(n) => DateTimeFunctions.minusHours(dt, n)

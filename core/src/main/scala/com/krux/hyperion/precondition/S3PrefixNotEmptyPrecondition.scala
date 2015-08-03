@@ -3,7 +3,8 @@ package com.krux.hyperion.precondition
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpS3PrefixNotEmptyPrecondition
 import com.krux.hyperion.common.{S3Uri, PipelineObjectId}
-import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.parameter.Parameter
 
 /**
  * A precondition to check that the Amazon S3 objects with the given prefix (represented as a URI) are present.
@@ -12,16 +13,16 @@ import com.krux.hyperion.expression.DpPeriod
  */
 case class S3PrefixNotEmptyPrecondition private (
   id: PipelineObjectId,
-  s3Prefix: S3Uri,
+  s3Prefix: Parameter[S3Uri],
   role: String,
-  preconditionTimeout: Option[DpPeriod]
+  preconditionTimeout: Option[Parameter[Duration]]
 ) extends Precondition {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withRole(role: String) = this.copy(role = role)
-  def withPreconditionTimeout(timeout: DpPeriod) = this.copy(preconditionTimeout = Option(timeout))
+  def withPreconditionTimeout(timeout: Parameter[Duration]) = this.copy(preconditionTimeout = Option(timeout))
 
   lazy val serialize = AdpS3PrefixNotEmptyPrecondition(
     id = id,
@@ -34,7 +35,7 @@ case class S3PrefixNotEmptyPrecondition private (
 }
 
 object S3PrefixNotEmptyPrecondition {
-  def apply(s3Prefix: S3Uri)(implicit hc: HyperionContext) =
+  def apply(s3Prefix: Parameter[S3Uri])(implicit hc: HyperionContext) =
     new S3PrefixNotEmptyPrecondition(
       id = PipelineObjectId(S3PrefixNotEmptyPrecondition.getClass),
       s3Prefix = s3Prefix,

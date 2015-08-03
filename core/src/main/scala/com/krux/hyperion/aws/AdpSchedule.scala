@@ -28,8 +28,8 @@ case class AdpSchedule(
   name: Option[String],
   period: String,
   startAt: Option[String],
-  startDateTime: Option[DateTime],
-  endDateTime: Option[DateTime],
+  startDateTime: Option[DateTime], // TODO make String
+  endDateTime: Option[DateTime], // TODO make String
   occurrences: Option[String]
 ) extends AdpDataPipelineObject {
 

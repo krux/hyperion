@@ -106,6 +106,7 @@ lazy val root = (project in file(".")).
   ).
   aggregate(
     core,
+    examples,
     contribActivityDefinition,
     contribActivitySftp,
     contribActivityFile
@@ -125,6 +126,17 @@ lazy val core = (project in file("core")).
       scalatestArtifact
     )
   )
+
+lazy val examples = (project in file("examples")).
+  settings(commonSettings: _*).
+  settings(
+    name := "hyperion-examples",
+    publishArtifact := false,
+    libraryDependencies ++= Seq(
+      scalatestArtifact
+    )
+  ).
+  dependsOn(core, contribActivityDefinition)
 
 lazy val contribActivityDefinition = (project in file("contrib/activity/definition")).
   settings(commonSettings: _*).

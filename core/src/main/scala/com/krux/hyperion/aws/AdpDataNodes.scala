@@ -14,12 +14,6 @@ package com.krux.hyperion.aws
  */
 trait AdpDataNode extends AdpDataPipelineObject {
   /**
-   * The worker group. This is used for routing tasks.
-   * If you provide a runsOn value and workerGroup exists, workerGroup is ignored.
-   */
-  def workerGroup: Option[String]
-
-  /**
    * A list of precondition objects that must be true for the data node to be valid.
    * A data node cannot reach the READY status until all its conditions are met.
    * Preconditions do not have their own schedule or identity, instead they run on the
@@ -54,9 +48,8 @@ case class AdpDynamoDBDataNode (
   tableName: String,
   region: Option[String],
   dynamoDBDataFormat: Option[AdpRef[AdpDataFormat]],
-  readThroughputPercent: Option[Double],
-  writeThroughputPercent: Option[Double],
-  workerGroup: Option[String],
+  readThroughputPercent: Option[String],
+  writeThroughputPercent: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -78,7 +71,6 @@ case class AdpS3DataNode(
   manifestFilePath: Option[String],
   compression: Option[String],
   s3EncryptionType: Option[String],
-  workerGroup: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -104,7 +96,6 @@ case class AdpRedshiftDataNode(
   schemaName: Option[String],
   tableName: String,
   primaryKeys: Option[Seq[String]],
-  workerGroup: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]
@@ -133,7 +124,6 @@ case class AdpSqlDataNode(
   table: String,
   selectQuery: Option[String],
   insertQuery: Option[String],
-  workerGroup: Option[String],
   precondition: Option[Seq[AdpRef[AdpPrecondition]]],
   onSuccess: Option[Seq[AdpRef[AdpSnsAlarm]]],
   onFail: Option[Seq[AdpRef[AdpSnsAlarm]]]

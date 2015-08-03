@@ -4,7 +4,7 @@ import com.github.nscala_time.time.Imports.{DateTime, DateTimeZone}
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.aws.{AdpRef, AdpSchedule}
 import com.krux.hyperion.common.{ScheduleObjectId, PipelineObjectId, PipelineObject}
-import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.expression.Duration
 import ScheduleType._
 
 /**
@@ -16,7 +16,7 @@ case class Schedule private (
   id: PipelineObjectId = ScheduleObjectId,
   // if None, will use first activation datetime
   start: Option[DateTime] = None,
-  period: DpPeriod = 1.day,
+  period: Duration = 1.day,
   end: Option[Either[Int, DateTime]] = None,
   scheduleType: ScheduleType = Cron
 ) extends PipelineObject {
@@ -41,7 +41,7 @@ case class Schedule private (
     this.copy(start = Option(startDt))
   }
 
-  def every(p: DpPeriod) = this.copy(period = p)
+  def every(p: Duration) = this.copy(period = p)
   def until(dt: DateTime) = this.copy(end = Option(Right(dt)))
   def stopAfter(occurrences: Int) = this.copy(end = Option(Left(occurrences)))
 

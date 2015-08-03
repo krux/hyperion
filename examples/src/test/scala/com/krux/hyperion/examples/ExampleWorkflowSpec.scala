@@ -42,6 +42,7 @@ class ExampleWorkflowSpec extends WordSpec {
         ("securityGroups" -> Seq("your-security-group")) ~
         ("associatePublicIpAddress" -> "false") ~
         ("keyPair" -> "your-aws-key-pair") ~
+        ("spotBidPrice" -> "#{mySpotPrice}") ~
         ("type" -> "Ec2Resource") ~
         ("role" -> "DataPipelineDefaultRole") ~
         ("resourceRole" -> "DataPipelineDefaultResourceRole")

@@ -22,13 +22,13 @@ case class AdpParameter(
   description: Option[String] = None,
 
   /* Indicates whether the parameter is optional or required. */
-  optional: Boolean = false,
+  optional: String = "false",
 
   /* Enumerates all permitted values for the parameter. */
   allowedValues: Option[Seq[String]] = None,
 
   /* Indicates whether the parameter is an array. */
-  isArray: Boolean = false,
+  isArray: String = "false",
 
   /* The default value. */
   `default`: Option[String] = None

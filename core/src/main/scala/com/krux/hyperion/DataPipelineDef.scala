@@ -29,7 +29,7 @@ trait DataPipelineDef extends HyperionCli with S3UriHelper {
 
   def tags: Map[String, Option[String]] = Map()
 
-  def parameters: Iterable[Parameter] = Seq()
+  def parameters: Iterable[Parameter[_]] = Seq()
 
   def objects: Iterable[PipelineObject] = workflow
     .toPipelineObjects
@@ -56,9 +56,9 @@ object DataPipelineDef {
     ("objects" -> JArray(
       AdpJsonSerializer(pd.defaultObject.serialize) ::
       AdpJsonSerializer(pd.schedule.serialize) ::
-      pd.objects.map(o => AdpJsonSerializer(o.serialize)).toList)) ~
+      pd.objects.map(_.serialize).toList.sortBy(_.id).map(o => AdpJsonSerializer(o)))) ~
     ("parameters" -> JArray(
-      pd.parameters.map(o => AdpJsonSerializer(o.serialize)).toList))
+      pd.parameters.flatMap(_.serialize).map(o => AdpJsonSerializer(o)).toList))
 
   implicit def dataPipelineDef2Aws(pd: DataPipelineDef): Seq[AwsPipelineObject] =
     AdpPipelineSerializer(pd.defaultObject.serialize) ::
@@ -66,5 +66,5 @@ object DataPipelineDef {
     pd.objects.map(o => AdpPipelineSerializer(o.serialize)).toList
 
   implicit def dataPipelineDef2AwsParameter(pd: DataPipelineDef): Seq[AwsParameterObject] =
-    pd.parameters.map(o => AdpParameterSerializer(o.serialize)).toList
+    pd.parameters.flatMap(_.serialize).map(o => AdpParameterSerializer(o)).toList
 }

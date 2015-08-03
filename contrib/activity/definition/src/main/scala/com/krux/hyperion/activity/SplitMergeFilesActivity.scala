@@ -5,7 +5,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
@@ -19,8 +20,8 @@ class SplitMergeFilesActivity private (
   val compressedOutput: Boolean,
   val skipFirstInputLine: Boolean,
   val linkOutputs: Boolean,
-  val suffixLength: Option[Int],
-  val numberOfFiles: Option[Int],
+  val suffixLength: Option[Parameter[Int]],
+  val numberOfFiles: Option[Parameter[Int]],
   val linesPerFile: Option[Long],
   val bytesPerFile: Option[Long],
   val bufferSize: Option[Long],
@@ -35,10 +36,10 @@ class SplitMergeFilesActivity private (
   val onFailAlarms: Seq[SnsAlarm],
   val onSuccessAlarms: Seq[SnsAlarm],
   val onLateActionAlarms: Seq[SnsAlarm],
-  val attemptTimeout: Option[DpPeriod],
-  val lateAfterTimeout: Option[DpPeriod],
-  val maximumRetries: Option[Int],
-  val retryDelay: Option[DpPeriod],
+  val attemptTimeout: Option[Parameter[Duration]],
+  val lateAfterTimeout: Option[Parameter[Duration]],
+  val maximumRetries: Option[Parameter[Int]],
+  val retryDelay: Option[Parameter[Duration]],
   val failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
@@ -52,8 +53,8 @@ class SplitMergeFilesActivity private (
     compressedOutput: Boolean = compressedOutput,
     skipFirstInputLine: Boolean = skipFirstInputLine,
     linkOutputs: Boolean = linkOutputs,
-    suffixLength: Option[Int] = suffixLength,
-    numberOfFiles: Option[Int] = numberOfFiles,
+    suffixLength: Option[Parameter[Int]] = suffixLength,
+    numberOfFiles: Option[Parameter[Int]] = numberOfFiles,
     linesPerFile: Option[Long] = linesPerFile,
     bytesPerFile: Option[Long] = bytesPerFile,
     bufferSize: Option[Long] = bufferSize,
@@ -68,10 +69,10 @@ class SplitMergeFilesActivity private (
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
     onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
     onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
-    attemptTimeout: Option[DpPeriod] = attemptTimeout,
-    lateAfterTimeout: Option[DpPeriod] = lateAfterTimeout,
-    maximumRetries: Option[Int] = maximumRetries,
-    retryDelay: Option[DpPeriod] = retryDelay,
+    attemptTimeout: Option[Parameter[Duration]] = attemptTimeout,
+    lateAfterTimeout: Option[Parameter[Duration]] = lateAfterTimeout,
+    maximumRetries: Option[Parameter[Int]] = maximumRetries,
+    retryDelay: Option[Parameter[Duration]] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SplitMergeFilesActivity(id,
     scriptUri, jarUri, mainClass,
@@ -89,8 +90,8 @@ class SplitMergeFilesActivity private (
   def withSkipFirstInputLine() = this.copy(skipFirstInputLine = true)
   def withLinkOutputs() = this.copy(linkOutputs = true)
   def withHeader(header: String*) = this.copy(header = Option(header.mkString(",")))
-  def withSuffixLength(suffixLength: Int) = this.copy(suffixLength = Option(suffixLength))
-  def withNumberOfFiles(numberOfFiles: Int) = this.copy(numberOfFiles = Option(numberOfFiles))
+  def withSuffixLength(suffixLength: Parameter[Int]) = this.copy(suffixLength = Option(suffixLength))
+  def withNumberOfFiles(numberOfFiles: Parameter[Int]) = this.copy(numberOfFiles = Option(numberOfFiles))
   def withNumberOfLinesPerFile(linesPerFile: Long) = this.copy(linesPerFile = Option(linesPerFile))
   def withNumberOfBytesPerFile(bytesPerFile: Long) = this.copy(bytesPerFile = Option(bytesPerFile))
   def withBufferSize(bufferSize: Long) = this.copy(bufferSize = Option(bufferSize))
@@ -107,10 +108,10 @@ class SplitMergeFilesActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms

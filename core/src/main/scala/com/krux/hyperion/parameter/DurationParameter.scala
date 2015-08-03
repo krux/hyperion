@@ -1,15 +1,15 @@
 package com.krux.hyperion.parameter
 
 import com.krux.hyperion.aws.AdpParameter
-import com.krux.hyperion.common.S3Uri
+import com.krux.hyperion.expression.Duration
 
-case class S3KeyParameter private (
+case class DurationParameter private (
   id: String,
-  value: S3Uri,
+  value: Duration,
   description: Option[String],
   isEncrypted: Boolean,
   isOptional: Boolean
-) extends Parameter[S3Uri] {
+) extends Parameter[Duration] {
 
   def withDescription(description: String) = this.copy(description = Option(description))
   def required = this.copy(isOptional = false)
@@ -17,7 +17,7 @@ case class S3KeyParameter private (
 
   lazy val serialize = Option(AdpParameter(
     id = name,
-    `type` = "AWS::S3::ObjectKey",
+    `type` = "String",
     description = description,
     optional = isOptional.toString,
     allowedValues = None,
@@ -27,9 +27,9 @@ case class S3KeyParameter private (
 
 }
 
-object S3KeyParameter {
-  def apply(id: String, value: S3Uri): S3KeyParameter =
-    new S3KeyParameter(
+object DurationParameter {
+  def apply(id: String, value: Duration): DurationParameter =
+    new DurationParameter(
       id = id,
       value = value,
       description = None,

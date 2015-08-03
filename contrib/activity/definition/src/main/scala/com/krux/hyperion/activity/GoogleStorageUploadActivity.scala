@@ -5,7 +5,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
@@ -17,17 +18,17 @@ case class GoogleStorageUploadActivity private (
   scriptUri: String,
   input: Option[S3DataNode],
   output: String,
-  botoConfigUrl: S3Uri,
+  botoConfigUrl: Parameter[S3Uri],
   runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[DpPeriod],
-  lateAfterTimeout: Option[DpPeriod],
-  maximumRetries: Option[Int],
-  retryDelay: Option[DpPeriod],
+  attemptTimeout: Option[Parameter[Duration]],
+  lateAfterTimeout: Option[Parameter[Duration]],
+  maximumRetries: Option[Parameter[Int]],
+  retryDelay: Option[Parameter[Duration]],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends GoogleStorageActivity {
 
@@ -42,10 +43,10 @@ case class GoogleStorageUploadActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ dependsOn
@@ -55,7 +56,7 @@ case class GoogleStorageUploadActivity private (
     name = id.toOption,
     command = None,
     scriptUri = Option(scriptUri),
-    scriptArgument = Option(Seq(botoConfigUrl.ref, output)),
+    scriptArgument = Option(Seq(botoConfigUrl.toString, output)),
     stdout = None,
     stderr = None,
     stage = Option("true"),
@@ -78,7 +79,7 @@ case class GoogleStorageUploadActivity private (
 }
 
 object GoogleStorageUploadActivity extends RunnableObject {
-  def apply(botoConfigUrl: S3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): GoogleStorageUploadActivity =
+  def apply(botoConfigUrl: Parameter[S3Uri])(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): GoogleStorageUploadActivity =
     new GoogleStorageUploadActivity(
       id = PipelineObjectId(GoogleStorageUploadActivity.getClass),
       scriptUri = s"${hc.scriptUri}activities/gsutil-upload.sh",

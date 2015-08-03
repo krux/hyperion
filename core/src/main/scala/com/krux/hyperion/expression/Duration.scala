@@ -6,44 +6,44 @@ package com.krux.hyperion.expression
  *
  * The minimum period is 15 minutes and the maximum period is 3 years.
  */
-sealed trait DpPeriod {
+sealed trait Duration {
   def n: Int
   def unit: String
 
   override def toString: String = s"$n $unit"
 }
 
-case class Year(n: Int) extends DpPeriod {
+case class Year(n: Int) extends Duration {
   val unit = "years"
 
   require(0 < n && n <= 3, "Years must be between 1 and 3")
 }
 
-case class Month(n: Int) extends DpPeriod {
+case class Month(n: Int) extends Duration {
   val unit = "months"
 
   require(0 < n && n <= 36, "Months must be between 1 and 36")
 }
 
-case class Week(n: Int) extends DpPeriod {
+case class Week(n: Int) extends Duration {
   val unit = "weeks"
 
   require(0 < n && n <= 156, "Weeks must be between 1 and 156")
 }
 
-case class Day(n: Int) extends DpPeriod {
+case class Day(n: Int) extends Duration {
   val unit = "days"
 
   require(0 < n && n <= 1095, "Days must be between 1 and 1095")
 }
 
-case class Hour(n: Int) extends DpPeriod {
+case class Hour(n: Int) extends Duration {
   val unit = "hours"
 
   require(0 < n && n <= 26280, "Hours must be between 1 and 26280")
 }
 
-case class Minute(n: Int) extends DpPeriod {
+case class Minute(n: Int) extends Duration {
   val unit = "minutes"
 
   require(10 <= n && n <= 1576800, "Minutes must be between 10 and 1576800")
@@ -52,9 +52,9 @@ case class Minute(n: Int) extends DpPeriod {
 /**
  * All supported data pipeline period units
  */
-object DpPeriod {
+object Duration {
 
-  def apply(s: String): DpPeriod = {
+  def apply(s: String): Duration = {
     s.trim.toLowerCase.split(' ').toList match {
       case amount :: unit :: Nil => unit match {
         case "year"   | "years"   => Year(amount.toInt)

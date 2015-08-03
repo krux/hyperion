@@ -5,7 +5,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpRedshiftCopyActivity
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
-import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
@@ -27,10 +28,10 @@ case class RedshiftCopyActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[DpPeriod],
-  lateAfterTimeout: Option[DpPeriod],
-  maximumRetries: Option[Int],
-  retryDelay: Option[DpPeriod],
+  attemptTimeout: Option[Parameter[Duration]],
+  lateAfterTimeout: Option[Parameter[Duration]],
+  maximumRetries: Option[Parameter[Int]],
+  retryDelay: Option[Parameter[Duration]],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
@@ -46,10 +47,10 @@ case class RedshiftCopyActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms

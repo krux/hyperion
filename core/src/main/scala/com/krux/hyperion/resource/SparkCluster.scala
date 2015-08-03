@@ -3,7 +3,8 @@ package com.krux.hyperion.resource
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpEmrCluster
 import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.parameter.{DirectValueParameter, Parameter}
 
 /**
  * Launch a Spark cluster
@@ -18,13 +19,13 @@ class SparkCluster private (
   val enableDebugging: Option[Boolean],
   val hadoopSchedulerType: Option[SchedulerType],
   val keyPair: Option[String],
-  val masterInstanceBidPrice: Option[Double],
+  val masterInstanceBidPrice: Option[Parameter[Double]],
   val masterInstanceType: Option[String],
-  val coreInstanceBidPrice: Option[Double],
-  val coreInstanceCount: Int,
+  val coreInstanceBidPrice: Option[Parameter[Double]],
+  val coreInstanceCount: Parameter[Int],
   val coreInstanceType: Option[String],
-  val taskInstanceBidPrice: Option[Double],
-  val taskInstanceCount: Int,
+  val taskInstanceBidPrice: Option[Parameter[Double]],
+  val taskInstanceCount: Parameter[Int],
   val taskInstanceType: Option[String],
   val region: Option[String],
   val availabilityZone: Option[String],
@@ -37,14 +38,14 @@ class SparkCluster private (
   val additionalSlaveSecurityGroupIds: Seq[String],
   val useOnDemandOnLastAttempt: Option[Boolean],
   val visibleToAllUsers: Option[Boolean],
-  val initTimeout: Option[DpPeriod],
-  val terminateAfter: Option[DpPeriod],
+  val initTimeout: Option[Parameter[Duration]],
+  val terminateAfter: Option[Parameter[Duration]],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
   val actionOnTaskFailure: Option[ActionOnTaskFailure]
 ) extends EmrCluster {
 
-  assert(coreInstanceCount >= 2)
-  assert(taskInstanceCount >= 0)
+  assert(coreInstanceCount.value >= 2)
+  assert(taskInstanceCount.value >= 0)
 
   def copy(id: PipelineObjectId = id,
     sparkVersion: String = sparkVersion,
@@ -55,13 +56,13 @@ class SparkCluster private (
     enableDebugging: Option[Boolean] = enableDebugging,
     hadoopSchedulerType: Option[SchedulerType] = hadoopSchedulerType,
     keyPair: Option[String] = keyPair,
-    masterInstanceBidPrice: Option[Double] = masterInstanceBidPrice,
+    masterInstanceBidPrice: Option[Parameter[Double]] = masterInstanceBidPrice,
     masterInstanceType: Option[String] = masterInstanceType,
-    coreInstanceBidPrice: Option[Double] = coreInstanceBidPrice,
-    coreInstanceCount: Int = coreInstanceCount,
+    coreInstanceBidPrice: Option[Parameter[Double]] = coreInstanceBidPrice,
+    coreInstanceCount: Parameter[Int] = coreInstanceCount,
     coreInstanceType: Option[String] = coreInstanceType,
-    taskInstanceBidPrice: Option[Double] = taskInstanceBidPrice,
-    taskInstanceCount: Int = taskInstanceCount,
+    taskInstanceBidPrice: Option[Parameter[Double]] = taskInstanceBidPrice,
+    taskInstanceCount: Parameter[Int] = taskInstanceCount,
     taskInstanceType: Option[String] = taskInstanceType,
     region: Option[String] = region,
     availabilityZone: Option[String] = availabilityZone,
@@ -74,8 +75,8 @@ class SparkCluster private (
     additionalSlaveSecurityGroupIds: Seq[String] = additionalSlaveSecurityGroupIds,
     useOnDemandOnLastAttempt: Option[Boolean] = useOnDemandOnLastAttempt,
     visibleToAllUsers: Option[Boolean] = visibleToAllUsers,
-    initTimeout: Option[DpPeriod] = initTimeout,
-    terminateAfter: Option[DpPeriod] = terminateAfter,
+    initTimeout: Option[Parameter[Duration]] = initTimeout,
+    terminateAfter: Option[Parameter[Duration]] = terminateAfter,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
     actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure
   ) = new SparkCluster(id, sparkVersion, amiVersion, supportedProducts, standardBootstrapAction, bootstrapAction,
@@ -96,13 +97,13 @@ class SparkCluster private (
   def withDebuggingEnabled() = this.copy(enableDebugging = Option(true))
   def withHadoopSchedulerType(hadoopSchedulerType: SchedulerType) = this.copy(hadoopSchedulerType = Option(hadoopSchedulerType))
   def withKeyPair(keyPair: String) = this.copy(keyPair = Option(keyPair))
-  def withMasterInstanceBidPrice(masterInstanceBidPrice: Double) = this.copy(masterInstanceBidPrice= Option(masterInstanceBidPrice))
+  def withMasterInstanceBidPrice(masterInstanceBidPrice: Parameter[Double]) = this.copy(masterInstanceBidPrice= Option(masterInstanceBidPrice))
   def withMasterInstanceType(instanceType: String) = this.copy(masterInstanceType = Option(instanceType))
-  def withCoreInstanceBidPrice(coreInstanceBidPrice: Double) = this.copy(coreInstanceBidPrice = Option(coreInstanceBidPrice))
-  def withCoreInstanceCount(instanceCount: Int) = this.copy(coreInstanceCount = instanceCount)
+  def withCoreInstanceBidPrice(coreInstanceBidPrice: Parameter[Double]) = this.copy(coreInstanceBidPrice = Option(coreInstanceBidPrice))
+  def withCoreInstanceCount(instanceCount: Parameter[Int]) = this.copy(coreInstanceCount = instanceCount)
   def withCoreInstanceType(instanceType: String) = this.copy(coreInstanceType = Option(instanceType))
-  def withTaskInstanceBidPrice(bid: Double) = this.copy(taskInstanceBidPrice = Option(bid))
-  def withTaskInstanceCount(instanceCount: Int) = this.copy(taskInstanceCount = instanceCount)
+  def withTaskInstanceBidPrice(bid: Parameter[Double]) = this.copy(taskInstanceBidPrice = Option(bid))
+  def withTaskInstanceCount(instanceCount: Parameter[Int]) = this.copy(taskInstanceCount = instanceCount)
   def withTaskInstanceType(instanceType: String) = this.copy(taskInstanceType = Option(instanceType))
   def withRegion(region: String) = this.copy(region = Option(region))
   def withAvailabilityZone(availabilityZone: String) = this.copy(availabilityZone = Option(availabilityZone))
@@ -115,12 +116,12 @@ class SparkCluster private (
   def withAdditionalSlaveSecurityGroupIds(securityGroupIds: String*) = this.copy(additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIds ++ securityGroupIds)
   def withUseOnDemandOnLastAttempt(useOnDemandOnLastAttempt: Boolean) = this.copy(useOnDemandOnLastAttempt = Option(useOnDemandOnLastAttempt))
   def withVisibleToAllUsers(visibleToAllUsers: Boolean) = this.copy(visibleToAllUsers = Option(visibleToAllUsers))
-  def withInitTimeout(timeout: DpPeriod) = this.copy(initTimeout = Option(timeout))
-  def terminatingAfter(terminateAfter: DpPeriod) = this.copy(terminateAfter = Option(terminateAfter))
+  def withInitTimeout(timeout: Parameter[Duration]) = this.copy(initTimeout = Option(timeout))
+  def terminatingAfter(terminateAfter: Parameter[Duration]) = this.copy(terminateAfter = Option(terminateAfter))
   def withActionOnResourceFailure(actionOnResourceFailure: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(actionOnResourceFailure))
   def withActionOnTaskFailure(actionOnTaskFailure: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(actionOnTaskFailure))
 
-  lazy val instanceCount = 1 + coreInstanceCount + taskInstanceCount
+  lazy val instanceCount = 1 + coreInstanceCount.value + taskInstanceCount.value
 
   lazy val serialize = new AdpEmrCluster(
     id = id,
@@ -131,20 +132,20 @@ class SparkCluster private (
     enableDebugging = enableDebugging.map(_.toString),
     hadoopSchedulerType = hadoopSchedulerType.map(_.toString),
     keyPair = keyPair,
-    masterInstanceBidPrice = masterInstanceBidPrice,
+    masterInstanceBidPrice = masterInstanceBidPrice.map(_.toString),
     masterInstanceType = masterInstanceType,
-    coreInstanceBidPrice = coreInstanceBidPrice,
+    coreInstanceBidPrice = coreInstanceBidPrice.map(_.toString),
     coreInstanceCount = Option(coreInstanceCount.toString),
     coreInstanceType = coreInstanceType,
-    taskInstanceBidPrice = taskInstanceCount match {
+    taskInstanceBidPrice = taskInstanceCount.value match {
       case 0 => None
       case _ => taskInstanceBidPrice.map(_.toString)
     },
-    taskInstanceCount = taskInstanceCount match {
+    taskInstanceCount = taskInstanceCount.value match {
       case 0 => None
       case _ => Option(taskInstanceCount.toString)
     },
-    taskInstanceType = taskInstanceCount match {
+    taskInstanceType = taskInstanceCount.value match {
       case 0 => None
       case _ => taskInstanceType
     },
@@ -163,8 +164,8 @@ class SparkCluster private (
       case Seq() => None
       case groupIds => Option(groupIds)
     },
-    useOnDemandOnLastAttempt = useOnDemandOnLastAttempt,
-    visibleToAllUsers = visibleToAllUsers,
+    useOnDemandOnLastAttempt = useOnDemandOnLastAttempt.map(_.toString),
+    visibleToAllUsers = visibleToAllUsers.map(_.toString),
     initTimeout = initTimeout.map(_.toString),
     terminateAfter = terminateAfter.map(_.toString),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
@@ -205,7 +206,7 @@ object SparkCluster {
     useOnDemandOnLastAttempt = None,
     visibleToAllUsers = None,
     initTimeout = None,
-    terminateAfter = hc.emrTerminateAfter,
+    terminateAfter = hc.emrTerminateAfter.map(DirectValueParameter[Duration]),
     actionOnResourceFailure = None,
     actionOnTaskFailure = None
   )

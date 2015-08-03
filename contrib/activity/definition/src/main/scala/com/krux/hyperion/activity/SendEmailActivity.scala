@@ -5,8 +5,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.DpPeriod
-import com.krux.hyperion.parameter.StringParameter
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.parameter.{Parameter, StringParameter}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
@@ -16,7 +16,7 @@ class SendEmailActivity private (
   val jarUri: String,
   val mainClass: String,
   val host: Option[String],
-  val port: Option[Int],
+  val port: Option[Parameter[Int]],
   val username: Option[String],
   val password: Option[StringParameter],
   val from: Option[String],
@@ -36,18 +36,20 @@ class SendEmailActivity private (
   val onFailAlarms: Seq[SnsAlarm],
   val onSuccessAlarms: Seq[SnsAlarm],
   val onLateActionAlarms: Seq[SnsAlarm],
-  val attemptTimeout: Option[DpPeriod],
-  val lateAfterTimeout: Option[DpPeriod],
-  val maximumRetries: Option[Int],
-  val retryDelay: Option[DpPeriod],
+  val attemptTimeout: Option[Parameter[Duration]],
+  val lateAfterTimeout: Option[Parameter[Duration]],
+  val maximumRetries: Option[Parameter[Int]],
+  val retryDelay: Option[Parameter[Duration]],
   val failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
+
+  require(password.forall(_.isEncrypted), "The password must be an encrypted string parameter")
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withHost(host: String) = this.copy(host = Option(host))
-  def withPort(port: Int) = this.copy(port = Option(port))
+  def withPort(port: Parameter[Int]) = this.copy(port = Option(port))
   def withUsername(username: String) = this.copy(username = Option(username))
   def withPassword(password: StringParameter) = this.copy(password = Option(password))
   def withFrom(from: String) = this.copy(from = Option(from))
@@ -65,10 +67,10 @@ class SendEmailActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def copy(
@@ -77,7 +79,7 @@ class SendEmailActivity private (
     jarUri: String = jarUri,
     mainClass: String = mainClass,
     host: Option[String] = host,
-    port: Option[Int] = port,
+    port: Option[Parameter[Int]] = port,
     username: Option[String] = username,
     password: Option[StringParameter] = password,
     from: Option[String] = from,
@@ -97,10 +99,10 @@ class SendEmailActivity private (
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
     onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
     onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
-    attemptTimeout: Option[DpPeriod] = attemptTimeout,
-    lateAfterTimeout: Option[DpPeriod] = lateAfterTimeout,
-    maximumRetries: Option[Int] = maximumRetries,
-    retryDelay: Option[DpPeriod] = retryDelay,
+    attemptTimeout: Option[Parameter[Duration]] = attemptTimeout,
+    lateAfterTimeout: Option[Parameter[Duration]] = lateAfterTimeout,
+    maximumRetries: Option[Parameter[Int]] = maximumRetries,
+    retryDelay: Option[Parameter[Duration]] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SendEmailActivity(id, scriptUri, jarUri, mainClass, host, port, username, password,
     from, to, cc, bcc, subject, body, starttls, debug, input, stdout, stderr, runsOn, dependsOn,

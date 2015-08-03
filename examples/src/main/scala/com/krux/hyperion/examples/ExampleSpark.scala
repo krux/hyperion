@@ -30,7 +30,7 @@ object ExampleSpark extends DataPipelineDef {
   val instanceCount = IntegerParameter("InstanceCount", 8)
   val instanceBid = DoubleParameter("InstanceBid", 3.40)
 
-  override def parameters: Iterable[Parameter] = Seq(location, instanceType, instanceCount, instanceBid)
+  override def parameters: Iterable[Parameter[_]] = Seq(location, instanceType, instanceCount, instanceBid)
 
   // Actions
   val mailAction = SnsAlarm()

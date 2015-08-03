@@ -4,7 +4,8 @@ import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 
@@ -13,7 +14,7 @@ import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
  */
 case class DeleteS3PathActivity private (
   id: PipelineObjectId,
-  s3Path: S3Uri,
+  s3Path: Parameter[S3Uri],
   stdout: Option[String],
   stderr: Option[String],
   runsOn: Resource[Ec2Resource],
@@ -22,10 +23,10 @@ case class DeleteS3PathActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[DpPeriod],
-  lateAfterTimeout: Option[DpPeriod],
-  maximumRetries: Option[Int],
-  retryDelay: Option[DpPeriod],
+  attemptTimeout: Option[Parameter[Duration]],
+  lateAfterTimeout: Option[Parameter[Duration]],
+  maximumRetries: Option[Parameter[Int]],
+  retryDelay: Option[Parameter[Duration]],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
@@ -40,10 +41,10 @@ case class DeleteS3PathActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
@@ -76,7 +77,7 @@ case class DeleteS3PathActivity private (
 }
 
 object DeleteS3PathActivity extends RunnableObject {
-  def apply(s3Path: S3Uri)(runsOn: Resource[Ec2Resource]): DeleteS3PathActivity =
+  def apply(s3Path: Parameter[S3Uri])(runsOn: Resource[Ec2Resource]): DeleteS3PathActivity =
     new DeleteS3PathActivity(
       id = PipelineObjectId(DeleteS3PathActivity.getClass),
       s3Path = s3Path,

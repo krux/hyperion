@@ -17,7 +17,6 @@ case class RedshiftDataNode private (
   createTableSql: Option[String],
   schemaName: Option[String],
   primaryKeys: Seq[String],
-  workerGroup: Option[WorkerGroup],
   preconditions: Seq[Precondition],
   onSuccessAlarms: Seq[SnsAlarm],
   onFailAlarms: Seq[SnsAlarm]
@@ -44,7 +43,6 @@ case class RedshiftDataNode private (
     schemaName = schemaName,
     tableName = tableName,
     primaryKeys = seqToOption(primaryKeys)(_.toString),
-    workerGroup = workerGroup.map(_.ref),
     precondition = seqToOption(preconditions)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref)
@@ -53,12 +51,7 @@ case class RedshiftDataNode private (
 }
 
 object RedshiftDataNode {
-  def apply(database: RedshiftDatabase, tableName: String): RedshiftDataNode = apply(database, tableName, None)
-
-  def apply(database: RedshiftDatabase, tableName: String, runsOn: WorkerGroup): RedshiftDataNode =
-    apply(database, tableName, Option(runsOn))
-
-  private def apply(database: RedshiftDatabase, tableName: String, runsOn: Option[WorkerGroup]): RedshiftDataNode =
+  def apply(database: RedshiftDatabase, tableName: String): RedshiftDataNode =
     new RedshiftDataNode(
       id = PipelineObjectId(RedshiftDataNode.getClass),
       database = database,
@@ -66,7 +59,6 @@ object RedshiftDataNode {
       createTableSql = None,
       schemaName = None,
       primaryKeys = Seq(),
-      workerGroup = runsOn,
       preconditions = Seq(),
       onSuccessAlarms = Seq(),
       onFailAlarms = Seq()

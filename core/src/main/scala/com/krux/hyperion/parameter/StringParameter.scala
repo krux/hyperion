@@ -9,25 +9,25 @@ case class StringParameter private (
   allowedValues: Seq[String],
   isEncrypted: Boolean,
   isOptional: Boolean
-) extends Parameter {
+) extends Parameter[String] {
 
   def withDescription(description: String) = this.copy(description = Option(description))
   def withAllowedValues(value: String*) = this.copy(allowedValues = allowedValues ++ value)
   def required = this.copy(isOptional = false)
   def encrypted = this.copy(isEncrypted = true)
 
-  lazy val serialize = AdpParameter(
+  lazy val serialize = Option(AdpParameter(
     id = name,
     `type` = "String",
     description = description,
-    optional = isOptional,
+    optional = isOptional.toString,
     allowedValues = allowedValues match {
       case Seq() => None
       case values => Option(values)
     },
-    isArray = false,
+    isArray = "false",
     `default` = Option(value)
-  )
+  ))
 
 }
 
@@ -41,5 +41,4 @@ object StringParameter {
       isEncrypted = false,
       isOptional = true
     )
-
 }

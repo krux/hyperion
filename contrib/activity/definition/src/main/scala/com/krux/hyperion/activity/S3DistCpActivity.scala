@@ -4,7 +4,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
 import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.DpPeriod
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource._
 
@@ -14,15 +15,15 @@ class S3DistCpActivity private (
   val dest: Option[S3DataNode],
   val sourcePattern: Option[String],
   val groupBy: Option[String],
-  val targetSize: Option[Int],
+  val targetSize: Option[Parameter[Int]],
   val appendLastToFile: Boolean,
   val outputCodec: S3DistCpActivity.OutputCodec,
   val s3ServerSideEncryption: Boolean,
   val deleteOnSuccess: Boolean,
   val disableMultipartUpload: Boolean,
-  val chunkSize: Option[Int],
+  val chunkSize: Option[Parameter[Int]],
   val numberFiles: Boolean,
-  val startingIndex: Option[Int],
+  val startingIndex: Option[Parameter[Int]],
   val outputManifest: Option[String],
   val previousManifest: Option[String],
   val requirePreviousManifest: Boolean,
@@ -38,10 +39,10 @@ class S3DistCpActivity private (
   val onFailAlarms: Seq[SnsAlarm],
   val onSuccessAlarms: Seq[SnsAlarm],
   val onLateActionAlarms: Seq[SnsAlarm],
-  val attemptTimeout: Option[DpPeriod],
-  val lateAfterTimeout: Option[DpPeriod],
-  val maximumRetries: Option[Int],
-  val retryDelay: Option[DpPeriod],
+  val attemptTimeout: Option[Parameter[Duration]],
+  val lateAfterTimeout: Option[Parameter[Duration]],
+  val maximumRetries: Option[Parameter[Int]],
+  val retryDelay: Option[Parameter[Duration]],
   val failureAndRerunMode: Option[FailureAndRerunMode],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
   val actionOnTaskFailure: Option[ActionOnTaskFailure]
@@ -53,15 +54,15 @@ class S3DistCpActivity private (
     dest: Option[S3DataNode] = dest,
     sourcePattern: Option[String] = sourcePattern,
     groupBy: Option[String] = groupBy,
-    targetSize: Option[Int] = targetSize,
+    targetSize: Option[Parameter[Int]] = targetSize,
     appendLastToFile: Boolean = appendLastToFile,
     outputCodec: S3DistCpActivity.OutputCodec = outputCodec,
     s3ServerSideEncryption: Boolean = s3ServerSideEncryption,
     deleteOnSuccess: Boolean = deleteOnSuccess,
     disableMultipartUpload: Boolean = disableMultipartUpload,
-    chunkSize: Option[Int] = chunkSize,
+    chunkSize: Option[Parameter[Int]] = chunkSize,
     numberFiles: Boolean = numberFiles,
-    startingIndex: Option[Int] = startingIndex,
+    startingIndex: Option[Parameter[Int]] = startingIndex,
     outputManifest: Option[String] = outputManifest,
     previousManifest: Option[String] = previousManifest,
     requirePreviousManifest: Boolean = requirePreviousManifest,
@@ -77,10 +78,10 @@ class S3DistCpActivity private (
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
     onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
     onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
-    attemptTimeout: Option[DpPeriod] = attemptTimeout,
-    lateAfterTimeout: Option[DpPeriod] = lateAfterTimeout,
-    maximumRetries: Option[Int] = maximumRetries,
-    retryDelay: Option[DpPeriod] = retryDelay,
+    attemptTimeout: Option[Parameter[Duration]] = attemptTimeout,
+    lateAfterTimeout: Option[Parameter[Duration]] = lateAfterTimeout,
+    maximumRetries: Option[Parameter[Int]] = maximumRetries,
+    retryDelay: Option[Parameter[Duration]] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
     actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure
@@ -99,15 +100,15 @@ class S3DistCpActivity private (
   def withDestination(dest: S3DataNode) = this.copy(dest = Option(dest))
   def withSourcePattern(sourcePattern: String) = this.copy(sourcePattern = Option(sourcePattern))
   def withGroupBy(groupBy: String) = this.copy(groupBy = Option(groupBy))
-  def withTargetSize(targetSize: Int) = this.copy(targetSize = Option(targetSize))
+  def withTargetSize(targetSize: Parameter[Int]) = this.copy(targetSize = Option(targetSize))
   def appendToLastFile() = this.copy(appendLastToFile = true)
   def withOutputCodec(outputCodec: S3DistCpActivity.OutputCodec) = this.copy(outputCodec = outputCodec)
   def withS3ServerSideEncryption() = this.copy(s3ServerSideEncryption = true)
   def withDeleteOnSuccess() = this.copy(deleteOnSuccess = true)
   def withoutMultipartUpload() = this.copy(disableMultipartUpload = true)
-  def withMultipartUploadChunkSize(chunkSize: Int) = this.copy(chunkSize = Option(chunkSize))
+  def withMultipartUploadChunkSize(chunkSize: Parameter[Int]) = this.copy(chunkSize = Option(chunkSize))
   def withNumberFiles() = this.copy(numberFiles = true)
-  def withStartingIndex(startingIndex: Int) = this.copy(startingIndex = Option(startingIndex))
+  def withStartingIndex(startingIndex: Parameter[Int]) = this.copy(startingIndex = Option(startingIndex))
   def withOutputManifest(outputManifest: String) = this.copy(outputManifest = Option(outputManifest))
   def withPreviousManifest(previousManifest: String) = this.copy(previousManifest = Option(previousManifest))
   def withRequirePreviousManifest() = this.copy(requirePreviousManifest = true)
@@ -123,10 +124,10 @@ class S3DistCpActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: DpPeriod) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: DpPeriod) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Int) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: DpPeriod) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
   def withActionOnResourceFailure(action: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(action))
   def withActionOnTaskFailure(action: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(action))
