@@ -72,6 +72,6 @@ object ExampleSpark extends DataPipelineDef {
     .withSteps(scoreStep1, scoreStep2)
     .onSuccess(mailAction)
 
-  override def workflow = filterActivity :~> scoreActivity
+  override def workflow = filterActivity ~> scoreActivity
 
 }

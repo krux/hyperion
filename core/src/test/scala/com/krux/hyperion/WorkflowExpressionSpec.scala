@@ -23,7 +23,7 @@ class WorkflowExpressionSpec extends WordSpec {
       val act5 = ShellCommandActivity("run act5")(ec2).named("act5")
       val act6 = ShellCommandActivity("run act6")(ec2).named("act6")
 
-      val dependencies = (act1 + act2) :~> ((act3 :~> act4) + act5) :~> act6
+      val dependencies = (act1 + act2) ~> ((act3 ~> act4) + act5) ~> act6
 
       val activities = dependencies.toPipelineObjects
 
@@ -98,15 +98,15 @@ class WorkflowExpressionSpec extends WordSpec {
       val act5 = ShellCommandActivity("run act5")(ec2).named("act5")
       val act6 = ShellCommandActivity("run act6")(ec2).named("act6")
 
-      // equivalent to val dependencies = (act1 + act2) :~> ((act3 :~> act4) + act5) :~> act6
+      // equivalent to val dependencies = (act1 + act2) ~> ((act3 ~> act4) + act5) ~> act6
       val dependencies =
-        (act1 :~> act3) +
-        (act2 :~> act3) +
-        (act3 :~> act4) +
-        (act2 :~> act5) +
-        (act1 :~> act5) +
-        (act4 :~> act6) +
-        (act5 :~> act6)
+        (act1 ~> act3) +
+        (act2 ~> act3) +
+        (act3 ~> act4) +
+        (act2 ~> act5) +
+        (act1 ~> act5) +
+        (act4 ~> act6) +
+        (act5 ~> act6)
 
       val activities = dependencies.toPipelineObjects
 
