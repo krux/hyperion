@@ -4,7 +4,7 @@ import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.common.S3Uri.S3StringContext
 import com.krux.hyperion.common.{S3Uri, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.DpPeriodBuilder
+import com.krux.hyperion.expression.DurationBuilder
 import com.krux.hyperion.expression.{DateTimeRef, DateTimeExp, Expression}
 import scala.language.implicitConversions
 import org.json4s.DefaultFormats
@@ -18,7 +18,7 @@ object Implicits {
   implicit val jsonFormats = DefaultFormats
 
   // Expression implicit
-  implicit def int2DpPeriod(n: Int): DpPeriodBuilder = new DpPeriodBuilder(n)
+  implicit def int2DpPeriod(n: Int): DurationBuilder = new DurationBuilder(n)
 
   implicit def dateTimeRef2dateTimeExp(dtRef: DateTimeRef.Value): DateTimeExp =
     new DateTimeExp(dtRef.toString)

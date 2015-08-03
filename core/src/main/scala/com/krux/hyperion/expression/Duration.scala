@@ -73,9 +73,9 @@ object Duration {
 }
 
 /**
- * Builds DpPeriod, this is mainly used for using implicit conversions
+ * Builds Duration, this is mainly used for using implicit conversions
  */
-class DpPeriodBuilder(n: Int) {
+class DurationBuilder(n: Int) {
 
   def year = Year(n)
   def years = this.year
