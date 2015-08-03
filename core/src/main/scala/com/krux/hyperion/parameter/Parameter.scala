@@ -39,6 +39,7 @@ object Parameter {
   implicit def intToParameter(i: Int): Parameter[Int] = DirectValueParameter[Int](i)
   implicit def longToParameter(i: Long): Parameter[Long] = DirectValueParameter[Long](i)
   implicit def s3UriToParameter(uri: S3Uri): Parameter[S3Uri] = DirectValueParameter[S3Uri](uri)
+  implicit def stringToS3Parameter(s: String): Parameter[S3Uri] = DirectValueParameter[S3Uri](S3Uri(s))
   implicit def stringToParameter(s: String): Parameter[String] = DirectValueParameter[String](s)
 
 }

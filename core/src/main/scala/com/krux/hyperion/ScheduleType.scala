@@ -1,7 +1,11 @@
 package com.krux.hyperion
 
-object ScheduleType extends Enumeration {
-  type ScheduleType = Value
-  val Cron = Value("cron")
-  val TimeSeries = Value("timeseries")
+sealed trait ScheduleType
+
+case object Cron extends ScheduleType {
+  override val toString = "cron"
+}
+
+case object TimeSeries extends ScheduleType {
+  override val toString = "timeseries"
 }

@@ -5,23 +5,23 @@ import com.krux.hyperion.common.S3Uri.S3StringContext
 import com.krux.hyperion.common.{S3Uri, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DurationBuilder
-import com.krux.hyperion.expression.{DateTimeRef, DateTimeExp, Expression}
+import com.krux.hyperion.expression._
 import scala.language.implicitConversions
 import org.json4s.DefaultFormats
 
 /**
- * The implicit conversions used in datapipeline
+ * The implicit conversions used in DataPipeline
  */
 object Implicits {
 
   implicit def string2DateTime(day: String): DateTime = new DateTime(day)
+
   implicit val jsonFormats = DefaultFormats
 
   // Expression implicit
   implicit def int2DpPeriod(n: Int): DurationBuilder = new DurationBuilder(n)
 
-  implicit def dateTimeRef2dateTimeExp(dtRef: DateTimeRef.Value): DateTimeExp =
-    new DateTimeExp(dtRef.toString)
+  implicit def dateTimeRef2dateTimeExp(dtRef: DateTimeRuntimeSlot): DateTimeExp = new DateTimeExp(dtRef.toString)
 
   implicit def expression2String(exp: Expression): String = exp.toString
 

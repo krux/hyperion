@@ -5,7 +5,6 @@ import com.krux.hyperion.Implicits._
 import com.krux.hyperion.aws.{AdpRef, AdpSchedule}
 import com.krux.hyperion.common.{ScheduleObjectId, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.expression.Duration
-import ScheduleType._
 
 /**
  * Schedule that runs at defined period.

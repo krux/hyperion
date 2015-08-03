@@ -5,7 +5,6 @@ import com.krux.hyperion.Implicits._
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.{SparkActivity, SparkStep}
 import com.krux.hyperion.expression.DateTimeFunctions.format
-import com.krux.hyperion.expression.ExpressionDSL._
 import com.krux.hyperion.parameter._
 import com.krux.hyperion.resource.SparkCluster
 import com.typesafe.config.ConfigFactory
