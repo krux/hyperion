@@ -10,7 +10,7 @@ sealed abstract class WorkflowExpression {
 
     def toPipelineObjectsRec(exp: WorkflowExpression): Set[PipelineActivity] =
       exp match {
-        case WorkflowActivityExpression(act) => act
+        case WorkflowActivityExpression(activity) => Set(activity)
 
         case WorkflowArrowExpression(left, right) =>
           val leftDeps = toPipelineObjectsRec(left)
@@ -41,7 +41,7 @@ sealed abstract class WorkflowExpression {
   def +(right: WorkflowExpression): WorkflowExpression = this.and(right)
 }
 
-case class WorkflowActivityExpression(activities: Set[PipelineActivity]) extends WorkflowExpression
+case class WorkflowActivityExpression(activity: PipelineActivity) extends WorkflowExpression
 
 case class WorkflowArrowExpression(left: WorkflowExpression, right: WorkflowExpression) extends WorkflowExpression
 
@@ -49,16 +49,13 @@ case class WorkflowPlusExpression(left: WorkflowExpression, right: WorkflowExpre
 
 object WorkflowExpression {
 
-  implicit def activitySet2WorkflowExpression(activities: Set[PipelineActivity]): WorkflowExpression =
-    WorkflowActivityExpression(activities)
+  implicit def workflowIterable2WorkflowExpression(activities: Iterable[WorkflowExpression]): WorkflowExpression =
+    activities.reduceLeft(_ + _)
 
   implicit def activityIterable2WorkflowExpression(activities: Iterable[PipelineActivity]): WorkflowExpression =
-    WorkflowActivityExpression(activities.toSet)
-
-  implicit def activitySeq2WorkflowExpression(activities: Seq[PipelineActivity]): WorkflowExpression =
-    WorkflowActivityExpression(activities.toSet)
+    activities.map(activity2WorkflowExpression).reduceLeft(_ + _)
 
   implicit def activity2WorkflowExpression(activity: PipelineActivity): WorkflowExpression =
-    WorkflowActivityExpression(Set(activity))
+    WorkflowActivityExpression(activity)
 
 }
