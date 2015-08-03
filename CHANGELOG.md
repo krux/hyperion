@@ -2,135 +2,164 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.0 - 2015-08-03
+### Added
+- [#2](https://github.com/krux/hyperion/issues/2) - Implement SftpUploadActivity
+- [#3](https://github.com/krux/hyperion/issues/3) - Implement SftpDownloadActivity
+- [#98](https://github.com/krux/hyperion/issues/98) - Add an activity to use SES to send emails rather than mailx
+- [#103](https://github.com/krux/hyperion/issues/103) - Provide an activity to split files
+- [#107](https://github.com/krux/hyperion/issues/107) - Support Worker Groups
+- [#108](https://github.com/krux/hyperion/issues/108) - Add attemptTimeout
+- [#109](https://github.com/krux/hyperion/issues/109) - Add lateAfterTimeout
+- [#110](https://github.com/krux/hyperion/issues/110) - Add maximumRetries
+- [#111](https://github.com/krux/hyperion/issues/111) - Add retryDelay
+- [#112](https://github.com/krux/hyperion/issues/112) - Add failureAndRerunMode
+- [#115](https://github.com/krux/hyperion/issues/115) - Add ShellScriptConfig
+- [#116](https://github.com/krux/hyperion/issues/116) - Add HadoopActivity
+- [#125](https://github.com/krux/hyperion/issues/125) - Support collections on WorkflowExpression
+- [#127](https://github.com/krux/hyperion/issues/127) - Better type safety for MainClass
+### Changed
+- [#106](https://github.com/krux/hyperion/issues/106) - Upgrade to Scala 2.11.7
+- [#113](https://github.com/krux/hyperion/issues/113) - Reorder parameters for consistency
+- [#114](https://github.com/krux/hyperion/issues/114) - Move non-core activities to a contrib project
+- [#117](https://github.com/krux/hyperion/issues/117) - Better type safety for PipelineObjectId
+- [#118](https://github.com/krux/hyperion/issues/118) - Better type safety for DpPeriod
+- [#119](https://github.com/krux/hyperion/issues/119) - Better type safety for S3 URIs
+- [#120](https://github.com/krux/hyperion/issues/120) - Better type safety for scripts/scriptUris
+- [#121](https://github.com/krux/hyperion/issues/121) - RedshiftUnloadActivitys Access Key Id/Secret be encrypted StringParameters
+- [#122](https://github.com/krux/hyperion/issues/122) - AdpS3DataNode should be a 1:1 match to AWS objects
+- [#123](https://github.com/krux/hyperion/issues/123) - Rename S3DataNode.fromPath to apply
+- [#128](https://github.com/krux/hyperion/issues/128) - Schedule to be constructed via cron/timeSeries/onceAtActivation
+
 ## 1.19.1 - 2015-07-23
 ### Fixed
-- #99 - Hyperion CLI driver should exit with appropriate error codes
+- [#99](https://github.com/krux/hyperion/issues/99) - Hyperion CLI driver should exit with appropriate error codes
 
 ## 1.19.0 - 2015-07-23
 ### Fixed
-- #91 - workflow dsl broken when the right hand side of andThen have dependencies. Note that
+- [#91](https://github.com/krux/hyperion/issues/91) - workflow dsl broken when the right hand side of andThen have dependencies. Note that
   `act1 + act2` is no longer the same as `Seq(act1, act2)` any more.
 ### Added
-- #101 - Allow workflow DSL to have duplicated activities.
+- [#101](https://github.com/krux/hyperion/issues/101) - Allow workflow DSL to have duplicated activities.
 
 ## 1.18.0 - 2015-07-19
 ### Added
-- #25 - Added a run-python runner script and PythonActivity
-- #89 - Added an activity to email input staging folders
-- #90 - Added an activity to merge input staging folders and upload to output staging folders
+- [#25](https://github.com/krux/hyperion/issues/25) - Added a run-python runner script and PythonActivity
+- [#89](https://github.com/krux/hyperion/issues/89) - Added an activity to email input staging folders
+- [#90](https://github.com/krux/hyperion/issues/90) - Added an activity to merge input staging folders and upload to output staging folders
 
 ## 1.17.0 - 2015-07-15
 ### Changed
-- #80 - Change jar-based activities/steps to require a jar
-- #83 - Remove dependency assertion in WorkflowDSL
-- #84 - Drop dependsOn and require WorkflowDSL
+- [#80](https://github.com/krux/hyperion/issues/80) - Change jar-based activities/steps to require a jar
+- [#83](https://github.com/krux/hyperion/issues/83) - Remove dependency assertion in WorkflowDSL
+- [#84](https://github.com/krux/hyperion/issues/84) - Drop dependsOn and require WorkflowDSL
 
 ## 1.16.0 - 2015-07-15
 ### Fixed
-- #81 - Regression: --region parameter is now effectively required on non-EC2 instances due to call to `getCurrentRegion`.
+- [#81](https://github.com/krux/hyperion/issues/81) - Regression: --region parameter is now effectively required on non-EC2 instances due to call to `getCurrentRegion`.
 
 ## 1.15.0 - 2015-07-14
 ### Fixed
-- #78 - Strip trailing $ from MainClass
+- [#78](https://github.com/krux/hyperion/issues/78) - Strip trailing $ from MainClass
 
 ## 1.14.0 - 2015-07-06
 ### Added
-- #65 - Ability to use roles via STS assume-role
+- [#65](https://github.com/krux/hyperion/issues/65) - Ability to use roles via STS assume-role
 
 ## 1.13.0 - 2015-07-06
 ### Changed
-- #68 - No longer specify AWS keys in configuration for RedshiftUnloadActivity - now must specify as arguments to activity
+- [#68](https://github.com/krux/hyperion/issues/68) - No longer specify AWS keys in configuration for RedshiftUnloadActivity - now must specify as arguments to activity
 
 ## 1.12.1 - 2015-07-03
 ### Fixed
-- #74 - DataNode should return path using toString
+- [#74](https://github.com/krux/hyperion/issues/74) - DataNode should return path using toString
 
 ## 1.12.0 - 2015-07-02
 ### Added
-- #64 - Supports non-default region
+- [#64](https://github.com/krux/hyperion/issues/64) - Supports non-default region
 ### Fixed
-- #69 - Role and ResourceRole were not getting properly defaulted on resources
+- [#69](https://github.com/krux/hyperion/issues/69) - Role and ResourceRole were not getting properly defaulted on resources
 
 ## 1.11.0 - 2015-07-01
 ### Added
-- #4 - Added S3DistCpActivity
+- [#4](https://github.com/krux/hyperion/issues/4) - Added S3DistCpActivity
 
 ## 1.10.1 - 2015-06-22
 ### Fixed
-- #63 - ActionOn* and SchedulerType case objects properly inherit from trait
+- [#63](https://github.com/krux/hyperion/issues/63) - ActionOn* and SchedulerType case objects properly inherit from trait
 
 ## 1.10.0 - 2015-06-22
 ### Added
-- #62 - role and resourceRole to EmrCluster types as well as additional missing properties
+- [#62](https://github.com/krux/hyperion/issues/62) - role and resourceRole to EmrCluster types as well as additional missing properties
 
 ## 1.9.0 - 2015-06-17
 ### Added
-- #59 - workflow DSL
+- [#59](https://github.com/krux/hyperion/issues/59) - workflow DSL
 
 ## 1.8.1 - 2015-06-09
 ### Changed
-- #54 - with* methods that take a sequence are now additive, and replaced withColumns(Seq[String]) with withColumns(String...)
-- #56 - reorganize objects into packages by type
+- [#54](https://github.com/krux/hyperion/issues/54) - with* methods that take a sequence are now additive, and replaced withColumns(Seq[String]) with withColumns(String...)
+- [#56](https://github.com/krux/hyperion/issues/56) - reorganize objects into packages by type
 
 ## 1.7.2 - 2015-04-28
 ### Fixed
-- #50 - In ShellCommandActivity, make command and scriptUri Either
-- #51 - When taskInstanceCount == 0 need to make sure other taskInstance parameters are set to None
+- [#50](https://github.com/krux/hyperion/issues/50) - In ShellCommandActivity, make command and scriptUri Either
+- [#51](https://github.com/krux/hyperion/issues/51) - When taskInstanceCount == 0 need to make sure other taskInstance parameters are set to None
 
 ## 1.7.1 - 2015-04-28
 ### Fixed
-- #48 - Pipeline blows up if sns.topic is not set
+- [#48](https://github.com/krux/hyperion/issues/48) - Pipeline blows up if sns.topic is not set
 
 ## 1.7.0 - 2015-04-28
 ### Changed
-- #46 - Support remaining properties on resources
-- #45 - Support VPC by adding subnetId
+- [#46](https://github.com/krux/hyperion/issues/46) - Support remaining properties on resources
+- [#45](https://github.com/krux/hyperion/issues/45) - Support VPC by adding subnetId
 - Use Option to construct options instead of Some
 
 ## 1.6.2 - 2015-04-26
 ### Changed
-- #40 - Hyperion CLI continue retry to delete the pipeline when --force is used
+- [#40](https://github.com/krux/hyperion/issues/40) - Hyperion CLI continue retry to delete the pipeline when --force is used
 
 ## 1.6.1 - 2015-04-15
 ### Changed
-- #41 - Refactor Option to Option[Seq] functions
+- [#41](https://github.com/krux/hyperion/issues/41) - Refactor Option to Option[Seq] functions
 
 ## 1.6.0 - 2015-04-05
 ### Changed
-- #17 - Make pipeline id transparent
-- #35 - Use immutable Map for objects building
+- [#17](https://github.com/krux/hyperion/issues/17) - Make pipeline id transparent
+- [#35](https://github.com/krux/hyperion/issues/35) - Use immutable Map for objects building
 
 ## 1.5.1 - 2015-04-02
 ### Added
-- #33 - Added support for tags
+- [#33](https://github.com/krux/hyperion/issues/33) - Added support for tags
 
 ## 1.5.0 - 2015-04-02
 ### Added
-- #6 - Support remaining schedule aspects
+- [#6](https://github.com/krux/hyperion/issues/6) - Support remaining schedule aspects
 
 ## 1.4.0 - 2015-04-01
 ### Added
-- #14 - Make datapipelineDef be able to have an CLI and remove the Hyperion executable
+- [#14](https://github.com/krux/hyperion/issues/14) - Make datapipelineDef be able to have an CLI and remove the Hyperion executable
 
 ## 1.3.0 - 2015-04-01
 ### Added
-- #5 - Support parameters
+- [#5](https://github.com/krux/hyperion/issues/5) - Support parameters
 
 ## 1.2.0 - 2015-03-31
 ### Fixed
-- #26 - ShellCommandActivity input and output should actually be a sequence of DataNodes.
+- [#26](https://github.com/krux/hyperion/issues/26) - ShellCommandActivity input and output should actually be a sequence of DataNodes.
 
 ## 1.1.0 - 2015-03-31
 ### Added
-- #10 - Support Preconditions
-- #18 - Add additional activities to EC2Resource and EmrCluster
+- [#10](https://github.com/krux/hyperion/issues/10) - Support Preconditions
+- [#18](https://github.com/krux/hyperion/issues/18) - Add additional activities to EC2Resource and EmrCluster
 
 ### Changed
-- #18 - Renamed runCopyActivity on EC2Resource to runCopy
+- [#18](https://github.com/krux/hyperion/issues/18) - Renamed runCopyActivity on EC2Resource to runCopy
 
 ## 1.0.5 - 2015-03-29
 ### Added
-- #13 - Support SQL related databases and the relevant data nodes
+- [#13](https://github.com/krux/hyperion/issues/13) - Support SQL related databases and the relevant data nodes
 
 ## 1.0.4 - 2015-03-29
 ### Added
@@ -138,15 +167,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.0.3 - 2015-03-28
 ### Added
-- #9 - Additional activity types (PigActivity, HiveActivity, HiveCopyActivity, CopyActivity)
+- [#9](https://github.com/krux/hyperion/issues/9) - Additional activity types (PigActivity, HiveActivity, HiveCopyActivity, CopyActivity)
 
 ## 1.0.2 - 2015-03-27
 ### Fixed
-- #15 - downgrade json4s to 3.2.10
+- [#15](https://github.com/krux/hyperion/issues/15) - downgrade json4s to 3.2.10
 
 ## 1.0.1 - 2015-03-26
 ### Fixed
-- #11 - Spark and MapReduce should dependOn PipelineActivity
+- [#11](https://github.com/krux/hyperion/issues/11) - Spark and MapReduce should dependOn PipelineActivity
 
 ## 1.0.0 - 2015-03-25
 ### Changed
