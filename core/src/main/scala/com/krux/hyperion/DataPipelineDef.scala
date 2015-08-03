@@ -1,5 +1,6 @@
 package com.krux.hyperion
 
+import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.aws.{AdpParameterSerializer, AdpPipelineSerializer, AdpJsonSerializer}
 import com.krux.hyperion.common.{S3UriHelper, S3Uri, DefaultObject, PipelineObject}
 import com.krux.hyperion.parameter.Parameter
@@ -43,10 +44,7 @@ trait DataPipelineDef extends HyperionCli with S3UriHelper {
       r
     }
 
-  def pipelineName = this.getClass.getName match {
-    case objName if objName.endsWith("$") => objName.dropRight(1)
-    case className => className
-  }
+  def pipelineName = MainClass(this).toString
 
 }
 
