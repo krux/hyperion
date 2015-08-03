@@ -75,7 +75,7 @@ case class SqlActivity private (
 }
 
 object SqlActivity extends RunnableObject {
-  def apply(database: RedshiftDatabase, script: Script)(implicit runsOn: Resource[Ec2Resource]): SqlActivity =
+  def apply(database: RedshiftDatabase, script: Script)(runsOn: Resource[Ec2Resource]): SqlActivity =
     new SqlActivity(
       id = PipelineObjectId(SqlActivity.getClass),
       script = script,

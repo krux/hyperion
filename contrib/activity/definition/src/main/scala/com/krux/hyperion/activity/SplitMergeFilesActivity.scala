@@ -158,7 +158,7 @@ class SplitMergeFilesActivity private (
 
 object SplitMergeFilesActivity extends RunnableObject {
 
-  def apply(filename: String)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): SplitMergeFilesActivity =
+  def apply(filename: String)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SplitMergeFilesActivity =
     new SplitMergeFilesActivity(
       id = PipelineObjectId(SplitMergeFilesActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),

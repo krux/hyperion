@@ -140,7 +140,7 @@ class SftpDownloadActivity private (
 
 object SftpDownloadActivity extends RunnableObject {
 
-  def apply(host: String)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): SftpDownloadActivity =
+  def apply(host: String)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SftpDownloadActivity =
     new SftpDownloadActivity(
       id = PipelineObjectId(SftpDownloadActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),

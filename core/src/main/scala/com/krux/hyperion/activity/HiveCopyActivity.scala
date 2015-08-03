@@ -84,7 +84,7 @@ case class HiveCopyActivity private (
 }
 
 object HiveCopyActivity extends RunnableObject {
-  def apply(input: DataNode, output: DataNode)(implicit runsOn: Resource[EmrCluster]): HiveCopyActivity =
+  def apply(input: DataNode, output: DataNode)(runsOn: Resource[EmrCluster]): HiveCopyActivity =
     new HiveCopyActivity(
       id = PipelineObjectId(HiveCopyActivity.getClass),
       filterSql = None,

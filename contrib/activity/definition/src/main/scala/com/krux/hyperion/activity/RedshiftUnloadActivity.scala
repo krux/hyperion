@@ -101,7 +101,7 @@ case class RedshiftUnloadActivity private (
 object RedshiftUnloadActivity extends RunnableObject {
 
   def apply(database: RedshiftDatabase, script: String, s3Path: S3Uri,
-    accessKeyId: StringParameter, accessKeySecret: StringParameter)(implicit runsOn: Resource[Ec2Resource]): RedshiftUnloadActivity =
+    accessKeyId: StringParameter, accessKeySecret: StringParameter)(runsOn: Resource[Ec2Resource]): RedshiftUnloadActivity =
     new RedshiftUnloadActivity(
       id = PipelineObjectId(RedshiftUnloadActivity.getClass),
       script = script,

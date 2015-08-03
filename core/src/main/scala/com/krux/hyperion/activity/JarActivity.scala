@@ -88,7 +88,7 @@ case class JarActivity private (
 
 object JarActivity extends RunnableObject {
 
-  def apply(jarUri: S3Uri)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): JarActivity =
+  def apply(jarUri: S3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): JarActivity =
     new JarActivity(
       id = PipelineObjectId(JarActivity.getClass),
       jarUri = jarUri,

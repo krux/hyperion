@@ -91,7 +91,7 @@ case class PigActivity private (
 }
 
 object PigActivity extends RunnableObject {
-  def apply(script: Script)(implicit runsOn: Resource[EmrCluster]): PigActivity =
+  def apply(script: Script)(runsOn: Resource[EmrCluster]): PigActivity =
     new PigActivity(
       id = PipelineObjectId(PigActivity.getClass),
       script = script,

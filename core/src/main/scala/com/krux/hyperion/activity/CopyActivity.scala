@@ -76,7 +76,7 @@ case class CopyActivity private (
 
 object CopyActivity extends RunnableObject {
 
-  def apply(input: Copyable, output: Copyable)(implicit runsOn: Resource[Ec2Resource]): CopyActivity =
+  def apply(input: Copyable, output: Copyable)(runsOn: Resource[Ec2Resource]): CopyActivity =
     new CopyActivity(
       id = PipelineObjectId(CopyActivity.getClass),
       input = input,

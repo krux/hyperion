@@ -153,7 +153,7 @@ class SendEmailActivity private (
 
 object SendEmailActivity extends RunnableObject {
 
-  def apply()(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): SendEmailActivity =
+  def apply(runsOn: Resource[Ec2Resource], hc: HyperionContext): SendEmailActivity =
     new SendEmailActivity(
       id = PipelineObjectId(SendEmailActivity.getClass),
       runsOn = runsOn,

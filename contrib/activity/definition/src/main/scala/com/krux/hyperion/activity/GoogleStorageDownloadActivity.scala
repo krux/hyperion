@@ -79,7 +79,7 @@ case class GoogleStorageDownloadActivity private (
 
 object GoogleStorageDownloadActivity extends RunnableObject {
 
-  def apply(botoConfigUrl: S3Uri)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): GoogleStorageDownloadActivity =
+  def apply(botoConfigUrl: S3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
     new GoogleStorageDownloadActivity(
       id = PipelineObjectId(GoogleStorageDownloadActivity.getClass),
       scriptUri = s"${hc.scriptUri}activities/gsutil-download.sh",

@@ -78,7 +78,7 @@ case class GoogleStorageUploadActivity private (
 }
 
 object GoogleStorageUploadActivity extends RunnableObject {
-  def apply(botoConfigUrl: S3Uri)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): GoogleStorageUploadActivity =
+  def apply(botoConfigUrl: S3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): GoogleStorageUploadActivity =
     new GoogleStorageUploadActivity(
       id = PipelineObjectId(GoogleStorageUploadActivity.getClass),
       scriptUri = s"${hc.scriptUri}activities/gsutil-upload.sh",

@@ -82,7 +82,7 @@ case class HadoopActivity private (
 }
 
 object HadoopActivity extends RunnableObject {
-  def apply(jarUri: String)(implicit runsOn: Resource[EmrCluster]): HadoopActivity = new HadoopActivity(
+  def apply(jarUri: String)(runsOn: Resource[EmrCluster]): HadoopActivity = new HadoopActivity(
     id = PipelineObjectId(HadoopActivity.getClass),
     jarUri = jarUri,
     mainClass = None,

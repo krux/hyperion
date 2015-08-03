@@ -85,7 +85,7 @@ case class SparkActivity private (
 
 object SparkActivity extends RunnableObject {
 
-  def apply()(implicit runsOn: Resource[SparkCluster]): SparkActivity =
+  def apply(runsOn: Resource[SparkCluster]): SparkActivity =
     new SparkActivity(
       id = PipelineObjectId(SparkActivity.getClass),
       steps = Seq(),

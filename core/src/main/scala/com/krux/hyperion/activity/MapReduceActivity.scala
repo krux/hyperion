@@ -84,7 +84,7 @@ case class MapReduceActivity private (
 }
 
 object MapReduceActivity extends RunnableObject {
-  private def apply()(implicit runsOn: Resource[EmrCluster]): MapReduceActivity =
+  def apply(runsOn: Resource[EmrCluster]): MapReduceActivity =
     new MapReduceActivity(
       id = PipelineObjectId(MapReduceActivity.getClass),
       steps = Seq(),

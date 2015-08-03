@@ -84,7 +84,7 @@ case class ShellCommandActivity private (
 
 object ShellCommandActivity extends RunnableObject {
 
-  def apply(script: Script)(implicit runsOn: Resource[Ec2Resource]): ShellCommandActivity =
+  def apply(script: Script)(runsOn: Resource[Ec2Resource]): ShellCommandActivity =
     new ShellCommandActivity(
       id = PipelineObjectId(ShellCommandActivity.getClass),
       script = script,

@@ -88,7 +88,7 @@ case class HiveActivity private (
 }
 
 object HiveActivity extends RunnableObject {
-  def apply(input: DataNode, output: DataNode, hiveScript: Script)(implicit runsOn: Resource[EmrCluster]): HiveActivity =
+  def apply(input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[EmrCluster]): HiveActivity =
     new HiveActivity(
       id = PipelineObjectId(HiveActivity.getClass),
       hiveScript = hiveScript,

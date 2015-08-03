@@ -86,7 +86,7 @@ object RedshiftCopyActivity extends Enumeration with RunnableObject {
   val OverwriteExisting = Value("OVERWRITE_EXISTING")
   val Truncate = Value("TRUNCATE")
 
-  def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode)(implicit runsOn: Resource[Ec2Resource]): RedshiftCopyActivity =
+  def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode)(runsOn: Resource[Ec2Resource]): RedshiftCopyActivity =
     new RedshiftCopyActivity(
       id = PipelineObjectId(RedshiftCopyActivity.getClass),
       insertMode = insertMode,

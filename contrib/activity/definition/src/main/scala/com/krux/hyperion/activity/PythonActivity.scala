@@ -134,7 +134,7 @@ class PythonActivity private (
 
 object PythonActivity extends RunnableObject {
 
-  def apply(pythonScriptUri: S3Uri)(implicit runsOn: Resource[Ec2Resource], hc: HyperionContext): PythonActivity =
+  def apply(pythonScriptUri: S3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): PythonActivity =
     new PythonActivity(
       id = PipelineObjectId(PythonActivity.getClass),
       scriptUri = Option(s"${hc.scriptUri}activities/run-python.sh"),

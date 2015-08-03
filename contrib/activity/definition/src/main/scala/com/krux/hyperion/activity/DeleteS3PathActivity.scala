@@ -76,7 +76,7 @@ case class DeleteS3PathActivity private (
 }
 
 object DeleteS3PathActivity extends RunnableObject {
-  def apply(s3Path: S3Uri)(implicit runsOn: Resource[Ec2Resource]): DeleteS3PathActivity =
+  def apply(s3Path: S3Uri)(runsOn: Resource[Ec2Resource]): DeleteS3PathActivity =
     new DeleteS3PathActivity(
       id = PipelineObjectId(DeleteS3PathActivity.getClass),
       s3Path = s3Path,
