@@ -33,9 +33,11 @@ sealed abstract class WorkflowExpression {
 
   def andThen(right: WorkflowExpression): WorkflowExpression = WorkflowArrowExpression(this, right)
   def :~>(right: WorkflowExpression): WorkflowExpression = this.andThen(right)
+  def ~>(right: WorkflowExpression): WorkflowExpression = this.andThen(right)
 
   def priorTo_:(right: WorkflowExpression): WorkflowExpression = this.andThen(right)
   def <~:(right: WorkflowExpression): WorkflowExpression = this.priorTo_:(right)
+  def <~(right: WorkflowExpression): WorkflowExpression = this.priorTo_:(right)
 
   def and(right: WorkflowExpression): WorkflowExpression = WorkflowPlusExpression(this, right)
   def +(right: WorkflowExpression): WorkflowExpression = this.and(right)

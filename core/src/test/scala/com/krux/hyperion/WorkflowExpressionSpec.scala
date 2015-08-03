@@ -57,6 +57,38 @@ class WorkflowExpressionSpec extends WordSpec {
 
     }
 
+    "produce correct dependencies for straight arrow" in {
+      val act1 = ShellCommandActivity("run act1")(ec2).named("act1")
+      val act2 = ShellCommandActivity("run act2")(ec2).named("act2")
+      val act3 = ShellCommandActivity("run act3")(ec2).named("act3")
+      val act4 = ShellCommandActivity("run act4")(ec2).named("act4")
+
+      val dependencies = act1 ~> act2 ~> act3 ~> act4
+      val activities = dependencies.toPipelineObjects
+
+      activities.foreach { act =>
+        act.id.toString.take(4) match {
+          case "act1" =>
+            assert(act.dependsOn.size === 0)
+          case "act2" =>
+            assert(act.dependsOn.size === 1)
+            val dependeeIds = act.dependsOn.map(_.id.toString.take(4)).toSet
+            assert(dependeeIds === Set("act1"))
+          case "act3" =>
+            assert(act.dependsOn.size === 2)
+            val dependeeIds = act.dependsOn.map(_.id.toString.take(4)).toSet
+            assert(dependeeIds === Set("act1", "act2"))
+          case "act4" =>
+            assert(act.dependsOn.size === 3)
+            val dependeeIds = act.dependsOn.map(_.id.toString.take(4)).toSet
+            assert(dependeeIds === Set("act1", "act2", "act3"))
+          case _ =>
+            // this should never get executed
+            assert(true === false)
+        }
+      }
+    }
+
     "produce correct dependencies with duplicates" in {
 
       val act1 = ShellCommandActivity("run act1")(ec2).named("act1")
