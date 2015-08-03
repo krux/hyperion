@@ -97,7 +97,7 @@ class SftpUploadActivity private (
     lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
 
-  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def arguments: Seq[String] = Seq(
     Option(Seq("upload")),

@@ -16,4 +16,6 @@ object Terminate extends PipelineObject {
 
   def ref: AdpRef[AdpTerminate] = AdpRef(serialize)
 
+  def objects: Iterable[PipelineObject] = None
+
 }

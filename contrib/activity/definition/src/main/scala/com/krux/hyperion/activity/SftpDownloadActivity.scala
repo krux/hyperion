@@ -97,7 +97,7 @@ class SftpDownloadActivity private (
     attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
 
-  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  def objects: Iterable[PipelineObject] = runsOn.toSeq ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def arguments: Seq[String] = Seq(
     Option(Seq("download")),

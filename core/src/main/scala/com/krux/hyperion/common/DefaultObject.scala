@@ -28,6 +28,6 @@ case class DefaultObject(schedule: Schedule)(implicit val hc: HyperionContext)
 
      def ref: AdpRef[AdpDataPipelineDefaultObject] = AdpRef(serialize)
 
-     override def objects = Seq(schedule)
+     def objects = Seq(schedule)
 
    }

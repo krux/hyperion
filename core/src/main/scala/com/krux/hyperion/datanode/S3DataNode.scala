@@ -62,7 +62,7 @@ case class S3File private (
 
   override def toString: String = filePath.toString
 
-  override def objects: Iterable[PipelineObject] = dataFormat
+  def objects: Iterable[PipelineObject] = dataFormat
 
   lazy val serialize = AdpS3DataNode(
     id = id,
@@ -130,7 +130,7 @@ case class S3Folder private(
 
   override def toString: String = directoryPath.toString
 
-  override def objects: Iterable[PipelineObject] = dataFormat
+  def objects: Iterable[PipelineObject] = dataFormat
 
   lazy val serialize = AdpS3DataNode(
     id = id,

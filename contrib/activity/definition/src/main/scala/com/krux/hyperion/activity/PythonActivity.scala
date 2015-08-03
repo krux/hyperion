@@ -95,7 +95,7 @@ class PythonActivity private (
     onFailAlarms, onSuccessAlarms, onLateActionAlarms, attemptTimeout, lateAfterTimeout, maximumRetries,
     retryDelay, failureAndRerunMode)
 
-  override def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   private def scriptArguments = Seq(
     pythonScriptUri.map(Seq(_).map(_.ref)),

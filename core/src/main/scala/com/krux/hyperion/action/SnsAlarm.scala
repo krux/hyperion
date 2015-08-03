@@ -23,6 +23,8 @@ case class SnsAlarm private (
   def withTopicArn(topicArn: String) = this.copy(topicArn = Some(topicArn))
   def withRole(role: String) = this.copy(role = Some(role))
 
+  def objects: Iterable[PipelineObject] = None
+
   lazy val serialize = new AdpSnsAlarm(
     id = id,
     name = id.toOption,

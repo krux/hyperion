@@ -27,4 +27,6 @@ trait Precondition extends PipelineObject {
 
   def ref: AdpRef[AdpPrecondition] = AdpRef(serialize)
 
+  def objects: Iterable[PipelineObject] = None
+
 }

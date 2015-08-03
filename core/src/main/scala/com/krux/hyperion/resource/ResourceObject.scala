@@ -11,4 +11,5 @@ trait ResourceObject extends PipelineObject {
 
   def named(name: String): ResourceObject
 
+  def objects: Iterable[PipelineObject] = None
 }

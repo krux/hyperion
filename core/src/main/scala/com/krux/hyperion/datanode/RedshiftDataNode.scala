@@ -34,7 +34,7 @@ case class RedshiftDataNode private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
 
-  override def objects: Iterable[PipelineObject] = Option(database)
+  def objects: Iterable[PipelineObject] = Option(database)
 
   lazy val serialize = AdpRedshiftDataNode(
     id = id,

@@ -12,4 +12,6 @@ trait DataFormat extends PipelineObject {
 
   def ref: AdpRef[AdpDataFormat] = AdpRef(serialize)
 
+  def objects: Iterable[PipelineObject] = None
+
 }

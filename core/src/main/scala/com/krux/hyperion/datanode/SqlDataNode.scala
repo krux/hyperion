@@ -2,7 +2,7 @@ package com.krux.hyperion.datanode
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlDataNode
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.database.JdbcDatabase
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.WorkerGroup
@@ -28,6 +28,8 @@ case class SqlDataNode (
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
+
+  def objects: Iterable[PipelineObject] = None
 
   lazy val serialize = AdpSqlDataNode(
     id = id,

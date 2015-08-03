@@ -8,11 +8,11 @@ import com.krux.hyperion.expression.DpPeriod
 import ScheduleType._
 
 /**
- * Cron liked schedule that runs at defined period.
+ * Schedule that runs at defined period.
  *
  * @note If start time given is a past time, data pipeline will perform back fill from the start.
  */
-case class Schedule(
+case class Schedule private (
   id: PipelineObjectId = ScheduleObjectId,
   // if None, will use first activation datetime
   start: Option[DateTime] = None,
@@ -42,11 +42,10 @@ case class Schedule(
   }
 
   def every(p: DpPeriod) = this.copy(period = p)
-
-  @deprecated("Use 'every' instead of 'period'", "2015-04-01") def period(p: DpPeriod) = this.copy(period = p)
-
   def until(dt: DateTime) = this.copy(end = Option(Right(dt)))
   def stopAfter(occurrences: Int) = this.copy(end = Option(Left(occurrences)))
+
+  def objects: Iterable[PipelineObject] = None
 
   lazy val serialize: AdpSchedule = start match {
     case Some(dt) =>

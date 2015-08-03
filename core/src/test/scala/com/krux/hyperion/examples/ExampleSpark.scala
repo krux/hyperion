@@ -20,7 +20,7 @@ object ExampleSpark extends DataPipelineDef {
 
   override lazy val tags = Map("example" -> None, "ownerGroup" -> Some("spark"))
 
-  override lazy val schedule = Schedule()
+  override lazy val schedule = Schedule.cron
     .startAtActivation
     .every(1.day)
     .stopAfter(3)

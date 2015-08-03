@@ -27,7 +27,7 @@ object ExampleRedshiftLoad extends DataPipelineDef {
 
   override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
 
-  override lazy val schedule = Schedule()
+  override lazy val schedule = Schedule.cron
     .startAtActivation
     .every(1.hour)
 

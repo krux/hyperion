@@ -12,7 +12,7 @@ trait PipelineObject extends Ordered[PipelineObject] {
   implicit def seq2Option[A](anySeq: Seq[A]): Option[Seq[A]] = seqToOption(anySeq)(x => x)
 
   def id: PipelineObjectId
-  def objects: Iterable[PipelineObject] = None
+  def objects: Iterable[PipelineObject]
   def serialize: AdpDataPipelineAbstractObject
   def ref: AdpRef[AdpDataPipelineAbstractObject]
 

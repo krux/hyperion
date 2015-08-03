@@ -12,4 +12,6 @@ trait Database extends PipelineObject {
 
   def ref: AdpRef[AdpDatabase] = AdpRef(serialize)
 
+  def objects: Iterable[PipelineObject] = None
+
 }

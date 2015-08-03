@@ -11,6 +11,8 @@ case class ShellScriptConfig(
 
   def withArguments(args: String*) = this.copy(scriptArguments = scriptArguments ++ args)
 
+  def objects: Iterable[PipelineObject] = None
+
   lazy val serialize = AdpShellScriptConfig(
     id = id,
     name = id.toOption,
