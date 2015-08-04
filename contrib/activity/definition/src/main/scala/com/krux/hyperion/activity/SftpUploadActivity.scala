@@ -8,7 +8,7 @@ import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.{Parameter, StringParameter}
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
 /**
  * Shell command activity that runs a given Jar
@@ -22,7 +22,7 @@ class SftpUploadActivity private (
   val port: Option[Parameter[Int]],
   val username: Option[String],
   val password: Option[StringParameter],
-  val identity: Option[String],
+  val identity: Option[Parameter[S3Uri]],
   val pattern: Option[String],
   val input: Option[S3DataNode],
   val output: Option[String],
@@ -47,7 +47,7 @@ class SftpUploadActivity private (
   def withPort(port: Parameter[Int]) = this.copy(port = Option(port))
   def withUsername(username: String) = this.copy(username = Option(username))
   def withPassword(password: StringParameter) = this.copy(password = Option(password))
-  def withIdentity(identity: String) = this.copy(identity = Option(identity))
+  def withIdentity(identity: Parameter[S3Uri]) = this.copy(identity = Option(identity))
   def withPattern(pattern: String) = this.copy(pattern = Option(pattern))
   def withInput(input: S3DataNode) = this.copy(input = Option(input))
   def withOutput(output: String) = this.copy(output = Option(output))
@@ -74,7 +74,7 @@ class SftpUploadActivity private (
     port: Option[Parameter[Int]] = port,
     username: Option[String] = username,
     password: Option[StringParameter] = password,
-    identity: Option[String] = identity,
+    identity: Option[Parameter[S3Uri]] = identity,
     pattern: Option[String] = pattern,
     input: Option[S3DataNode] = input,
     output: Option[String] = output,
@@ -105,7 +105,7 @@ class SftpUploadActivity private (
     port.map(p => Seq("--port", p.toString)),
     username.map(u => Seq("--user", u)),
     password.map(p => Seq("--password", p.toString)),
-    identity.map(i => Seq("--identity", i)),
+    identity.map(i => Seq("--identity", i.toString)),
     pattern.map(p => Seq("--pattern", p)),
     input.map(in => Seq("--source", in.asInput(1))),
     output.map(out => Seq("--destination", out))

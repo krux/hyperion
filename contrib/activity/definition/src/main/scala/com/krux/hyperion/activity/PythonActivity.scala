@@ -8,7 +8,7 @@ import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
 /**
  * Shell command activity that runs a given python script

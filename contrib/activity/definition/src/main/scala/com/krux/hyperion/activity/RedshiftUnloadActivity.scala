@@ -1,14 +1,13 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlActivity
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.{Parameter, StringParameter}
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
 /**
  * Unload result of the given sql script from redshift to given s3Path.
