@@ -9,7 +9,7 @@ import scala.collection.JavaConverters._
 import com.jcraft.jsch.{JSchException, UserInfo, ChannelSftp, JSch}
 import scopt.OptionParser
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object SftpActivity {
   sealed trait Action
@@ -62,37 +62,39 @@ object SftpActivity {
   def apply(options: Options): Boolean = try {
     val ssh = new JSch()
 
-    // Add the private key (PEM) identity
-    options.identity.foreach { identity =>
-      val identityBytes: Option[Array[Byte]] = if (identity.startsWith("s3://")) {
-        (identity.stripPrefix("s3://").split('/').toList match {
+    // Add the private key (PEM) identity if one is specified
+    val identity = options.identity match {
+      case Some(id) if id.startsWith("s3://") =>
+        (id.stripPrefix("s3://").split('/').toList match {
           case bucket :: key =>
             print(s"Downloading identity from s3://$bucket/${key.mkString("/")}...")
-            val s3Object = Try(new AmazonS3Client().getObject(bucket, key.mkString("/")))
-            if (s3Object.isFailure) {
-              None
-            } else {
-              println("done.")
-              print("Attaching identity...")
-              s3Object.toOption
+
+            Try(new AmazonS3Client().getObject(bucket, key.mkString("/"))) match {
+              case Success(s3Object) =>
+                println("done.")
+                Option(s3Object)
+
+              case Failure(e) =>
+                println("failed.")
+                System.err.println(e.getMessage)
+                None
             }
 
           case _ =>
-            println("Unknown identity request")
+            System.err.println(s"Unknown identity: $id")
             None
         }).map(_.getObjectContent).map(streamToByteArray)
-      } else {
-        print(s"Loading identity from $identity...")
-        Option(new File(identity)).map(fileToByteArray)
-      }
 
-      if (identityBytes.isEmpty) {
-        System.err.println("Could not attach identity.")
-        return false
-      }
+      case Some(id) =>
+        println(s"Loading identity from $id...")
+        Option(new File(id)).map(fileToByteArray)
 
-      ssh.addIdentity("identity", identityBytes.get, null, null)
+      case None => None
+    }
 
+    identity.foreach { id =>
+      print(s"Attaching identity...")
+      ssh.addIdentity("identity", id, null, null)
       println("done.")
     }
 
@@ -118,7 +120,7 @@ object SftpActivity {
       override def getPassphrase: String = ""
     })
 
-  // Connect the session
+    // Connect the session
     print("Connecting...")
     session.connect()
     println("done.")
