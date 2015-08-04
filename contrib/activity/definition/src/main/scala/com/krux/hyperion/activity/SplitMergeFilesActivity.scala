@@ -23,8 +23,8 @@ class SplitMergeFilesActivity private (
   val suffixLength: Option[Parameter[Int]],
   val numberOfFiles: Option[Parameter[Int]],
   val linesPerFile: Option[Long],
-  val bytesPerFile: Option[Long],
-  val bufferSize: Option[Long],
+  val bytesPerFile: Option[String],
+  val bufferSize: Option[String],
   val pattern: Option[String],
   val input: Seq[S3DataNode],
   val output: Seq[S3DataNode],
@@ -56,8 +56,8 @@ class SplitMergeFilesActivity private (
     suffixLength: Option[Parameter[Int]] = suffixLength,
     numberOfFiles: Option[Parameter[Int]] = numberOfFiles,
     linesPerFile: Option[Long] = linesPerFile,
-    bytesPerFile: Option[Long] = bytesPerFile,
-    bufferSize: Option[Long] = bufferSize,
+    bytesPerFile: Option[String] = bytesPerFile,
+    bufferSize: Option[String] = bufferSize,
     pattern: Option[String] = pattern,
     input: Seq[S3DataNode] = input,
     output: Seq[S3DataNode] = output,
@@ -93,8 +93,8 @@ class SplitMergeFilesActivity private (
   def withSuffixLength(suffixLength: Parameter[Int]) = this.copy(suffixLength = Option(suffixLength))
   def withNumberOfFiles(numberOfFiles: Parameter[Int]) = this.copy(numberOfFiles = Option(numberOfFiles))
   def withNumberOfLinesPerFile(linesPerFile: Long) = this.copy(linesPerFile = Option(linesPerFile))
-  def withNumberOfBytesPerFile(bytesPerFile: Long) = this.copy(bytesPerFile = Option(bytesPerFile))
-  def withBufferSize(bufferSize: Long) = this.copy(bufferSize = Option(bufferSize))
+  def withNumberOfBytesPerFile(bytesPerFile: String) = this.copy(bytesPerFile = Option(bytesPerFile))
+  def withBufferSize(bufferSize: String) = this.copy(bufferSize = Option(bufferSize))
   def withInputPattern(pattern: String) = this.copy(pattern = Option(pattern))
 
   def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs)
@@ -124,8 +124,8 @@ class SplitMergeFilesActivity private (
     suffixLength.map(s => Seq("--suffix-length", s.toString)),
     numberOfFiles.map(n => Seq("-n", n.toString)),
     linesPerFile.map(n => Seq("-l", n.toString)),
-    bytesPerFile.map(n => Seq("-C", n.toString)),
-    bufferSize.map(n => Seq("-S", n.toString)),
+    bytesPerFile.map(n => Seq("-C", n)),
+    bufferSize.map(n => Seq("-S", n)),
     pattern.map(p => Seq("--name", p)),
     Option(Seq(filename))
   ).flatten.flatten
