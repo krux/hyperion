@@ -8,11 +8,12 @@ val configArtifact          = "com.typesafe"           %  "config"              
 val commonsIoArtifact       = "commons-io"             %  "commons-io"                % "2.4"
 val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % awsSdkVersion
 val awsStsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sts"          % awsSdkVersion
+val awsS3Artifact           = "com.amazonaws"          %  "aws-java-sdk-s3"           % awsSdkVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
 val mailArtifact            = "com.sun.mail"           %  "mailapi"                   % "1.5.4"
 val smtpArtifact            = "com.sun.mail"           %  "smtp"                      % "1.5.4"
 
-val hyperionVersion = "2.0.1"
+val hyperionVersion = "2.0.2"
 
 // Scaladoc publishing stuff
 site.settings
@@ -158,6 +159,7 @@ lazy val contribActivitySftp = (project in file("contrib/activity/sftp")).
     name := "hyperion-sftp-activity",
     libraryDependencies ++= Seq(
       scoptArtifact,
+      awsS3Artifact,
       jschArtifact
     )
   )

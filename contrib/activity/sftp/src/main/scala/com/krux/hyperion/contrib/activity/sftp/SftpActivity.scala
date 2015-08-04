@@ -2,10 +2,14 @@ package com.krux.hyperion.contrib.activity.sftp
 
 import java.io._
 import java.nio.file.Paths
+import com.amazonaws.services.s3.{AmazonS3Client, AmazonS3}
+
 import scala.collection.JavaConverters._
 
 import com.jcraft.jsch.{JSchException, UserInfo, ChannelSftp, JSch}
 import scopt.OptionParser
+
+import scala.util.Try
 
 object SftpActivity {
   sealed trait Action
@@ -24,7 +28,7 @@ object SftpActivity {
     port: Option[Int] = None,
     username: Option[String] = None,
     password: Option[String] = None,
-    identity: Option[File] = None,
+    identity: Option[String] = None,
     path: Option[String] = None,
     pattern: Option[String] = None
   )
@@ -55,13 +59,40 @@ object SftpActivity {
     os.toByteArray
   }
 
-  def apply(options: Options): Boolean = {
+  def apply(options: Options): Boolean = try {
     val ssh = new JSch()
 
     // Add the private key (PEM) identity
     options.identity.foreach { identity =>
-      print(s"Loading identity from $identity...")
-      ssh.addIdentity("identity", fileToByteArray(identity), null, null)
+      val identityBytes: Option[Array[Byte]] = if (identity.startsWith("s3://")) {
+        (identity.stripPrefix("s3://").split('/').toList match {
+          case bucket :: key =>
+            print(s"Downloading identity from s3://$bucket/${key.mkString("/")}...")
+            val s3Object = Try(new AmazonS3Client().getObject(bucket, key.mkString("/")))
+            if (s3Object.isFailure) {
+              None
+            } else {
+              println("done.")
+              print("Attaching identity...")
+              s3Object.toOption
+            }
+
+          case _ =>
+            println("Unknown identity request")
+            None
+        }).map(_.getObjectContent).map(streamToByteArray)
+      } else {
+        print(s"Loading identity from $identity...")
+        Option(new File(identity)).map(fileToByteArray)
+      }
+
+      if (identityBytes.isEmpty) {
+        System.err.println("Could not attach identity.")
+        return false
+      }
+
+      ssh.addIdentity("identity", identityBytes.get, null, null)
+
       println("done.")
     }
 
@@ -87,72 +118,70 @@ object SftpActivity {
       override def getPassphrase: String = ""
     })
 
-    // Connect the session
+  // Connect the session
+    print("Connecting...")
+    session.connect()
+    println("done.")
+
     try {
-      print("Connecting...")
-      session.connect()
-      println("done.")
+      // Start an SFTP channel
+      val channel = session.openChannel("sftp")
+
+      // Connect the channel
+      channel.connect()
 
       try {
-        // Start an SFTP channel
-        val channel = session.openChannel("sftp")
+        val sftp = channel.asInstanceOf[ChannelSftp]
+        import sftp.LsEntry
 
-        // Connect the channel
-        channel.connect()
+        options.path.foreach { dir =>
+          print(s"Setting remote directory to $dir...")
+          sftp.cd(dir)
+          println("done.")
+        }
+        // Change directory to folder where we have permissions to get files
+        options.mode match {
+          case Some(UploadAction) =>
+            // List all of the files in the source folder
+            Paths.get(System.getenv("INPUT1_STAGING_DIR")).toFile.listFiles(new FilenameFilter {
+              override def accept(dir: File, name: String): Boolean = options.pattern.forall(name.matches)
+            }).foreach { file =>
+              print(s"Uploading ${file.getAbsolutePath} -> ${file.getName}...")
+              // Upload the file
+              sftp.put(file.getAbsolutePath, file.getName)
+              println("done.")
+            }
 
-        try {
-          val sftp = channel.asInstanceOf[ChannelSftp]
-          import sftp.LsEntry
+          case Some(DownloadAction) =>
+            // List all of the files in the source folder
+            sftp.ls(options.pattern.getOrElse("*")).asScala.foreach { entry =>
+              val sourceFilename = entry.asInstanceOf[LsEntry].getFilename
+              val destFilename = Paths.get(System.getenv("OUTPUT1_STAGING_DIR"), sourceFilename).toAbsolutePath
+                .toString
 
-          options.path.foreach { dir =>
-            print(s"Setting remote directory to $dir...")
-            sftp.cd(dir)
-            println("done.")
-          }
-          // Change directory to folder where we have permissions to get files
-          options.mode match {
-            case Some(UploadAction) =>
-              // List all of the files in the source folder
-              Paths.get(System.getenv("INPUT1_STAGING_DIR")).toFile.listFiles(new FilenameFilter {
-                override def accept(dir: File, name: String): Boolean = options.pattern.forall(name.matches)
-              }).foreach { file =>
-                print(s"Uploading ${file.getAbsolutePath} -> ${file.getName}...")
-                // Upload the file
-                sftp.put(file.getAbsolutePath, file.getName)
-                println("done.")
-              }
+              print(s"Downloading $sourceFilename -> $destFilename...")
 
-            case Some(DownloadAction) =>
-              // List all of the files in the source folder
-              sftp.ls(options.pattern.getOrElse("*")).asScala.foreach { entry =>
-                val sourceFilename = entry.asInstanceOf[LsEntry].getFilename
-                val destFilename = Paths.get(System.getenv("OUTPUT1_STAGING_DIR"), sourceFilename).toAbsolutePath
-                  .toString
+              // Download the file
+              sftp.get(sourceFilename, destFilename)
 
-                print(s"Downloading $sourceFilename -> $destFilename...")
+              println("done.")
+            }
 
-                // Download the file
-                sftp.get(sourceFilename, destFilename)
-
-                println("done.")
-              }
-
-            case _ =>
-          }
-        } finally {
-          channel.disconnect()
+          case _ =>
         }
       } finally {
-        session.disconnect()
+        channel.disconnect()
       }
-
-      true
-    } catch {
-      case e: JSchException =>
-        System.err.println()
-        System.err.println(e.getMessage)
-        false
+    } finally {
+      session.disconnect()
     }
+
+    true
+  } catch {
+    case e: JSchException =>
+      System.err.println()
+      System.err.println(e.getMessage)
+      false
   }
 
   def main(args: Array[String]): Unit = {
@@ -168,7 +197,7 @@ object SftpActivity {
         .text("Connect to the host using USERNAME\n")
       opt[String]('p', "password").valueName("PASSWORD").optional().action((x, c) => c.copy(password = Option(x)))
         .text("Provide PASSWORD for the USER\n")
-      opt[File]('i', "identity").valueName("IDENTITY").optional().action((x, c) => c.copy(identity = Option(x)))
+      opt[String]('i', "identity").valueName("IDENTITY").optional().action((x, c) => c.copy(identity = Option(x)))
         .text("Use the IDENTITY instead of a PASSWORD\n")
       opt[String]("pattern").valueName("PATTERN").optional().action((x, c) => c.copy(pattern = Option(x)))
         .text("Search for files matching PATTERN to upload/download\n")
@@ -228,14 +257,19 @@ object SftpActivity {
       })
 
       checkConfig(_.identity match {
-        case Some(id) => if (!id.exists()) {
-          failure(s"Identity file $id does not exist.")
-        } else if (!id.isFile) {
-          failure(s"Identity file $id is not a normal file.")
-        } else if (!id.canRead) {
-          failure(s"Identity file $id cannot be read.")
-        } else {
+        case Some(id) => if (id.startsWith("s3")) {
           success
+        } else {
+          val idFile = new File(id)
+          if (!idFile.exists()) {
+            failure(s"Identity file $id does not exist.")
+          } else if (!idFile.isFile) {
+            failure(s"Identity file $id is not a normal file.")
+          } else if (!idFile.canRead) {
+            failure(s"Identity file $id cannot be read.")
+          } else {
+            success
+          }
         }
 
         case _ => success
