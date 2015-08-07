@@ -29,10 +29,8 @@ add_on_exit rm -rf ${WORKING_DIR}
 shift 1
 
 # Download the jar if it doesn't exist locally
-if [ ! -f ${LOCAL_JAR} ]; then
-  echo "Downloading ${REMOTE_JAR} to ${LOCAL_JAR}"
-  aws s3 cp ${REMOTE_JAR} ${LOCAL_JAR}
-fi
+echo "Downloading ${REMOTE_JAR} to ${LOCAL_JAR}"
+aws s3 cp ${REMOTE_JAR} ${LOCAL_JAR}
 
 # Ensure the local jar actually exists
 [ -f ${LOCAL_JAR} ] || exit 3

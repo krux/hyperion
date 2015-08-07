@@ -160,7 +160,7 @@ object SendEmailActivity extends RunnableObject {
       id = PipelineObjectId(SendEmailActivity.getClass),
       runsOn = runsOn,
       scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),
-      jarUri = s"${hc.scriptUri}activities/hyperion-contrib-activity-email-assembly-current.jar",
+      jarUri = s"${hc.scriptUri}activities/hyperion-email-activity-current-assembly.jar",
       mainClass = "com.krux.hyperion.contrib.activity.email.SendEmailActivity",
       host = None,
       port = None,

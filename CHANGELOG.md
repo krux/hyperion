@@ -2,15 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.0.4 - 2015-08-15
+## 2.0.5 - 2016-08-07
 ### Fixed
-- [#138](https://github.com/krux/hyperion/issues/138) - Make parameter key work for
-    starting letter with lower case
+- [#140](https://github.com/krux/hyperion/issues/140) - SendEmailActivity runner isnt being published
 
-## 2.0.3 - 2015-08-15
+## 2.0.4 - 2015-08-05
 ### Fixed
-- [#136](https://github.com/krux/hyperion/issues/136) - Fix a bug that database
-    object is not included
+- [#138](https://github.com/krux/hyperion/issues/138) - Make parameter key work for starting letter with lower case
+
+## 2.0.3 - 2015-08-05
+### Fixed
+- [#136](https://github.com/krux/hyperion/issues/136) - Fix a bug that database object is not included
 
 ## 2.0.2 - 2015-08-03
 ### Added
