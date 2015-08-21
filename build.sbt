@@ -13,16 +13,7 @@ val scalatestArtifact       = "org.scalatest"          %% "scalatest"           
 val mailArtifact            = "com.sun.mail"           %  "mailapi"                   % "1.5.4"
 val smtpArtifact            = "com.sun.mail"           %  "smtp"                      % "1.5.4"
 
-val hyperionVersion = "2.0.12"
-
-// Scaladoc publishing stuff
-site.settings
-
-ghpages.settings
-
-git.remoteRepo := "git@github.com:krux/hyperion.git"
-
-site.includeScaladoc()
+val hyperionVersion = "2.1.0"
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -74,7 +65,7 @@ lazy val commonSettings = Seq(
   version := hyperionVersion,
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq(
-    "2.10.4",
+    "2.10.5",
     "2.11.7"
   ),
   scalacOptions ++= Seq(
@@ -103,8 +94,14 @@ lazy val artifactSettings = commonSettings ++ Seq(
 
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
+  settings(unidocSettings: _*).
   settings(publishSettings: _*).
-  settings(name := "hyperion").
+  settings(site.settings ++ ghpages.settings: _*).
+  settings(
+    name := "hyperion",
+    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+    git.remoteRepo := "git@github.com:krux/hyperion.git"
+  ).
   dependsOn(
     core,
     contribActivityDefinition

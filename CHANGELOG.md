@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.0 - 2015-08-21
+### Fixed
+- [#148](https://github.com/krux/hyperion/issues/148) - Update api doc to use the multi-project
+    build
+- [#158](https://github.com/krux/hyperion/issues/158) - Upgrade to scala 2.10.5
+
 ## 2.0.12 - 2015-08-17
 ### Fixed
 - [#155](https://github.com/krux/hyperion/issues/155) - Workflow breaks when
