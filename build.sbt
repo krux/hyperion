@@ -1,3 +1,6 @@
+val hyperionVersion = "2.1.1"
+val scala210Version = "2.10.5"
+val scala211Version = "2.11.7"
 val awsSdkVersion = "1.9.35"
 
 val nscalaTimeArtifact      = "com.github.nscala-time" %% "nscala-time"               % "1.8.0"
@@ -12,8 +15,6 @@ val awsS3Artifact           = "com.amazonaws"          %  "aws-java-sdk-s3"     
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
 val mailArtifact            = "com.sun.mail"           %  "mailapi"                   % "1.5.4"
 val smtpArtifact            = "com.sun.mail"           %  "smtp"                      % "1.5.4"
-
-val hyperionVersion = "2.1.0"
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -63,10 +64,10 @@ lazy val noPublishSettings = Seq(
 lazy val commonSettings = Seq(
   organization := "com.krux",
   version := hyperionVersion,
-  scalaVersion := "2.11.7",
+  scalaVersion := scala211Version,
   crossScalaVersions := Seq(
-    "2.10.5",
-    "2.11.7"
+    scala210Version,
+    scala211Version
   ),
   scalacOptions ++= Seq(
     "-deprecation",

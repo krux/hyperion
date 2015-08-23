@@ -10,6 +10,8 @@ sealed abstract class WorkflowExpression {
 
     def toPipelineObjectsRec(exp: WorkflowExpression): Set[PipelineActivity] =
       exp match {
+        case WorkflowNoActivityExpression => Set()
+
         case WorkflowActivityExpression(activity) => Set(activity)
 
         case WorkflowArrowExpression(left, right) =>
@@ -37,6 +39,8 @@ sealed abstract class WorkflowExpression {
   def and(right: WorkflowExpression): WorkflowExpression = WorkflowPlusExpression(this, right)
   def +(right: WorkflowExpression): WorkflowExpression = this.and(right)
 }
+
+case object WorkflowNoActivityExpression extends WorkflowExpression
 
 case class WorkflowActivityExpression(activity: PipelineActivity) extends WorkflowExpression
 
