@@ -24,8 +24,8 @@ sealed abstract class WorkflowExpression {
         val rightDeps = toPipelineObjectsRec(right)
         (leftDeps ++ rightDeps).groupBy(_.id)
           .map { case (id, acts) =>
-          acts.reduceLeft((a, b) => a.dependsOn(b.dependsOn: _*))
-        }.toSet
+            acts.reduceLeft((a, b) => a.dependsOn(b.dependsOn: _*))
+          }.toSet
     }
 
     toPipelineObjectsRec(this)
