@@ -8,35 +8,43 @@ sealed abstract class WorkflowExpression {
 
   def toPipelineObjects: Iterable[PipelineActivity] = {
 
-    def toPipelineObjectsRec(exp: WorkflowExpression): Set[PipelineActivity] =
-      exp match {
-        case WorkflowNoActivityExpression => Set()
+    def toPipelineObjectsRec(exp: WorkflowExpression): Set[PipelineActivity] = exp match {
+      case WorkflowNoActivityExpression => Set()
 
-        case WorkflowActivityExpression(activity) => Set(activity)
+      case WorkflowActivityExpression(activity) => Set(activity)
 
-        case WorkflowArrowExpression(left, right) =>
-          val leftDeps = toPipelineObjectsRec(left)
-          val rightDeps = toPipelineObjectsRec(right)
-          // rightDeps now should depend on leftDeps
-          rightDeps.map(_.dependsOn(leftDeps.toSeq.sortBy(_.id): _*)) ++ leftDeps
+      case WorkflowArrowExpression(left, right) =>
+        val leftDeps = toPipelineObjectsRec(left)
+        val rightDeps = toPipelineObjectsRec(right)
+        // rightDeps now should depend on leftDeps
+        rightDeps.map(_.dependsOn(leftDeps.toSeq.sortBy(_.id): _*)) ++ leftDeps
 
-        case WorkflowPlusExpression(left, right) =>
-          val leftDeps = toPipelineObjectsRec(left)
-          val rightDeps = toPipelineObjectsRec(right)
-          (leftDeps ++ rightDeps).groupBy(_.id)
-            .map { case (id, acts) =>
-              acts.reduceLeft((a, b) => a.dependsOn(b.dependsOn: _*))
-            }
-            .toSet
-      }
+      case WorkflowPlusExpression(left, right) =>
+        val leftDeps = toPipelineObjectsRec(left)
+        val rightDeps = toPipelineObjectsRec(right)
+        (leftDeps ++ rightDeps).groupBy(_.id)
+          .map { case (id, acts) =>
+          acts.reduceLeft((a, b) => a.dependsOn(b.dependsOn: _*))
+        }.toSet
+    }
 
     toPipelineObjectsRec(this)
   }
 
-  def andThen(right: WorkflowExpression): WorkflowExpression = WorkflowArrowExpression(this, right)
+  def andThen(right: WorkflowExpression): WorkflowExpression = right match {
+    case WorkflowNoActivityExpression => this
+    case r if this == WorkflowNoActivityExpression => r
+    case r => WorkflowArrowExpression(this, r)
+  }
+
   def ~>(right: WorkflowExpression): WorkflowExpression = this.andThen(right)
 
-  def and(right: WorkflowExpression): WorkflowExpression = WorkflowPlusExpression(this, right)
+  def and(right: WorkflowExpression): WorkflowExpression = right match {
+    case WorkflowNoActivityExpression => this
+    case r if this == WorkflowNoActivityExpression => r
+    case r => WorkflowPlusExpression(this, right)
+  }
+
   def +(right: WorkflowExpression): WorkflowExpression = this.and(right)
 }
 
