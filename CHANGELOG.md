@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.0 - 2015-08-29
+### Added
+- [#164](https://github.com/krux/hyperion/issues/164) - Add support for rdsInstanceId to RdsDatabase
+
 ## 2.3.0 - 2015-08-29
 ### Fixed
 - [#166](https://github.com/krux/hyperion/issues/166) - If the input is empty, split-merge should not create an empty file with headers

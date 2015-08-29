@@ -76,7 +76,10 @@ case class AdpRdsDatabase(
   databaseName: Option[String],
   jdbcProperties: Option[Seq[String]],
   username: String,
-  `*password`: String
+  `*password`: String,
+  rdsInstanceId: String,
+  region: String,
+  jdbcDriverJarUri: Option[String]
 ) extends AdpDatabase {
 
   val `type` = "RdsDatabase"
