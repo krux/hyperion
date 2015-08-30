@@ -86,10 +86,13 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
           println(s"Pipeline created: $pipelineId")
           println("Uploading pipeline definition")
 
+          val pipelineObjects: Seq[PipelineObject] = pipelineDef
+          println(s"Pipeline definition has ${pipelineObjects.length} objects")
+
           val putDefinitionResult = client.putPipelineDefinition(
             new PutPipelineDefinitionRequest()
               .withPipelineId(pipelineId)
-              .withPipelineObjects(pipelineDef: Seq[PipelineObject])
+              .withPipelineObjects(pipelineObjects)
               .withParameterObjects(pipelineDef: Seq[ParameterObject])
           )
 
