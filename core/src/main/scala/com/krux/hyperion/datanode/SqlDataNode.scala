@@ -3,9 +3,8 @@ package com.krux.hyperion.datanode
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlDataNode
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
-import com.krux.hyperion.database.JdbcDatabase
+import com.krux.hyperion.database.Database
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.WorkerGroup
 
 /**
  * @note that the AWS Datapipeline SqlDataNode does not require a JdbcDatabase parameter, but
@@ -15,7 +14,7 @@ import com.krux.hyperion.resource.WorkerGroup
 case class SqlDataNode (
   id: PipelineObjectId,
   tableQuery: TableQuery,
-  database: JdbcDatabase,
+  database: Database,
   preconditions: Seq[Precondition],
   onSuccessAlarms: Seq[SnsAlarm],
   onFailAlarms: Seq[SnsAlarm]
@@ -52,7 +51,7 @@ case class SqlDataNode (
 
 object SqlDataNode {
 
-  def apply(tableQuery: TableQuery, database: JdbcDatabase): SqlDataNode =
+  def apply(tableQuery: TableQuery, database: Database): SqlDataNode =
    new SqlDataNode(
       id = PipelineObjectId(SqlDataNode.getClass),
       tableQuery = tableQuery,

@@ -1,4 +1,4 @@
-val hyperionVersion = "2.3.0"
+val hyperionVersion = "2.4.0"
 val scala210Version = "2.10.5"
 val scala211Version = "2.11.7"
 val awsSdkVersion   = "1.9.35"

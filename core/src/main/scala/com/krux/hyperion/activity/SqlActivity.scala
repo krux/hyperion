@@ -2,12 +2,12 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlActivity
-import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
-import com.krux.hyperion.database.RedshiftDatabase
+import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.database.Database
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
 /**
  * Runs an SQL query on a RedShift cluster. If the query writes out to a table that does not exist,
@@ -17,7 +17,7 @@ case class SqlActivity private (
   id: PipelineObjectId,
   script: Script,
   scriptArgument: Seq[String],
-  database: RedshiftDatabase,
+  database: Database,
   queue: Option[String],
   runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
@@ -76,7 +76,7 @@ case class SqlActivity private (
 }
 
 object SqlActivity extends RunnableObject {
-  def apply(database: RedshiftDatabase, script: Script)(runsOn: Resource[Ec2Resource]): SqlActivity =
+  def apply(database: Database, script: Script)(runsOn: Resource[Ec2Resource]): SqlActivity =
     new SqlActivity(
       id = PipelineObjectId(SqlActivity.getClass),
       script = script,

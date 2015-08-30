@@ -61,13 +61,18 @@ class AdpDatabasesSpec extends WordSpec {
         databaseName = Option("datascience-rds"),
         jdbcProperties = None,
         `*password` = "supersecretpassword",
-        username = "notsosupersecretuser"
+        username = "notsosupersecretuser",
+        rdsInstanceId = "21234",
+        region = "us-west-2",
+        jdbcDriverJarUri = None
       )
       val objShoudBe = ("id" -> "rds") ~
         ("databaseName" -> "datascience-rds") ~
         ("*password" -> "supersecretpassword") ~
         ("username" -> "notsosupersecretuser") ~
-        ("type" -> "RdsDatabase")
+        ("type" -> "RdsDatabase") ~
+        ("rdsInstanceId" -> "21234") ~
+        ("region" -> "us-west-2")
 
       assert(AdpJsonSerializer(testObj) === objShoudBe)
     }
