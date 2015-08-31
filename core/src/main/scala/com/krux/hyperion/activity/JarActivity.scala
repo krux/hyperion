@@ -18,6 +18,7 @@ case class JarActivity private (
   jarUri: S3Uri,
   scriptUri: Option[S3Uri],
   mainClass: Option[MainClass],
+  options: Seq[String],
   arguments: Seq[String],
   stdout: Option[String],
   stderr: Option[String],
@@ -41,6 +42,7 @@ case class JarActivity private (
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
   def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
+  def withOptions(opts: String*) = this.copy(options = options ++ opts)
   def withArguments(args: String*) = this.copy(arguments = arguments ++ args)
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))
   def withStderrTo(err: String) = this.copy(stderr = Option(err))
@@ -65,7 +67,7 @@ case class JarActivity private (
     name = id.toOption,
     command = None,
     scriptUri = scriptUri.map(_.ref),
-    scriptArgument = Option(Seq(jarUri.ref) ++ mainClass.map(_.toString).toSeq ++ arguments),
+    scriptArgument = Option(Seq(jarUri.ref) ++ options ++ mainClass.map(_.toString).toSeq ++ arguments),
     stdout = stdout,
     stderr = stderr,
     stage = stage.map(_.toString),
@@ -95,6 +97,7 @@ object JarActivity extends RunnableObject {
       jarUri = jarUri,
       scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       mainClass = None,
+      options = Seq(),
       arguments = Seq(),
       stdout = None,
       stderr = None,
