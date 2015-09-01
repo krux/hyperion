@@ -1,10 +1,11 @@
-val hyperionVersion = "2.5.0"
+val hyperionVersion = "2.6.0"
 val scala210Version = "2.10.5"
 val scala211Version = "2.11.7"
 val awsSdkVersion   = "1.9.35"
 val mailVersion     = "1.5.4"
 
 val nscalaTimeArtifact      = "com.github.nscala-time" %% "nscala-time"               % "1.8.0"
+val jodaConvertArtifact     = "org.joda"               %  "joda-convert"              % "1.7"    % "provided"
 val json4sJacksonArtifact   = "org.json4s"             %% "json4s-jackson"            % "3.2.10"
 val scoptArtifact           = "com.github.scopt"       %% "scopt"                     % "3.3.0"
 val jschArtifact            = "com.jcraft"             %  "jsch"                      % "0.1.53"
@@ -160,7 +161,8 @@ lazy val contribActivitySftp = (project in file("contrib/activity/sftp")).
     libraryDependencies ++= Seq(
       scoptArtifact,
       awsS3Artifact,
-      jschArtifact
+      jschArtifact,
+      jodaConvertArtifact
     )
   )
 

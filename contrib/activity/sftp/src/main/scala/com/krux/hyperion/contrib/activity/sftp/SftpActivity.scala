@@ -2,7 +2,9 @@ package com.krux.hyperion.contrib.activity.sftp
 
 import java.io._
 import java.nio.file.Paths
-import com.amazonaws.services.s3.{AmazonS3Client, AmazonS3}
+import com.amazonaws.services.s3.AmazonS3Client
+import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 
 import scala.collection.JavaConverters._
 
@@ -31,6 +33,8 @@ object SftpActivity {
     identity: Option[String] = None,
     path: Option[String] = None,
     pattern: Option[String] = None,
+    since: Option[DateTime] = None,
+    until: Option[DateTime] = None,
     skipEmpty: Boolean = false
   )
 
@@ -163,18 +167,27 @@ object SftpActivity {
             }
 
           case Some(DownloadAction) =>
+            val sinceDate = options.since.map(_.getMillis / 1000)
+            val untilDate = options.until.map(_.getMillis / 1000)
+
             // List all of the files in the source folder
             sftp.ls(options.pattern.getOrElse("*")).asScala.foreach { entry =>
-              val sourceFilename = entry.asInstanceOf[LsEntry].getFilename
-              val destFilename = Paths.get(System.getenv("OUTPUT1_STAGING_DIR"), sourceFilename).toAbsolutePath
-                .toString
+              val lsEntry = entry.asInstanceOf[LsEntry]
+              val sourceFilename = lsEntry.getFilename
+              val sourceTimestamp = lsEntry.getAttrs.getMTime
 
-              print(s"Downloading $sourceFilename -> $destFilename...")
+              if (sinceDate.forall(_ < sourceTimestamp) && untilDate.forall(_ > sourceTimestamp)) {
+                val destFilename = Paths.get(System.getenv("OUTPUT1_STAGING_DIR"), sourceFilename)
+                  .toAbsolutePath
+                  .toString
 
-              // Download the file
-              sftp.get(sourceFilename, destFilename)
-
-              println("done.")
+                // Download the file
+                print(s"Downloading $sourceFilename -> $destFilename...")
+                sftp.get(sourceFilename, destFilename)
+                println("done.")
+              } else {
+                println(s"Skipping $sourceFilename because it does not meet the time requirements")
+              }
             }
 
           case _ =>
@@ -195,6 +208,8 @@ object SftpActivity {
   }
 
   def main(args: Array[String]): Unit = {
+    val dateParser = ISODateTimeFormat.dateOptionalTimeParser()
+
     val parser = new OptionParser[Options](s"hyperion-sftp-activity") {
       note("Common options:")
       help("help").text("prints this usage text\n")
@@ -229,6 +244,10 @@ object SftpActivity {
             |  Downloads files matching PATTERN from SOURCE to OUTPUT1_STAGING_DIR.
           """.stripMargin)
         .children(
+          opt[String]("since").valueName("TIMESTAMP").optional().action((x, c) => c.copy(since = Option(dateParser.parseDateTime(x))))
+            .text("Download files modified after TIMESTAMP.\n"),
+          opt[String]("until").valueName("TIMESTAMP").optional().action((x, c) => c.copy(until = Option(dateParser.parseDateTime(x))))
+            .text("Download files modified before TIMESTAMP.\n"),
           arg[String]("SOURCE").optional().action((x, c) => c.copy(path = Option(x)))
             .text("Downloads files from SOURCE.\n")
         )
