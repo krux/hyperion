@@ -33,4 +33,4 @@ mkdir -p ${HYPERION_HOME}
 rm -f ${LOCAL_JAR}
 hadoop fs -get ${JAR_LOCATION} ${LOCAL_JAR}
 
-exec ${EMR_SPARK_HOME}/bin/spark-submit --master yarn-client --driver-memory 9g --conf spark.yarn.user.classpath.first=true --class ${JOB_CLASS} ${LOCAL_JAR} $@
+exec ${EMR_SPARK_HOME}/bin/spark-submit --master yarn-client --driver-memory 9g --class ${JOB_CLASS} ${LOCAL_JAR} $@
