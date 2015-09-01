@@ -197,6 +197,7 @@ lazy val contribActivityNotification = (project in file("contrib/activity/notifi
     name := "hyperion-notification-activity",
     libraryDependencies ++= Seq(
       scoptArtifact,
+      json4sJacksonArtifact,
       awsSnsArtifact,
       awsSqsArtifact,
       smtpArtifact
