@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.6.0 - 2015-09-01
+### Added
+- [177](https://github.com/krux/hyperion/issues/177) - The SFTP activity should support a --since to download files since a date
+
 ## 2.5.0 - 2015-08-31
 ### Added
 - [175](https://github.com/krux/hyperion/issues/175) - Need to be able to pass options to java in addition to arguments to the main class

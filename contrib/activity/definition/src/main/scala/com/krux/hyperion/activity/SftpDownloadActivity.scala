@@ -5,7 +5,7 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.expression.{DateTimeFunctions, DateTimeExp, Duration}
 import com.krux.hyperion.parameter.{Parameter, StringParameter}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
@@ -24,6 +24,8 @@ class SftpDownloadActivity private (
   val password: Option[StringParameter],
   val identity: Option[Parameter[S3Uri]],
   val pattern: Option[String],
+  val sinceDate: Option[DateTimeExp],
+  val untilDate: Option[DateTimeExp],
   val input: Option[String],
   val output: Option[S3DataNode],
   val stdout: Option[String],
@@ -46,6 +48,8 @@ class SftpDownloadActivity private (
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
   def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
 
+  def since(date: DateTimeExp) = this.copy(sinceDate = Option(date))
+  def until(date: DateTimeExp) = this.copy(untilDate = Option(date))
   def withPort(port: Parameter[Int]) = this.copy(port = Option(port))
   def withUsername(username: String) = this.copy(username = Option(username))
   def withPassword(password: StringParameter) = this.copy(password = Option(password))
@@ -78,6 +82,8 @@ class SftpDownloadActivity private (
     password: Option[StringParameter] = password,
     identity: Option[Parameter[S3Uri]] = identity,
     pattern: Option[String] = pattern,
+    sinceDate: Option[DateTimeExp] = sinceDate,
+    untilDate: Option[DateTimeExp] = untilDate,
     input: Option[String] = input,
     output: Option[S3DataNode] = output,
     stdout: Option[String] = stdout,
@@ -94,12 +100,15 @@ class SftpDownloadActivity private (
     retryDelay: Option[Parameter[Duration]] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SftpDownloadActivity(
-    id, scriptUri, jarUri, mainClass, host, port, username, password, identity, pattern, input, output,
-    stdout, stderr, runsOn, dependsOn, preconditions, onFailAlarms, onSuccessAlarms, onLateActionAlarms,
+    id, scriptUri, jarUri, mainClass, host, port, username, password, identity, pattern, sinceDate, untilDate,
+    input, output, stdout, stderr, runsOn, dependsOn, preconditions,
+    onFailAlarms, onSuccessAlarms, onLateActionAlarms,
     attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+
+  private val DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssZZ"
 
   private def arguments: Seq[String] = Seq(
     Option(Seq("download")),
@@ -109,6 +118,8 @@ class SftpDownloadActivity private (
     password.map(p => Seq("--password", p.toString)),
     identity.map(i => Seq("--identity", i.toString)),
     pattern.map(p => Seq("--pattern", p)),
+    sinceDate.map(d => Seq("--since", DateTimeFunctions.format(d, DateTimeFormat).toString)),
+    untilDate.map(d => Seq("--until", DateTimeFunctions.format(d, DateTimeFormat).toString)),
     input.map(in => Seq(in))
   ).flatten.flatten
 
@@ -153,6 +164,8 @@ object SftpDownloadActivity extends RunnableObject {
       password = None,
       identity = None,
       pattern = None,
+      sinceDate = None,
+      untilDate = None,
       input = None,
       output = None,
       stdout = None,
