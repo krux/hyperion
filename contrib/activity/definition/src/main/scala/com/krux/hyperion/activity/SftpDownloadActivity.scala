@@ -108,7 +108,7 @@ class SftpDownloadActivity private (
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  private val DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssZZ"
+  private val DateTimeFormat = "yyyy-MM-dd\\'T\\'HH:mm:ssZZ"
 
   private def arguments: Seq[String] = Seq(
     Option(Seq("download")),
