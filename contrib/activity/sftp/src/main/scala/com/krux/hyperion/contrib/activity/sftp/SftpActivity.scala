@@ -208,8 +208,6 @@ object SftpActivity {
   }
 
   def main(args: Array[String]): Unit = {
-    val dateParser = ISODateTimeFormat.dateOptionalTimeParser()
-
     val parser = new OptionParser[Options](s"hyperion-sftp-activity") {
       note("Common options:")
       help("help").text("prints this usage text\n")
@@ -244,9 +242,9 @@ object SftpActivity {
             |  Downloads files matching PATTERN from SOURCE to OUTPUT1_STAGING_DIR.
           """.stripMargin)
         .children(
-          opt[String]("since").valueName("TIMESTAMP").optional().action((x, c) => c.copy(since = Option(dateParser.parseDateTime(x))))
+          opt[String]("since").valueName("TIMESTAMP").optional().action((x, c) => c.copy(since = Option(new DateTime(x))))
             .text("Download files modified after TIMESTAMP.\n"),
-          opt[String]("until").valueName("TIMESTAMP").optional().action((x, c) => c.copy(until = Option(dateParser.parseDateTime(x))))
+          opt[String]("until").valueName("TIMESTAMP").optional().action((x, c) => c.copy(until = Option(new DateTime(x))))
             .text("Download files modified before TIMESTAMP.\n"),
           arg[String]("SOURCE").optional().action((x, c) => c.copy(path = Option(x)))
             .text("Downloads files from SOURCE.\n")
