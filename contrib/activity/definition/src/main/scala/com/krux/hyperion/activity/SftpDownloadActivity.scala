@@ -5,7 +5,7 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.{DateTimeExp, Duration}
+import com.krux.hyperion.expression.{DateTimeFunctions, DateTimeExp, Duration}
 import com.krux.hyperion.parameter.{Parameter, StringParameter}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
@@ -108,6 +108,8 @@ class SftpDownloadActivity private (
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
+  private val DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssZZ"
+
   private def arguments: Seq[String] = Seq(
     Option(Seq("download")),
     Option(Seq("--host", host)),
@@ -116,8 +118,8 @@ class SftpDownloadActivity private (
     password.map(p => Seq("--password", p.toString)),
     identity.map(i => Seq("--identity", i.toString)),
     pattern.map(p => Seq("--pattern", p)),
-    sinceDate.map(d => Seq("--since", d.toString)),
-    untilDate.map(d => Seq("--until", d.toString)),
+    sinceDate.map(d => Seq("--since", DateTimeFunctions.format(d, DateTimeFormat).toString)),
+    untilDate.map(d => Seq("--until", DateTimeFunctions.format(d, DateTimeFormat).toString)),
     input.map(in => Seq(in))
   ).flatten.flatten
 
