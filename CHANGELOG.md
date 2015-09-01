@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.7.0 - 2015-09-02
+### Added
+- [#172](https://github.com/krux/hyperion/issues/172) - Create activity to send generic SNS message
+- [#173](https://github.com/krux/hyperion/issues/173) - Create activity to send generic SQS message
+- [#174](https://github.com/krux/hyperion/issues/174) - Create activity to send Flowdock notifications
+
 ## 2.6.1 - 2015-09-01
 ### Fixed
 - [179](https://github.com/krux/hyperion/issues/179) - Single quotes in SFTP Activitys date format breaks DataPipeline
