@@ -54,7 +54,7 @@ object ShellCommandPrecondition {
     new ShellCommandPrecondition(
       id = PipelineObjectId(ShellCommandPrecondition.getClass),
       script = script,
-      scriptArgument = Seq(),
+      scriptArgument = Seq.empty,
       stdout = None,
       stderr = None,
       role = hc.role,

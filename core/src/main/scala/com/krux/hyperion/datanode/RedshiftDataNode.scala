@@ -58,9 +58,9 @@ object RedshiftDataNode {
       tableName = tableName,
       createTableSql = None,
       schemaName = None,
-      primaryKeys = Seq(),
-      preconditions = Seq(),
-      onSuccessAlarms = Seq(),
-      onFailAlarms = Seq()
+      primaryKeys = Seq.empty,
+      preconditions = Seq.empty,
+      onSuccessAlarms = Seq.empty,
+      onFailAlarms = Seq.empty
     )
 }

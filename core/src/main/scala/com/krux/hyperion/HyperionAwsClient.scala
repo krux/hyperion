@@ -37,7 +37,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
 
     def getPipelineId: Option[String] = {
       @tailrec
-      def queryPipelines(ids: List[String] = List(), request: ListPipelinesRequest = new ListPipelinesRequest()): List[String] = {
+      def queryPipelines(ids: List[String] = List.empty, request: ListPipelinesRequest = new ListPipelinesRequest()): List[String] = {
         val response = client.listPipelines(request)
 
         val theseIds: List[String] = response.getPipelineIdList.collect({
@@ -59,7 +59,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
       }
     }
 
-    def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map()): Option[String] = {
+    def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map.empty): Option[String] = {
       println(s"Creating pipeline $pipelineName")
 
       getPipelineId match {

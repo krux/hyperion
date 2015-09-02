@@ -35,6 +35,6 @@ case class DynamoDBExportDataFormat private (
 object DynamoDBExportDataFormat {
   def apply() = new DynamoDBExportDataFormat(
     id = PipelineObjectId(DynamoDBExportDataFormat.getClass),
-    columns = Seq()
+    columns = Seq.empty
   )
 }

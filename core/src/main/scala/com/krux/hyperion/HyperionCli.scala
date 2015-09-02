@@ -14,7 +14,7 @@ trait HyperionCli { this: DataPipelineDef =>
     customName: Option[String] = None,
     region: Option[String] = None,
     roleArn: Option[String] = None,
-    tags: Map[String, Option[String]] = Map()
+    tags: Map[String, Option[String]] = Map.empty
   )
 
   def main(args: Array[String]): Unit = {

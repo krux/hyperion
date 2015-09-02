@@ -8,7 +8,7 @@ import com.krux.hyperion.common.PipelineObjectId
  */
 case class TsvDataFormat private (
   id: PipelineObjectId,
-  columns: Seq[String] = Seq(),
+  columns: Seq[String] = Seq.empty,
   escapeChar: Option[String] = None
 ) extends DataFormat {
 

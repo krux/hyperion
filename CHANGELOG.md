@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.7.3 - 2015-09-03
+### Changed
+- [#186](https://github.com/krux/hyperion/issues/186) - Change collection constructors to use `.empty`
+
 ## 2.7.2 - 2015-09-03
 ### Fixed
 - [#184](https://github.com/krux/hyperion/issues/184) - Properties for new notification activities are not properly exposed in the Activity definition

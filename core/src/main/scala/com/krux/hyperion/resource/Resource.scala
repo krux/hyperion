@@ -11,7 +11,7 @@ sealed trait Resource[T] {
 sealed class WorkerGroupResource[T](wg: WorkerGroup) extends Resource[T] {
   def asWorkerGroup: Option[WorkerGroup] = Option(wg)
   def asManagedResource: Option[T] = None
-  def toSeq: Seq[T] = Seq()
+  def toSeq: Seq[T] = Seq.empty
 }
 
 sealed class ManagedResource[T](resource: T) extends Resource[T] {

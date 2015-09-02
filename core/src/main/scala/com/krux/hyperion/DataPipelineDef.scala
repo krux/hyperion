@@ -28,9 +28,9 @@ trait DataPipelineDef extends HyperionCli with S3UriHelper {
 
   def defaultObject = DefaultObject(schedule)
 
-  def tags: Map[String, Option[String]] = Map()
+  def tags: Map[String, Option[String]] = Map.empty
 
-  def parameters: Iterable[Parameter[_]] = Seq()
+  def parameters: Iterable[Parameter[_]] = Seq.empty
 
   def objects: Iterable[PipelineObject] = workflow
     .toPipelineObjects

@@ -31,7 +31,7 @@ case class CsvDataFormat private (
 object CsvDataFormat {
   def apply() = new CsvDataFormat(
     id = PipelineObjectId(CsvDataFormat.getClass),
-    columns = Seq(),
+    columns = Seq.empty,
     escapeChar = None
   )
 }

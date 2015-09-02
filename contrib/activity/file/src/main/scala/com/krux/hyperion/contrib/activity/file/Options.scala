@@ -14,7 +14,7 @@ case class Options(
   compressed: Boolean = false,
   link: Boolean = false,
   skipFirstLine: Boolean = false,
-  inputs: Seq[File] = Seq(),
-  outputDirectory: Seq[File] = Seq(),
+  inputs: Seq[File] = Seq.empty,
+  outputDirectory: Seq[File] = Seq.empty,
   temporaryDirectory: Option[File] = None
 )

@@ -56,9 +56,9 @@ object SqlDataNode {
       id = PipelineObjectId(SqlDataNode.getClass),
       tableQuery = tableQuery,
       database = database,
-      preconditions = Seq(),
-      onSuccessAlarms = Seq(),
-      onFailAlarms = Seq()
+      preconditions = Seq.empty,
+      onSuccessAlarms = Seq.empty,
+      onFailAlarms = Seq.empty
     )
 
 }

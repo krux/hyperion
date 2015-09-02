@@ -33,6 +33,6 @@ object RegExDataFormat {
     id = PipelineObjectId(RegExDataFormat.getClass),
     inputRegEx = inputRegEx,
     outputFormat = outputFormat,
-    columns = Seq()
+    columns = Seq.empty
   )
 }

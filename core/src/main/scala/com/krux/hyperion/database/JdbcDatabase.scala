@@ -22,7 +22,7 @@ trait JdbcDatabase extends Database {
 
   def jdbcDriverClass: String
 
-  def jdbcProperties: Seq[String] = Seq()
+  def jdbcProperties: Seq[String] = Seq.empty
 
   lazy val serialize = AdpJdbcDatabase(
     id = id,

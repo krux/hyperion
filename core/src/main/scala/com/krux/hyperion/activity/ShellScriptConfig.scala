@@ -32,7 +32,7 @@ object ShellScriptConfig {
     new ShellScriptConfig(
       id = PipelineObjectId(ShellScriptConfig.getClass),
       scriptUri = scriptUri,
-      scriptArguments = Seq()
+      scriptArguments = Seq.empty
     )
 }
 

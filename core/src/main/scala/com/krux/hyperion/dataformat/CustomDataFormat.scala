@@ -35,7 +35,7 @@ object CustomDataFormat {
 
   def apply() = new CustomDataFormat(
     id = PipelineObjectId(CustomDataFormat.getClass),
-    columns = Seq(),
+    columns = Seq.empty,
     columnSeparator = ",",
     recordSeparator = "\n"
   )

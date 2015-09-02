@@ -15,7 +15,7 @@ trait RdsDatabase extends Database {
 
   def jdbcDriverJarUri: Option[String] = None
 
-  def jdbcProperties: Seq[String] = Seq()
+  def jdbcProperties: Seq[String] = Seq.empty
 
   def rdsInstanceId: String
 

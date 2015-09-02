@@ -37,7 +37,7 @@ object DoubleParameter {
       id = id,
       value = value,
       description = None,
-      allowedValues = Seq(),
+      allowedValues = Seq.empty,
       isEncrypted = false,
       isOptional = true
     )

@@ -29,6 +29,6 @@ case class DynamoDBDataFormat private (
 object DynamoDBDataFormat {
   def apply() = new DynamoDBDataFormat(
     id = PipelineObjectId(DynamoDBDataFormat.getClass),
-    columns = Seq()
+    columns = Seq.empty
   )
 }

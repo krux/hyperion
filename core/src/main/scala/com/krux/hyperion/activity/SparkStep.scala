@@ -27,7 +27,7 @@ object SparkStep {
   def apply(jarUri: Parameter[S3Uri])(implicit hc: HyperionContext): SparkStep = SparkStep(
     jarUri = jarUri,
     mainClass = None,
-    args = Seq(),
+    args = Seq.empty,
     scriptRunner = Option("s3://elasticmapreduce/libs/script-runner/script-runner.jar"),
     jobRunner = Option(s"${hc.scriptUri}run-spark-step.sh")
   )

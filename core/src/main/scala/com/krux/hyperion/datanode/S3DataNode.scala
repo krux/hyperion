@@ -91,9 +91,9 @@ object S3File {
       manifestFilePath = None,
       isCompressed = false,
       isEncrypted = true,
-      preconditions = Seq(),
-      onSuccessAlarms = Seq(),
-      onFailAlarms = Seq()
+      preconditions = Seq.empty,
+      onSuccessAlarms = Seq.empty,
+      onFailAlarms = Seq.empty
     )
 }
 
@@ -151,8 +151,8 @@ object S3Folder {
       manifestFilePath = None,
       isCompressed = false,
       isEncrypted = true,
-      preconditions = Seq(),
-      onSuccessAlarms = Seq(),
-      onFailAlarms = Seq()
+      preconditions = Seq.empty,
+      onSuccessAlarms = Seq.empty,
+      onFailAlarms = Seq.empty
     )
 }

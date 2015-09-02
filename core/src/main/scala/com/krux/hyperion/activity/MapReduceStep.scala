@@ -21,7 +21,7 @@ object MapReduceStep {
   def apply(jarUri: String): MapReduceStep = MapReduceStep(
     jarUri = jarUri,
     mainClass = None,
-    args = Seq()
+    args = Seq.empty
   )
 
 }

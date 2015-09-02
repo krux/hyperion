@@ -93,7 +93,7 @@ object Ec2Resource {
     subnetId = hc.ec2SubnetId,
     associatePublicIpAddress = false,
     securityGroups = Seq(hc.ec2SecurityGroup),
-    securityGroupIds = Seq(),
+    securityGroupIds = Seq.empty,
     spotBidPrice = None,
     useOnDemandOnLastAttempt = None,
     initTimeout = None,
