@@ -26,6 +26,7 @@ class SplitMergeFilesActivity private (
   val bytesPerFile: Option[String],
   val bufferSize: Option[String],
   val pattern: Option[String],
+  val markSuccessfulJobs: Boolean,
   val input: Seq[S3DataNode],
   val output: Seq[S3DataNode],
   val stdout: Option[String],
@@ -59,6 +60,7 @@ class SplitMergeFilesActivity private (
     bytesPerFile: Option[String] = bytesPerFile,
     bufferSize: Option[String] = bufferSize,
     pattern: Option[String] = pattern,
+    markSuccessfulJobs: Boolean = markSuccessfulJobs,
     input: Seq[S3DataNode] = input,
     output: Seq[S3DataNode] = output,
     stdout: Option[String] = stdout,
@@ -78,7 +80,7 @@ class SplitMergeFilesActivity private (
     scriptUri, jarUri, mainClass,
     filename, header, compressedOutput, skipFirstInputLine, linkOutputs,
     suffixLength, numberOfFiles, linesPerFile, bytesPerFile, bufferSize,
-    pattern, input, output, stdout, stderr, runsOn, dependsOn,
+    pattern, markSuccessfulJobs, input, output, stdout, stderr, runsOn, dependsOn,
     preconditions, onFailAlarms, onSuccessAlarms, onLateActionAlarms,
     attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
@@ -96,6 +98,7 @@ class SplitMergeFilesActivity private (
   def withNumberOfBytesPerFile(bytesPerFile: String) = this.copy(bytesPerFile = Option(bytesPerFile))
   def withBufferSize(bufferSize: String) = this.copy(bufferSize = Option(bufferSize))
   def withInputPattern(pattern: String) = this.copy(pattern = Option(pattern))
+  def markingSuccessfulJobs() = this.copy(markSuccessfulJobs = true)
 
   def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs)
   def withOutput(outputs: S3DataNode*) = this.copy(output = output ++ outputs)
@@ -120,6 +123,7 @@ class SplitMergeFilesActivity private (
     if (compressedOutput) Option(Seq("-z")) else None,
     if (skipFirstInputLine) Option(Seq("--skip-first-line")) else None,
     if (linkOutputs) Option(Seq("--link")) else None,
+    if (markSuccessfulJobs) Option(Seq("--mark-successful-jobs")) else None,
     header.map(h => Seq("--header", h)),
     suffixLength.map(s => Seq("--suffix-length", s.toString)),
     numberOfFiles.map(n => Seq("-n", n.toString)),
@@ -176,6 +180,7 @@ object SplitMergeFilesActivity extends RunnableObject {
       bytesPerFile = None,
       bufferSize = None,
       pattern = None,
+      markSuccessfulJobs = false,
       input = Seq.empty,
       output = Seq.empty,
       stdout = None,

@@ -11,7 +11,7 @@ case class FileRepartitioner(options: Options) {
     case Seq(one) => one
 
     case files =>
-      val destination: File = File.createTempFile("merge-", ".tmp", options.temporaryDirectory.get)
+      val destination: File = File.createTempFile("merge-", if (options.compressed) ".gz" else ".tmp", options.temporaryDirectory.get)
       destination.deleteOnExit()
 
       // If we are simply merging files then the merge step needs to add the header.
@@ -81,6 +81,11 @@ case class FileRepartitioner(options: Options) {
       } else {
         Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING)
       }
+    }
+
+    // Mark a successful job
+    if (options.markSuccessfulJobs) {
+      Paths.get(System.getenv("OUTPUT1_STAGING_DIR"), "_SUCCESS").toFile.createNewFile()
     }
 
     true

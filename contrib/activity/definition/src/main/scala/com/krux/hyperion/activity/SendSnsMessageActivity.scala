@@ -98,7 +98,7 @@ object SendSnsMessageActivity extends RunnableObject {
       id = PipelineObjectId(SendSnsMessageActivity.getClass),
       scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = s"${hc.scriptUri}activities/hyperion-notification-activity-current-assembly.jar",
-      mainClass = "com.krux.hyperion.contrib.activity.notification.SendSnsMessageActivity",
+      mainClass = "com.krux.hyperion.contrib.activity.notification.SendSnsMessage",
       topicArn = topicArn,
       message = message,
       subject = None,

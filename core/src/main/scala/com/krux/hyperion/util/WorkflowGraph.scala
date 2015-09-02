@@ -97,16 +97,16 @@ class WorkflowGraph private (
 
   @tailrec
   final def toActivities: Iterable[PipelineActivity] = {
-    assert(roots.size != 0)
-    assert(leaves.size != 0)
+    assert(roots.nonEmpty)
+    assert(leaves.nonEmpty)
 
-    if (flow.size == 0) {
+    if (flow.isEmpty) {
       activities.values
     } else {
       // get the immediate dependencies from the root node
       val rootDependents: Set[(PipelineObjectId, PipelineObjectId)] =
         for {
-          act <- (roots -- isolates)
+          act <- roots -- isolates
           dependent <- flow(act)
         } yield (dependent, act)
 

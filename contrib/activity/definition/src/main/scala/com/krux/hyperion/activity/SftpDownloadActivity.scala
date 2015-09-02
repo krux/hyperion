@@ -26,6 +26,8 @@ class SftpDownloadActivity private (
   val pattern: Option[String],
   val sinceDate: Option[DateTimeExp],
   val untilDate: Option[DateTimeExp],
+  val skipEmpty: Boolean,
+  val markSuccessfulJobs: Boolean,
   val input: Option[String],
   val output: Option[S3DataNode],
   val stdout: Option[String],
@@ -55,6 +57,8 @@ class SftpDownloadActivity private (
   def withPassword(password: StringParameter) = this.copy(password = Option(password))
   def withIdentity(identity: Parameter[S3Uri]) = this.copy(identity = Option(identity))
   def withPattern(pattern: String) = this.copy(pattern = Option(pattern))
+  def skippingEmpty() = this.copy(skipEmpty = true)
+  def markingSuccessfulJobs() = this.copy(markSuccessfulJobs = true)
   def withInput(input: String) = this.copy(input = Option(input))
   def withOutput(output: S3DataNode) = this.copy(output = Option(output))
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))
@@ -84,6 +88,8 @@ class SftpDownloadActivity private (
     pattern: Option[String] = pattern,
     sinceDate: Option[DateTimeExp] = sinceDate,
     untilDate: Option[DateTimeExp] = untilDate,
+    skipEmpty: Boolean = skipEmpty,
+    markSuccessfulJobs: Boolean = markSuccessfulJobs,
     input: Option[String] = input,
     output: Option[S3DataNode] = output,
     stdout: Option[String] = stdout,
@@ -101,7 +107,7 @@ class SftpDownloadActivity private (
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SftpDownloadActivity(
     id, scriptUri, jarUri, mainClass, host, port, username, password, identity, pattern, sinceDate, untilDate,
-    input, output, stdout, stderr, runsOn, dependsOn, preconditions,
+    skipEmpty, markSuccessfulJobs, input, output, stdout, stderr, runsOn, dependsOn, preconditions,
     onFailAlarms, onSuccessAlarms, onLateActionAlarms,
     attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
@@ -120,6 +126,8 @@ class SftpDownloadActivity private (
     pattern.map(p => Seq("--pattern", p)),
     sinceDate.map(d => Seq("--since", DateTimeFunctions.format(d, DateTimeFormat).toString)),
     untilDate.map(d => Seq("--until", DateTimeFunctions.format(d, DateTimeFormat).toString)),
+    if (skipEmpty) Option(Seq("--skip-empty")) else None,
+    if (markSuccessfulJobs) Option(Seq("--mark-successful-jobs")) else None,
     input.map(in => Seq(in))
   ).flatten.flatten
 
@@ -166,6 +174,8 @@ object SftpDownloadActivity extends RunnableObject {
       pattern = None,
       sinceDate = None,
       untilDate = None,
+      skipEmpty = false,
+      markSuccessfulJobs = false,
       input = None,
       output = None,
       stdout = None,

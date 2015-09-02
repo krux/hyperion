@@ -119,6 +119,8 @@ object RepartitionFile {
         .text("assume the input files have a header in the first line and skip it")
       opt[Unit]('L', "link").optional().action((_, c) => c.copy(link = true))
         .text("link the output files instead of copying into position")
+      opt[Unit]("mark-successful-jobs").optional().action((_, c) => c.copy(markSuccessfulJobs = true))
+        .text("Creates a _SUCCESS file to mark the successful completion of the job")
       opt[String]('H', "header").valueName("HEAD").optional().action((x, c) => c.copy(header = Option(s"$x\n")))
         .text("prepend header HEAD to each file")
       opt[Int]('a', "suffix-length").valueName("N").optional().action((x, c) => c.copy(suffixLength = x))
@@ -142,8 +144,8 @@ object RepartitionFile {
       arg[String]("NAME").required().action((x, c) => c.copy(output = x))
         .text("use NAME for the output filename.  The actual files will have suffixes of suffix-length")
 
-      note(s"\nIf PATH is not specified, then directories specified by $${INPUT1_STAGING_DIR}..$${INPUT10_STAGING_DIR} are searched for files.\n")
-      note(s"If --directory PATH is not specified, then directories specified by $${OUTPUT1_STAGING_DIR}..$${OUTPUT10_STAGING_DIR} are used.")
+      note(s"\nIf --input PATH is not specified, then directories specified by $${INPUT1_STAGING_DIR}..$${INPUT10_STAGING_DIR} are searched for files.\n")
+      note(s"If --output PATH is not specified, then directories specified by $${OUTPUT1_STAGING_DIR}..$${OUTPUT10_STAGING_DIR} are used.")
       note("If those directories are not specified, then the current directory is used.")
 
       checkConfig { c =>

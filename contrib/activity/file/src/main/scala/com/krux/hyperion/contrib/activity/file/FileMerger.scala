@@ -22,8 +22,7 @@ case class FileMerger(destination: File, skipFirstLine: Boolean = false, headers
 
   private def doSkipFirstLine(input: InputStream): InputStream = {
     while (skipFirstLine && (input.read() match {
-      case -1 => false
-      case '\n' => false
+      case -1 | '\n' => false
       case _ => true
     })) {}
 
@@ -43,15 +42,18 @@ case class FileMerger(destination: File, skipFirstLine: Boolean = false, headers
     } else if (source.length() > 0) {
       print(s"Merging ${source.getAbsolutePath}...")
 
-      headers.map(_.getBytes).foreach(output.write)
-
       val input = new BufferedInputStream({
         val s = new FileInputStream(source)
         if (source.getName.endsWith(".gz")) new GZIPInputStream(s) else s
       })
 
+      // If the input doesn't have at least 2 bytes available then it is most likely empty
       try {
-        IOUtils.copy(doSkipFirstLine(input), output)
+        if (input.available() > 1) {
+          headers.map(_.getBytes).foreach(output.write)
+
+          IOUtils.copy(doSkipFirstLine(input), output)
+        }
       } finally {
         IOUtils.closeQuietly(input)
         println("done")

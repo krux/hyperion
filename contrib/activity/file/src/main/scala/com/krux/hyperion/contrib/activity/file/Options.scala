@@ -14,6 +14,7 @@ case class Options(
   compressed: Boolean = false,
   link: Boolean = false,
   skipFirstLine: Boolean = false,
+  markSuccessfulJobs: Boolean = false,
   inputs: Seq[File] = Seq.empty,
   outputDirectory: Seq[File] = Seq.empty,
   temporaryDirectory: Option[File] = None

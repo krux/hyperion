@@ -92,7 +92,7 @@ object SendFlowdockMessageActivity extends RunnableObject {
       id = PipelineObjectId(SendFlowdockMessageActivity.getClass),
       scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = s"${hc.scriptUri}activities/hyperion-notification-activity-current-assembly.jar",
-      mainClass = "com.krux.hyperion.contrib.activity.notification.SendFlowdockMessageActivity",
+      mainClass = "com.krux.hyperion.contrib.activity.notification.SendFlowdockMessage",
       flowApiToken = flowApiToken,
       message = message,
       user = "hyperion",

@@ -1,17 +1,14 @@
 package com.krux.hyperion.contrib.activity.sftp
 
 import java.io._
-import java.nio.file.Paths
-import com.amazonaws.services.s3.AmazonS3Client
-import org.joda.time.DateTime
-import org.joda.time.format.ISODateTimeFormat
-
+import java.nio.file.{Path, Paths}
 import scala.collection.JavaConverters._
+import scala.util.{Failure, Success, Try}
 
+import org.joda.time.DateTime
+import com.amazonaws.services.s3.AmazonS3Client
 import com.jcraft.jsch.{JSchException, UserInfo, ChannelSftp, JSch}
 import scopt.OptionParser
-
-import scala.util.{Failure, Success, Try}
 
 object SftpActivity {
   sealed trait Action
@@ -35,7 +32,8 @@ object SftpActivity {
     pattern: Option[String] = None,
     since: Option[DateTime] = None,
     until: Option[DateTime] = None,
-    skipEmpty: Boolean = false
+    skipEmpty: Boolean = false,
+    markSuccessfulJobs: Boolean = false
   )
 
   private def fileToByteArray(file: File): Array[Byte] = {
@@ -62,6 +60,14 @@ object SftpActivity {
     os.flush()
     os.close()
     os.toByteArray
+  }
+
+  private def isFileReallyEmpty(filename: String, length: Long): Boolean = if (filename.endsWith(".gz")) {
+    // The maximum empty compressed GZ file seems to be around 25 bytes
+    // We do this to avoid actually opening a stream on the file and sampling
+    length < 25
+  } else {
+    length == 0
   }
 
   def apply(options: Options): Boolean = try {
@@ -152,9 +158,9 @@ object SftpActivity {
           case Some(UploadAction) =>
             // List all of the files in the source folder
             Paths.get(System.getenv("INPUT1_STAGING_DIR")).toFile.listFiles(new FilenameFilter {
-              override def accept(dir: File, name: String): Boolean = options.pattern.forall(name.matches)
+              override def accept(dir: File, name: String): Boolean = name != "_SUCCESS" && options.pattern.forall(name.matches)
             }).foreach { file =>
-              if (options.skipEmpty && file.length() == 0) {
+              if (options.skipEmpty && isFileReallyEmpty(file.getName, file.length())) {
                 println(s"Skipping ${file.getAbsolutePath} because it is empty.")
               } else {
                 print(s"Uploading ${file.getAbsolutePath} -> ${file.getName}...")
@@ -164,6 +170,13 @@ object SftpActivity {
 
                 println("done.")
               }
+            }
+
+            // Upload an empty _SUCCESS file if we are to mark successful jobs
+            if (options.markSuccessfulJobs) {
+              val stream = sftp.put("_SUCCESS")
+              stream.flush()
+              stream.close()
             }
 
           case Some(DownloadAction) =>
@@ -176,7 +189,9 @@ object SftpActivity {
               val sourceFilename = lsEntry.getFilename
               val sourceTimestamp = lsEntry.getAttrs.getMTime
 
-              if (sinceDate.forall(_ < sourceTimestamp) && untilDate.forall(_ > sourceTimestamp)) {
+              if (options.skipEmpty && isFileReallyEmpty(sourceFilename, lsEntry.getAttrs.getSize)) {
+                println(s"Skipping $sourceFilename because it is empty")
+              } else if (sinceDate.forall(_ < sourceTimestamp) && untilDate.forall(_ > sourceTimestamp)) {
                 val destFilename = Paths.get(System.getenv("OUTPUT1_STAGING_DIR"), sourceFilename)
                   .toAbsolutePath
                   .toString
@@ -188,6 +203,11 @@ object SftpActivity {
               } else {
                 println(s"Skipping $sourceFilename because it does not meet the time requirements")
               }
+            }
+
+            // Mark a successful job
+            if (options.markSuccessfulJobs) {
+              Paths.get(System.getenv("OUTPUT1_STAGING_DIR"), "_SUCCESS").toFile.createNewFile()
             }
 
           case _ =>
@@ -223,6 +243,7 @@ object SftpActivity {
       opt[String]('i', "identity").valueName("IDENTITY").optional().action((x, c) => c.copy(identity = Option(x)))
         .text("Use the IDENTITY instead of a PASSWORD\n")
       opt[Unit]("skip-empty").optional().action((_, c) => c.copy(skipEmpty = true))
+      opt[Unit]("mark-successful-jobs").optional().action((_, c) => c.copy(markSuccessfulJobs = true))
       opt[String]("pattern").valueName("PATTERN").optional().action((x, c) => c.copy(pattern = Option(x)))
         .text("Search for files matching PATTERN to upload/download\n")
 

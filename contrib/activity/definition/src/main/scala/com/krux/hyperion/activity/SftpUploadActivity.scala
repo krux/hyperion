@@ -24,6 +24,8 @@ class SftpUploadActivity private (
   val password: Option[StringParameter],
   val identity: Option[Parameter[S3Uri]],
   val pattern: Option[String],
+  val skipEmpty: Boolean,
+  val markSuccessfulJobs: Boolean,
   val input: Option[S3DataNode],
   val output: Option[String],
   val stdout: Option[String],
@@ -38,8 +40,7 @@ class SftpUploadActivity private (
   val lateAfterTimeout: Option[Parameter[Duration]],
   val maximumRetries: Option[Parameter[Int]],
   val retryDelay: Option[Parameter[Duration]],
-  val failureAndRerunMode: Option[FailureAndRerunMode],
-  val skipEmpty: Boolean
+  val failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends SftpActivity {
 
   def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
@@ -50,11 +51,12 @@ class SftpUploadActivity private (
   def withPassword(password: StringParameter) = this.copy(password = Option(password))
   def withIdentity(identity: Parameter[S3Uri]) = this.copy(identity = Option(identity))
   def withPattern(pattern: String) = this.copy(pattern = Option(pattern))
+  def skippingEmpty() = this.copy(skipEmpty = true)
+  def markingSuccessfulJobs() = this.copy(markSuccessfulJobs = true)
   def withInput(input: S3DataNode) = this.copy(input = Option(input))
   def withOutput(output: String) = this.copy(output = Option(output))
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))
   def withStderrTo(err: String) = this.copy(stderr = Option(err))
-  def skippingEmpty() = this.copy(skipEmpty = true)
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
@@ -78,6 +80,8 @@ class SftpUploadActivity private (
     password: Option[StringParameter] = password,
     identity: Option[Parameter[S3Uri]] = identity,
     pattern: Option[String] = pattern,
+    skipEmpty: Boolean = skipEmpty,
+    markSuccessfulJobs: Boolean = markSuccessfulJobs,
     input: Option[S3DataNode] = input,
     output: Option[String] = output,
     stdout: Option[String] = stdout,
@@ -92,12 +96,12 @@ class SftpUploadActivity private (
     lateAfterTimeout: Option[Parameter[Duration]] = lateAfterTimeout,
     maximumRetries: Option[Parameter[Int]] = maximumRetries,
     retryDelay: Option[Parameter[Duration]] = retryDelay,
-    failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode,
-    skipEmpty: Boolean = skipEmpty
+    failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SftpUploadActivity(
-    id, scriptUri, jarUri, mainClass, host, port, username, password, identity, pattern, input, output, stdout, stderr,
-    runsOn, dependsOn, preconditions, onFailAlarms, onSuccessAlarms, onLateActionAlarms, attemptTimeout,
-    lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode, skipEmpty
+    id, scriptUri, jarUri, mainClass, host, port, username, password, identity, pattern, skipEmpty, markSuccessfulJobs,
+    input, output, stdout, stderr, runsOn, dependsOn, preconditions,
+    onFailAlarms, onSuccessAlarms, onLateActionAlarms, attemptTimeout,
+    lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode
   )
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
@@ -111,6 +115,7 @@ class SftpUploadActivity private (
     identity.map(i => Seq("--identity", i.toString)),
     pattern.map(p => Seq("--pattern", p)),
     if (skipEmpty) Option(Seq("--skip-empty")) else None,
+    if (markSuccessfulJobs) Option(Seq("--mark-successful-jobs")) else None,
     output.map(out => Seq(out))
   ).flatten.flatten
 
@@ -155,6 +160,8 @@ object SftpUploadActivity extends RunnableObject {
       password = None,
       identity = None,
       pattern = None,
+      skipEmpty = false,
+      markSuccessfulJobs = false,
       input = None,
       output = None,
       stdout = None,
@@ -169,8 +176,7 @@ object SftpUploadActivity extends RunnableObject {
       lateAfterTimeout = None,
       maximumRetries = None,
       retryDelay = None,
-      failureAndRerunMode = None,
-      skipEmpty = false
+      failureAndRerunMode = None
     )
 
 }

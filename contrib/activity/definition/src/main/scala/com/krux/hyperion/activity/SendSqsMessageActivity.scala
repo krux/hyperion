@@ -96,7 +96,7 @@ object SendSqsMessageActivity extends RunnableObject {
       id = PipelineObjectId(SendSqsMessageActivity.getClass),
       scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = s"${hc.scriptUri}activities/hyperion-notification-activity-current-assembly.jar",
-      mainClass = "com.krux.hyperion.contrib.activity.notification.SendSqsMessageActivity",
+      mainClass = "com.krux.hyperion.contrib.activity.notification.SendSqsMessage",
       queue = queue,
       message = message,
       region = None,
