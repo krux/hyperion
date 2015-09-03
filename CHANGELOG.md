@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.8.2 - 2015-09-03
+### Fixed
+- [#160](https://github.com/krux/hyperion/issues/160) - Better Sns alarm format support
+
 ## 2.8.1 - 2015-09-03
 ### Fixed
 - [#195](https://github.com/krux/hyperion/issues/195) - RepartitionFile emitting empty files

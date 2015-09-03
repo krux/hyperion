@@ -8,7 +8,7 @@ import scala.language.implicitConversions
  * Expression. Expressions are delimited by: "#{" and "}" and the contents of the braces are
  * evaluated by AWS Data Pipeline.
  */
-sealed trait Expression {
+trait Expression {
 
   def content: String
 
