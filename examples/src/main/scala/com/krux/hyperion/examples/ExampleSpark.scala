@@ -39,7 +39,9 @@ object ExampleSpark extends DataPipelineDef {
     .withRole("DataPipelineDefaultResourceRole")
 
   // Resources
-  val sparkCluster = SparkCluster().withTaskInstanceCount(1)
+  val sparkCluster = SparkCluster()
+    .withTaskInstanceCount(1)
+    .withTaskInstanceType(instanceType)
 
   // First activity
   val filterStep = SparkStep(jar)

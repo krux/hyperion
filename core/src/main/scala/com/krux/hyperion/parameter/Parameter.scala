@@ -1,9 +1,8 @@
 package com.krux.hyperion.parameter
 
-import com.krux.hyperion.expression.Duration
-
 import scala.language.implicitConversions
 
+import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.aws.AdpParameter
 
@@ -41,5 +40,7 @@ object Parameter {
   implicit def s3UriToParameter(uri: S3Uri): Parameter[S3Uri] = DirectValueParameter[S3Uri](uri)
   implicit def stringToS3Parameter(s: String): Parameter[S3Uri] = DirectValueParameter[S3Uri](S3Uri(s))
   implicit def stringToParameter(s: String): Parameter[String] = DirectValueParameter[String](s)
+
+  implicit def parameterToString(p: Parameter[_]): String = p.toString
 
 }

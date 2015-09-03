@@ -1,5 +1,6 @@
 package com.krux.hyperion.parameter
 
+import scala.language.implicitConversions
 import com.krux.hyperion.aws.AdpParameter
 
 case class StringParameter private (

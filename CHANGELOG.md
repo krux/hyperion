@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.8.0 - 2015-09-03
+### Added
+- [#192](https://github.com/krux/hyperion/issues/192) - StringParameter should have implicit conversion to String
+
 ## 2.7.3 - 2015-09-03
 ### Changed
 - [#186](https://github.com/krux/hyperion/issues/186) - Change collection constructors to use `.empty`
