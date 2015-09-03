@@ -32,8 +32,8 @@ case class SqlActivity private (
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withArguments(arg: String*) = this.copy(scriptArgument = scriptArgument ++ arg)
   def withQueue(queue: String) = this.copy(queue = Option(queue))

@@ -34,8 +34,8 @@ case class SparkActivity private (
   actionOnTaskFailure: Option[ActionOnTaskFailure]
 ) extends EmrActivity {
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withSteps(step: SparkStep*) = this.copy(steps = steps ++ step)
   def withPreStepCommand(command: String*) = this.copy(preStepCommands = preStepCommands ++ command)

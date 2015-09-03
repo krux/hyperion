@@ -1,29 +1,32 @@
 package com.krux.hyperion.activity
 
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws._
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, EmrCluster}
+import com.krux.hyperion.resource.{SparkCluster, Resource}
 
 /**
- * Runs a MapReduce job on a cluster. The cluster can be an EMR cluster managed by AWS Data Pipeline
- * or another resource if you use TaskRunner. Use HadoopActivity when you want to run work in parallel.
+ * Runs a Spark job on a cluster. The cluster can be an EMR cluster managed by AWS Data Pipeline
+ * or another resource if you use TaskRunner. Use SparkJobActivity when you want to run work in parallel.
  * This allows you to use the scheduling resources of the YARN framework or the MapReduce resource
  * negotiator in Hadoop 1. If you would like to run work sequentially using the Amazon EMR Step action,
- * you can still use EmrActivity.
+ * you can still use SparkActivity.
  */
-case class HadoopActivity private (
+case class SparkJobActivity private (
   id: PipelineObjectId,
+  scriptRunner: String,
+  jobRunner: String,
   jarUri: String,
-  mainClass: Option[MainClass],
-  argument: Seq[String],
+  mainClass: MainClass,
+  args: Seq[String],
   hadoopQueue: Option[String],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
-  runsOn: Resource[EmrCluster],
+  runsOn: Resource[SparkCluster],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
@@ -39,7 +42,7 @@ case class HadoopActivity private (
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withArguments(arguments: String*) = this.copy(argument = argument ++ arguments)
+  def withArguments(argument: String*) = this.copy(args = args ++ argument)
   def withHadoopQueue(queue: String) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
@@ -60,9 +63,9 @@ case class HadoopActivity private (
   lazy val serialize = AdpHadoopActivity(
     id = id,
     name = id.toOption,
-    jarUri = jarUri,
-    mainClass = mainClass.map(_.toString),
-    argument = argument,
+    jarUri = scriptRunner,
+    mainClass = None,
+    argument = Seq(jobRunner, jarUri.toString, mainClass.toString) ++ args,
     hadoopQueue = hadoopQueue,
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
@@ -82,14 +85,14 @@ case class HadoopActivity private (
 
 }
 
-object HadoopActivity extends RunnableObject {
-  def apply(jarUri: String, mainClass: MainClass)(runsOn: Resource[EmrCluster]): HadoopActivity = apply(jarUri, Option(mainClass))(runsOn)
-
-  def apply(jarUri: String, mainClass: Option[MainClass] = None)(runsOn: Resource[EmrCluster]): HadoopActivity = new HadoopActivity(
-    id = PipelineObjectId(HadoopActivity.getClass),
+object SparkJobActivity extends RunnableObject {
+  def apply(jarUri: String, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkJobActivity = new SparkJobActivity(
+    id = PipelineObjectId(SparkJobActivity.getClass),
+    scriptRunner = "s3://elasticmapreduce/libs/script-runner/script-runner.jar",
+    jobRunner = s"${hc.scriptUri}run-spark-step.sh",
     jarUri = jarUri,
     mainClass = mainClass,
-    argument = Seq.empty,
+    args = Seq.empty,
     hadoopQueue = None,
     preActivityTaskConfig = None,
     postActivityTaskConfig = None,

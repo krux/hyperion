@@ -51,8 +51,8 @@ case class S3File private (
   onFailAlarms: Seq[SnsAlarm]
 ) extends S3DataNode {
 
-  def named(name: String): S3File = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String): S3File = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String): S3File = this.copy(id = id.named(name))
+  def groupedBy(group: String): S3File = this.copy(id = id.groupedBy(group))
 
   def withDataFormat(fmt: DataFormat): S3File = this.copy(dataFormat = Option(fmt))
   def withManifestFilePath(path: Parameter[S3Uri]): S3File = this.copy(manifestFilePath = Option(path))
@@ -112,8 +112,8 @@ case class S3Folder private(
   onFailAlarms: Seq[SnsAlarm]
 ) extends S3DataNode {
 
-  def named(name: String): S3Folder = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String): S3Folder = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String): S3Folder = this.copy(id = id.named(name))
+  def groupedBy(group: String): S3Folder = this.copy(id = id.groupedBy(group))
 
   def withDataFormat(fmt: DataFormat): S3Folder = this.copy(dataFormat = Option(fmt))
   def withManifestFilePath(path: Parameter[S3Uri]): S3Folder = this.copy(manifestFilePath = Option(path))

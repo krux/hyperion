@@ -38,8 +38,8 @@ case class JarActivity private (
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
   def withOptions(opts: String*) = this.copy(options = options ++ opts)

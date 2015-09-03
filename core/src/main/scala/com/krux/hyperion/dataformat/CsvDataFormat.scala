@@ -13,8 +13,8 @@ case class CsvDataFormat private (
   escapeChar: Option[String]
 ) extends DataFormat {
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withColumns(col: String*) = this.copy(columns = columns ++ col)
   def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))

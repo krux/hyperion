@@ -34,8 +34,8 @@ case class ShellCommandActivity private (
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withArguments(args: String*) = this.copy(scriptArguments = scriptArguments ++ args)
   def withStdoutTo(out: String) = this.copy(stdout = Option(out))

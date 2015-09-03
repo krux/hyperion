@@ -45,8 +45,8 @@ case class RedshiftUnloadActivity private (
     ${unloadOptions.flatMap(_.repr).mkString(" ")}
   """
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withUnloadOptions(opts: RedshiftUnloadOption*) =
     this.copy(unloadOptions = unloadOptions ++ opts)

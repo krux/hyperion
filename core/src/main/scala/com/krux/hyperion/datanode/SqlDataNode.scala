@@ -20,8 +20,8 @@ case class SqlDataNode (
   onFailAlarms: Seq[SnsAlarm]
 ) extends Copyable {
 
-  def named(name: String): SqlDataNode = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String): SqlDataNode = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String): SqlDataNode = this.copy(id = id.named(name))
+  def groupedBy(group: String): SqlDataNode = this.copy(id = id.groupedBy(group))
 
   def whenMet(conditions: Precondition*): SqlDataNode = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*): SqlDataNode = this.copy(onFailAlarms = onFailAlarms ++ alarms)
