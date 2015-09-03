@@ -5,6 +5,7 @@ import com.krux.hyperion.Implicits._
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.{SparkActivity, SparkStep}
 import com.krux.hyperion.expression.DateTimeFunctions.format
+import com.krux.hyperion.expression.RuntimeNode
 import com.krux.hyperion.parameter._
 import com.krux.hyperion.resource.SparkCluster
 import com.typesafe.config.ConfigFactory
@@ -33,7 +34,7 @@ object ExampleSpark extends DataPipelineDef {
 
   // Actions
   val mailAction = SnsAlarm()
-    .withSubject("Something happened at #{node.@scheduledStartTime}")
+    .withSubject(s"Something happened at ${RuntimeNode.scheduledStartTime}")
     .withMessage(s"Some message $instanceCount x $instanceType @ $instanceBid for $location")
     .withTopicArn("arn:aws:sns:us-east-1:28619EXAMPLE:ExampleTopic")
     .withRole("DataPipelineDefaultResourceRole")
