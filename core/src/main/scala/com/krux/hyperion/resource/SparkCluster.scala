@@ -87,8 +87,8 @@ class SparkCluster private (
     useOnDemandOnLastAttempt, visibleToAllUsers, initTimeout, terminateAfter,
     actionOnResourceFailure, actionOnTaskFailure)
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withSparkVersion(sparkVersion: String) = this.copy(sparkVersion = sparkVersion)
   def withAmiVersion(ver: String) = this.copy(amiVersion = ver)

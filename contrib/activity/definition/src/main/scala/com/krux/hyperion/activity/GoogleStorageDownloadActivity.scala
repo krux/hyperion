@@ -32,8 +32,8 @@ case class GoogleStorageDownloadActivity private (
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends GoogleStorageActivity {
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withInput(path: String) = this.copy(input = path)
   def withOutput(out: S3DataNode) = this.copy(output = Option(out))

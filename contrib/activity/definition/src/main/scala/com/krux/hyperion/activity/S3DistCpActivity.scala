@@ -93,8 +93,8 @@ class S3DistCpActivity private (
     attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode,
     actionOnResourceFailure, actionOnTaskFailure)
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withSource(source: S3DataNode) = this.copy(source = Option(source))
   def withDestination(dest: S3DataNode) = this.copy(dest = Option(dest))

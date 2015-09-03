@@ -8,6 +8,8 @@ trait PipelineObjectId extends Ordered[PipelineObjectId] {
 
   def compare(that: PipelineObjectId): Int =  this.toString.compare(that.toString)
 
+  def named(name: String) = PipelineObjectId.withName(name, this)
+  def groupedBy(group: String) = PipelineObjectId.withGroup(group, this)
 }
 
 object PipelineObjectId {

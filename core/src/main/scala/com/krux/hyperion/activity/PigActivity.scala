@@ -39,8 +39,8 @@ case class PigActivity private (
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withScriptVariable(scriptVariable: String*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withGeneratedScriptsPath(generatedScriptsPath: S3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))

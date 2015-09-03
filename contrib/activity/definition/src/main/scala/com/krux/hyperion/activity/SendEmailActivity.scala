@@ -45,8 +45,8 @@ class SendEmailActivity private (
 
   require(password.forall(_.isEncrypted), "The password must be an encrypted string parameter")
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withHost(host: String) = this.copy(host = Option(host))
   def withPort(port: Parameter[Int]) = this.copy(port = Option(port))

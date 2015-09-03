@@ -85,8 +85,8 @@ class MapReduceCluster private (
     useOnDemandOnLastAttempt, visibleToAllUsers, initTimeout, terminateAfter,
     actionOnResourceFailure, actionOnTaskFailure)
 
-  def named(name: String) = this.copy(id = PipelineObjectId.withName(name, id))
-  def groupedBy(group: String) = this.copy(id = PipelineObjectId.withGroup(group, id))
+  def named(name: String) = this.copy(id = id.named(name))
+  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withAmiVersion(ver: String) = this.copy(amiVersion = ver)
   def withSupportedProducts(products: String) = this.copy(supportedProducts = Option(products))
