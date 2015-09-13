@@ -18,7 +18,7 @@ class ExampleWorkflowSpec extends WordSpec {
       assert(objectsField.size === 9)  // 6 activities, 1 default, 1 schedule, 1 ec2 resource
 
       // the first object should be Default
-      val defaultObj = objectsField(0)
+      val defaultObj = objectsField.head
       val defaultObjShouldBe = ("id" -> "Default") ~
         ("name" -> "Default") ~
         ("scheduleType" -> "cron") ~
@@ -101,7 +101,7 @@ class ExampleWorkflowSpec extends WordSpec {
         ("name" -> act4Id) ~
         ("command" -> "run act4") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
-        ("dependsOn" -> List("ref" -> act3Id, "ref" -> act2Id)) ~
+        ("dependsOn" -> List("ref" -> act2Id, "ref" -> act3Id)) ~
         ("type" -> "ShellCommandActivity")
       assert(act4ShouldBe === act4)
 
@@ -113,7 +113,7 @@ class ExampleWorkflowSpec extends WordSpec {
         ("name" -> act5Id) ~
         ("command" -> "run act5") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
-        ("dependsOn" -> List("ref" -> act3Id, "ref" -> act2Id)) ~
+        ("dependsOn" -> List("ref" -> act2Id, "ref" -> act3Id)) ~
         ("type" -> "ShellCommandActivity")
       assert(act5ShouldBe === act5)
 
@@ -125,7 +125,7 @@ class ExampleWorkflowSpec extends WordSpec {
         ("name" -> act6Id) ~
         ("command" -> "run act6") ~
         ("runsOn" -> ("ref" -> ec2Id)) ~
-        ("dependsOn" -> List("ref" -> act5Id, "ref" -> act4Id)) ~
+        ("dependsOn" -> List("ref" -> act4Id, "ref" -> act5Id)) ~
         ("type" -> "ShellCommandActivity")
       assert(act6ShouldBe === act6)
 

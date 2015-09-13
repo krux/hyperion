@@ -27,7 +27,7 @@ object AdpJsonSerializer {
 
   case object AdpRefSerializer extends CustomSerializer[AdpRef[AdpDataPipelineObject]](format => (
     {
-      case JObject(List((refKey, JString(id)))) => AdpRef.withRefObjId[AdpDataPipelineObject](id)
+      case JObject(List((_, JString(id)))) => AdpRef.withRefObjId[AdpDataPipelineObject](id)
     },
     {
       case AdpRef(objId) => JObject(List(refKey -> JString(objId)))

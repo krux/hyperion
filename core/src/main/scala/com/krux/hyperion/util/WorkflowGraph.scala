@@ -113,7 +113,7 @@ class WorkflowGraph private (
       // assign dependees to the immediate dependents
       val actsWithDeps = rootDependents.groupBy(_._1)
         .map { case (dependent, group) =>
-          dependent.dependsOn(group.map(_._2).toSeq.map(activities): _*)
+          dependent.dependsOn(group.map(_._2).toSeq.map(activities).sortBy(_.id): _*)
         }
 
       val newActivities = actsWithDeps.foldLeft(activities)((acts, act) => acts + (act.id -> act))

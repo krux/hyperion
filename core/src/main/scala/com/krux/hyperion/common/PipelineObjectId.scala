@@ -18,19 +18,17 @@ object PipelineObjectId {
   def apply(name: String, group: String) = NameGroupObjectId(name, group)
   def fixed(seed: String) = FixedObjectId(seed)
 
-  def withName(name: String, id: PipelineObjectId) =
-    id match {
-      case NameGroupObjectId(_, c, r) => NameGroupObjectId(name, c, r)
-      case RandomizedObjectId(_, r) => NameGroupObjectId(name, "", r)
-      case _ => NameGroupObjectId(name, "")
-    }
+  def withName(name: String, id: PipelineObjectId) = id match {
+    case NameGroupObjectId(_, c, r) => NameGroupObjectId(name, c, r)
+    case RandomizedObjectId(_, r) => NameGroupObjectId(name, "", r)
+    case _ => NameGroupObjectId(name, "")
+  }
 
-  def withGroup(group: String, id: PipelineObjectId) =
-    id match {
-      case NameGroupObjectId(n, _, r) => NameGroupObjectId(n, group, r)
-      case RandomizedObjectId(_, r) => NameGroupObjectId("", group, r)
-      case _ => NameGroupObjectId("", group)
-    }
+  def withGroup(group: String, id: PipelineObjectId) = id match {
+    case NameGroupObjectId(n, _, r) => NameGroupObjectId(n, group, r)
+    case RandomizedObjectId(_, r) => NameGroupObjectId("", group, r)
+    case _ => NameGroupObjectId("", group)
+  }
 }
 
 case class NameGroupObjectId(name: String, group: String, rand: String = UUID.randomUUID.toString) extends PipelineObjectId {
