@@ -20,32 +20,34 @@ object PipelineObjectId {
 
   def withName(name: String, id: PipelineObjectId) =
     id match {
-      case NameGroupObjectId(_, c) => NameGroupObjectId(name, c)
+      case NameGroupObjectId(_, c, r) => NameGroupObjectId(name, c, r)
+      case RandomizedObjectId(_, r) => NameGroupObjectId(name, "", r)
       case _ => NameGroupObjectId(name, "")
     }
 
   def withGroup(group: String, id: PipelineObjectId) =
     id match {
-      case NameGroupObjectId(n, _) => NameGroupObjectId(n, group)
+      case NameGroupObjectId(n, _, r) => NameGroupObjectId(n, group, r)
+      case RandomizedObjectId(_, r) => NameGroupObjectId("", group, r)
       case _ => NameGroupObjectId("", group)
     }
 }
 
-case class NameGroupObjectId(name: String, group: String) extends PipelineObjectId {
+case class NameGroupObjectId(name: String, group: String, rand: String = UUID.randomUUID.toString) extends PipelineObjectId {
 
   val uniqueId = (name, group) match {
-    case ("", "") => UUID.randomUUID.toString
-    case ("", g) => s"${g}_${UUID.randomUUID.toString}"
-    case (n, "") => s"${n}_${UUID.randomUUID.toString}"
-    case (n, g) => s"${n}_${g}_${UUID.randomUUID.toString}"
+    case ("", "") => rand
+    case ("", g) => (g :: rand :: Nil).mkString("_")
+    case (n, "") => (n :: rand :: Nil).mkString("_")
+    case (n, g) => (n :: g :: rand :: Nil).mkString("_")
   }
 
   override def toString = uniqueId
 }
 
-case class RandomizedObjectId(seed: String) extends PipelineObjectId {
+case class RandomizedObjectId(seed: String, rand: String = UUID.randomUUID.toString) extends PipelineObjectId {
 
-  val uniqueId = seed + "_" + UUID.randomUUID.toString
+  val uniqueId = (seed :: rand :: Nil).mkString("_")
 
   override def toString = uniqueId
 
