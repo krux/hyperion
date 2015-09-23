@@ -5,7 +5,7 @@ import com.krux.hyperion.aws.{AdpParameterSerializer, AdpPipelineSerializer, Adp
 import com.krux.hyperion.common.{S3UriHelper, S3Uri, DefaultObject, PipelineObject}
 import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.workflow.WorkflowExpression
-import com.krux.hyperion.workflow.{Implicits => WorkflowImplicits}
+import com.krux.hyperion.workflow.WorkflowExpressionImplicits
 
 import scala.language.implicitConversions
 
@@ -18,7 +18,7 @@ import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineO
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
  */
-trait DataPipelineDef extends HyperionCli with S3UriHelper with WorkflowImplicits {
+trait DataPipelineDef extends HyperionCli with S3UriHelper with WorkflowExpressionImplicits {
 
   private lazy val context = new HyperionContext()
 

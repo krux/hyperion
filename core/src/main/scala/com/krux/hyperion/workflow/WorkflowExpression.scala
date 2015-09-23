@@ -46,3 +46,5 @@ case class WorkflowActivityExpression(activity: PipelineActivity) extends Workfl
 case class WorkflowArrowExpression(left: WorkflowExpression, right: WorkflowExpression) extends WorkflowExpression
 
 case class WorkflowPlusExpression(left: WorkflowExpression, right: WorkflowExpression) extends WorkflowExpression
+
+object WorkflowExpression extends WorkflowExpressionImplicits

@@ -1,10 +1,10 @@
 package com.krux.hyperion.workflow
 
-import com.krux.hyperion.activity.PipelineActivity
-
 import scala.language.implicitConversions
 
-trait Implicits {
+import com.krux.hyperion.activity.PipelineActivity
+
+trait WorkflowExpressionImplicits {
 
   implicit def workflowIterable2WorkflowExpression(activities: Iterable[WorkflowExpression]): WorkflowExpression =
     activities.reduceLeft(_ + _)
@@ -16,5 +16,3 @@ trait Implicits {
     WorkflowActivityExpression(activity)
 
 }
-
-object Implicits extends Implicits
