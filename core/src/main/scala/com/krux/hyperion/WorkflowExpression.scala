@@ -1,6 +1,8 @@
-package com.krux.hyperion.workflow
+package com.krux.hyperion
 
 import com.krux.hyperion.activity.PipelineActivity
+import com.krux.hyperion.workflow.WorkflowExpressionImplicits
+import com.krux.hyperion.workflow.WorkflowGraph
 
 sealed abstract class WorkflowExpression {
 

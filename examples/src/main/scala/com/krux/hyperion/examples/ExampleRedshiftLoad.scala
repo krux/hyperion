@@ -7,7 +7,7 @@ import com.krux.hyperion.dataformat.TsvDataFormat
 import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.resource.Ec2Resource
-import com.krux.hyperion.workflow.WorkflowExpression
+import com.krux.hyperion.WorkflowExpression
 import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
 import com.typesafe.config.ConfigFactory
 

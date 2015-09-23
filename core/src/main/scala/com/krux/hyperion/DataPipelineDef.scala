@@ -4,7 +4,6 @@ import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.aws.{AdpParameterSerializer, AdpPipelineSerializer, AdpJsonSerializer}
 import com.krux.hyperion.common.{S3UriHelper, S3Uri, DefaultObject, PipelineObject}
 import com.krux.hyperion.parameter.Parameter
-import com.krux.hyperion.workflow.WorkflowExpression
 import com.krux.hyperion.workflow.WorkflowExpressionImplicits
 
 import scala.language.implicitConversions

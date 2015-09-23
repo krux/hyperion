@@ -8,7 +8,7 @@ import com.krux.hyperion.expression.RuntimeNode
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.parameter._
 import com.krux.hyperion.resource.SparkCluster
-import com.krux.hyperion.workflow.WorkflowExpression
+import com.krux.hyperion.WorkflowExpression
 import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
 import com.typesafe.config.ConfigFactory
 
