@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.11.0 - 2015-09-22
+### Fixed
+- [#207](https://github.com/krux/hyperion/issues/207) - Make workflow expression DSL avaible to pipeline def by default.
+
 ## 2.10.0 - 2015-09-13
 ### Added
 - [#204](https://github.com/krux/hyperion/issues/204) - HadoopActivity and SparkJobActivity should support input and output data nodes

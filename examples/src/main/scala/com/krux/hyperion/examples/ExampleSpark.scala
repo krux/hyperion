@@ -1,16 +1,16 @@
 package com.krux.hyperion.examples
 
-import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
-import com.krux.hyperion.Implicits._
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.{SparkJobActivity, SparkActivity, SparkStep}
+import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.DateTimeFunctions.format
 import com.krux.hyperion.expression.RuntimeNode
+import com.krux.hyperion.Implicits._
 import com.krux.hyperion.parameter._
 import com.krux.hyperion.resource.SparkCluster
+import com.krux.hyperion.workflow.WorkflowExpression
+import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
 import com.typesafe.config.ConfigFactory
-import com.krux.hyperion.WorkflowExpression._
 
 object ExampleSpark extends DataPipelineDef {
 

@@ -1,4 +1,4 @@
-package com.krux.hyperion.util
+package com.krux.hyperion.workflow
 
 import com.krux.hyperion.activity.PipelineActivity
 import com.krux.hyperion.common.PipelineObjectId

@@ -4,7 +4,7 @@ import com.krux.hyperion.activity.ShellCommandActivity
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.parameter.DoubleParameter
 import com.krux.hyperion.resource.Ec2Resource
-import com.krux.hyperion.WorkflowExpression._
+import com.krux.hyperion.workflow.WorkflowExpression
 import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
 import com.typesafe.config.ConfigFactory
 
