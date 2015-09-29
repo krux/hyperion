@@ -1,8 +1,11 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
+import scala.annotation.tailrec
+import scala.collection.mutable.StringBuilder
+
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlActivity
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.{Parameter, StringParameter}
@@ -37,8 +40,42 @@ case class RedshiftUnloadActivity private (
   require(accessKeyId.isEncrypted, "The access key id must be an encrypted string parameter")
   require(accessKeySecret.isEncrypted, "The access secret must be an encrypted string parameter")
 
+  @tailrec
+  private def prepareScript(
+      exp: String, expLevel: Int = 0, result: StringBuilder = StringBuilder.newBuilder
+    ): String = {
+
+    if (exp == "") {
+      result.toString
+    } else {
+      val curChar = exp.head
+      val expTail = exp.tail
+
+      if (expLevel == 0) {  // outside a expression block
+        if (curChar == '#')
+          prepareScript(expTail, -1, result + curChar)
+        else
+          prepareScript(
+            expTail, expLevel, if (curChar == '\'') result ++= "\\\\'" else result + curChar)
+      } else if (expLevel == -1){  // the previous char is '#'
+        if (curChar == '{')  // start of an expression
+          prepareScript(expTail, 1, result + curChar)
+        else
+          prepareScript(
+            expTail, 0, if (curChar == '\'') result ++= "\\\\'" else result + curChar)
+      } else {  // inside a expression block
+        if (curChar == '}')
+          prepareScript(expTail, expLevel - 1, result + curChar)
+        else if (curChar == '{')
+          prepareScript(expTail, expLevel + 1, result + curChar)
+        else
+          prepareScript(expTail, expLevel, result + curChar)
+      }
+    }
+  }
+
   def unloadScript = s"""
-    UNLOAD ('${script.replaceAll("'", "\\\\\\\\'")}')
+    UNLOAD ('${prepareScript(script)}')
     TO '$s3Path'
     WITH CREDENTIALS AS
     'aws_access_key_id=$accessKeyId;aws_secret_access_key=$accessKeySecret'
