@@ -40,9 +40,43 @@ case class RedshiftUnloadActivity private (
   require(accessKeyId.isEncrypted, "The access key id must be an encrypted string parameter")
   require(accessKeySecret.isEncrypted, "The access secret must be an encrypted string parameter")
 
+  /**
+   * Given the start of exp, seek the end of expression returning the expression block and the rest
+   * of the string. Note that expression is not a nested structure and the only legitimate '{' or
+   * '}' within a expression is within quotes (i.e. '"' or "'")
+   *
+   * @note this does not handle the case that expression have escaped quotes (i.e. "\"" or '\'')
+   */
+  @tailrec
+  private def seekEoe(
+      exp: String,
+      quote: Option[Char] = None,
+      expPart: StringBuilder = StringBuilder.newBuilder
+    ): (String, String) = {
+
+    if (exp == "") {
+      throw new RuntimeException("expression started but not ended")
+    } else {
+      val curChar = exp.head
+      val next = exp.tail
+
+      quote match {
+        case Some('\'') =>  // if started in single quoted string
+          if (curChar == '\'') seekEoe(next, None, expPart + curChar)
+          else seekEoe(next, quote, expPart + curChar)
+        case Some('"') =>
+          if (curChar == '"') seekEoe(next, None, expPart + curChar)
+          else seekEoe(next, quote, expPart + curChar)
+        case _ =>
+          if (curChar == '}') ((expPart + curChar).result, next)
+          else seekEoe(next, quote, expPart + curChar)
+      }
+    }
+  }
+
   @tailrec
   private def prepareScript(
-      exp: String, expLevel: Int = 0, result: StringBuilder = StringBuilder.newBuilder
+      exp: String, hashSpotted: Boolean = false, result: StringBuilder = StringBuilder.newBuilder
     ): String = {
 
     if (exp == "") {
@@ -51,25 +85,26 @@ case class RedshiftUnloadActivity private (
       val curChar = exp.head
       val expTail = exp.tail
 
-      if (expLevel == 0) {  // outside a expression block
+      if (hashSpotted) {  // outside a expression block
         if (curChar == '#')
-          prepareScript(expTail, -1, result + curChar)
+          prepareScript(expTail, true, result + curChar)
         else
           prepareScript(
-            expTail, expLevel, if (curChar == '\'') result ++= "\\\\'" else result + curChar)
-      } else if (expLevel == -1){  // the previous char is '#'
-        if (curChar == '{')  // start of an expression
-          prepareScript(expTail, 1, result + curChar)
-        else
+            expTail,
+            hashSpotted,
+            if (curChar == '\'') result ++= "\\\\'" else result + curChar
+          )
+      } else {  // the previous char is '#'
+        if (curChar == '{') {  // start of an expression
+          val (blockBody, rest) = seekEoe(expTail)
+          prepareScript(rest, hashSpotted, result + curChar ++= blockBody)
+        } else {  // not start of an expression
           prepareScript(
-            expTail, 0, if (curChar == '\'') result ++= "\\\\'" else result + curChar)
-      } else {  // inside a expression block
-        if (curChar == '}')
-          prepareScript(expTail, expLevel - 1, result + curChar)
-        else if (curChar == '{')
-          prepareScript(expTail, expLevel + 1, result + curChar)
-        else
-          prepareScript(expTail, expLevel, result + curChar)
+            expTail,
+            hashSpotted,
+            if (curChar == '\'') result ++= "\\\\'" else result + curChar
+          )
+        }
       }
     }
   }
