@@ -62,22 +62,24 @@ case class RedshiftUnloadActivity private (
 
       quote match {
         case Some(quoteChar) =>  // if is in quote
-          if (curChar == quoteChar) seekEndOfExpr(next, None, expPart += curChar)
-          else seekEndOfExpr(next, quote, expPart += curChar)
+          seekEndOfExpr(next, quote.filter(_ != curChar), expPart += curChar)
         case _ =>
-          if (curChar == '}')
-            ((expPart += curChar).result, next)
-          else if (curChar == '\'' || curChar == '"')
-            seekEndOfExpr(next, Option(curChar), expPart += curChar)
-          else
-            seekEndOfExpr(next, None, expPart += curChar)
+          curChar match {
+            case '}' => ((expPart += curChar).result, next)
+            case '\'' | '"' => seekEndOfExpr(next, Option(curChar), expPart += curChar)
+            case _ => seekEndOfExpr(next, None, expPart += curChar)
+          }
       }
     }
   }
 
+  private def escapeChar(c: Char): String = if (c == '\'') "\\\\'" else c.toString
+
   @tailrec
   private def prepareScript(
-      exp: String, hashSpotted: Boolean = false, result: StringBuilder = StringBuilder.newBuilder
+      exp: String,
+      hashSpotted: Boolean = false,
+      result: StringBuilder = StringBuilder.newBuilder
     ): String = {
 
     if (exp.isEmpty) {
@@ -86,19 +88,14 @@ case class RedshiftUnloadActivity private (
       val curChar = exp.head
       val expTail = exp.tail
 
-      def appendEscapedChar: StringBuilder = if (curChar == '\'') result ++= "\\\\'" else result += curChar
-
       if (!hashSpotted) {  // outside a expression block
-        if (curChar == '#')
-          prepareScript(expTail, true, result += curChar)
-        else
-          prepareScript(expTail, false, appendEscapedChar)
+        prepareScript(expTail, curChar == '#', result ++= escapeChar(curChar))
       } else {  // the previous char is '#'
         if (curChar == '{') {  // start of an expression
           val (blockBody, rest) = seekEndOfExpr(expTail)
           prepareScript(rest, false, result += curChar ++= blockBody)
         } else {  // not start of an expression
-          prepareScript(expTail, false, appendEscapedChar)
+          prepareScript(expTail, false, result ++= escapeChar(curChar))
         }
       }
     }
