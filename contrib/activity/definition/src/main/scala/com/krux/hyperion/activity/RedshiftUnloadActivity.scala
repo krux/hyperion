@@ -48,32 +48,29 @@ case class RedshiftUnloadActivity private (
    * @note this does not handle the case that expression have escaped quotes (i.e. "\"" or '\'')
    */
   @tailrec
-  private def seekEoe(
+  private def seekEndOfExpr(
       exp: String,
       quote: Option[Char] = None,
       expPart: StringBuilder = StringBuilder.newBuilder
     ): (String, String) = {
 
-    if (exp == "") {
+    if (exp.isEmpty) {
       throw new RuntimeException("expression started but not ended")
     } else {
       val curChar = exp.head
       val next = exp.tail
 
       quote match {
-        case Some('\'') =>  // if started in single quoted string
-          if (curChar == '\'') seekEoe(next, None, expPart + curChar)
-          else seekEoe(next, quote, expPart + curChar)
-        case Some('"') =>
-          if (curChar == '"') seekEoe(next, None, expPart + curChar)
-          else seekEoe(next, quote, expPart + curChar)
+        case Some(quoteChar) =>  // if is in quote
+          if (curChar == quoteChar) seekEndOfExpr(next, None, expPart += curChar)
+          else seekEndOfExpr(next, quote, expPart += curChar)
         case _ =>
           if (curChar == '}')
-            ((expPart + curChar).result, next)
+            ((expPart += curChar).result, next)
           else if (curChar == '\'' || curChar == '"')
-            seekEoe(next, Option(curChar), expPart + curChar)
+            seekEndOfExpr(next, Option(curChar), expPart += curChar)
           else
-            seekEoe(next, quote, expPart + curChar)
+            seekEndOfExpr(next, None, expPart += curChar)
       }
     }
   }
@@ -83,31 +80,25 @@ case class RedshiftUnloadActivity private (
       exp: String, hashSpotted: Boolean = false, result: StringBuilder = StringBuilder.newBuilder
     ): String = {
 
-    if (exp == "") {
+    if (exp.isEmpty) {
       result.toString
     } else {
       val curChar = exp.head
       val expTail = exp.tail
 
+      def appendEscapedChar: StringBuilder = if (curChar == '\'') result ++= "\\\\'" else result += curChar
+
       if (!hashSpotted) {  // outside a expression block
         if (curChar == '#')
-          prepareScript(expTail, true, result + curChar)
+          prepareScript(expTail, true, result += curChar)
         else
-          prepareScript(
-            expTail,
-            hashSpotted,
-            if (curChar == '\'') result ++= "\\\\'" else result + curChar
-          )
+          prepareScript(expTail, false, appendEscapedChar)
       } else {  // the previous char is '#'
         if (curChar == '{') {  // start of an expression
-          val (blockBody, rest) = seekEoe(expTail)
-          prepareScript(rest, hashSpotted, result + curChar ++= blockBody)
+          val (blockBody, rest) = seekEndOfExpr(expTail)
+          prepareScript(rest, false, result += curChar ++= blockBody)
         } else {  // not start of an expression
-          prepareScript(
-            expTail,
-            hashSpotted,
-            if (curChar == '\'') result ++= "\\\\'" else result + curChar
-          )
+          prepareScript(expTail, false, appendEscapedChar)
         }
       }
     }

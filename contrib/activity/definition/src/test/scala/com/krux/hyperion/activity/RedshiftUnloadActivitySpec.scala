@@ -36,7 +36,7 @@ class RedshiftUnloadActivitySpec extends WordSpec {
         |select * from t where
         |id = 'myid'
         |and {tim'e} = #{format(@actualRunTime, 'yyyy-MM-dd')}
-        |and someOtherWierdFormat = #{"{ } a'dfa {" + ' { ex"aef { }'}
+        |and some{OtherWeird'Forma}t = #{"{ } a'dfa {" + ' { ex"aef { }'}
         |and name = 'abcdefg'
         |limit 10""".stripMargin
 
@@ -45,7 +45,7 @@ class RedshiftUnloadActivitySpec extends WordSpec {
         |select * from t where
         |id = \\'myid\\'
         |and {tim\\'e} = #{format(@actualRunTime, 'yyyy-MM-dd')}
-        |and someOtherWierdFormat = #{"{ } a'dfa {" + ' { ex"aef { }'}
+        |and some{OtherWeird\\'Forma}t = #{"{ } a'dfa {" + ' { ex"aef { }'}
         |and name = \\'abcdefg\\'
         |limit 10')
         |TO 's3://not-important/'
