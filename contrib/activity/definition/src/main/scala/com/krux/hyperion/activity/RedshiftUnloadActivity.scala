@@ -68,8 +68,12 @@ case class RedshiftUnloadActivity private (
           if (curChar == '"') seekEoe(next, None, expPart + curChar)
           else seekEoe(next, quote, expPart + curChar)
         case _ =>
-          if (curChar == '}') ((expPart + curChar).result, next)
-          else seekEoe(next, quote, expPart + curChar)
+          if (curChar == '}')
+            ((expPart + curChar).result, next)
+          else if (curChar == '\'' || curChar == '"')
+            seekEoe(next, Option(curChar), expPart + curChar)
+          else
+            seekEoe(next, quote, expPart + curChar)
       }
     }
   }
@@ -85,7 +89,7 @@ case class RedshiftUnloadActivity private (
       val curChar = exp.head
       val expTail = exp.tail
 
-      if (hashSpotted) {  // outside a expression block
+      if (!hashSpotted) {  // outside a expression block
         if (curChar == '#')
           prepareScript(expTail, true, result + curChar)
         else
@@ -110,12 +114,12 @@ case class RedshiftUnloadActivity private (
   }
 
   def unloadScript = s"""
-    UNLOAD ('${prepareScript(script)}')
-    TO '$s3Path'
-    WITH CREDENTIALS AS
-    'aws_access_key_id=$accessKeyId;aws_secret_access_key=$accessKeySecret'
-    ${unloadOptions.flatMap(_.repr).mkString(" ")}
-  """
+    |UNLOAD ('${prepareScript(script)}')
+    |TO '$s3Path'
+    |WITH CREDENTIALS AS
+    |'aws_access_key_id=$accessKeyId;aws_secret_access_key=$accessKeySecret'
+    |${unloadOptions.flatMap(_.repr).mkString(" ")}
+  """.stripMargin
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))

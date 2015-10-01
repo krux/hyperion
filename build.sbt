@@ -86,6 +86,7 @@ lazy val commonSettings = Seq(
       "-doc-source-url",
       "https://github.com/krux/hyperion/tree/master/€{FILE_PATH}.scala")
   },
+  libraryDependencies += scalatestArtifact,
   test in assembly := {} // skip test during assembly
 )
 
@@ -132,8 +133,7 @@ lazy val core = (project in file("core")).
       nscalaTimeArtifact,
       json4sJacksonArtifact,
       scoptArtifact,
-      configArtifact,
-      scalatestArtifact
+      configArtifact
     )
   )
 
@@ -141,10 +141,7 @@ lazy val examples = (project in file("examples")).
   settings(commonSettings: _*).
   settings(noPublishSettings: _*).
   settings(
-    name := "hyperion-examples",
-    libraryDependencies ++= Seq(
-      scalatestArtifact
-    )
+    name := "hyperion-examples"
   ).
   dependsOn(core, contribActivityDefinition)
 
