@@ -28,3 +28,6 @@ bin/
 .classpath
 .project
 .settings/
+
+# OS files
+.DS_Store
