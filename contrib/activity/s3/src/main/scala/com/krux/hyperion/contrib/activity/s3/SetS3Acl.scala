@@ -13,12 +13,14 @@ import scopt.OptionParser
  * A more flexible way to set s3 acl other than awscli. It makes sure grants is additive and allows
  * both canned acl as well as normal grants with recursive option.
  */
-object S3Acl {
+object SetS3Acl {
+
+  final val S3Protocol = "s3://"
 
   case class S3Uri(ref: String) {
-    require(ref.startsWith("s3"), "S3Uri must start with s3 protocol.")
+    require(ref.startsWith(S3Protocol), "S3Uri must start with s3 protocol.")
 
-    val (bucket: String, key: String) = ref.split("://")(1).split("/", 2) match {
+    val (bucket: String, key: String) = ref.stripPrefix(S3Protocol).split("/", 2) match {
       case Array(b, k) => (b, k)
       case Array(b) => (b, "")
     }
@@ -51,15 +53,16 @@ object S3Acl {
     permission: Permission,
     grantee: Grantee
   )
+
   object Grant {
-    def apply(formatedStr: String) = {
-      formatedStr.split('=') match {
-        case Array(permStr, "id", canonicalId) =>
-          new Grant(PermissionFactory(permStr), new CanonicalGrantee(canonicalId))
-        case Array(permStr, "emailaddress", emailAddress) =>
-          new Grant(PermissionFactory(permStr), new EmailAddressGrantee(emailAddress))
-        case Array(permStr, "group", groupUri) =>
-          new Grant(PermissionFactory(permStr), GroupGrantee.parseGroupGrantee(groupUri))
+    def apply(grantString: String) = {
+      grantString.split('=') match {
+        case Array(permissionString, "id", canonicalId) =>
+          new Grant(PermissionFactory(permissionString), new CanonicalGrantee(canonicalId))
+        case Array(permissionString, "emailaddress", emailAddress) =>
+          new Grant(PermissionFactory(permissionString), new EmailAddressGrantee(emailAddress))
+        case Array(permissionString, "group", groupUri) =>
+          new Grant(PermissionFactory(permissionString), GroupGrantee.parseGroupGrantee(groupUri))
         case _ =>
           throw new RuntimeException("Invalid grant expression")
       }
@@ -115,26 +118,28 @@ object S3Acl {
         resultAcl.grantPermission(newAcl.grantee, newAcl.permission)
         resultAcl
       }
-      s3Client.setObjectAcl(bucketName, key, newAcl)
 
+      s3Client.setObjectAcl(bucketName, key, newAcl)
     }
 
     @tailrec
     def applyRecursive(
-        bucketName: String, prefix: String, previousBatch: Option[ObjectListing] = None
+        bucketName: String,
+        prefix: String,
+        previousBatch: Option[ObjectListing] = None
       ): Unit = {
       previousBatch match {
-        case Some(previousLst) =>
-          if (previousLst.isTruncated()) {
-            val objListing = s3Client.listNextBatchOfObjects(previousLst)
-            objListing.getObjectSummaries().asScala.foreach { objSumamry =>
-              applyNonRecursive(objSumamry.getBucketName(), objSumamry.getKey())
+        case Some(previousListing) =>
+          if (previousListing.isTruncated()) {
+            val objListing = s3Client.listNextBatchOfObjects(previousListing)
+            objListing.getObjectSummaries().asScala.foreach { summary =>
+              applyNonRecursive(summary.getBucketName(), summary.getKey())
             }
           } // Do nothing if the previous is not truncated
         case None =>
           val objListing = s3Client.listObjects(bucketName, prefix)
-          objListing.getObjectSummaries().asScala.foreach { objSumamry =>
-            applyNonRecursive(objSumamry.getBucketName(), objSumamry.getKey())
+          objListing.getObjectSummaries().asScala.foreach { summary =>
+            applyNonRecursive(summary.getBucketName(), summary.getKey())
           }
           applyRecursive(bucketName, prefix, Option(objListing))
       }

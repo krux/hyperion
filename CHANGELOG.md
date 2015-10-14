@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.11.4 - 2015-10-14
+## 2.12.0 - 2015-10-14
 ## Fixed
 - [#223](https://github.com/krux/hyperion/issues/223) - Contrib activity that sets S3 ACL
 

@@ -9,7 +9,7 @@ import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
-case class S3AclActivity private (
+case class SetS3AclActivity private (
     id: PipelineObjectId,
     scriptUri: Option[S3Uri],
     jarUri: String,
@@ -76,7 +76,7 @@ case class S3AclActivity private (
     scriptArgument = Option(Seq(jarUri, mainClass) ++ buildArgs),
     stdout = None,
     stderr = None,
-    stage = Option("true"),
+    stage = Option("false"),
     input = None,
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -95,13 +95,13 @@ case class S3AclActivity private (
 
 }
 
-object S3AclActivity extends RunnableObject {
-  def apply(s3Uri: S3Uri, acls: Seq[String], grants: Seq[String])(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): S3AclActivity =
-    new S3AclActivity(
-        id = PipelineObjectId(S3AclActivity.getClass),
+object SetS3AclActivity extends RunnableObject {
+  def apply(s3Uri: S3Uri, acls: Seq[String], grants: Seq[String])(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SetS3AclActivity =
+    new SetS3AclActivity(
+        id = PipelineObjectId(SetS3AclActivity.getClass),
         scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
         jarUri = s"${hc.scriptUri}activities/hyperion-s3-activity-current-assembly.jar",
-        mainClass = "com.krux.hyperion.contrib.activity.s3.S3Acl",
+        mainClass = "com.krux.hyperion.contrib.activity.s3.SetS3Acl",
         cannedAcls = acls,
         grants = grants,
         recursive = false,
