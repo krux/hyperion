@@ -1,4 +1,4 @@
-val hyperionVersion = "2.11.3"
+val hyperionVersion = "2.12.0"
 val scala210Version = "2.10.5"
 val scala211Version = "2.11.7"
 val awsSdkVersion   = "1.9.35"
@@ -119,7 +119,8 @@ lazy val root = (project in file(".")).
     contribActivitySftp,
     contribActivityEmail,
     contribActivityNotification,
-    contribActivityFile
+    contribActivityFile,
+    contribActivityS3
   )
 
 lazy val core = (project in file("core")).
@@ -203,3 +204,13 @@ lazy val contribActivityNotification = (project in file("contrib/activity/notifi
     )
   )
 
+lazy val contribActivityS3 = (project in file("contrib/activity/s3")).
+  settings(artifactSettings: _*).
+  settings(publishSettings: _*).
+  settings(
+    name := "hyperion-s3-activity",
+    libraryDependencies ++= Seq(
+      scoptArtifact,
+      awsS3Artifact
+    )
+  )
