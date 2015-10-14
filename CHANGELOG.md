@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.11.4 - 2015-10-14
+## Fixed
+- [#223](https://github.com/krux/hyperion/issues/223) - Contrib activity that sets S3 ACL
+
 ## 2.11.3 - 2015-10-12
 ## Fixed
 - [#220](https://github.com/krux/hyperion/issues/220) - Make spark activity download jar to different directory to avoid race condition of jobs running in parallel.
