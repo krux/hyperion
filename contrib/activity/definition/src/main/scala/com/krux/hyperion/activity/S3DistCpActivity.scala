@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.aws.{AdpHadoopActivity, AdpEmrActivity}
+import com.krux.hyperion.aws.AdpHadoopActivity
 import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.Duration
@@ -237,8 +237,8 @@ object S3DistCpActivity extends RunnableObject {
       endpoint = None,
       storageClass = None,
       sourcePrefixesFile = None,
-      preStepCommands = Seq.empty,
-      postStepCommands = Seq.empty,
+      preActivityTaskConfig = None,
+      postActivityTaskConfig = None,
       runsOn = runsOn,
       dependsOn = Seq.empty,
       preconditions = Seq.empty,
@@ -251,7 +251,8 @@ object S3DistCpActivity extends RunnableObject {
       retryDelay = None,
       failureAndRerunMode = None,
       actionOnResourceFailure = None,
-      actionOnTaskFailure = None
+      actionOnTaskFailure = None,
+      arguments = Seq.empty
     )
 
 }
