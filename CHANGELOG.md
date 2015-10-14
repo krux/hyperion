@@ -2,24 +2,29 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.12.2 - 2015-10-14
+### Added
+- [#229](https://github.com/krux/hyperion/issues/229) - Convert S3DistCpActivity to a HadoopActivity instead of EmrActivity
+- [#228](https://github.com/krux/hyperion/issues/228) - Allow specifying options to S3DistCpActivity
+
 ## 2.12.1 - 2015-10-14
-## Fixed
+### Fixed
 - [#226](https://github.com/krux/hyperion/issues/226) - Improves SetS3AclActivity with canned acl enum and more flexible apply
 
 ## 2.12.0 - 2015-10-14
-## Added
+### Added
 - [#223](https://github.com/krux/hyperion/issues/223) - Contrib activity that sets S3 ACL
 
 ## 2.11.3 - 2015-10-12
-## Fixed
-- [#220](https://github.com/krux/hyperion/issues/220) - Make spark activity download jar to different directory to avoid race condition of jobs running in parallel.
+### Fixed
+- [#220](https://github.com/krux/hyperion/issues/220) - Make SparkActivity download jar to different directory to avoid race condition of jobs running in parallel.
 
 ## 2.11.2 - 2015-10-08
-## Fixed
+### Fixed
 - [#217](https://github.com/krux/hyperion/issues/217) - DateTimeExpression methods returns the wrong expression.
 
 ## 2.11.1 - 2015-09-29
-## Fixed
+### Fixed
 - [#211](https://github.com/krux/hyperion/issues/211) - RedhishiftUnloadActivity fail when containing expressions with `'`
 
 ## 2.11.0 - 2015-09-22

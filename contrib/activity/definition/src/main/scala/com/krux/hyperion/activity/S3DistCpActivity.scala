@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.aws.AdpEmrActivity
+import com.krux.hyperion.aws.{AdpHadoopActivity, AdpEmrActivity}
 import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.Duration
@@ -31,8 +31,8 @@ class S3DistCpActivity private (
   val endpoint: Option[String],
   val storageClass: Option[StorageClass],
   val sourcePrefixesFile: Option[String],
-  val preStepCommands: Seq[String],
-  val postStepCommands: Seq[String],
+  val preActivityTaskConfig: Option[ShellScriptConfig],
+  val postActivityTaskConfig: Option[ShellScriptConfig],
   val runsOn: Resource[EmrCluster],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
@@ -45,7 +45,8 @@ class S3DistCpActivity private (
   val retryDelay: Option[Parameter[Duration]],
   val failureAndRerunMode: Option[FailureAndRerunMode],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
-  val actionOnTaskFailure: Option[ActionOnTaskFailure]
+  val actionOnTaskFailure: Option[ActionOnTaskFailure],
+  val arguments: Seq[String]
 ) extends EmrActivity {
 
   def copy(
@@ -70,8 +71,8 @@ class S3DistCpActivity private (
     endpoint: Option[String] = endpoint,
     storageClass: Option[StorageClass] = storageClass,
     sourcePrefixesFile: Option[String] = sourcePrefixesFile,
-    preStepCommands: Seq[String] = preStepCommands,
-    postStepCommands: Seq[String] = postStepCommands,
+    preActivityTaskConfig: Option[ShellScriptConfig] = preActivityTaskConfig,
+    postActivityTaskConfig: Option[ShellScriptConfig] = postActivityTaskConfig,
     runsOn: Resource[EmrCluster] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
@@ -84,14 +85,15 @@ class S3DistCpActivity private (
     retryDelay: Option[Parameter[Duration]] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
-    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure
+    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure,
+    arguments: Seq[String] = arguments
   ) = new S3DistCpActivity(id, source, dest, sourcePattern, groupBy, targetSize, appendLastToFile,
     outputCodec, s3ServerSideEncryption, deleteOnSuccess, disableMultipartUpload, chunkSize, numberFiles,
     startingIndex, outputManifest, previousManifest, requirePreviousManifest, copyFromManifest, endpoint,
-    storageClass, sourcePrefixesFile, preStepCommands, postStepCommands, runsOn, dependsOn, preconditions,
+    storageClass, sourcePrefixesFile, preActivityTaskConfig, postActivityTaskConfig, runsOn, dependsOn, preconditions,
     onFailAlarms, onSuccessAlarms, onLateActionAlarms,
     attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode,
-    actionOnResourceFailure, actionOnTaskFailure)
+    actionOnResourceFailure, actionOnTaskFailure, arguments)
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
@@ -116,8 +118,9 @@ class S3DistCpActivity private (
   def withS3Endpoint(endpoint: String) = this.copy(endpoint = Option(endpoint))
   def withStorageClass(storageClass: StorageClass) = this.copy(storageClass = Option(storageClass))
   def withSourcePrefixesFile(sourcePrefixesFile: String) = this.copy(sourcePrefixesFile = Option(sourcePrefixesFile))
-  def withPreStepCommand(command: String*) = this.copy(preStepCommands = preStepCommands ++ command)
-  def withPostStepCommand(command: String*) = this.copy(postStepCommands = postStepCommands ++ command)
+  def withPreActivityTaskConfig(command: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(command))
+  def withPostActivityTaskConfig(command: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(command))
+  def withArguments(arg: String*) = this.copy(arguments = arguments ++ arg)
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
@@ -134,7 +137,8 @@ class S3DistCpActivity private (
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  private def arguments: Seq[String] = Seq(
+  private def allArguments: Seq[String] = Seq(
+    Option(arguments),
     source.map(s => Seq("--src", s.toString)),
     dest.map(s => Seq("--dest", s.toString)),
     sourcePattern.map(s => Seq("--srcPattern", s.toString)),
@@ -157,14 +161,15 @@ class S3DistCpActivity private (
     sourcePrefixesFile.map(s => Seq("--srcPrefixesFile", s))
   ).flatten.flatten
 
-  private def steps: Seq[MapReduceStep] = Seq(MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar").withArguments(arguments: _*))
-
-  lazy val serialize = AdpEmrActivity(
+  lazy val serialize = AdpHadoopActivity(
     id = id,
     name = id.toOption,
-    step = steps.map(_.toString),
-    preStepCommand = seqToOption(preStepCommands)(_.toString),
-    postStepCommand = seqToOption(postStepCommands)(_.toString),
+    jarUri = "/home/hadoop/lib/emr-s3distcp-1.0.jar",
+    mainClass = None,
+    argument = Option(allArguments),
+    hadoopQueue = None,
+    preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
+    postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     input = None,
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -178,9 +183,7 @@ class S3DistCpActivity private (
     lateAfterTimeout = lateAfterTimeout.map(_.toString),
     maximumRetries = maximumRetries.map(_.toString),
     retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString),
-    actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
-    actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
+    failureAndRerunMode = failureAndRerunMode.map(_.toString)
   )
 
 }
@@ -190,6 +193,10 @@ object S3DistCpActivity extends RunnableObject {
   sealed trait OutputCodec
 
   object OutputCodec {
+    object Gz extends OutputCodec {
+      override val toString = "gz"
+    }
+
     object Gzip extends OutputCodec {
       override val toString = "gzip"
     }
