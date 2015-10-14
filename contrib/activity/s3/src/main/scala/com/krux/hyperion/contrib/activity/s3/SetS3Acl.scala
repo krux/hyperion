@@ -24,30 +24,25 @@ object SetS3Acl {
       case Array(b, k) => (b, k)
       case Array(b) => (b, "")
     }
-
   }
 
-  object CannedAccessControlListFactory {
-    def apply(name: String) = name match {
-      case "private" => CannedAccessControlList.Private
-      case "public-read" => CannedAccessControlList.PublicRead
-      case "public-read-write" => CannedAccessControlList.PublicReadWrite
-      case "authenticated-read" => CannedAccessControlList.AuthenticatedRead
-      case "bucket-owner-read" => CannedAccessControlList.BucketOwnerRead
-      case "bucket-owner-full-control" => CannedAccessControlList.BucketOwnerFullControl
-      case "log-delivery-write" => CannedAccessControlList.LogDeliveryWrite
-    }
-  }
+  val cannedAccessControlListMap = Map(
+    "private" -> CannedAccessControlList.Private,
+    "public-read" -> CannedAccessControlList.PublicRead,
+    "public-read-write" -> CannedAccessControlList.PublicReadWrite,
+    "authenticated-read" -> CannedAccessControlList.AuthenticatedRead,
+    "bucket-owner-read" -> CannedAccessControlList.BucketOwnerRead,
+    "bucket-owner-full-control" -> CannedAccessControlList.BucketOwnerFullControl,
+    "log-delivery-write" -> CannedAccessControlList.LogDeliveryWrite
+  )
 
-  object PermissionFactory {
-    def apply(name: String) = name match {
-      case "full" => Permission.FullControl
-      case "read" => Permission.Read
-      case "readacl" => Permission.ReadAcp
-      case "write" => Permission.Write
-      case "writeacl" => Permission.WriteAcp
-    }
-  }
+  val permissionMap = Map(
+    "full" -> Permission.FullControl,
+    "read" -> Permission.Read,
+    "readacl" -> Permission.ReadAcp,
+    "write" -> Permission.Write,
+    "writeacl" -> Permission.WriteAcp
+  )
 
   case class Grant(
     permission: Permission,
@@ -58,11 +53,11 @@ object SetS3Acl {
     def apply(grantString: String) = {
       grantString.split('=') match {
         case Array(permissionString, "id", canonicalId) =>
-          new Grant(PermissionFactory(permissionString), new CanonicalGrantee(canonicalId))
+          new Grant(permissionMap(permissionString), new CanonicalGrantee(canonicalId))
         case Array(permissionString, "emailaddress", emailAddress) =>
-          new Grant(PermissionFactory(permissionString), new EmailAddressGrantee(emailAddress))
+          new Grant(permissionMap(permissionString), new EmailAddressGrantee(emailAddress))
         case Array(permissionString, "group", groupUri) =>
-          new Grant(PermissionFactory(permissionString), GroupGrantee.parseGroupGrantee(groupUri))
+          new Grant(permissionMap(permissionString), GroupGrantee.parseGroupGrantee(groupUri))
         case _ =>
           throw new RuntimeException("Invalid grant expression")
       }
@@ -75,30 +70,6 @@ object SetS3Acl {
     recursive: Boolean = false,
     s3Uri: String = ""
   )
-
-  implicit val cannedAclRead: scopt.Read[CannedAccessControlList] =
-    scopt.Read.reads(CannedAccessControlListFactory.apply)
-  implicit val grantsRead: scopt.Read[Grant] = scopt.Read.reads(Grant.apply)
-
-  def main(args: Array[String]): Unit = {
-    val parser = new OptionParser[Cli]("hyperion-s3-acl-activity") {
-      head("hyperion-s3-acl-activity")
-      opt[Seq[CannedAccessControlList]]("acl").action((x, c) => c.copy(acl = c.acl ++ x))
-        .valueName("acl1,acl2")
-        .unbounded
-      opt[Seq[Grant]]("grants").action((x, c) => c.copy(grants = c.grants ++ x))
-        .valueName("Permission=Grantee_Type=Grantee_ID[,Permission=Grantee_Type=Grantee_ID ...")
-        .unbounded
-      opt[Unit]("recursive").action((_, c) => c.copy(recursive = true))
-      arg[String]("s3uri").action((x, c) => c.copy(s3Uri = x))
-    }
-
-    parser.parse(args, Cli()) match {
-      case Some(cli) => apply(cli)
-      case None => throw new RuntimeException("Invalid cli format")
-    }
-
-  }
 
   def apply(cli: Cli): Unit = {
 
@@ -128,6 +99,7 @@ object SetS3Acl {
         prefix: String,
         previousBatch: Option[ObjectListing] = None
       ): Unit = {
+
       previousBatch match {
         case Some(previousListing) =>
           if (previousListing.isTruncated()) {
@@ -135,6 +107,7 @@ object SetS3Acl {
             objListing.getObjectSummaries().asScala.foreach { summary =>
               applyNonRecursive(summary.getBucketName(), summary.getKey())
             }
+            applyRecursive(bucketName, prefix, Option(objListing))
           } // Do nothing if the previous is not truncated
         case None =>
           val objListing = s3Client.listObjects(bucketName, prefix)
@@ -154,4 +127,27 @@ object SetS3Acl {
     }
   }
 
+  def main(args: Array[String]): Unit = {
+
+    implicit val cannedAclRead: scopt.Read[CannedAccessControlList] =
+      scopt.Read.reads(cannedAccessControlListMap)
+    implicit val grantsRead: scopt.Read[Grant] = scopt.Read.reads(Grant.apply)
+
+    val parser = new OptionParser[Cli]("hyperion-s3-acl-activity") {
+      head("hyperion-s3-acl-activity")
+      opt[Seq[CannedAccessControlList]]("acl").action((x, c) => c.copy(acl = c.acl ++ x))
+        .valueName("acl1,acl2")
+        .unbounded
+      opt[Seq[Grant]]("grants").action((x, c) => c.copy(grants = c.grants ++ x))
+        .valueName("Permission=Grantee_Type=Grantee_ID[,Permission=Grantee_Type=Grantee_ID ...")
+        .unbounded
+      opt[Unit]("recursive").action((_, c) => c.copy(recursive = true))
+      arg[String]("s3uri").action((x, c) => c.copy(s3Uri = x))
+    }
+
+    parser.parse(args, Cli()) match {
+      case Some(cli) => apply(cli)
+      case None => throw new RuntimeException("Invalid cli format")
+    }
+  }
 }

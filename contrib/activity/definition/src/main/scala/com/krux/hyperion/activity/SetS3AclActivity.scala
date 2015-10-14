@@ -41,32 +41,23 @@ case class SetS3AclActivity private (
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
 
+  def withRecursive = this.copy(recursive = true)
+
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  private def buildArgs: Seq[String] = {
-
-    val args = Seq.newBuilder[String]
-
-    val aclArg = cannedAcls.mkString(",")
-    if (aclArg.nonEmpty) {
-      args += "--acl" += aclArg
-    }
-
-    val grantsArg = grants.mkString(",")
-    if (grantsArg.nonEmpty) {
-      args += "--grants" += grantsArg
-    }
-
-    if (recursive) {
-      args += "--recursive"
-    }
-
-    args += s3Uri.toString
-
-    args.result
-  }
-
-  def withRecursive = this.copy(recursive = true)
+  private def buildArgs: Seq[String] =
+    Seq(
+      cannedAcls match {
+        case Seq() => Seq.empty
+        case args => Seq("--acl", args.mkString(","))
+      },
+      grants match {
+        case Seq() => Seq.empty
+        case args => Seq("--grants", args.mkString(","))
+      },
+      if (recursive) Seq("--recursive") else Seq.empty,
+      Seq(s3Uri.toString)
+    ).flatten
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
