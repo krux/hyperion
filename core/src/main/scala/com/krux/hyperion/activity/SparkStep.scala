@@ -25,7 +25,7 @@ case class SparkStep private (
   override def toString: String = Seq(
     Seq(scriptRunner, jobRunner),
     sparkOptions,
-    sparkConfig.flatMap { case (k, v) => Seq("--conf", k, v) }.toSeq,
+    sparkConfig.flatMap { case (k, v) => Seq("--conf", s"$k=$v") }.toSeq,
     Seq(jarUri.toString),
     mainClass.map(_.toString).toSeq,
     args

@@ -98,7 +98,7 @@ class SparkJobActivity private (
 
   def objects: Iterable[PipelineObject] = inputs ++ outputs ++ runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
-  private def sparkSettings: Seq[String] = sparkOptions ++ sparkConfig.flatMap { case (k, v) => Seq("--conf", k, v) }
+  private def sparkSettings: Seq[String] = sparkOptions ++ sparkConfig.flatMap { case (k, v) => Seq("--conf", s"$k=$v") }
 
   lazy val serialize = AdpHadoopActivity(
     id = id,
