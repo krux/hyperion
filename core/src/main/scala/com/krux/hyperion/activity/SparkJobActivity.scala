@@ -39,7 +39,9 @@ case class SparkJobActivity private (
   lateAfterTimeout: Option[Parameter[Duration]],
   maximumRetries: Option[Parameter[Int]],
   retryDelay: Option[Parameter[Duration]],
-  failureAndRerunMode: Option[FailureAndRerunMode]
+  failureAndRerunMode: Option[FailureAndRerunMode],
+  sparkOptions: Seq[String],
+  sparkConfig: Map[String, String]
 ) extends EmrActivity {
 
   def named(name: String) = this.copy(id = id.named(name))
@@ -51,6 +53,8 @@ case class SparkJobActivity private (
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
   def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
   def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
+  def withSparkOption(option: String*) = this.copy(sparkOptions = sparkOptions ++ option)
+  def withSparkConfig(key: String, value: String) = this.copy(sparkConfig = sparkConfig + (key -> value))
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
@@ -65,12 +69,14 @@ case class SparkJobActivity private (
 
   def objects: Iterable[PipelineObject] = inputs ++ outputs ++ runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
+  private def sparkSettings: Seq[String] = sparkOptions ++ sparkConfig.flatMap { case (k, v) => Seq("--conf", k, v) }
+
   lazy val serialize = AdpHadoopActivity(
     id = id,
     name = id.toOption,
     jarUri = scriptRunner,
     mainClass = None,
-    argument = Seq(jobRunner, jarUri.toString, mainClass.toString) ++ args,
+    argument = Seq(jobRunner) ++ sparkSettings ++ Seq(jarUri.toString, mainClass.toString) ++ args,
     hadoopQueue = hadoopQueue,
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
@@ -115,6 +121,8 @@ object SparkJobActivity extends RunnableObject {
     lateAfterTimeout = None,
     maximumRetries = None,
     retryDelay = None,
-    failureAndRerunMode = None
+    failureAndRerunMode = None,
+    sparkOptions = Seq.empty,
+    sparkConfig = Map.empty
   )
 }
