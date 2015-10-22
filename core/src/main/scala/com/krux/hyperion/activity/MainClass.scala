@@ -2,11 +2,14 @@ package com.krux.hyperion.activity
 
 import scala.language.implicitConversions
 
+import com.krux.hyperion.adt.HString
+
 class MainClass private (name: String) {
   override val toString = name
 }
 
 object MainClass {
+  implicit def hStringToMainClass(s: HString): MainClass = MainClass(s.toString)
   implicit def stringToMainClass(s: String): MainClass = MainClass(s)
   implicit def classToMainClass(c: Class[_]): MainClass = MainClass(c)
   implicit def anyToMainClass(a: Any): MainClass = MainClass(a)

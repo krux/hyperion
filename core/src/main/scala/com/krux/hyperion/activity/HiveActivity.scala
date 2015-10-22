@@ -1,13 +1,13 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean}
 import com.krux.hyperion.aws.AdpHiveActivity
+import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.DataNode
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, WorkerGroup, EmrCluster}
+import com.krux.hyperion.resource.{Resource, EmrCluster}
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveActivity makes it easier to set up an Amzon EMR
@@ -21,10 +21,10 @@ import com.krux.hyperion.resource.{Resource, WorkerGroup, EmrCluster}
 case class HiveActivity private (
   id: PipelineObjectId,
   hiveScript: Script,
-  scriptVariables: Seq[String],
+  scriptVariables: Seq[HString],
   input: DataNode,
   output: DataNode,
-  hadoopQueue: Option[String],
+  hadoopQueue: Option[HString],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
   runsOn: Resource[EmrCluster],
@@ -33,18 +33,18 @@ case class HiveActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[Parameter[Duration]],
-  lateAfterTimeout: Option[Parameter[Duration]],
-  maximumRetries: Option[Parameter[Int]],
-  retryDelay: Option[Parameter[Duration]],
+  attemptTimeout: Option[HDuration],
+  lateAfterTimeout: Option[HDuration],
+  maximumRetries: Option[HInt],
+  retryDelay: Option[HDuration],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withScriptVariable(scriptVariable: String*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
-  def withHadoopQueue(queue: String) = this.copy(hadoopQueue = Option(queue))
+  def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
+  def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
 
@@ -53,10 +53,10 @@ case class HiveActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
@@ -66,11 +66,11 @@ case class HiveActivity private (
     name = id.toOption,
     hiveScript = hiveScript.content,
     scriptUri = hiveScript.uri.map(_.ref),
-    scriptVariable = seqToOption(scriptVariables)(_.toString),
-    stage = Option("true"),
+    scriptVariable = seqToOption(scriptVariables)(_.toAws),
+    stage = Option(HBoolean.True.toAws),
     input = Option(input.ref),
     output = Option(output.ref),
-    hadoopQueue = hadoopQueue,
+    hadoopQueue = hadoopQueue.map(_.toAws),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -80,11 +80,11 @@ case class HiveActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.toAws),
+    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
+    maximumRetries = maximumRetries.map(_.toAws),
+    retryDelay = retryDelay.map(_.toAws),
+    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
   )
 }
 

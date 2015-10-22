@@ -1,13 +1,24 @@
 package com.krux.hyperion.activity
 
-trait FailureAndRerunMode
+trait FailureAndRerunMode {
+  def toAws: String
+}
 
 object FailureAndRerunMode {
+
   case object CascadeOnFailure extends FailureAndRerunMode {
-    override val toString: String = "cascade"
+
+    def toAws = "cascade"
+
+    override val toString: String = toAws
+
   }
 
   case object None extends FailureAndRerunMode {
-    override val toString: String = "none"
+
+    def toAws = "none"
+
+    override val toString: String = toAws
+
   }
 }

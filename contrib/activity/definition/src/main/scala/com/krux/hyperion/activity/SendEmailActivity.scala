@@ -1,45 +1,46 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.{Parameter, StringParameter}
+import com.krux.hyperion.expression.{RunnableObject, Parameter}
+import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean, HType}
+import com.krux.hyperion.adt.HType._
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
 class SendEmailActivity private (
   val id: PipelineObjectId,
-  val scriptUri: Option[String],
-  val jarUri: String,
-  val mainClass: String,
-  val host: Option[String],
-  val port: Option[Parameter[Int]],
-  val username: Option[String],
-  val password: Option[StringParameter],
-  val from: Option[String],
-  val to: Seq[String],
-  val cc: Seq[String],
-  val bcc: Seq[String],
-  val subject: Option[String],
-  val body: Option[String],
+  val scriptUri: Option[HString],
+  val jarUri: HString,
+  val mainClass: HString,
+  val host: Option[HString],
+  val port: Option[HInt],
+  val username: Option[HString],
+  val password: Option[Parameter[String]],
+  val from: Option[HString],
+  val to: Seq[HString],
+  val cc: Seq[HString],
+  val bcc: Seq[HString],
+  val subject: Option[HString],
+  val body: Option[HString],
   val starttls: Boolean,
   val debug: Boolean,
   val input: Seq[S3DataNode],
-  val stdout: Option[String],
-  val stderr: Option[String],
+  val stdout: Option[HString],
+  val stderr: Option[HString],
   val runsOn: Resource[Ec2Resource],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
   val onFailAlarms: Seq[SnsAlarm],
   val onSuccessAlarms: Seq[SnsAlarm],
   val onLateActionAlarms: Seq[SnsAlarm],
-  val attemptTimeout: Option[Parameter[Duration]],
-  val lateAfterTimeout: Option[Parameter[Duration]],
-  val maximumRetries: Option[Parameter[Int]],
-  val retryDelay: Option[Parameter[Duration]],
+  val attemptTimeout: Option[HDuration],
+  val lateAfterTimeout: Option[HDuration],
+  val maximumRetries: Option[HInt],
+  val retryDelay: Option[HDuration],
   val failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
@@ -48,63 +49,63 @@ class SendEmailActivity private (
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withHost(host: String) = this.copy(host = Option(host))
-  def withPort(port: Parameter[Int]) = this.copy(port = Option(port))
-  def withUsername(username: String) = this.copy(username = Option(username))
-  def withPassword(password: StringParameter) = this.copy(password = Option(password))
-  def withFrom(from: String) = this.copy(from = Option(from))
-  def withTo(to: String) = this.copy(to = this.to :+ to)
-  def withCc(cc: String) = this.copy(cc = this.cc :+ cc)
-  def withBcc(bcc: String) = this.copy(bcc = this.bcc :+ bcc)
-  def withSubject(subject: String) = this.copy(subject = Option(subject))
-  def withBody(body: String) = this.copy(body = Option(body))
+  def withHost(host: HString) = this.copy(host = Option(host))
+  def withPort(port: HInt) = this.copy(port = Option(port))
+  def withUsername(username: HString) = this.copy(username = Option(username))
+  def withPassword(password: Parameter[String]) = this.copy(password = Option(password))
+  def withFrom(from: HString) = this.copy(from = Option(from))
+  def withTo(to: HString) = this.copy(to = this.to :+ to)
+  def withCc(cc: HString) = this.copy(cc = this.cc :+ cc)
+  def withBcc(bcc: HString) = this.copy(bcc = this.bcc :+ bcc)
+  def withSubject(subject: HString) = this.copy(subject = Option(subject))
+  def withBody(body: HString) = this.copy(body = Option(body))
   def withStartTls = this.copy(starttls = true)
   def withDebug = this.copy(debug = true)
   def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs)
-  def withStdoutTo(out: String) = this.copy(stdout = Option(out))
-  def withStderrTo(err: String) = this.copy(stderr = Option(err))
+  def withStdoutTo(out: HString) = this.copy(stdout = Option(out))
+  def withStderrTo(err: HString) = this.copy(stderr = Option(err))
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def copy(
     id: PipelineObjectId = id,
-    scriptUri: Option[String] = scriptUri,
-    jarUri: String = jarUri,
-    mainClass: String = mainClass,
-    host: Option[String] = host,
-    port: Option[Parameter[Int]] = port,
-    username: Option[String] = username,
-    password: Option[StringParameter] = password,
-    from: Option[String] = from,
-    to: Seq[String] = to,
-    cc: Seq[String] = cc,
-    bcc: Seq[String] = bcc,
-    subject: Option[String] = subject,
-    body: Option[String] = body,
+    scriptUri: Option[HString] = scriptUri,
+    jarUri: HString = jarUri,
+    mainClass: HString = mainClass,
+    host: Option[HString] = host,
+    port: Option[HInt] = port,
+    username: Option[HString] = username,
+    password: Option[Parameter[String]] = password,
+    from: Option[HString] = from,
+    to: Seq[HString] = to,
+    cc: Seq[HString] = cc,
+    bcc: Seq[HString] = bcc,
+    subject: Option[HString] = subject,
+    body: Option[HString] = body,
     starttls: Boolean = starttls,
     debug: Boolean = debug,
     input: Seq[S3DataNode] = input,
-    stdout: Option[String] = stdout,
-    stderr: Option[String] = stderr,
+    stdout: Option[HString] = stdout,
+    stderr: Option[HString] = stderr,
     runsOn: Resource[Ec2Resource] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
     onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
     onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
-    attemptTimeout: Option[Parameter[Duration]] = attemptTimeout,
-    lateAfterTimeout: Option[Parameter[Duration]] = lateAfterTimeout,
-    maximumRetries: Option[Parameter[Int]] = maximumRetries,
-    retryDelay: Option[Parameter[Duration]] = retryDelay,
+    attemptTimeout: Option[HDuration] = attemptTimeout,
+    lateAfterTimeout: Option[HDuration] = lateAfterTimeout,
+    maximumRetries: Option[HInt] = maximumRetries,
+    retryDelay: Option[HDuration] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SendEmailActivity(id, scriptUri, jarUri, mainClass, host, port, username, password,
     from, to, cc, bcc, subject, body, starttls, debug, input, stdout, stderr, runsOn, dependsOn,
@@ -113,30 +114,30 @@ class SendEmailActivity private (
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  private def arguments: Seq[String] = Seq(
-    host.map(h => Seq("-H", h)),
-    port.map(p => Seq("-P", p.toString)),
-    username.map(u => Seq("-u", u)),
-    password.map(p => Seq("-p", p.toString)),
-    from.map(f => Seq("--from", f)),
-    Option(to.flatMap(t => Seq("--to", t))),
-    Option(cc.flatMap(c => Seq("--cc", c))),
-    Option(bcc.flatMap(b => Seq("--bcc", b))),
-    subject.map(s => Seq("-s", s)),
-    body.map(b => Seq("-B", b)),
-    if (starttls) Option(Seq("--starttls")) else None,
-    if (debug) Option(Seq("--debug")) else None
+  private def arguments: Seq[HType] = Seq(
+    host.map(h => Seq[HString]("-H", h)),
+    port.map(p => Seq[HType]("-P", p)),
+    username.map(u => Seq[HString]("-u", u)),
+    password.map(p => Seq[HType]("-p", p)),
+    from.map(f => Seq[HString]("--from", f)),
+    Option(to.flatMap(t => Seq[HString]("--to", t))),
+    Option(cc.flatMap(c => Seq[HString]("--cc", c))),
+    Option(bcc.flatMap(b => Seq[HString]("--bcc", b))),
+    subject.map(s => Seq[HString]("-s", s)),
+    body.map(b => Seq[HString]("-B", b)),
+    if (starttls) Option(Seq[HString]("--starttls")) else None,
+    if (debug) Option(Seq[HString]("--debug")) else None
   ).flatten.flatten
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = scriptUri,
-    scriptArgument = Option(Seq(jarUri, mainClass) ++ arguments),
-    stdout = stdout,
-    stderr = stderr,
-    stage = Option("true"),
+    scriptUri = scriptUri.map(_.toAws),
+    scriptArgument = Option((jarUri +: mainClass +: arguments).map(_.toAws)),
+    stdout = stdout.map(_.toAws),
+    stderr = stderr.map(_.toAws),
+    stage = Option(HBoolean.True.toAws),
     input = seqToOption(input)(_.ref),
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -146,11 +147,11 @@ class SendEmailActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.toAws),
+    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
+    maximumRetries = maximumRetries.map(_.toAws),
+    retryDelay = retryDelay.map(_.toAws),
+    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
   )
 
 }
@@ -161,7 +162,7 @@ object SendEmailActivity extends RunnableObject {
     new SendEmailActivity(
       id = PipelineObjectId(SendEmailActivity.getClass),
       runsOn = runsOn,
-      scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh"),
+      scriptUri = Option(s"${hc.scriptUri}activities/run-jar.sh": HString),
       jarUri = s"${hc.scriptUri}activities/hyperion-email-activity-current-assembly.jar",
       mainClass = "com.krux.hyperion.contrib.activity.email.SendEmailActivity",
       host = None,

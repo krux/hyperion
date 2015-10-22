@@ -8,7 +8,7 @@ package com.krux.hyperion.common
  * or using a builder such as s3 / "hyperion-bucket" / "some-path".
  */
 case class S3Uri(ref: String) {
-  require(ref.startsWith("s3"), "S3Uri must start with s3 protocol.")
+  require(ref.startsWith("s3://"), "S3Uri must start with s3 protocol.")
 
   def /(next: String) = S3Uri(s"$ref/$next")
 

@@ -20,7 +20,7 @@ object Implicits {
 
   implicit def int2DpPeriod(n: Int): DurationBuilder = new DurationBuilder(n)
 
-  implicit def dateTimeRef2dateTimeExp(dtRef: DateTimeRuntimeSlot): DateTimeExp = new DateTimeExp(dtRef.toString)
+  // implicit def dateTimeRef2dateTimeExp(dtRef: DateTimeRuntimeSlot): DateTimeExp = new DateTimeExp(dtRef.toString)
 
   implicit def expression2String(exp: Expression): String = exp.toString
 

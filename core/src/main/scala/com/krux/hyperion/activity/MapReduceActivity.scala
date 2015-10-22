@@ -4,8 +4,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.adt.{HInt, HDuration, HString}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource._
 
@@ -15,8 +15,8 @@ import com.krux.hyperion.resource._
 case class MapReduceActivity private (
   id: PipelineObjectId,
   steps: Seq[MapReduceStep],
-  preStepCommands: Seq[String],
-  postStepCommands: Seq[String],
+  preStepCommands: Seq[HString],
+  postStepCommands: Seq[HString],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
   runsOn: Resource[EmrCluster],
@@ -25,10 +25,10 @@ case class MapReduceActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[Parameter[Duration]],
-  lateAfterTimeout: Option[Parameter[Duration]],
-  maximumRetries: Option[Parameter[Int]],
-  retryDelay: Option[Parameter[Duration]],
+  attemptTimeout: Option[HDuration],
+  lateAfterTimeout: Option[HDuration],
+  maximumRetries: Option[HInt],
+  retryDelay: Option[HDuration],
   failureAndRerunMode: Option[FailureAndRerunMode],
   actionOnResourceFailure: Option[ActionOnResourceFailure],
   actionOnTaskFailure: Option[ActionOnTaskFailure]
@@ -38,8 +38,8 @@ case class MapReduceActivity private (
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withSteps(step: MapReduceStep*) = this.copy(steps = steps ++ step)
-  def withPreStepCommand(command: String*) = this.copy(preStepCommands = preStepCommands ++ command)
-  def withPostStepCommand(command: String*) = this.copy(postStepCommands = postStepCommands ++ command)
+  def withPreStepCommand(command: HString*) = this.copy(preStepCommands = preStepCommands ++ command)
+  def withPostStepCommand(command: HString*) = this.copy(postStepCommands = postStepCommands ++ command)
   def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
   def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
 
@@ -48,10 +48,10 @@ case class MapReduceActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
   def withActionOnResourceFailure(action: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(action))
   def withActionOnTaskFailure(action: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(action))

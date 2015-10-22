@@ -1,11 +1,10 @@
 package com.krux.hyperion.precondition
 
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.activity.Script
 import com.krux.hyperion.aws.AdpShellCommandPrecondition
-import com.krux.hyperion.common.{S3Uri, PipelineObjectId}
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.adt.HDuration
+import com.krux.hyperion.HyperionContext
 
 /**
  * A Unix/Linux shell command that can be run as a precondition.
@@ -23,7 +22,7 @@ case class ShellCommandPrecondition private (
   stdout: Option[String],
   stderr: Option[String],
   role: String,
-  preconditionTimeout: Option[Parameter[Duration]]
+  preconditionTimeout: Option[HDuration]
 ) extends Precondition {
 
   def named(name: String) = this.copy(id = id.named(name))
@@ -33,7 +32,7 @@ case class ShellCommandPrecondition private (
   def withStdout(stdout: String) = this.copy(stdout = Option(stdout))
   def withStderr(stderr: String) = this.copy(stderr = Option(stderr))
   def withRole(role: String) = this.copy(role = role)
-  def withPreconditionTimeout(timeout: Parameter[Duration]) = this.copy(preconditionTimeout = Option(timeout))
+  def withPreconditionTimeout(timeout: HDuration) = this.copy(preconditionTimeout = Option(timeout))
 
   lazy val serialize = AdpShellCommandPrecondition(
     id = id,

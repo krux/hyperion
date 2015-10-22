@@ -1,10 +1,9 @@
 package com.krux.hyperion.precondition
 
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpS3KeyExistsPrecondition
-import com.krux.hyperion.common.{S3Uri, PipelineObjectId}
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.adt.{HDuration, HS3Uri}
+import com.krux.hyperion.HyperionContext
 
 /**
  * Checks whether a key exists in an Amazon S3 data node.
@@ -13,16 +12,16 @@ import com.krux.hyperion.parameter.Parameter
  */
 case class S3KeyExistsPrecondition private (
   id: PipelineObjectId,
-  s3Key: Parameter[S3Uri],
+  s3Key: HS3Uri,
   role: String,
-  preconditionTimeout: Option[Parameter[Duration]]
+  preconditionTimeout: Option[HDuration]
 ) extends Precondition {
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withRole(role: String) = this.copy(role = role)
-  def withPreconditionTimeout(timeout: Parameter[Duration]) = this.copy(preconditionTimeout = Option(timeout))
+  def withPreconditionTimeout(timeout: HDuration) = this.copy(preconditionTimeout = Option(timeout))
 
   lazy val serialize = AdpS3KeyExistsPrecondition(
     id = id,
@@ -35,7 +34,7 @@ case class S3KeyExistsPrecondition private (
 }
 
 object S3KeyExistsPrecondition {
-  def apply(s3Key: Parameter[S3Uri])(implicit hc: HyperionContext) =
+  def apply(s3Key: HS3Uri)(implicit hc: HyperionContext) =
     new S3KeyExistsPrecondition(
       id = PipelineObjectId(S3KeyExistsPrecondition.getClass),
       s3Key = s3Key,

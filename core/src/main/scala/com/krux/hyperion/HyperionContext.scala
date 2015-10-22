@@ -1,8 +1,10 @@
 package com.krux.hyperion
 
-import com.krux.hyperion.expression.Duration
-import com.typesafe.config.{ConfigFactory, Config}
 import scala.util.Try
+
+import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.adt.HType._
+import com.typesafe.config.{ConfigFactory, Config}
 
 /**
  * Basic configurations

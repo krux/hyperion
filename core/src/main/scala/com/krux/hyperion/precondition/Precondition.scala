@@ -2,8 +2,7 @@ package com.krux.hyperion.precondition
 
 import com.krux.hyperion.aws.{AdpRef, AdpPrecondition}
 import com.krux.hyperion.common.PipelineObject
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.adt.HDuration
 
 /**
  * The base trait of all preconditions.
@@ -22,7 +21,7 @@ trait Precondition extends PipelineObject {
    * The precondition will be retried until the retryTimeout with a gap of retryDelay between attempts.
    * Time period; for example, "1 hour".
    */
-  def preconditionTimeout: Option[Parameter[Duration]]
+  def preconditionTimeout: Option[HDuration]
 
   def serialize: AdpPrecondition
 

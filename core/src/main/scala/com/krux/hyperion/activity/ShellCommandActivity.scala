@@ -2,12 +2,12 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.adt.{HInt, HDuration, HString}
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
 /**
  * Runs a command or script
@@ -15,9 +15,9 @@ import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
 case class ShellCommandActivity private (
   id: PipelineObjectId,
   script: Script,
-  scriptArguments: Seq[String],
-  stdout: Option[String],
-  stderr: Option[String],
+  scriptArguments: Seq[HString],
+  stdout: Option[HString],
+  stderr: Option[HString],
   stage: Option[Boolean],
   input: Seq[S3DataNode],
   output: Seq[S3DataNode],
@@ -27,19 +27,19 @@ case class ShellCommandActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[Parameter[Duration]],
-  lateAfterTimeout: Option[Parameter[Duration]],
-  maximumRetries: Option[Parameter[Int]],
-  retryDelay: Option[Parameter[Duration]],
+  attemptTimeout: Option[HDuration],
+  lateAfterTimeout: Option[HDuration],
+  maximumRetries: Option[HInt],
+  retryDelay: Option[HDuration],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withArguments(args: String*) = this.copy(scriptArguments = scriptArguments ++ args)
-  def withStdoutTo(out: String) = this.copy(stdout = Option(out))
-  def withStderrTo(err: String) = this.copy(stderr = Option(err))
+  def withArguments(args: HString*) = this.copy(scriptArguments = scriptArguments ++ args)
+  def withStdoutTo(out: HString) = this.copy(stdout = Option(out))
+  def withStderrTo(err: HString) = this.copy(stderr = Option(err))
   def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs, stage = Option(true))
   def withOutput(outputs: S3DataNode*) = this.copy(output = output ++ outputs, stage = Option(true))
 
@@ -49,10 +49,10 @@ case class ShellCommandActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ preconditions ++ input ++ output ++ dependsOn ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
@@ -62,9 +62,9 @@ case class ShellCommandActivity private (
     name = id.toOption,
     command = script.content,
     scriptUri = script.uri.map(_.ref),
-    scriptArgument = scriptArguments,
-    stdout = stdout,
-    stderr = stderr,
+    scriptArgument = scriptArguments.map(_.toString),
+    stdout = stdout.map(_.toString),
+    stderr = stderr.map(_.toString),
     stage = stage.map(_.toString),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),

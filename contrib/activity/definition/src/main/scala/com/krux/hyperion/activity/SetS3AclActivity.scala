@@ -1,33 +1,34 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.HType._
+import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString, HBoolean, HType}
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, S3Uri, PipelineObjectId}
-import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
 case class SetS3AclActivity private (
     id: PipelineObjectId,
-    scriptUri: Option[S3Uri],
-    jarUri: String,
-    mainClass: String,
+    scriptUri: Option[HS3Uri],
+    jarUri: HString,
+    mainClass: HString,
     cannedAcls: Seq[CannedAccessControlList.Value],
-    grants: Seq[String],
+    grants: Seq[HString],
     recursive: Boolean,
-    s3Uri: Parameter[S3Uri],
+    s3Uri: HS3Uri,
     dependsOn: Seq[PipelineActivity],
-    tags: Seq[String],
+    tags: Seq[HString],
     preconditions: Seq[Precondition],
     onFailAlarms: Seq[SnsAlarm],
     onSuccessAlarms: Seq[SnsAlarm],
     onLateActionAlarms: Seq[SnsAlarm],
-    attemptTimeout: Option[Parameter[Duration]],
-    lateAfterTimeout: Option[Parameter[Duration]],
-    maximumRetries: Option[Parameter[Int]],
-    retryDelay: Option[Parameter[Duration]],
+    attemptTimeout: Option[HDuration],
+    lateAfterTimeout: Option[HDuration],
+    maximumRetries: Option[HInt],
+    retryDelay: Option[HDuration],
     failureAndRerunMode: Option[FailureAndRerunMode],
     runsOn: Resource[Ec2Resource]
   ) extends PipelineActivity {
@@ -45,29 +46,29 @@ case class SetS3AclActivity private (
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  private def buildArgs: Seq[String] =
+  private def buildArgs: Seq[HType] =
     Seq(
       cannedAcls match {
         case Seq() => Seq.empty
-        case args => Seq("--acl", args.mkString(","))
+        case args => Seq[HString]("--acl", args.mkString(","))
       },
       grants match {
         case Seq() => Seq.empty
-        case args => Seq("--grants", args.mkString(","))
+        case args => Seq[HString]("--grants", args.mkString(","))
       },
-      if (recursive) Seq("--recursive") else Seq.empty,
-      Seq(s3Uri.toString)
+      if (recursive) Seq[HString]("--recursive") else Seq.empty,
+      Seq(s3Uri)
     ).flatten
 
   lazy val serialize = AdpShellCommandActivity(
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = scriptUri.map(_.ref),
-    scriptArgument = Option(Seq(jarUri, mainClass) ++ buildArgs),
+    scriptUri = scriptUri.map(_.toAws),
+    scriptArgument = Option((Seq(jarUri, mainClass) ++ buildArgs).map(_.toAws)),
     stdout = None,
     stderr = None,
-    stage = Option("false"),
+    stage = Option(HBoolean.False.toAws),
     input = None,
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -77,31 +78,31 @@ case class SetS3AclActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.toAws),
+    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
+    maximumRetries = maximumRetries.map(_.toAws),
+    retryDelay = retryDelay.map(_.toAws),
+    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
   )
 
 }
 
 object SetS3AclActivity extends RunnableObject {
   def apply(
-      s3Uri: S3Uri,
+      s3Uri: HS3Uri,
       acls: Seq[CannedAccessControlList.Value] = Seq.empty,
-      grants: Seq[String] = Seq.empty
+      grants: Seq[HString] = Seq.empty
     )(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SetS3AclActivity = {
 
     new SetS3AclActivity(
         id = PipelineObjectId(SetS3AclActivity.getClass),
-        scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
+        scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh"): HS3Uri),
         jarUri = s"${hc.scriptUri}activities/hyperion-s3-activity-current-assembly.jar",
         mainClass = "com.krux.hyperion.contrib.activity.s3.SetS3Acl",
         cannedAcls = acls,
         grants = grants,
         recursive = false,
-        s3Uri = s3Uri.toString,
+        s3Uri = s3Uri,
         dependsOn = Seq.empty,
         tags = Seq.empty,
         preconditions = Seq.empty,

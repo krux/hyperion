@@ -4,8 +4,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws._
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.adt.{HInt, HDuration, HString}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, EmrCluster}
 
@@ -18,10 +18,10 @@ import com.krux.hyperion.resource.{Resource, EmrCluster}
  */
 case class HadoopActivity private (
   id: PipelineObjectId,
-  jarUri: String,
+  jarUri: HString,
   mainClass: Option[MainClass],
-  argument: Seq[String],
-  hadoopQueue: Option[String],
+  argument: Seq[HString],
+  hadoopQueue: Option[HString],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
   inputs: Seq[S3DataNode],
@@ -32,18 +32,18 @@ case class HadoopActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[Parameter[Duration]],
-  lateAfterTimeout: Option[Parameter[Duration]],
-  maximumRetries: Option[Parameter[Int]],
-  retryDelay: Option[Parameter[Duration]],
+  attemptTimeout: Option[HDuration],
+  lateAfterTimeout: Option[HDuration],
+  maximumRetries: Option[HInt],
+  retryDelay: Option[HDuration],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends EmrActivity {
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withArguments(arguments: String*) = this.copy(argument = argument ++ arguments)
-  def withHadoopQueue(queue: String) = this.copy(hadoopQueue = Option(queue))
+  def withArguments(arguments: HString*) = this.copy(argument = argument ++ arguments)
+  def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
   def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
@@ -54,10 +54,10 @@ case class HadoopActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = inputs ++ outputs ++ runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
@@ -65,10 +65,10 @@ case class HadoopActivity private (
   lazy val serialize = AdpHadoopActivity(
     id = id,
     name = id.toOption,
-    jarUri = jarUri,
+    jarUri = jarUri.toString,
     mainClass = mainClass.map(_.toString),
-    argument = argument,
-    hadoopQueue = hadoopQueue,
+    argument = argument.map(_.toString),
+    hadoopQueue = hadoopQueue.map(_.toString),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     input = seqToOption(inputs)(_.ref),
@@ -90,9 +90,9 @@ case class HadoopActivity private (
 }
 
 object HadoopActivity extends RunnableObject {
-  def apply(jarUri: String, mainClass: MainClass)(runsOn: Resource[EmrCluster]): HadoopActivity = apply(jarUri, Option(mainClass))(runsOn)
+  def apply(jarUri: HString, mainClass: MainClass)(runsOn: Resource[EmrCluster]): HadoopActivity = apply(jarUri, Option(mainClass))(runsOn)
 
-  def apply(jarUri: String, mainClass: Option[MainClass] = None)(runsOn: Resource[EmrCluster]): HadoopActivity = new HadoopActivity(
+  def apply(jarUri: HString, mainClass: Option[MainClass] = None)(runsOn: Resource[EmrCluster]): HadoopActivity = new HadoopActivity(
     id = PipelineObjectId(HadoopActivity.getClass),
     jarUri = jarUri,
     mainClass = mainClass,

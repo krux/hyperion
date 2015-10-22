@@ -1,10 +1,10 @@
 package com.krux.hyperion.resource
 
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.{AdpRef, AdpEc2Resource}
 import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.{DirectValueParameter, Parameter}
+import com.krux.hyperion.adt.HType._
+import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.adt.{HDuration, HDouble}
 
 /**
  * EC2 resource
@@ -23,10 +23,10 @@ case class Ec2Resource private (
   associatePublicIpAddress: Boolean,
   securityGroups: Seq[String],
   securityGroupIds: Seq[String],
-  spotBidPrice: Option[Parameter[Double]],
+  spotBidPrice: Option[HDouble],
   useOnDemandOnLastAttempt: Option[Boolean],
-  initTimeout: Option[Parameter[Duration]],
-  terminateAfter: Option[Parameter[Duration]],
+  initTimeout: Option[HDuration],
+  terminateAfter: Option[HDuration],
   actionOnResourceFailure: Option[ActionOnResourceFailure],
   actionOnTaskFailure: Option[ActionOnTaskFailure]
 ) extends ResourceObject {
@@ -35,7 +35,7 @@ case class Ec2Resource private (
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def runAsUser(user: String) = this.copy(runAsUser = Option(user))
-  def terminatingAfter(terminateAfter: Parameter[Duration]) = this.copy(terminateAfter = Option(terminateAfter))
+  def terminatingAfter(terminateAfter: HDuration) = this.copy(terminateAfter = Option(terminateAfter))
   def withRole(role: String) = this.copy(role = Option(role))
   def withResourceRole(role: String) = this.copy(resourceRole = Option(role))
   def withInstanceType(instanceType: String) = this.copy(instanceType = instanceType)
@@ -48,9 +48,9 @@ case class Ec2Resource private (
   def withActionOnResourceFailure(actionOnResourceFailure: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(actionOnResourceFailure))
   def withActionOnTaskFailure(actionOnTaskFailure: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(actionOnTaskFailure))
   def withAvailabilityZone(availabilityZone: String) = this.copy(availabilityZone = Option(availabilityZone))
-  def withSpotBidPrice(spotBidPrice: Parameter[Double]) = this.copy(spotBidPrice = Option(spotBidPrice))
+  def withSpotBidPrice(spotBidPrice: HDouble) = this.copy(spotBidPrice = Option(spotBidPrice))
   def withUseOnDemandOnLastAttempt(useOnDemandOnLastAttempt: Boolean) = this.copy(useOnDemandOnLastAttempt = Option(useOnDemandOnLastAttempt))
-  def withInitTimeout(timeout: Parameter[Duration]) = this.copy(initTimeout = Option(timeout))
+  def withInitTimeout(timeout: HDuration) = this.copy(initTimeout = Option(timeout))
 
   lazy val serialize = AdpEc2Resource(
     id = id,
@@ -97,7 +97,7 @@ object Ec2Resource {
     spotBidPrice = None,
     useOnDemandOnLastAttempt = None,
     initTimeout = None,
-    terminateAfter = hc.ec2TerminateAfter.map(DirectValueParameter[Duration]),
+    terminateAfter = hc.ec2TerminateAfter.map(duration2HDuration),
     actionOnResourceFailure = None,
     actionOnTaskFailure = None
   )

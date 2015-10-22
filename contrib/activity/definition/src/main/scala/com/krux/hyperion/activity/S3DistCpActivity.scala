@@ -4,8 +4,9 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
 import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.adt.{HInt, HDuration, HString}
+import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource._
 
@@ -13,80 +14,80 @@ class S3DistCpActivity private (
   val id: PipelineObjectId,
   val source: Option[S3DataNode],
   val dest: Option[S3DataNode],
-  val sourcePattern: Option[String],
-  val groupBy: Option[String],
-  val targetSize: Option[Parameter[Int]],
+  val sourcePattern: Option[HString],
+  val groupBy: Option[HString],
+  val targetSize: Option[HInt],
   val appendLastToFile: Boolean,
   val outputCodec: S3DistCpActivity.OutputCodec,
   val s3ServerSideEncryption: Boolean,
   val deleteOnSuccess: Boolean,
   val disableMultipartUpload: Boolean,
-  val chunkSize: Option[Parameter[Int]],
+  val chunkSize: Option[HInt],
   val numberFiles: Boolean,
-  val startingIndex: Option[Parameter[Int]],
-  val outputManifest: Option[String],
-  val previousManifest: Option[String],
+  val startingIndex: Option[HInt],
+  val outputManifest: Option[HString],
+  val previousManifest: Option[HString],
   val requirePreviousManifest: Boolean,
   val copyFromManifest: Boolean,
-  val endpoint: Option[String],
+  val endpoint: Option[HString],
   val storageClass: Option[StorageClass],
-  val sourcePrefixesFile: Option[String],
-  val preStepCommands: Seq[String],
-  val postStepCommands: Seq[String],
+  val sourcePrefixesFile: Option[HString],
+  val preStepCommands: Seq[HString],
+  val postStepCommands: Seq[HString],
   val runsOn: Resource[EmrCluster],
   val dependsOn: Seq[PipelineActivity],
   val preconditions: Seq[Precondition],
   val onFailAlarms: Seq[SnsAlarm],
   val onSuccessAlarms: Seq[SnsAlarm],
   val onLateActionAlarms: Seq[SnsAlarm],
-  val attemptTimeout: Option[Parameter[Duration]],
-  val lateAfterTimeout: Option[Parameter[Duration]],
-  val maximumRetries: Option[Parameter[Int]],
-  val retryDelay: Option[Parameter[Duration]],
+  val attemptTimeout: Option[HDuration],
+  val lateAfterTimeout: Option[HDuration],
+  val maximumRetries: Option[HInt],
+  val retryDelay: Option[HDuration],
   val failureAndRerunMode: Option[FailureAndRerunMode],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
   val actionOnTaskFailure: Option[ActionOnTaskFailure],
-  val arguments: Seq[String]
+  val arguments: Seq[HString]
 ) extends EmrActivity {
 
   def copy(
     id: PipelineObjectId = id,
     source: Option[S3DataNode] = source,
     dest: Option[S3DataNode] = dest,
-    sourcePattern: Option[String] = sourcePattern,
-    groupBy: Option[String] = groupBy,
-    targetSize: Option[Parameter[Int]] = targetSize,
+    sourcePattern: Option[HString] = sourcePattern,
+    groupBy: Option[HString] = groupBy,
+    targetSize: Option[HInt] = targetSize,
     appendLastToFile: Boolean = appendLastToFile,
     outputCodec: S3DistCpActivity.OutputCodec = outputCodec,
     s3ServerSideEncryption: Boolean = s3ServerSideEncryption,
     deleteOnSuccess: Boolean = deleteOnSuccess,
     disableMultipartUpload: Boolean = disableMultipartUpload,
-    chunkSize: Option[Parameter[Int]] = chunkSize,
+    chunkSize: Option[HInt] = chunkSize,
     numberFiles: Boolean = numberFiles,
-    startingIndex: Option[Parameter[Int]] = startingIndex,
-    outputManifest: Option[String] = outputManifest,
-    previousManifest: Option[String] = previousManifest,
+    startingIndex: Option[HInt] = startingIndex,
+    outputManifest: Option[HString] = outputManifest,
+    previousManifest: Option[HString] = previousManifest,
     requirePreviousManifest: Boolean = requirePreviousManifest,
     copyFromManifest: Boolean = copyFromManifest,
-    endpoint: Option[String] = endpoint,
+    endpoint: Option[HString] = endpoint,
     storageClass: Option[StorageClass] = storageClass,
-    sourcePrefixesFile: Option[String] = sourcePrefixesFile,
-    preStepCommands: Seq[String] = preStepCommands,
-    postStepCommands: Seq[String] = postStepCommands,
+    sourcePrefixesFile: Option[HString] = sourcePrefixesFile,
+    preStepCommands: Seq[HString] = preStepCommands,
+    postStepCommands: Seq[HString] = postStepCommands,
     runsOn: Resource[EmrCluster] = runsOn,
     dependsOn: Seq[PipelineActivity] = dependsOn,
     preconditions: Seq[Precondition] = preconditions,
     onFailAlarms: Seq[SnsAlarm] = onFailAlarms,
     onSuccessAlarms: Seq[SnsAlarm] = onSuccessAlarms,
     onLateActionAlarms: Seq[SnsAlarm] = onLateActionAlarms,
-    attemptTimeout: Option[Parameter[Duration]] = attemptTimeout,
-    lateAfterTimeout: Option[Parameter[Duration]] = lateAfterTimeout,
-    maximumRetries: Option[Parameter[Int]] = maximumRetries,
-    retryDelay: Option[Parameter[Duration]] = retryDelay,
+    attemptTimeout: Option[HDuration] = attemptTimeout,
+    lateAfterTimeout: Option[HDuration] = lateAfterTimeout,
+    maximumRetries: Option[HInt] = maximumRetries,
+    retryDelay: Option[HDuration] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
     actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure,
-    arguments: Seq[String] = arguments
+    arguments: Seq[HString] = arguments
   ) = new S3DistCpActivity(id, source, dest, sourcePattern, groupBy, targetSize, appendLastToFile,
     outputCodec, s3ServerSideEncryption, deleteOnSuccess, disableMultipartUpload, chunkSize, numberFiles,
     startingIndex, outputManifest, previousManifest, requirePreviousManifest, copyFromManifest, endpoint,
@@ -100,65 +101,65 @@ class S3DistCpActivity private (
 
   def withSource(source: S3DataNode) = this.copy(source = Option(source))
   def withDestination(dest: S3DataNode) = this.copy(dest = Option(dest))
-  def withSourcePattern(sourcePattern: String) = this.copy(sourcePattern = Option(sourcePattern))
-  def withGroupBy(groupBy: String) = this.copy(groupBy = Option(groupBy))
-  def withTargetSize(targetSize: Parameter[Int]) = this.copy(targetSize = Option(targetSize))
+  def withSourcePattern(sourcePattern: HString) = this.copy(sourcePattern = Option(sourcePattern))
+  def withGroupBy(groupBy: HString) = this.copy(groupBy = Option(groupBy))
+  def withTargetSize(targetSize: HInt) = this.copy(targetSize = Option(targetSize))
   def appendToLastFile() = this.copy(appendLastToFile = true)
   def withOutputCodec(outputCodec: S3DistCpActivity.OutputCodec) = this.copy(outputCodec = outputCodec)
   def withS3ServerSideEncryption() = this.copy(s3ServerSideEncryption = true)
   def withDeleteOnSuccess() = this.copy(deleteOnSuccess = true)
   def withoutMultipartUpload() = this.copy(disableMultipartUpload = true)
-  def withMultipartUploadChunkSize(chunkSize: Parameter[Int]) = this.copy(chunkSize = Option(chunkSize))
+  def withMultipartUploadChunkSize(chunkSize: HInt) = this.copy(chunkSize = Option(chunkSize))
   def withNumberFiles() = this.copy(numberFiles = true)
-  def withStartingIndex(startingIndex: Parameter[Int]) = this.copy(startingIndex = Option(startingIndex))
-  def withOutputManifest(outputManifest: String) = this.copy(outputManifest = Option(outputManifest))
-  def withPreviousManifest(previousManifest: String) = this.copy(previousManifest = Option(previousManifest))
+  def withStartingIndex(startingIndex: HInt) = this.copy(startingIndex = Option(startingIndex))
+  def withOutputManifest(outputManifest: HString) = this.copy(outputManifest = Option(outputManifest))
+  def withPreviousManifest(previousManifest: HString) = this.copy(previousManifest = Option(previousManifest))
   def withRequirePreviousManifest() = this.copy(requirePreviousManifest = true)
   def withCopyFromManifest() = this.copy(copyFromManifest = true)
-  def withS3Endpoint(endpoint: String) = this.copy(endpoint = Option(endpoint))
+  def withS3Endpoint(endpoint: HString) = this.copy(endpoint = Option(endpoint))
   def withStorageClass(storageClass: StorageClass) = this.copy(storageClass = Option(storageClass))
-  def withSourcePrefixesFile(sourcePrefixesFile: String) = this.copy(sourcePrefixesFile = Option(sourcePrefixesFile))
-  def withPreStepCommand(command: String*) = this.copy(preStepCommands = preStepCommands ++ command)
-  def withPostStepCommand(command: String*) = this.copy(postStepCommands = postStepCommands ++ command)
+  def withSourcePrefixesFile(sourcePrefixesFile: HString) = this.copy(sourcePrefixesFile = Option(sourcePrefixesFile))
+  def withPreStepCommand(command: HString*) = this.copy(preStepCommands = preStepCommands ++ command)
+  def withPostStepCommand(command: HString*) = this.copy(postStepCommands = postStepCommands ++ command)
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
   def withActionOnResourceFailure(action: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(action))
   def withActionOnTaskFailure(action: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(action))
-  def withArgument(argument: String*) = this.copy(arguments = arguments ++ argument)
+  def withArgument(argument: HString*) = this.copy(arguments = arguments ++ argument)
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  private def allArguments: Seq[String] = Seq(
+  private def allArguments: Seq[HString] = Seq(
     Option(arguments),
-    source.map(s => Seq("--src", s.toString)),
-    dest.map(s => Seq("--dest", s.toString)),
-    sourcePattern.map(s => Seq("--srcPattern", s.toString)),
-    groupBy.map(s => Seq("--groupBy", s.toString)),
-    targetSize.map(s => Seq("--targetSize", s.toString)),
-    if (appendLastToFile) Option(Seq("--appendToLastFile")) else None,
-    Option(Seq("--outputCodec", outputCodec.toString)),
-    if (s3ServerSideEncryption) Option(Seq("--s3ServerSideEncryption")) else None,
-    if (deleteOnSuccess) Option(Seq("--deleteOnSuccess")) else None,
-    if (disableMultipartUpload) Option(Seq("--disableMultipartUpload")) else None,
-    chunkSize.map(s => Seq("--multipartUploadChunkSize", s.toString)),
-    if (numberFiles) Option(Seq("--numberFiles")) else None,
-    startingIndex.map(s => Seq("--startingIndex", s.toString)),
-    outputManifest.map(s => Seq("--outputManifest", s)),
-    previousManifest.map(s => Seq("--previousManifest", s)),
-    if (requirePreviousManifest) Option(Seq("--requirePreviousManifest")) else None,
-    if (copyFromManifest) Option(Seq("--copyFromManifest")) else None,
-    endpoint.map(s => Seq("--endpoint", s)),
-    storageClass.map(s => Seq("--storageClass", s.toString)),
-    sourcePrefixesFile.map(s => Seq("--srcPrefixesFile", s))
+    source.map(s => Seq[HString]("--src", s.toString)),
+    dest.map(s => Seq[HString]("--dest", s.toString)),
+    sourcePattern.map(s => Seq[HString]("--srcPattern", s.toString)),
+    groupBy.map(s => Seq[HString]("--groupBy", s.toString)),
+    targetSize.map(s => Seq[HString]("--targetSize", s.toString)),
+    if (appendLastToFile) Option(Seq[HString]("--appendToLastFile")) else None,
+    Option(Seq[HString]("--outputCodec", outputCodec.toString)),
+    if (s3ServerSideEncryption) Option(Seq[HString]("--s3ServerSideEncryption")) else None,
+    if (deleteOnSuccess) Option(Seq[HString]("--deleteOnSuccess")) else None,
+    if (disableMultipartUpload) Option(Seq[HString]("--disableMultipartUpload")) else None,
+    chunkSize.map(s => Seq[HString]("--multipartUploadChunkSize", s.toString)),
+    if (numberFiles) Option(Seq[HString]("--numberFiles")) else None,
+    startingIndex.map(s => Seq[HString]("--startingIndex", s.toString)),
+    outputManifest.map(s => Seq[HString]("--outputManifest", s)),
+    previousManifest.map(s => Seq[HString]("--previousManifest", s)),
+    if (requirePreviousManifest) Option(Seq[HString]("--requirePreviousManifest")) else None,
+    if (copyFromManifest) Option(Seq[HString]("--copyFromManifest")) else None,
+    endpoint.map(s => Seq[HString]("--endpoint", s)),
+    storageClass.map(s => Seq[HString]("--storageClass", s.toString)),
+    sourcePrefixesFile.map(s => Seq[HString]("--srcPrefixesFile", s))
   ).flatten.flatten
 
   private def steps: Seq[MapReduceStep] = Seq(MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar").withArguments(allArguments: _*))

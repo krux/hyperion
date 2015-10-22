@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.0.0-SNAPSHOT
+### Changed
+- [#215](https://github.com/krux/hyperion/issues/215) - Revisit and refactor expression and parameter
+
 ## 2.13.0 - 2015-10-15
 ### Added
 - [#224](https://github.com/krux/hyperion/issues/224) - Spark*Activity should allow setting parameters for spark jobs

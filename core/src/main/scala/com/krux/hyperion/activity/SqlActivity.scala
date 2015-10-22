@@ -4,8 +4,8 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlActivity
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.database.Database
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.adt.{HInt, HDuration, HString}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
@@ -16,37 +16,37 @@ import com.krux.hyperion.resource.{Resource, Ec2Resource}
 case class SqlActivity private (
   id: PipelineObjectId,
   script: Script,
-  scriptArgument: Seq[String],
+  scriptArgument: Seq[HString],
   database: Database,
-  queue: Option[String],
+  queue: Option[HString],
   runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[Parameter[Duration]],
-  lateAfterTimeout: Option[Parameter[Duration]],
-  maximumRetries: Option[Parameter[Int]],
-  retryDelay: Option[Parameter[Duration]],
+  attemptTimeout: Option[HDuration],
+  lateAfterTimeout: Option[HDuration],
+  maximumRetries: Option[HInt],
+  retryDelay: Option[HDuration],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withArguments(arg: String*) = this.copy(scriptArgument = scriptArgument ++ arg)
-  def withQueue(queue: String) = this.copy(queue = Option(queue))
+  def withArguments(arg: HString*) = this.copy(scriptArgument = scriptArgument ++ arg)
+  def withQueue(queue: HString) = this.copy(queue = Option(queue))
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] =
@@ -57,9 +57,9 @@ case class SqlActivity private (
     name = id.toOption,
     script = script.content,
     scriptUri = script.uri.map(_.toString),
-    scriptArgument = scriptArgument,
+    scriptArgument = scriptArgument.map(_.toString),
     database = database.ref,
-    queue = queue,
+    queue = queue.map(_.toString),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
     runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),

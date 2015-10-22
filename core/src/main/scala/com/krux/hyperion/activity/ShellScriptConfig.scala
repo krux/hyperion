@@ -1,12 +1,12 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.aws.{AdpRef, AdpShellScriptConfig}
-import com.krux.hyperion.common.{S3Uri, PipelineObject, PipelineObjectId}
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
+import com.krux.hyperion.adt.HS3Uri
 
 case class ShellScriptConfig(
   id: PipelineObjectId,
-  scriptUri: Parameter[S3Uri],
+  scriptUri: HS3Uri,
   scriptArguments: Seq[String]
 ) extends PipelineObject {
 
@@ -28,7 +28,7 @@ case class ShellScriptConfig(
 }
 
 object ShellScriptConfig {
-  def apply(scriptUri: Parameter[S3Uri]): ShellScriptConfig =
+  def apply(scriptUri: HS3Uri): ShellScriptConfig =
     new ShellScriptConfig(
       id = PipelineObjectId(ShellScriptConfig.getClass),
       scriptUri = scriptUri,

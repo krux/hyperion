@@ -1,22 +1,23 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
+import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri}
+import com.krux.hyperion.adt.HType._
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
+import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
 /**
  * Shell command activity that runs a given Jar
  */
 case class JarActivity private (
   id: PipelineObjectId,
-  jarUri: S3Uri,
-  scriptUri: Option[S3Uri],
+  jarUri: HS3Uri,
+  scriptUri: Option[HS3Uri],
   mainClass: Option[MainClass],
   options: Seq[String],
   arguments: Seq[String],
@@ -31,10 +32,10 @@ case class JarActivity private (
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[Parameter[Duration]],
-  lateAfterTimeout: Option[Parameter[Duration]],
-  maximumRetries: Option[Parameter[Int]],
-  retryDelay: Option[Parameter[Duration]],
+  attemptTimeout: Option[HDuration],
+  lateAfterTimeout: Option[HDuration],
+  maximumRetries: Option[HInt],
+  retryDelay: Option[HDuration],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
@@ -54,10 +55,10 @@ case class JarActivity private (
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
@@ -66,8 +67,8 @@ case class JarActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = scriptUri.map(_.ref),
-    scriptArgument = Option(Seq(jarUri.ref) ++ options ++ mainClass.map(_.toString).toSeq ++ arguments),
+    scriptUri = scriptUri.map(_.toString),
+    scriptArgument = Option(Seq(jarUri.toString) ++ options ++ mainClass.map(_.toString).toSeq ++ arguments),
     stdout = stdout,
     stderr = stderr,
     stage = stage.map(_.toString),
@@ -95,7 +96,7 @@ object JarActivity extends RunnableObject {
     new JarActivity(
       id = PipelineObjectId(JarActivity.getClass),
       jarUri = jarUri,
-      scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
+      scriptUri = Option(S3Uri(s"${hc.scriptUri}activities/run-jar.sh"): HS3Uri),
       mainClass = None,
       options = Seq.empty,
       arguments = Seq.empty,

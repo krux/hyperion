@@ -1,12 +1,12 @@
 package com.krux.hyperion.datanode
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.aws.{AdpSnsAlarm, AdpRef, AdpS3DataNode}
+import com.krux.hyperion.aws.AdpS3DataNode
 import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.dataformat.DataFormat
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.adt.HS3Uri
+import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.WorkerGroup
 
 sealed trait S3DataNode extends Copyable {
 
@@ -20,7 +20,7 @@ sealed trait S3DataNode extends Copyable {
   def groupedBy(client: String): S3DataNode
 
   def withDataFormat(fmt: DataFormat): S3DataNode
-  def withManifestFilePath(path: Parameter[S3Uri]): S3DataNode
+  def withManifestFilePath(path: HS3Uri): S3DataNode
   def compressed: S3DataNode
   def unencrypted: S3DataNode
   def whenMet(conditions: Precondition*): S3DataNode
@@ -41,9 +41,9 @@ object S3DataNode {
  */
 case class S3File private (
   id: PipelineObjectId,
-  filePath: Parameter[S3Uri],
+  filePath: HS3Uri,
   dataFormat: Option[DataFormat],
-  manifestFilePath: Option[Parameter[S3Uri]],
+  manifestFilePath: Option[HS3Uri],
   isCompressed: Boolean,
   isEncrypted: Boolean,
   preconditions: Seq[Precondition],
@@ -55,7 +55,7 @@ case class S3File private (
   def groupedBy(group: String): S3File = this.copy(id = id.groupedBy(group))
 
   def withDataFormat(fmt: DataFormat): S3File = this.copy(dataFormat = Option(fmt))
-  def withManifestFilePath(path: Parameter[S3Uri]): S3File = this.copy(manifestFilePath = Option(path))
+  def withManifestFilePath(path: HS3Uri): S3File = this.copy(manifestFilePath = Option(path))
   def compressed: S3File = this.copy(isCompressed = true)
   def unencrypted: S3File = this.copy(isEncrypted = false)
   def whenMet(conditions: Precondition*): S3File = this.copy(preconditions = preconditions ++ conditions)
@@ -83,7 +83,7 @@ case class S3File private (
 }
 
 object S3File {
-  def apply(filePath: Parameter[S3Uri]): S3File =
+  def apply(filePath: HS3Uri): S3File =
     new S3File(
       id = PipelineObjectId(S3File.getClass),
       filePath = filePath,
@@ -102,9 +102,9 @@ object S3File {
  */
 case class S3Folder private(
   id: PipelineObjectId,
-  directoryPath: Parameter[S3Uri],
+  directoryPath: HS3Uri,
   dataFormat: Option[DataFormat],
-  manifestFilePath: Option[Parameter[S3Uri]],
+  manifestFilePath: Option[HS3Uri],
   isCompressed: Boolean,
   isEncrypted: Boolean,
   preconditions: Seq[Precondition],
@@ -116,7 +116,7 @@ case class S3Folder private(
   def groupedBy(group: String): S3Folder = this.copy(id = id.groupedBy(group))
 
   def withDataFormat(fmt: DataFormat): S3Folder = this.copy(dataFormat = Option(fmt))
-  def withManifestFilePath(path: Parameter[S3Uri]): S3Folder = this.copy(manifestFilePath = Option(path))
+  def withManifestFilePath(path: HS3Uri): S3Folder = this.copy(manifestFilePath = Option(path))
   def compressed: S3Folder = this.copy(isCompressed = true)
   def unencrypted: S3Folder = this.copy(isEncrypted = false)
   def whenMet(preconditions: Precondition*): S3Folder = this.copy(preconditions = preconditions ++ preconditions)
@@ -143,7 +143,7 @@ case class S3Folder private(
 }
 
 object S3Folder {
-  def apply(directoryPath: Parameter[S3Uri]): S3Folder =
+  def apply(directoryPath: HS3Uri): S3Folder =
     new S3Folder(
       id = PipelineObjectId(S3Folder.getClass),
       directoryPath = directoryPath,

@@ -1,34 +1,34 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.{HString, HInt, HDuration, HBoolean}
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, S3Uri, PipelineObjectId}
-import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.parameter.Parameter
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
 case class SendFlowdockMessageActivity private (
   id: PipelineObjectId,
   scriptUri: Option[S3Uri],
-  jarUri: String,
-  mainClass: String,
-  flowApiToken: String,
-  message: String,
-  user: String,
+  jarUri: HString,
+  mainClass: HString,
+  flowApiToken: HString,
+  message: HString,
+  user: HString,
   continueOnError: Boolean,
-  tags: Seq[String],
+  tags: Seq[HString],
   runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
   onFailAlarms: Seq[SnsAlarm],
   onSuccessAlarms: Seq[SnsAlarm],
   onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[Parameter[Duration]],
-  lateAfterTimeout: Option[Parameter[Duration]],
-  maximumRetries: Option[Parameter[Int]],
-  retryDelay: Option[Parameter[Duration]],
+  attemptTimeout: Option[HDuration],
+  lateAfterTimeout: Option[HDuration],
+  maximumRetries: Option[HInt],
+  retryDelay: Option[HDuration],
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
@@ -36,28 +36,28 @@ case class SendFlowdockMessageActivity private (
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def continuingOnError = this.copy(continueOnError = true)
-  def withUser(user: String) = this.copy(user = user)
-  def withTags(tag: String*) = this.copy(tags = this.tags ++ tag)
+  def withUser(user: HString) = this.copy(user = user)
+  def withTags(tag: HString*) = this.copy(tags = this.tags ++ tag)
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
   def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
   def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: Parameter[Duration]) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: Parameter[Duration]) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: Parameter[Int]) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: Parameter[Duration]) = this.copy(retryDelay = Option(delay))
+  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
+  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
+  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
+  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  private def arguments: Seq[String] = Seq(
-    if (continueOnError) Seq.empty else Seq("--fail-on-error"),
-    Seq("--api-key", flowApiToken),
-    Seq("--user", user),
-    if (tags.isEmpty) Seq.empty else Seq("--tags", tags.mkString(",")),
-    Seq(message)
+  private def arguments: Seq[HString] = Seq(
+    if (continueOnError) Seq.empty[HString] else Seq[HString]("--fail-on-error"),
+    Seq[HString]("--api-key", flowApiToken),
+    Seq[HString]("--user", user),
+    if (tags.isEmpty) Seq.empty else Seq[HString]("--tags", tags.mkString(",")),
+    Seq[HString](message)
   ).flatten
 
   lazy val serialize = AdpShellCommandActivity(
@@ -65,10 +65,10 @@ case class SendFlowdockMessageActivity private (
     name = id.toOption,
     command = None,
     scriptUri = scriptUri.map(_.ref),
-    scriptArgument = Option(Seq(jarUri, mainClass) ++ arguments),
+    scriptArgument = Option((Seq(jarUri, mainClass) ++ arguments).map(_.toAws)),
     stdout = None,
     stderr = None,
-    stage = Option("false"),
+    stage = Option(HBoolean.False.toAws),
     input = None,
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -78,11 +78,11 @@ case class SendFlowdockMessageActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.toAws),
+    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
+    maximumRetries = maximumRetries.map(_.toAws),
+    retryDelay = retryDelay.map(_.toAws),
+    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
   )
 }
 

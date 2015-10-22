@@ -1,9 +1,5 @@
 package com.krux.hyperion.expression
 
-import org.joda.time.{DateTimeZone, DateTime}
-
-import scala.language.implicitConversions
-
 /**
  * Expression. Expressions are delimited by: "#{" and "}" and the contents of the braces are
  * evaluated by AWS Data Pipeline.
@@ -12,88 +8,150 @@ trait Expression {
 
   def content: String
 
-  override def toString = s"#{$content}"
+  def toAws: String = s"#{$content}"
+
+  override def toString: String = toAws
 
 }
 
-/**
- * For expressions that return strings.
- */
-case class StringExp(content: String) extends Expression {
+trait TypedExpression extends Expression
 
-  def + (e: StringExp) = StringExp(s"$content + ${e.content}")
+trait IntTypedExp extends TypedExpression { self =>
 
-}
-
-/**
- * For expressions that return numbers.
- */
-case class NumericExp(content: String) extends Expression {
-
-  def + (e: NumericExp) = NumericExp(s"$content + ${e.content}")
-  def - (e: NumericExp) = NumericExp(s"$content - ${e.content}")
-  def * (e: NumericExp) = NumericExp(s"$content * ${e.content}")
-  def / (e: NumericExp) = NumericExp(s"$content / ${e.content}")
-  def ^ (e: NumericExp) = NumericExp(s"$content ^ ${e.content}")
-
-}
-
-object NumericExp {
-  implicit def intToNumericExp(n: Int): NumericExp = NumericExp(n.toString)
-}
-
-/**
- * For expressions that returns DateTimes.
- */
-case class DateTimeExp(content: String) extends Expression {
-
-  def + (period: Duration): DateTimeExp = period match {
-    case Minute(n) => DateTimeFunctions.plusMinutes(this, n)
-    case Hour(n) => DateTimeFunctions.plusHours(this, n)
-    case Day(n) => DateTimeFunctions.plusDays(this, n)
-    case Week(n) => DateTimeFunctions.plusWeeks(this, n)
-    case Month(n) => DateTimeFunctions.plusMonths(this, n)
-    case Year(n) => DateTimeFunctions.plusYears(this, n)
+  def + (e: IntTypedExp) = new IntTypedExp {
+    def content = s"${self.content} + ${e.content}"
   }
 
-  def - (period: Duration): DateTimeExp = period match {
-    case Minute(n) => DateTimeFunctions.minusMinutes(this, n)
-    case Hour(n) => DateTimeFunctions.minusHours(this, n)
-    case Day(n) => DateTimeFunctions.minusDays(this, n)
-    case Week(n) => DateTimeFunctions.minusWeeks(this, n)
-    case Month(n) => DateTimeFunctions.minusMonths(this, n)
-    case Year(n) => DateTimeFunctions.minusYears(this, n)
+  def + (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} + ${e.content}"
   }
 
-  def year: NumericExp = DateTimeFunctions.year(this)
-  def month: NumericExp = DateTimeFunctions.month(this)
-  def day: NumericExp = DateTimeFunctions.day(this)
-  def dayOfYear: NumericExp = DateTimeFunctions.dayOfYear(this)
-  def hour: NumericExp = DateTimeFunctions.hour(this)
-  def minute: NumericExp = DateTimeFunctions.minute(this)
+  def - (e: IntTypedExp) = new IntTypedExp {
+    def content = s"${self.content} - ${e.content}"
+  }
 
-  def firstOfMonth: DateTimeExp = DateTimeFunctions.firstOfMonth(this)
-  def midnight: DateTimeExp = DateTimeFunctions.midnight(this)
-  def sunday: DateTimeExp = DateTimeFunctions.sunday(this)
-  def yesterday: DateTimeExp = DateTimeFunctions.yesterday(this)
-  def inTimeZone(zone: String): DateTimeExp = DateTimeFunctions.inTimeZone(this, zone)
+  def - (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} - ${e.content}"
+  }
+
+  def * (e: IntTypedExp) = new IntTypedExp {
+    def content = s"${self.content} * ${e.content}"
+  }
+
+  def * (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} * ${e.content}"
+  }
+
+  def / (e: IntTypedExp) = new IntTypedExp {
+    def content = s"${self.content} / ${e.content}"
+  }
+
+  def / (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} / ${e.content}"
+  }
+
+  /**
+   * @note for ^ case, it always returns DoubleTypedExp regardless of the type of the paramenter
+   */
+  def ^ (e: IntTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} ^ ${e.content}"
+  }
+
+  def ^ (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} ^ ${e.content}"
+  }
 
 }
 
-object DateTimeExp {
+trait DoubleTypedExp extends TypedExpression { self =>
 
-  def apply(dt: DateTime): DateTimeExp = {
-    val utc = dt.toDateTime(DateTimeZone.UTC)
-    if (utc.getHourOfDay > 0 || utc.getMinuteOfHour > 0)
-      DateTimeFunctions.makeDateTime(utc.getYear, utc.getMonthOfYear, utc.getDayOfMonth, utc.getHourOfDay, utc.getMinuteOfHour)
-    else
-      DateTimeFunctions.makeDate(utc.getYear, utc.getMonthOfYear, utc.getDayOfMonth)
+  def + (e: IntTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} + ${e.content}"
   }
 
-  def apply(year: NumericExp, month: NumericExp, day: NumericExp): DateTimeExp =
-    DateTimeFunctions.makeDate(year, month, day)
+  def + (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} + ${e.content}"
+  }
 
-  def apply(year: NumericExp, month: NumericExp, day: NumericExp, hour: NumericExp, minute: NumericExp): DateTimeExp =
-    DateTimeFunctions.makeDateTime(year, month, day, hour, minute)
+  def - (e: IntTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} - ${e.content}"
+  }
+
+  def - (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} - ${e.content}"
+  }
+
+  def * (e: IntTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} * ${e.content}"
+  }
+
+  def * (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} * ${e.content}"
+  }
+
+  def / (e: IntTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} / ${e.content}"
+  }
+
+  def / (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} / ${e.content}"
+  }
+
+  def ^ (e: IntTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} ^ ${e.content}"
+  }
+
+  def ^ (e: DoubleTypedExp) = new DoubleTypedExp {
+    def content = s"${self.content} ^ ${e.content}"
+  }
 
 }
+
+trait StringTypedExp extends TypedExpression { self =>
+
+  def + (e: StringTypedExp) = new StringTypedExp {
+    def content = s"${self.content} + ${e.content}"
+  }
+
+}
+
+trait BooleanTypedExp extends TypedExpression
+
+trait DateTimeTypedExp extends TypedExpression {
+
+  def + (period: Duration): DateTimeTypedExp = period match {
+    case Minute(n) => PlusMinutes(this, IntExp(n))
+    case Hour(n) => PlusHours(this, IntExp(n))
+    case Day(n) => PlusDays(this, IntExp(n))
+    case Week(n) => PlusWeeks(this, IntExp(n))
+    case Month(n) => PlusMonths(this, IntExp(n))
+    case Year(n) => PlusYears(this, IntExp(n))
+  }
+
+  def - (period: Duration): DateTimeTypedExp = period match {
+    case Minute(n) => MinusMinutes(this, IntExp(n))
+    case Hour(n) => MinusHours(this, IntExp(n))
+    case Day(n) => MinusDays(this, IntExp(n))
+    case Week(n) => MinusWeeks(this, IntExp(n))
+    case Month(n) => MinusMonths(this, IntExp(n))
+    case Year(n) => MinusYears(this, IntExp(n))
+  }
+
+  def year: IntTypedExp = ExtractYear(this)
+  def month: IntTypedExp = ExtractMonth(this)
+  def day: IntTypedExp = ExtractDay(this)
+  def dayOfYear: IntTypedExp = DayOfYear(this)
+  def hour: IntTypedExp = ExtractHour(this)
+  def minute: IntTypedExp = ExtractMinute(this)
+
+  def firstOfMonth: DateTimeTypedExp = FirstOfMonth(this)
+  def midnight: DateTimeTypedExp = Midnight(this)
+  def sunday: DateTimeTypedExp = Sunday(this)
+  def yesterday: DateTimeTypedExp = Yesterday(this)
+  def inTimeZone(zone: String): DateTimeTypedExp = InTimeZone(this, zone)
+
+}
+
+trait DurationTypedExp extends TypedExpression
+
+trait S3UriTypedExp extends TypedExpression

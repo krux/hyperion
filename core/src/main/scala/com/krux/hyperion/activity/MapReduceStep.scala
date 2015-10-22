@@ -1,16 +1,18 @@
 package com.krux.hyperion.activity
 
+import com.krux.hyperion.adt.HString
+
 /**
  * A MapReduce step that runs on MapReduce Cluster
  */
 case class MapReduceStep private (
-  jarUri: String,
+  jarUri: HString,
   mainClass: Option[MainClass],
-  args: Seq[String]
+  args: Seq[HString]
 ) {
 
   def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
-  def withArguments(arg: String*) = this.copy(args = args ++ arg)
+  def withArguments(arg: HString*) = this.copy(args = args ++ arg)
 
   override def toString = (Seq(jarUri) ++ mainClass.map(_.toString).toSeq ++ args).mkString(",")
 
@@ -18,7 +20,7 @@ case class MapReduceStep private (
 
 object MapReduceStep {
 
-  def apply(jarUri: String): MapReduceStep = MapReduceStep(
+  def apply(jarUri: HString): MapReduceStep = MapReduceStep(
     jarUri = jarUri,
     mainClass = None,
     args = Seq.empty
