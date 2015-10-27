@@ -1,7 +1,5 @@
 package com.krux.hyperion.resource
 
-import scala.util.Try
-
 import com.krux.hyperion.aws.AdpEmrCluster
 import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.adt.HType._
@@ -45,8 +43,8 @@ class MapReduceCluster private (
   val actionOnTaskFailure: Option[ActionOnTaskFailure]
 ) extends EmrCluster {
 
-  assert(Try(taskInstanceCount >= 0).getOrElse(true))
-  assert(Try(coreInstanceCount >= 1).getOrElse(true))
+  assert((taskInstanceCount >= 0).getOrElse(true))
+  assert((coreInstanceCount >= 1).getOrElse(true))
 
   def copy(id: PipelineObjectId = id,
     amiVersion: HString = amiVersion,

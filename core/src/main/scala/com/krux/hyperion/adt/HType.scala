@@ -6,7 +6,7 @@ import org.joda.time.{DateTimeZone, DateTime}
 
 import com.krux.hyperion.expression.{DateTimeExp, IntExp, StringExp, DoubleExp,
   TypedExpression, IntConstantExp, DurationExp, Duration, S3UriExp, BooleanExp}
-import com.krux.hyperion.common.S3Uri
+import com.krux.hyperion.common.{S3Uri, OptionalOrdered}
 
 sealed abstract class HType {
 
@@ -48,16 +48,16 @@ object HType {
 
 case class HString(value: Either[String, StringExp]) extends HType
 
-case class HInt(value: Either[Int, IntExp]) extends HType with Ordered[Int] {
+case class HInt(value: Either[Int, IntExp]) extends HType with OptionalOrdered[Int] {
 
   def isZero: Option[Boolean] = value match {
     case Left(v) => Option(v == 0)
     case _ => None
   }
 
-  def compare(that: Int): Int = value match {
-    case Left(v) => v - that
-    case _ => throw new NotComparableException("Cannot compare expressions")
+  def compare(that: Int): Option[Int] = value match {
+    case Left(v) => Some(v - that)
+    case _ => None
   }
 
   def + (that: HInt): HInt = this.value match {
@@ -73,11 +73,11 @@ case class HInt(value: Either[Int, IntExp]) extends HType with Ordered[Int] {
 
 }
 
-case class HDouble(value: Either[Double, DoubleExp]) extends HType with Ordered[Double] {
+case class HDouble(value: Either[Double, DoubleExp]) extends HType with OptionalOrdered[Double] {
 
-  def compare(that: Double): Int = value match {
-    case Left(v) => java.lang.Double.compare(v, that)
-    case _ => throw new NotComparableException("Cannot cmpare expressions")
+  def compare(that: Double): Option[Int] = value match {
+    case Left(v) => Some(java.lang.Double.compare(v, that))
+    case _ => None
   }
 
 }

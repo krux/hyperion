@@ -1,7 +1,5 @@
 package com.krux.hyperion.resource
 
-import scala.util.Try
-
 import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.adt.{HInt, HDuration, HDouble, HString, HBoolean}
 import com.krux.hyperion.aws.AdpEmrCluster
@@ -46,8 +44,8 @@ class SparkCluster private (
   val actionOnTaskFailure: Option[ActionOnTaskFailure]
 ) extends EmrCluster {
 
-  assert(Try(coreInstanceCount >= 2).getOrElse(true))
-  assert(Try(taskInstanceCount >= 0).getOrElse(true))
+  assert((coreInstanceCount >= 2).getOrElse(true))
+  assert((taskInstanceCount >= 0).getOrElse(true))
 
   def copy(id: PipelineObjectId = id,
     sparkVersion: HString = sparkVersion,
