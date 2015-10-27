@@ -64,13 +64,13 @@ case class HiveActivity private (
   lazy val serialize = new AdpHiveActivity(
     id = id,
     name = id.toOption,
-    hiveScript = hiveScript.content,
-    scriptUri = hiveScript.uri.map(_.ref),
-    scriptVariable = seqToOption(scriptVariables)(_.toAws),
-    stage = Option(HBoolean.True.toAws),
+    hiveScript = hiveScript.content.map(_.serialize),
+    scriptUri = hiveScript.uri.map(_.serialize),
+    scriptVariable = seqToOption(scriptVariables)(_.serialize),
+    stage = Option(HBoolean.True.serialize),
     input = Option(input.ref),
     output = Option(output.ref),
-    hadoopQueue = hadoopQueue.map(_.toAws),
+    hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -80,11 +80,11 @@ case class HiveActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toAws),
-    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
-    maximumRetries = maximumRetries.map(_.toAws),
-    retryDelay = retryDelay.map(_.toAws),
-    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 }
 

@@ -6,7 +6,6 @@ import org.json4s.jackson.JsonMethods._
 import org.json4s.JsonDSL._
 import org.scalatest.WordSpec
 
-
 class ExampleWorkflowSpec extends WordSpec {
 
   "ExampleWorkflow" should {

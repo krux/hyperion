@@ -61,11 +61,11 @@ case class HiveCopyActivity private (
   lazy val serialize = AdpHiveCopyActivity(
     id = id,
     name = id.toOption,
-    filterSql = filterSql.map(_.toString),
-    generatedScriptsPath = generatedScriptsPath.map(_.toString),
+    filterSql = filterSql.map(_.serialize),
+    generatedScriptsPath = generatedScriptsPath.map(_.serialize),
     input = Option(input.ref),
     output = Option(output.ref),
-    hadoopQueue = hadoopQueue.map(_.toString),
+    hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -75,11 +75,11 @@ case class HiveCopyActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 }
 

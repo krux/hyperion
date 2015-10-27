@@ -110,11 +110,11 @@ class PythonActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = scriptUri.map(_.toAws),
-    scriptArgument = Option(scriptArguments.map(_.toAws)),
-    stdout = stdout.map(_.toAws),
-    stderr = stderr.map(_.toAws),
-    stage = Option(HBoolean.True.toAws),
+    scriptUri = scriptUri.map(_.serialize),
+    scriptArgument = Option(scriptArguments.map(_.serialize)),
+    stdout = stdout.map(_.serialize),
+    stderr = stderr.map(_.serialize),
+    stage = Option(HBoolean.True.serialize),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -124,11 +124,11 @@ class PythonActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toAws),
-    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
-    maximumRetries = maximumRetries.map(_.toAws),
-    retryDelay = retryDelay.map(_.toAws),
-    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

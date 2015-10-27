@@ -1,11 +1,11 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean}
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{HInt, HDuration, HString}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
@@ -18,7 +18,7 @@ case class ShellCommandActivity private (
   scriptArguments: Seq[HString],
   stdout: Option[HString],
   stderr: Option[HString],
-  stage: Option[Boolean],
+  stage: Option[HBoolean],
   input: Seq[S3DataNode],
   output: Seq[S3DataNode],
   runsOn: Resource[Ec2Resource],
@@ -40,8 +40,8 @@ case class ShellCommandActivity private (
   def withArguments(args: HString*) = this.copy(scriptArguments = scriptArguments ++ args)
   def withStdoutTo(out: HString) = this.copy(stdout = Option(out))
   def withStderrTo(err: HString) = this.copy(stderr = Option(err))
-  def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs, stage = Option(true))
-  def withOutput(outputs: S3DataNode*) = this.copy(output = output ++ outputs, stage = Option(true))
+  def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs, stage = Option(HBoolean.True))
+  def withOutput(outputs: S3DataNode*) = this.copy(output = output ++ outputs, stage = Option(HBoolean.True))
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
 
@@ -60,12 +60,12 @@ case class ShellCommandActivity private (
   lazy val serialize = AdpShellCommandActivity(
     id = id,
     name = id.toOption,
-    command = script.content,
-    scriptUri = script.uri.map(_.ref),
-    scriptArgument = scriptArguments.map(_.toString),
-    stdout = stdout.map(_.toString),
-    stderr = stderr.map(_.toString),
-    stage = stage.map(_.toString),
+    command = script.content.map(_.serialize),
+    scriptUri = script.uri.map(_.serialize),
+    scriptArgument = scriptArguments.map(_.serialize),
+    stdout = stdout.map(_.serialize),
+    stderr = stderr.map(_.serialize),
+    stage = stage.map(_.serialize),
     input = seqToOption(input)(_.ref),
     output = seqToOption(output)(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -75,11 +75,11 @@ case class ShellCommandActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 }
 

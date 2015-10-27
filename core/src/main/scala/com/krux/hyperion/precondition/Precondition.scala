@@ -1,8 +1,8 @@
 package com.krux.hyperion.precondition
 
+import com.krux.hyperion.adt.{HDuration, HString}
 import com.krux.hyperion.aws.{AdpRef, AdpPrecondition}
 import com.krux.hyperion.common.PipelineObject
-import com.krux.hyperion.adt.HDuration
 
 /**
  * The base trait of all preconditions.
@@ -15,7 +15,7 @@ trait Precondition extends PipelineObject {
   /**
    * The IAM role to use for this precondition.
    */
-  def role: String
+  def role: HString
 
   /**
    * The precondition will be retried until the retryTimeout with a gap of retryDelay between attempts.

@@ -1,8 +1,8 @@
 package com.krux.hyperion.precondition
 
+import com.krux.hyperion.adt.{HDuration, HS3Uri, HString}
 import com.krux.hyperion.aws.AdpS3KeyExistsPrecondition
 import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.adt.{HDuration, HS3Uri}
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -13,22 +13,22 @@ import com.krux.hyperion.HyperionContext
 case class S3KeyExistsPrecondition private (
   id: PipelineObjectId,
   s3Key: HS3Uri,
-  role: String,
+  role: HString,
   preconditionTimeout: Option[HDuration]
 ) extends Precondition {
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withRole(role: String) = this.copy(role = role)
+  def withRole(role: HString) = this.copy(role = role)
   def withPreconditionTimeout(timeout: HDuration) = this.copy(preconditionTimeout = Option(timeout))
 
   lazy val serialize = AdpS3KeyExistsPrecondition(
     id = id,
     name = id.toOption,
-    s3Key = s3Key.toString,
-    role = role,
-    preconditionTimeout = preconditionTimeout.map(_.toString)
+    s3Key = s3Key.serialize,
+    role = role.serialize,
+    preconditionTimeout = preconditionTimeout.map(_.serialize)
   )
 
 }

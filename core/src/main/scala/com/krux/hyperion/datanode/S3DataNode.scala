@@ -5,7 +5,6 @@ import com.krux.hyperion.aws.AdpS3DataNode
 import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.dataformat.DataFormat
 import com.krux.hyperion.adt.HS3Uri
-import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.precondition.Precondition
 
 sealed trait S3DataNode extends Copyable {
@@ -70,9 +69,9 @@ case class S3File private (
     id = id,
     name = id.toOption,
     directoryPath = None,
-    filePath = Option(filePath.toString),
+    filePath = Option(filePath.serialize),
     dataFormat = dataFormat.map(_.ref),
-    manifestFilePath = manifestFilePath.map(_.toString),
+    manifestFilePath = manifestFilePath.map(_.serialize),
     compression = if (isCompressed) Option("gzip") else None,
     s3EncryptionType = if (isEncrypted) None else Option("NONE"),
     precondition = seqToOption(preconditions)(_.ref),
@@ -130,10 +129,10 @@ case class S3Folder private(
   lazy val serialize = AdpS3DataNode(
     id = id,
     name = id.toOption,
-    directoryPath = Option(directoryPath.toString),
+    directoryPath = Option(directoryPath.serialize),
     filePath = None,
     dataFormat = dataFormat.map(_.ref),
-    manifestFilePath = manifestFilePath.map(_.toString),
+    manifestFilePath = manifestFilePath.map(_.serialize),
     compression = if (isCompressed) Option("gzip") else None,
     s3EncryptionType = if (isEncrypted) None else Option("NONE"),
     precondition = seqToOption(preconditions)(_.ref),

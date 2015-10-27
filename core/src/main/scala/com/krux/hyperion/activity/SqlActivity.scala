@@ -55,11 +55,11 @@ case class SqlActivity private (
   lazy val serialize = AdpSqlActivity(
     id = id,
     name = id.toOption,
-    script = script.content,
-    scriptUri = script.uri.map(_.toString),
-    scriptArgument = scriptArgument.map(_.toString),
+    script = script.content.map(_.serialize),
+    scriptUri = script.uri.map(_.serialize),
+    scriptArgument = scriptArgument.map(_.serialize),
     database = database.ref,
-    queue = queue.map(_.toString),
+    queue = queue.map(_.serialize),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
     runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
@@ -67,11 +67,11 @@ case class SqlActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 }
 

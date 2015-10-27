@@ -1,6 +1,7 @@
 package com.krux.hyperion.datanode
 
 import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRedshiftDataNode
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.database.RedshiftDatabase
@@ -13,10 +14,10 @@ import com.krux.hyperion.resource.WorkerGroup
 case class RedshiftDataNode private (
   id: PipelineObjectId,
   database: RedshiftDatabase,
-  tableName: String,
-  createTableSql: Option[String],
-  schemaName: Option[String],
-  primaryKeys: Seq[String],
+  tableName: HString,
+  createTableSql: Option[HString],
+  schemaName: Option[HString],
+  primaryKeys: Seq[HString],
   preconditions: Seq[Precondition],
   onSuccessAlarms: Seq[SnsAlarm],
   onFailAlarms: Seq[SnsAlarm]
@@ -25,9 +26,9 @@ case class RedshiftDataNode private (
   def named(name: String): RedshiftDataNode = this.copy(id = id.named(name))
   def groupedBy(group: String): RedshiftDataNode = this.copy(id = id.groupedBy(group))
 
-  def withCreateTableSql(createSql: String): RedshiftDataNode = this.copy(createTableSql = Option(createSql))
-  def withSchema(name: String): RedshiftDataNode = this.copy(schemaName = Option(name))
-  def withPrimaryKeys(pks: String*): RedshiftDataNode = this.copy(primaryKeys = primaryKeys ++ pks)
+  def withCreateTableSql(createSql: HString): RedshiftDataNode = this.copy(createTableSql = Option(createSql))
+  def withSchema(name: HString): RedshiftDataNode = this.copy(schemaName = Option(name))
+  def withPrimaryKeys(pks: HString*): RedshiftDataNode = this.copy(primaryKeys = primaryKeys ++ pks)
 
   def whenMet(conditions: Precondition*): RedshiftDataNode = this.copy(preconditions = preconditions ++ conditions)
   def onFail(alarms: SnsAlarm*): RedshiftDataNode = this.copy(onFailAlarms = onFailAlarms ++ alarms)
@@ -38,10 +39,10 @@ case class RedshiftDataNode private (
   lazy val serialize = AdpRedshiftDataNode(
     id = id,
     name = id.toOption,
-    createTableSql = createTableSql,
+    createTableSql = createTableSql.map(_.serialize),
     database = database.ref,
-    schemaName = schemaName,
-    tableName = tableName,
+    schemaName = schemaName.map(_.serialize),
+    tableName = tableName.serialize,
     primaryKeys = seqToOption(primaryKeys)(_.toString),
     precondition = seqToOption(preconditions)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
@@ -51,7 +52,7 @@ case class RedshiftDataNode private (
 }
 
 object RedshiftDataNode {
-  def apply(database: RedshiftDatabase, tableName: String): RedshiftDataNode =
+  def apply(database: RedshiftDatabase, tableName: HString): RedshiftDataNode =
     new RedshiftDataNode(
       id = PipelineObjectId(RedshiftDataNode.getClass),
       database = database,

@@ -65,10 +65,10 @@ case class HadoopActivity private (
   lazy val serialize = AdpHadoopActivity(
     id = id,
     name = id.toOption,
-    jarUri = jarUri.toString,
+    jarUri = jarUri.serialize,
     mainClass = mainClass.map(_.toString),
-    argument = argument.map(_.toString),
-    hadoopQueue = hadoopQueue.map(_.toString),
+    argument = argument.map(_.serialize),
+    hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     input = seqToOption(inputs)(_.ref),
@@ -80,11 +80,11 @@ case class HadoopActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

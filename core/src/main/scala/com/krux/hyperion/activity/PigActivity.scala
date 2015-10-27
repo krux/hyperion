@@ -5,7 +5,7 @@ import com.krux.hyperion.aws.AdpPigActivity
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{HInt, HDuration, HString, HS3Uri}
+import com.krux.hyperion.adt.{HInt, HDuration, HString, HS3Uri, HBoolean}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, EmrCluster}
 
@@ -20,7 +20,7 @@ case class PigActivity private (
   script: Script,
   scriptVariables: Seq[HString],
   generatedScriptsPath: Option[HS3Uri],
-  stage: Option[Boolean],
+  stage: Option[HBoolean],
   input: Option[DataNode],
   output: Option[DataNode],
   hadoopQueue: Option[HString],
@@ -44,8 +44,8 @@ case class PigActivity private (
 
   def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
-  def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(true))
-  def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(true))
+  def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(HBoolean.True))
+  def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(HBoolean.True))
   def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
@@ -66,14 +66,14 @@ case class PigActivity private (
   lazy val serialize = new AdpPigActivity(
     id = id,
     name = id.toOption,
-    script = script.content,
-    scriptUri = script.uri.map(_.ref),
-    scriptVariable = seqToOption(scriptVariables)(_.toString),
-    generatedScriptsPath = generatedScriptsPath.map(_.toString),
-    stage = stage.toString,
+    script = script.content.map(_.serialize),
+    scriptUri = script.uri.map(_.serialize),
+    scriptVariable = seqToOption(scriptVariables)(_.serialize),
+    generatedScriptsPath = generatedScriptsPath.map(_.serialize),
+    stage = stage.map(_.serialize),
     input = input.map(_.ref),
     output = output.map(_.ref),
-    hadoopQueue = hadoopQueue.map(_.toString),
+    hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -83,11 +83,11 @@ case class PigActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 }
 

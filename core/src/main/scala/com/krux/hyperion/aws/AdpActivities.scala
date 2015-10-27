@@ -370,7 +370,7 @@ class AdpPigActivity (
   val scriptUri: Option[String],
   val scriptVariable: Option[Seq[String]],
   val generatedScriptsPath: Option[String],
-  val stage: String,
+  val stage: Option[String],
   val input: Option[AdpRef[AdpDataNode]],
   val output: Option[AdpRef[AdpDataNode]],
   val hadoopQueue: Option[String],

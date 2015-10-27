@@ -6,7 +6,6 @@ import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.{RunnableObject, Parameter}
 import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean, HType}
-import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
@@ -133,11 +132,11 @@ class SendEmailActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = scriptUri.map(_.toAws),
-    scriptArgument = Option((jarUri +: mainClass +: arguments).map(_.toAws)),
-    stdout = stdout.map(_.toAws),
-    stderr = stderr.map(_.toAws),
-    stage = Option(HBoolean.True.toAws),
+    scriptUri = scriptUri.map(_.serialize),
+    scriptArgument = Option((jarUri +: mainClass +: arguments).map(_.serialize)),
+    stdout = stdout.map(_.serialize),
+    stderr = stderr.map(_.serialize),
+    stage = Option(HBoolean.True.serialize),
     input = seqToOption(input)(_.ref),
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -147,11 +146,11 @@ class SendEmailActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toAws),
-    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
-    maximumRetries = maximumRetries.map(_.toAws),
-    retryDelay = retryDelay.map(_.toAws),
-    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

@@ -1,12 +1,12 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString, HBoolean, HType, HDateTime}
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.{Format, DateTimeExp, RunnableObject, Parameter}
-import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString, HBoolean, HType}
-import com.krux.hyperion.adt.HType._
+import com.krux.hyperion.expression.ConstantExpression._
+import com.krux.hyperion.expression.{Format, DateTimeConstantExp, RunnableObject, Parameter}
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
@@ -25,8 +25,8 @@ class SftpDownloadActivity private (
   val password: Option[Parameter[String]],
   val identity: Option[HS3Uri],
   val pattern: Option[HString],
-  val sinceDate: Option[DateTimeExp],
-  val untilDate: Option[DateTimeExp],
+  val sinceDate: Option[DateTimeConstantExp],
+  val untilDate: Option[DateTimeConstantExp],
   val skipEmpty: Boolean,
   val markSuccessfulJobs: Boolean,
   val input: Option[HString],
@@ -51,8 +51,8 @@ class SftpDownloadActivity private (
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def since(date: DateTimeExp) = this.copy(sinceDate = Option(date))
-  def until(date: DateTimeExp) = this.copy(untilDate = Option(date))
+  def since(date: DateTimeConstantExp) = this.copy(sinceDate = Option(date))
+  def until(date: DateTimeConstantExp) = this.copy(untilDate = Option(date))
   def withPort(port: HInt) = this.copy(port = Option(port))
   def withUsername(username: HString) = this.copy(username = Option(username))
   def withPassword(password: Parameter[String]) = this.copy(password = Option(password))
@@ -87,8 +87,8 @@ class SftpDownloadActivity private (
     password: Option[Parameter[String]] = password,
     identity: Option[HS3Uri] = identity,
     pattern: Option[HString] = pattern,
-    sinceDate: Option[DateTimeExp] = sinceDate,
-    untilDate: Option[DateTimeExp] = untilDate,
+    sinceDate: Option[DateTimeConstantExp] = sinceDate,
+    untilDate: Option[DateTimeConstantExp] = untilDate,
     skipEmpty: Boolean = skipEmpty,
     markSuccessfulJobs: Boolean = markSuccessfulJobs,
     input: Option[HString] = input,
@@ -136,11 +136,11 @@ class SftpDownloadActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = scriptUri.map(_.toAws),
-    scriptArgument = Option((jarUri +: mainClass +: arguments).map(_.toAws)),
-    stdout = stdout.map(_.toAws),
-    stderr = stderr.map(_.toAws),
-    stage = Option(HBoolean.True.toAws),
+    scriptUri = scriptUri.map(_.serialize),
+    scriptArgument = Option((jarUri +: mainClass +: arguments).map(_.serialize)),
+    stdout = stdout.map(_.serialize),
+    stderr = stderr.map(_.serialize),
+    stage = Option(HBoolean.True.serialize),
     input = None,
     output = output.map(o => Seq(o.ref)),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -150,11 +150,11 @@ class SftpDownloadActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toAws),
-    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
-    maximumRetries = maximumRetries.map(_.toAws),
-    retryDelay = retryDelay.map(_.toAws),
-    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

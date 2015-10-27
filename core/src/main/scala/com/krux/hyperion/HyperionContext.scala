@@ -3,7 +3,6 @@ package com.krux.hyperion
 import scala.util.Try
 
 import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.adt.HType._
 import com.typesafe.config.{ConfigFactory, Config}
 
 /**

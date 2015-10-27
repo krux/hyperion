@@ -21,15 +21,16 @@ case class SparkStep private (
   def withSparkOption(option: HString*) = this.copy(sparkOptions = sparkOptions ++ option)
   def withSparkConfig(key: HString, value: HString) = this.copy(sparkConfig = sparkConfig + (key -> value))
 
-  override def toString: String = Seq(
+  def serialize: String = Seq(
     Seq(scriptRunner, jobRunner),
     sparkOptions,
     sparkConfig.flatMap { case (k, v) => Seq("--conf", s"$k=$v") }.toSeq,
-    Seq(jarUri.toString),
+    Seq(jarUri.serialize),
     mainClass.map(_.toString).toSeq,
     args
   ).flatten.mkString(",")
 
+  override def toString: String = serialize
 }
 
 object SparkStep {

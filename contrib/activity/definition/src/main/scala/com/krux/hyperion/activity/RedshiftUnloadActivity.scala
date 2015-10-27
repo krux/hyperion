@@ -105,7 +105,7 @@ case class RedshiftUnloadActivity private (
     |UNLOAD ('${prepareScript(script)}')
     |TO '$s3Path'
     |WITH CREDENTIALS AS
-    |'aws_access_key_id=${accessKeyId.reference};aws_secret_access_key=${accessKeySecret.reference}'
+    |'aws_access_key_id=${accessKeyId.ref};aws_secret_access_key=${accessKeySecret.ref}'
     |${unloadOptions.flatMap(_.repr).mkString(" ")}
   """.stripMargin
 
@@ -152,11 +152,11 @@ case class RedshiftUnloadActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

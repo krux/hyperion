@@ -56,11 +56,11 @@ case class GoogleStorageUploadActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = Option(scriptUri.toAws),
-    scriptArgument = Option(Seq(botoConfigUrl.toAws, output.toAws)),
+    scriptUri = Option(scriptUri.serialize),
+    scriptArgument = Option(Seq(botoConfigUrl.serialize, output.serialize)),
     stdout = None,
     stderr = None,
-    stage = Option(HBoolean.True.toAws),
+    stage = Option(HBoolean.True.serialize),
     input = input.map(in => Seq(in.ref)),
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -70,11 +70,11 @@ case class GoogleStorageUploadActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toAws),
-    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
-    maximumRetries = maximumRetries.map(_.toAws),
-    retryDelay = retryDelay.map(_.toAws),
-    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

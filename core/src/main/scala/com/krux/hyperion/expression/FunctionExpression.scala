@@ -1,12 +1,12 @@
 package com.krux.hyperion.expression
 
-trait FuncExpression extends Expression {
+trait FunctionExpression extends Expression {
 
-  def funcName: String
+  def name: String
 
   def args: Seq[Expression]
 
-  def content = s"$funcName(${args.map(_.content).mkString(",")})"
+  def content = s"$name(${args.map(_.content).mkString(",")})"
 
 }
 
@@ -14,16 +14,12 @@ trait FuncExpression extends Expression {
  * Creates a String object that is the result of converting the specified DateTime using the
  * specified format string. Example: #{format(myDateTime,'YYYY-MM-dd HH:mm:ss z')}
  */
-case class Format(myDateTime: DateTimeTypedExp, myFormat: String) extends FuncExpression
-  with StringTypedExp {
+case class Format(myDateTime: DateTimeExp, myFormat: StringExp) extends FunctionExpression
+  with StringExp {
 
-  def funcName = "format"
+  def name = "format"
 
-  val formatStringExp = new Expression {
-    def content = s"'$myFormat'"
-  }
-
-  def args = Seq(myDateTime, formatStringExp)
+  def args = Seq(myDateTime, myFormat)
 
 }
 
@@ -31,10 +27,10 @@ case class Format(myDateTime: DateTimeTypedExp, myFormat: String) extends FuncEx
  * Creates a DateTime object, in UTC, with the specified year, month, and day, at midnight.
  * Example: #{makeDate(2011,5,24)}
  */
-case class MakeDate(theYear: IntTypedExp, theMonth: IntTypedExp, theDay: IntTypedExp) extends FuncExpression
-  with DateTimeTypedExp {
+case class MakeDate(theYear: IntExp, theMonth: IntExp, theDay: IntExp) extends FunctionExpression
+  with DateTimeExp {
 
-  def funcName = "makeDate"
+  def name = "makeDate"
 
   def args = Seq(theYear, theMonth, theDay)
 
@@ -45,10 +41,10 @@ case class MakeDate(theYear: IntTypedExp, theMonth: IntTypedExp, theDay: IntType
  * Example: #{makeDateTime(2011,5,24,14,21)}
  */
 case class MakeDateTime(
-    theYear: IntTypedExp, theMonth: IntTypedExp, theDay: IntTypedExp, theHour: IntTypedExp, theMinute: IntTypedExp
-  ) extends FuncExpression with DateTimeTypedExp {
+    theYear: IntExp, theMonth: IntExp, theDay: IntExp, theHour: IntExp, theMinute: IntExp
+  ) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "makeDate"
+  def name = "makeDateTime"
 
   def args = Seq(theYear, theMonth, theDay, theHour, theMinute)
 
@@ -58,9 +54,9 @@ case class MakeDateTime(
  * Gets the year of the DateTime value as an integer.
  * Example: #{year(myDateTime)}
  */
-case class ExtractYear(myDateTime: DateTimeTypedExp) extends FuncExpression with IntTypedExp {
+case class ExtractYear(myDateTime: DateTimeExp) extends FunctionExpression with IntExp {
 
-  def funcName = "year"
+  def name = "year"
 
   def args = Seq(myDateTime)
 
@@ -68,9 +64,9 @@ case class ExtractYear(myDateTime: DateTimeTypedExp) extends FuncExpression with
 
 // Gets the month of the DateTime value as an integer.
 // Example: #{month(myDateTime)}
-case class ExtractMonth(myDateTime: DateTimeTypedExp) extends FuncExpression with IntTypedExp {
+case class ExtractMonth(myDateTime: DateTimeExp) extends FunctionExpression with IntExp {
 
-  def funcName = "month"
+  def name = "month"
 
   def args = Seq(myDateTime)
 
@@ -80,9 +76,9 @@ case class ExtractMonth(myDateTime: DateTimeTypedExp) extends FuncExpression wit
  * Gets the day of the DateTime value as an integer.
  * Example: #{day(myDateTime)}
  */
-case class ExtractDay(myDateTime: DateTimeTypedExp) extends FuncExpression with IntTypedExp {
+case class ExtractDay(myDateTime: DateTimeExp) extends FunctionExpression with IntExp {
 
-  def funcName = "day"
+  def name = "day"
 
   def args = Seq(myDateTime)
 
@@ -92,9 +88,9 @@ case class ExtractDay(myDateTime: DateTimeTypedExp) extends FuncExpression with 
  * Gets the day of the year of the DateTime value as an integer.
  * Example: #{dayOfYear(myDateTime)}
  */
-case class DayOfYear(myDateTime: DateTimeTypedExp) extends FuncExpression with IntTypedExp {
+case class DayOfYear(myDateTime: DateTimeExp) extends FunctionExpression with IntExp {
 
-  def funcName = "dayOfYear"
+  def name = "dayOfYear"
 
   def args = Seq(myDateTime)
 
@@ -104,9 +100,9 @@ case class DayOfYear(myDateTime: DateTimeTypedExp) extends FuncExpression with I
  * Gets the hour of the DateTime value as an integer.
  * Example: #{hour(myDateTime)}
  */
-case class ExtractHour(myDateTime: DateTimeTypedExp) extends FuncExpression with IntTypedExp {
+case class ExtractHour(myDateTime: DateTimeExp) extends FunctionExpression with IntExp {
 
-  def funcName = "hour"
+  def name = "hour"
 
   def args = Seq(myDateTime)
 
@@ -116,9 +112,9 @@ case class ExtractHour(myDateTime: DateTimeTypedExp) extends FuncExpression with
  * Gets the minute of the DateTime value as an integer.
  * Example: #{minute(myDateTime)}
  */
-case class ExtractMinute(myDateTime: DateTimeTypedExp) extends FuncExpression with IntTypedExp {
+case class ExtractMinute(myDateTime: DateTimeExp) extends FunctionExpression with IntExp {
 
-  def funcName = "minute"
+  def name = "minute"
 
   def args = Seq(myDateTime)
 
@@ -128,9 +124,9 @@ case class ExtractMinute(myDateTime: DateTimeTypedExp) extends FuncExpression wi
  * Creates a DateTime object for the start of the month in the specified DateTime.
  * Example: #{firstOfMonth(myDateTime)}
  */
-case class FirstOfMonth(myDateTime: DateTimeTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class FirstOfMonth(myDateTime: DateTimeExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "firstOfMonth"
+  def name = "firstOfMonth"
 
   def args = Seq(myDateTime)
 
@@ -141,9 +137,9 @@ case class FirstOfMonth(myDateTime: DateTimeTypedExp) extends FuncExpression wit
  * Creates a DateTime object for the next midnight, relative to the specified DateTime.
  * Example: #{midnight(myDateTime)}
  */
-case class Midnight(myDateTime: DateTimeTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class Midnight(myDateTime: DateTimeExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "midnight"
+  def name = "midnight"
 
   def args = Seq(myDateTime)
 
@@ -155,9 +151,9 @@ case class Midnight(myDateTime: DateTimeTypedExp) extends FuncExpression with Da
  * If the specified DateTime is a Sunday, the result is the specified DateTime.
  * Example: #{sunday(myDateTime)}
  */
-case class Sunday(myDateTime: DateTimeTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class Sunday(myDateTime: DateTimeExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "sunday"
+  def name = "sunday"
 
   def args = Seq(myDateTime)
 
@@ -169,9 +165,9 @@ case class Sunday(myDateTime: DateTimeTypedExp) extends FuncExpression with Date
  * The result is the same as minusDays(1).
  * Example: #{yesterday(myDateTime)}
  */
-case class Yesterday(myDateTime: DateTimeTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class Yesterday(myDateTime: DateTimeExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "yesterday"
+  def name = "yesterday"
 
   def args = Seq(myDateTime)
 
@@ -183,15 +179,11 @@ case class Yesterday(myDateTime: DateTimeTypedExp) extends FuncExpression with D
  * see http://joda-time.sourceforge.net/timezones.html.
  * Example: #{inTimeZone(myDateTime,'America/Los_Angeles')}
  */
-case class InTimeZone(myDateTime: DateTimeTypedExp, zone: String) extends FuncExpression with DateTimeTypedExp {
+case class InTimeZone(myDateTime: DateTimeExp, zone: StringExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "inTimeZone"
+  def name = "inTimeZone"
 
-  val zoneStringExp = new Expression {
-    def content = s"'$zone'"
-  }
-
-  def args = Seq(myDateTime, zoneStringExp)
+  def args = Seq(myDateTime, zone)
 
 }
 
@@ -200,9 +192,9 @@ case class InTimeZone(myDateTime: DateTimeTypedExp, zone: String) extends FuncEx
  * from the specified DateTime.
  * Example: #{minusYears(myDateTime,1)}
  */
-case class MinusYears(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class MinusYears(myDateTime: DateTimeExp, daysToSub: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "minusYears"
+  def name = "minusYears"
 
   def args = Seq(myDateTime, daysToSub)
 
@@ -213,9 +205,9 @@ case class MinusYears(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) exte
  * from the specified DateTime.
  * Example: #{minusMonths(myDateTime,1)}
  */
-case class MinusMonths(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class MinusMonths(myDateTime: DateTimeExp, daysToSub: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "minusMonths"
+  def name = "minusMonths"
 
   def args = Seq(myDateTime, daysToSub)
 
@@ -226,9 +218,9 @@ case class MinusMonths(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) ext
  * from the specified DateTime.
  * Example: #{minusWeeks(myDateTime,1)}
  */
-case class MinusWeeks(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class MinusWeeks(myDateTime: DateTimeExp, daysToSub: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "minusWeeks"
+  def name = "minusWeeks"
 
   def args = Seq(myDateTime, daysToSub)
 
@@ -239,9 +231,9 @@ case class MinusWeeks(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) exte
  * from the specified DateTime.
  * Example: #{minusDays(myDateTime,1)}
  */
-case class MinusDays(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class MinusDays(myDateTime: DateTimeExp, daysToSub: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "minusDays"
+  def name = "minusDays"
 
   def args = Seq(myDateTime, daysToSub)
 
@@ -252,9 +244,9 @@ case class MinusDays(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) exten
  * from the specified DateTime.
  * Example: #{minusHours(myDateTime,1)}
  */
-case class MinusHours(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class MinusHours(myDateTime: DateTimeExp, daysToSub: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "minusHours"
+  def name = "minusHours"
 
   def args = Seq(myDateTime, daysToSub)
 
@@ -265,9 +257,9 @@ case class MinusHours(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) exte
  * from the specified DateTime.
  * Example: #{minusMinutes(myDateTime,1)}
  */
-case class MinusMinutes(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class MinusMinutes(myDateTime: DateTimeExp, daysToSub: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "minusMinutes"
+  def name = "minusMinutes"
 
   def args = Seq(myDateTime, daysToSub)
 
@@ -278,9 +270,9 @@ case class MinusMinutes(myDateTime: DateTimeTypedExp, daysToSub: IntTypedExp) ex
  * to the specified DateTime.
  * Example: #{plusYears(myDateTime,1)}
  */
-case class PlusYears(myDateTime: DateTimeTypedExp, yearsToAdd: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class PlusYears(myDateTime: DateTimeExp, yearsToAdd: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "plusYears"
+  def name = "plusYears"
 
   def args = Seq(myDateTime, yearsToAdd)
 
@@ -291,9 +283,9 @@ case class PlusYears(myDateTime: DateTimeTypedExp, yearsToAdd: IntTypedExp) exte
  * to the specified DateTime.
  * Example: #{plusMonths(myDateTime,1)}
  */
-case class PlusMonths(myDateTime: DateTimeTypedExp, monthsToAdd: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class PlusMonths(myDateTime: DateTimeExp, monthsToAdd: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "plusMonths"
+  def name = "plusMonths"
 
   def args = Seq(myDateTime, monthsToAdd)
 
@@ -304,9 +296,9 @@ case class PlusMonths(myDateTime: DateTimeTypedExp, monthsToAdd: IntTypedExp) ex
  * to the specified DateTime.
  * Example: #{plusWeeks(myDateTime,1)}
  */
-case class PlusWeeks(myDateTime: DateTimeTypedExp, weeksToAdd: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class PlusWeeks(myDateTime: DateTimeExp, weeksToAdd: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "plusWeeks"
+  def name = "plusWeeks"
 
   def args = Seq(myDateTime, weeksToAdd)
 
@@ -317,9 +309,9 @@ case class PlusWeeks(myDateTime: DateTimeTypedExp, weeksToAdd: IntTypedExp) exte
  * to the specified DateTime.
  * Example: #{plusDays(myDateTime,1)}
  */
-case class PlusDays(myDateTime: DateTimeTypedExp, daysToAdd: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class PlusDays(myDateTime: DateTimeExp, daysToAdd: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "plusDays"
+  def name = "plusDays"
 
   def args = Seq(myDateTime, daysToAdd)
 
@@ -330,9 +322,9 @@ case class PlusDays(myDateTime: DateTimeTypedExp, daysToAdd: IntTypedExp) extend
  * to the specified DateTime.
  * Example: #{plusHours(myDateTime,1)}
  */
-case class PlusHours(myDateTime: DateTimeTypedExp, hoursToAdd: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class PlusHours(myDateTime: DateTimeExp, hoursToAdd: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "plusHours"
+  def name = "plusHours"
 
   def args = Seq(myDateTime, hoursToAdd)
 
@@ -343,9 +335,9 @@ case class PlusHours(myDateTime: DateTimeTypedExp, hoursToAdd: IntTypedExp) exte
  * to the specified DateTime.
  * Example: #{plusMinutes(myDateTime,1)}
  */
-case class PlusMinutes(myDateTime: DateTimeTypedExp, minutesToAdd: IntTypedExp) extends FuncExpression with DateTimeTypedExp {
+case class PlusMinutes(myDateTime: DateTimeExp, minutesToAdd: IntExp) extends FunctionExpression with DateTimeExp {
 
-  def funcName = "plusMinutes"
+  def name = "plusMinutes"
 
   def args = Seq(myDateTime, minutesToAdd)
 

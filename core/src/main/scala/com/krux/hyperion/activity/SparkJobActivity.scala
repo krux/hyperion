@@ -6,7 +6,6 @@ import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.{HInt, HDuration, HString}
-import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{SparkCluster, Resource}
@@ -104,10 +103,10 @@ class SparkJobActivity private (
   lazy val serialize = AdpHadoopActivity(
     id = id,
     name = id.toOption,
-    jarUri = scriptRunner.toString,
+    jarUri = scriptRunner.serialize,
     mainClass = None,
-    argument = Seq(jobRunner.toString) ++ sparkSettings.map(_.toString) ++ Seq(jarUri.toString, mainClass.toString) ++ args.map(_.toString),
-    hadoopQueue = hadoopQueue.map(_.toString),
+    argument = jobRunner.serialize +: sparkSettings.map(_.serialize) ++: jarUri.serialize +: mainClass.toString +: args.map(_.serialize),
+    hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     input = seqToOption(inputs)(_.ref),
@@ -119,11 +118,11 @@ class SparkJobActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

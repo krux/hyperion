@@ -1,15 +1,20 @@
 package com.krux.hyperion.resource
 
-trait SchedulerType
+trait SchedulerType {
+  def serialize: String
+}
 
 case object ParallelFairScheduler extends SchedulerType {
-  override val toString = "PARALLEL_FAIR_SCHEDULING"
+  val serialize = "PARALLEL_FAIR_SCHEDULING"
+  override val toString = serialize
 }
 
 case object ParallelCapacityScheduler extends SchedulerType {
-  override val toString = "PARALLEL_CAPACITY_SCHEDULING"
+  val serialize = "PARALLEL_CAPACITY_SCHEDULING"
+  override val toString = serialize
 }
 
 case object DefaultScheduler extends SchedulerType {
-  override val toString = "DEFAULT_SCHEDULER"
+  val serialize = "DEFAULT_SCHEDULER"
+  override val toString = serialize
 }

@@ -68,10 +68,10 @@ case class SendSqsMessageActivity private (
     name = id.toOption,
     command = None,
     scriptUri = scriptUri.map(_.ref),
-    scriptArgument = Option((jarUri +: mainClass +: arguments).map(_.toAws)),
+    scriptArgument = Option((jarUri +: mainClass +: arguments).map(_.serialize)),
     stdout = None,
     stderr = None,
-    stage = Option(HBoolean.False.toAws),
+    stage = Option(HBoolean.False.serialize),
     input = None,
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -81,11 +81,11 @@ case class SendSqsMessageActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toAws),
-    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
-    maximumRetries = maximumRetries.map(_.toAws),
-    retryDelay = retryDelay.map(_.toAws),
-    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 }
 

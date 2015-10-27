@@ -4,12 +4,14 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.{SparkJobActivity, SparkActivity, SparkStep}
 import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.datanode.S3DataNode
+import com.krux.hyperion.expression.ConstantExpression._
 import com.krux.hyperion.expression.{Format, RuntimeNode, Parameter}
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.resource.SparkCluster
 import com.krux.hyperion.WorkflowExpression
 import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext}
 import com.typesafe.config.ConfigFactory
+
 
 object ExampleSpark extends DataPipelineDef {
 
@@ -37,7 +39,7 @@ object ExampleSpark extends DataPipelineDef {
   // Actions
   val mailAction = SnsAlarm()
     .withSubject(s"Something happened at ${RuntimeNode.ScheduledStartTime}")
-    .withMessage(s"Some message ${instanceCount.reference} x ${instanceType.reference} @ ${instanceBid.reference} for ${location.reference}")
+    .withMessage(s"Some message $instanceCount x $instanceType @ $instanceBid for $location")
     .withTopicArn("arn:aws:sns:us-east-1:28619EXAMPLE:ExampleTopic")
     .withRole("DataPipelineDefaultResourceRole")
 

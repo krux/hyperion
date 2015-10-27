@@ -192,7 +192,7 @@ class AdpActivitiesSpec extends WordSpec {
         scriptUri = None,
         scriptVariable = None,
         generatedScriptsPath = None,
-        stage = "true",
+        stage = Option("true"),
         input = Option(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode")),
         output = Option(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode")),
         hadoopQueue = None,

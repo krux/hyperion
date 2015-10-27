@@ -58,8 +58,8 @@ case class RedshiftCopyActivity private (
     id = id,
     name = id.toOption,
     insertMode = insertMode.toString,
-    transformSql = transformSql.map(_.toString),
-    queue = queue.map(_.toString),
+    transformSql = transformSql.map(_.serialize),
+    queue = queue.map(_.serialize),
     commandOptions = seqToOption(commandOptions)(_.repr).map(_.flatten),
     input = input.ref,
     output = output.ref,
@@ -70,11 +70,11 @@ case class RedshiftCopyActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

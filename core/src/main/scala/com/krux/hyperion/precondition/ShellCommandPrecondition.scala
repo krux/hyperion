@@ -1,9 +1,9 @@
 package com.krux.hyperion.precondition
 
 import com.krux.hyperion.activity.Script
+import com.krux.hyperion.adt.{HDuration, HString}
 import com.krux.hyperion.aws.AdpShellCommandPrecondition
 import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.adt.HDuration
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -18,32 +18,32 @@ import com.krux.hyperion.HyperionContext
 case class ShellCommandPrecondition private (
   id: PipelineObjectId,
   script: Script,
-  scriptArgument: Seq[String],
-  stdout: Option[String],
-  stderr: Option[String],
-  role: String,
+  scriptArgument: Seq[HString],
+  stdout: Option[HString],
+  stderr: Option[HString],
+  role: HString,
   preconditionTimeout: Option[HDuration]
 ) extends Precondition {
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withScriptArgument(argument: String*) = this.copy(scriptArgument = scriptArgument ++ argument)
-  def withStdout(stdout: String) = this.copy(stdout = Option(stdout))
-  def withStderr(stderr: String) = this.copy(stderr = Option(stderr))
-  def withRole(role: String) = this.copy(role = role)
+  def withScriptArgument(argument: HString*) = this.copy(scriptArgument = scriptArgument ++ argument)
+  def withStdout(stdout: HString) = this.copy(stdout = Option(stdout))
+  def withStderr(stderr: HString) = this.copy(stderr = Option(stderr))
+  def withRole(role: HString) = this.copy(role = role)
   def withPreconditionTimeout(timeout: HDuration) = this.copy(preconditionTimeout = Option(timeout))
 
   lazy val serialize = AdpShellCommandPrecondition(
     id = id,
     name = id.toOption,
-    command = script.content,
-    scriptUri = script.uri.map(_.ref),
-    scriptArgument = scriptArgument,
-    stdout = stdout,
-    stderr = stderr,
-    role = role,
-    preconditionTimeout = preconditionTimeout.map(_.toString)
+    command = script.content.map(_.serialize),
+    scriptUri = script.uri.map(_.serialize),
+    scriptArgument = scriptArgument.map(_.serialize),
+    stdout = stdout.map(_.serialize),
+    stderr = stderr.map(_.serialize),
+    role = role.serialize,
+    preconditionTimeout = preconditionTimeout.map(_.serialize)
   )
 
 }

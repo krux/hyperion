@@ -61,9 +61,9 @@ case class MapReduceActivity private (
   lazy val serialize = AdpEmrActivity(
     id = id,
     name = id.toOption,
-    step = steps.map(_.toString),
-    preStepCommand = seqToOption(preStepCommands)(_.toString),
-    postStepCommand = seqToOption(postStepCommands)(_.toString),
+    step = steps.map(_.serialize),
+    preStepCommand = seqToOption(preStepCommands)(_.serialize),
+    postStepCommand = seqToOption(postStepCommands)(_.serialize),
     input = seqToOption(inputs)(_.ref),
     output = seqToOption(outputs)(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -73,13 +73,13 @@ case class MapReduceActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toString),
-    lateAfterTimeout = lateAfterTimeout.map(_.toString),
-    maximumRetries = maximumRetries.map(_.toString),
-    retryDelay = retryDelay.map(_.toString),
-    failureAndRerunMode = failureAndRerunMode.map(_.toString),
-    actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
-    actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
+    actionOnResourceFailure = actionOnResourceFailure.map(_.serialize),
+    actionOnTaskFailure = actionOnTaskFailure.map(_.serialize)
   )
 
 }

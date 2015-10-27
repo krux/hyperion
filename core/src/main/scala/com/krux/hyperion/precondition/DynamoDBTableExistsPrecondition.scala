@@ -1,8 +1,8 @@
 package com.krux.hyperion.precondition
 
+import com.krux.hyperion.adt.{HDuration, HString}
 import com.krux.hyperion.aws.AdpDynamoDBTableExistsPrecondition
 import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.adt.HDuration
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -12,29 +12,29 @@ import com.krux.hyperion.HyperionContext
  */
 case class DynamoDBTableExistsPrecondition private (
   id: PipelineObjectId,
-  tableName: String,
-  role: String,
+  tableName: HString,
+  role: HString,
   preconditionTimeout: Option[HDuration]
 ) extends Precondition {
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withRole(role: String) = this.copy(role = role)
+  def withRole(role: HString) = this.copy(role = role)
   def withPreconditionTimeout(timeout: HDuration) = this.copy(preconditionTimeout = Option(timeout))
 
   lazy val serialize = AdpDynamoDBTableExistsPrecondition(
     id = id,
     name = id.toOption,
-    tableName = tableName,
-    role = role,
-    preconditionTimeout = preconditionTimeout.map(_.toString)
+    tableName = tableName.serialize,
+    role = role.serialize,
+    preconditionTimeout = preconditionTimeout.map(_.serialize)
   )
 
 }
 
 object DynamoDBTableExistsPrecondition {
-  def apply(tableName: String)(implicit hc: HyperionContext) =
+  def apply(tableName: HString)(implicit hc: HyperionContext) =
     new DynamoDBTableExistsPrecondition(
       id = PipelineObjectId(DynamoDBTableExistsPrecondition.getClass),
       tableName = tableName,

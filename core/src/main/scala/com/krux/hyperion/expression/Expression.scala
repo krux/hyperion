@@ -8,150 +8,150 @@ trait Expression {
 
   def content: String
 
-  def toAws: String = s"#{$content}"
+  def serialize: String = s"#{$content}"
 
-  override def toString: String = toAws
+  override def toString: String = serialize
 
 }
 
 trait TypedExpression extends Expression
 
-trait IntTypedExp extends TypedExpression { self =>
+trait IntExp extends TypedExpression { self =>
 
-  def + (e: IntTypedExp) = new IntTypedExp {
+  def + (e: IntExp) = new IntExp {
     def content = s"${self.content} + ${e.content}"
   }
 
-  def + (e: DoubleTypedExp) = new DoubleTypedExp {
+  def + (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} + ${e.content}"
   }
 
-  def - (e: IntTypedExp) = new IntTypedExp {
+  def - (e: IntExp) = new IntExp {
     def content = s"${self.content} - ${e.content}"
   }
 
-  def - (e: DoubleTypedExp) = new DoubleTypedExp {
+  def - (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} - ${e.content}"
   }
 
-  def * (e: IntTypedExp) = new IntTypedExp {
+  def * (e: IntExp) = new IntExp {
     def content = s"${self.content} * ${e.content}"
   }
 
-  def * (e: DoubleTypedExp) = new DoubleTypedExp {
+  def * (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} * ${e.content}"
   }
 
-  def / (e: IntTypedExp) = new IntTypedExp {
+  def / (e: IntExp) = new IntExp {
     def content = s"${self.content} / ${e.content}"
   }
 
-  def / (e: DoubleTypedExp) = new DoubleTypedExp {
+  def / (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} / ${e.content}"
   }
 
   /**
-   * @note for ^ case, it always returns DoubleTypedExp regardless of the type of the paramenter
+   * @note for ^ case, it always returns DoubleExp regardless of the type of the paramenter
    */
-  def ^ (e: IntTypedExp) = new DoubleTypedExp {
+  def ^ (e: IntExp) = new DoubleExp {
     def content = s"${self.content} ^ ${e.content}"
   }
 
-  def ^ (e: DoubleTypedExp) = new DoubleTypedExp {
+  def ^ (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} ^ ${e.content}"
   }
 
 }
 
-trait DoubleTypedExp extends TypedExpression { self =>
+trait DoubleExp extends TypedExpression { self =>
 
-  def + (e: IntTypedExp) = new DoubleTypedExp {
+  def + (e: IntExp) = new DoubleExp {
     def content = s"${self.content} + ${e.content}"
   }
 
-  def + (e: DoubleTypedExp) = new DoubleTypedExp {
+  def + (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} + ${e.content}"
   }
 
-  def - (e: IntTypedExp) = new DoubleTypedExp {
+  def - (e: IntExp) = new DoubleExp {
     def content = s"${self.content} - ${e.content}"
   }
 
-  def - (e: DoubleTypedExp) = new DoubleTypedExp {
+  def - (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} - ${e.content}"
   }
 
-  def * (e: IntTypedExp) = new DoubleTypedExp {
+  def * (e: IntExp) = new DoubleExp {
     def content = s"${self.content} * ${e.content}"
   }
 
-  def * (e: DoubleTypedExp) = new DoubleTypedExp {
+  def * (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} * ${e.content}"
   }
 
-  def / (e: IntTypedExp) = new DoubleTypedExp {
+  def / (e: IntExp) = new DoubleExp {
     def content = s"${self.content} / ${e.content}"
   }
 
-  def / (e: DoubleTypedExp) = new DoubleTypedExp {
+  def / (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} / ${e.content}"
   }
 
-  def ^ (e: IntTypedExp) = new DoubleTypedExp {
+  def ^ (e: IntExp) = new DoubleExp {
     def content = s"${self.content} ^ ${e.content}"
   }
 
-  def ^ (e: DoubleTypedExp) = new DoubleTypedExp {
+  def ^ (e: DoubleExp) = new DoubleExp {
     def content = s"${self.content} ^ ${e.content}"
   }
 
 }
 
-trait StringTypedExp extends TypedExpression { self =>
+trait StringExp extends TypedExpression { self =>
 
-  def + (e: StringTypedExp) = new StringTypedExp {
+  def + (e: StringExp) = new StringExp {
     def content = s"${self.content} + ${e.content}"
   }
 
 }
 
-trait BooleanTypedExp extends TypedExpression
+trait BooleanExp extends TypedExpression
 
-trait DateTimeTypedExp extends TypedExpression {
+trait DateTimeExp extends TypedExpression {
 
-  def + (period: Duration): DateTimeTypedExp = period match {
-    case Minute(n) => PlusMinutes(this, IntExp(n))
-    case Hour(n) => PlusHours(this, IntExp(n))
-    case Day(n) => PlusDays(this, IntExp(n))
-    case Week(n) => PlusWeeks(this, IntExp(n))
-    case Month(n) => PlusMonths(this, IntExp(n))
-    case Year(n) => PlusYears(this, IntExp(n))
+  def + (period: Duration): DateTimeExp = period match {
+    case Minute(n) => PlusMinutes(this, IntConstantExp(n))
+    case Hour(n) => PlusHours(this, IntConstantExp(n))
+    case Day(n) => PlusDays(this, IntConstantExp(n))
+    case Week(n) => PlusWeeks(this, IntConstantExp(n))
+    case Month(n) => PlusMonths(this, IntConstantExp(n))
+    case Year(n) => PlusYears(this, IntConstantExp(n))
   }
 
-  def - (period: Duration): DateTimeTypedExp = period match {
-    case Minute(n) => MinusMinutes(this, IntExp(n))
-    case Hour(n) => MinusHours(this, IntExp(n))
-    case Day(n) => MinusDays(this, IntExp(n))
-    case Week(n) => MinusWeeks(this, IntExp(n))
-    case Month(n) => MinusMonths(this, IntExp(n))
-    case Year(n) => MinusYears(this, IntExp(n))
+  def - (period: Duration): DateTimeExp = period match {
+    case Minute(n) => MinusMinutes(this, IntConstantExp(n))
+    case Hour(n) => MinusHours(this, IntConstantExp(n))
+    case Day(n) => MinusDays(this, IntConstantExp(n))
+    case Week(n) => MinusWeeks(this, IntConstantExp(n))
+    case Month(n) => MinusMonths(this, IntConstantExp(n))
+    case Year(n) => MinusYears(this, IntConstantExp(n))
   }
 
-  def year: IntTypedExp = ExtractYear(this)
-  def month: IntTypedExp = ExtractMonth(this)
-  def day: IntTypedExp = ExtractDay(this)
-  def dayOfYear: IntTypedExp = DayOfYear(this)
-  def hour: IntTypedExp = ExtractHour(this)
-  def minute: IntTypedExp = ExtractMinute(this)
+  def year: IntExp = ExtractYear(this)
+  def month: IntExp = ExtractMonth(this)
+  def day: IntExp = ExtractDay(this)
+  def dayOfYear: IntExp = DayOfYear(this)
+  def hour: IntExp = ExtractHour(this)
+  def minute: IntExp = ExtractMinute(this)
 
-  def firstOfMonth: DateTimeTypedExp = FirstOfMonth(this)
-  def midnight: DateTimeTypedExp = Midnight(this)
-  def sunday: DateTimeTypedExp = Sunday(this)
-  def yesterday: DateTimeTypedExp = Yesterday(this)
-  def inTimeZone(zone: String): DateTimeTypedExp = InTimeZone(this, zone)
+  def firstOfMonth: DateTimeExp = FirstOfMonth(this)
+  def midnight: DateTimeExp = Midnight(this)
+  def sunday: DateTimeExp = Sunday(this)
+  def yesterday: DateTimeExp = Yesterday(this)
+  def inTimeZone(zone: String): DateTimeExp = InTimeZone(this, StringConstantExp(zone))
 
 }
 
-trait DurationTypedExp extends TypedExpression
+trait DurationExp extends TypedExpression
 
-trait S3UriTypedExp extends TypedExpression
+trait S3UriExp extends TypedExpression

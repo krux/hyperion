@@ -54,9 +54,9 @@ case class DeleteS3PathActivity private (
     command = Option(s"aws s3 rm --recursive $s3Path"),
     scriptUri = None,
     scriptArgument = None,
-    stdout = stdout.map(_.toAws),
-    stderr = stderr.map(_.toAws),
-    stage = Option(HBoolean.False.toAws),
+    stdout = stdout.map(_.serialize),
+    stderr = stderr.map(_.serialize),
+    stage = Option(HBoolean.False.serialize),
     input = None,
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -66,11 +66,11 @@ case class DeleteS3PathActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toAws),
-    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
-    maximumRetries = maximumRetries.map(_.toAws),
-    retryDelay = retryDelay.map(_.toAws),
-    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }

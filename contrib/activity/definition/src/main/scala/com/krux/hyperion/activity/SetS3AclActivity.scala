@@ -1,7 +1,6 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString, HBoolean, HType}
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, S3Uri, PipelineObjectId}
@@ -64,11 +63,11 @@ case class SetS3AclActivity private (
     id = id,
     name = id.toOption,
     command = None,
-    scriptUri = scriptUri.map(_.toAws),
-    scriptArgument = Option((Seq(jarUri, mainClass) ++ buildArgs).map(_.toAws)),
+    scriptUri = scriptUri.map(_.serialize),
+    scriptArgument = Option((Seq(jarUri, mainClass) ++ buildArgs).map(_.serialize)),
     stdout = None,
     stderr = None,
-    stage = Option(HBoolean.False.toAws),
+    stage = Option(HBoolean.False.serialize),
     input = None,
     output = None,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -78,11 +77,11 @@ case class SetS3AclActivity private (
     onFail = seqToOption(onFailAlarms)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.toAws),
-    lateAfterTimeout = lateAfterTimeout.map(_.toAws),
-    maximumRetries = maximumRetries.map(_.toAws),
-    retryDelay = retryDelay.map(_.toAws),
-    failureAndRerunMode = failureAndRerunMode.map(_.toAws)
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }
