@@ -87,6 +87,11 @@ case class HBoolean(value: Either[Boolean, BooleanExp]) extends HType
 object HBoolean {
   final val True = HBoolean(Left(true))
   final val False = HBoolean(Left(false))
+
+  implicit def hboolean2Boolean(b: HBoolean): Boolean = b.value match {
+    case Left(v) => v
+    case Right(v) => v.evaluate
+  }
 }
 
 case class HDateTime(value: Either[DateTime, DateTimeExp]) extends HType {

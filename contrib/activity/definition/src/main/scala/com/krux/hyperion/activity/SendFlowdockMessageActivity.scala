@@ -17,7 +17,7 @@ case class SendFlowdockMessageActivity private (
   flowApiToken: HString,
   message: HString,
   user: HString,
-  continueOnError: Boolean,
+  continueOnError: HBoolean,
   tags: Seq[HString],
   runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],

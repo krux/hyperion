@@ -16,7 +16,7 @@ case class SetS3AclActivity private (
     mainClass: HString,
     cannedAcls: Seq[CannedAccessControlList.Value],
     grants: Seq[HString],
-    recursive: Boolean,
+    recursive: HBoolean,
     s3Uri: HS3Uri,
     dependsOn: Seq[PipelineActivity],
     tags: Seq[HString],

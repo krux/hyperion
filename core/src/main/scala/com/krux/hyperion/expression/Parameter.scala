@@ -31,7 +31,11 @@ case class Parameter[T : TypeTag] private (
     case t if t <:< typeOf[Int] => new IntExp { def content = name }
     case t if t <:< typeOf[Double] => new DoubleExp { def content = name }
     case t if t <:< typeOf[String] => new StringExp { def content = name }
-    case t if t <:< typeOf[Boolean] => new BooleanExp { def content = name }
+    case t if t <:< typeOf[Boolean] =>
+      new BooleanExp {
+        def content = name
+        def evaluate = value.get.asInstanceOf[Boolean]
+      }
     case t if t <:< typeOf[DateTime] => new DateTimeExp { def content = name }
     case t if t <:< typeOf[Duration] => new DurationExp { def content = name }
     case t if t <:< typeOf[S3Uri] => new S3UriExp { def content = name }

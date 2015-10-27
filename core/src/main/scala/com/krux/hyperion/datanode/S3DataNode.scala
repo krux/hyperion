@@ -4,7 +4,7 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpS3DataNode
 import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
 import com.krux.hyperion.dataformat.DataFormat
-import com.krux.hyperion.adt.HS3Uri
+import com.krux.hyperion.adt.{HS3Uri, HBoolean}
 import com.krux.hyperion.precondition.Precondition
 
 sealed trait S3DataNode extends Copyable {
@@ -43,7 +43,7 @@ case class S3File private (
   filePath: HS3Uri,
   dataFormat: Option[DataFormat],
   manifestFilePath: Option[HS3Uri],
-  isCompressed: Boolean,
+  isCompressed: HBoolean,
   isEncrypted: Boolean,
   preconditions: Seq[Precondition],
   onSuccessAlarms: Seq[SnsAlarm],
@@ -104,8 +104,8 @@ case class S3Folder private(
   directoryPath: HS3Uri,
   dataFormat: Option[DataFormat],
   manifestFilePath: Option[HS3Uri],
-  isCompressed: Boolean,
-  isEncrypted: Boolean,
+  isCompressed: HBoolean,
+  isEncrypted: HBoolean,
   preconditions: Seq[Precondition],
   onSuccessAlarms: Seq[SnsAlarm],
   onFailAlarms: Seq[SnsAlarm]

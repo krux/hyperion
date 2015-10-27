@@ -18,7 +18,7 @@ case class SendSnsMessageActivity private (
   message: HString,
   subject: Option[HString],
   region: Option[HString],
-  structuredMessage: Boolean,
+  structuredMessage: HBoolean,
   attributes: Map[HString, (HString, HString)],
   runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
