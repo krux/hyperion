@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.14.0 - 2015-10-27
+### Added
+- [#239](https://github.com/krux/hyperion/issues/239) - Capability to generate graph of workflow
+
 ## 2.13.2 - 2015-10-27
 ### Added
 - [#237](https://github.com/krux/hyperion/issues/237) - Allow Spark*Activity to override driver-memory
