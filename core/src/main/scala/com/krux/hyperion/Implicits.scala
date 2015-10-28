@@ -34,13 +34,13 @@ object Implicits {
 
   implicit def stringContext2S3UriHelper(sc: StringContext): S3StringContext = S3StringContext(sc)
 
-  implicit class intToMemorySpec(n: Int) {
+  implicit class Int2Memory(n: Int) {
     def kilobytes = Memory(n, "K")
     def megabytes = Memory(n, "M")
     def gigabytes = Memory(n, "G")
   }
 
-  implicit class longToMemorySpec(n: Long) {
+  implicit class Long2Memory(n: Long) {
     def kilobytes = Memory(n, "K")
     def megabytes = Memory(n, "M")
     def gigabytes = Memory(n, "G")
