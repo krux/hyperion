@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.13.2 - 2015-10-27
+### Added
+- [#237](https://github.com/krux/hyperion/issues/237) - Allow Spark*Activity to override driver-memory
+
 ## 2.13.1 - 2015-10-26
 ### Added
 - [#234](https://github.com/krux/hyperion/issues/234) - SplitMergeFiles should allow ignoring cases where there is no input files
