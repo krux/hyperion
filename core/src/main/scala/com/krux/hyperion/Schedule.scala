@@ -25,7 +25,7 @@ case class Schedule private (
   def startDateTime(dt: DateTime) = this.copy(start = Option(dt))
 
   def startTodayAt(hourOfDay: Int, minuteOfHour: Int, secondOfMinute: Int) =
-    startThisDayOfXAt(0, hourOfDay, minuteOfHour, secondOfMinute)((dt, i) => dt)
+    startThisDayOfXAt(0, hourOfDay, minuteOfHour, secondOfMinute)((dt, _) => dt)
 
   def startThisWeekAt(dayOfWeek: Int, hourOfDay: Int, minuteOfHour: Int, secondOfMinute: Int) =
     startThisDayOfXAt(dayOfWeek, hourOfDay, minuteOfHour, secondOfMinute)(_.withDayOfWeek(_))
@@ -55,7 +55,7 @@ case class Schedule private (
         startAt = None,
         startDateTime = Option(dt),
         endDateTime = end.flatMap {
-          case Right(dt) => Option(dt)
+          case Right(d) => Option(d)
           case _ => None
         },
         occurrences = end.flatMap {

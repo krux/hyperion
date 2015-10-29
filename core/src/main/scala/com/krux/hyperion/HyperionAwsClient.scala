@@ -59,17 +59,21 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
       }
     }
 
-    def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map.empty): Option[String] = {
+    def createPipeline(
+      force: Boolean = false,
+      schedule: Option[String] = None,
+      tags: Map[String, Option[String]] = Map.empty
+    ): Option[String] = {
       println(s"Creating pipeline $pipelineName")
 
       getPipelineId match {
         case Some(pipelineId) =>
           println("Pipeline already exists")
           if (force) {
-            println("Delete the existing pipline")
+            println("Delete the existing pipeline")
             ForPipelineId(pipelineId).deletePipelineById()
             Thread.sleep(10000)  // wait until the data pipeline is really deleted
-            createPipeline(force = true, tags)
+            createPipeline(force = true, schedule, tags)
           } else {
             println("Use --force to force pipeline creation")
             None

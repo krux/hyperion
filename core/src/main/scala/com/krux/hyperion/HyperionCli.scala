@@ -10,6 +10,7 @@ trait HyperionCli { this: DataPipelineDef =>
     mode: String = "generate",
     activate: Boolean = false,
     force: Boolean = false,
+    schedule: Option[String] = None,
     pipelineId: Option[String] = None,
     customName: Option[String] = None,
     region: Option[String] = None,
@@ -25,6 +26,7 @@ trait HyperionCli { this: DataPipelineDef =>
         .children(
           opt[Unit]("force").action { (_, c) => c.copy(force = true) },
           opt[Unit]("activate").action { (_, c) => c.copy(activate = true) },
+          opt[String]("schedule").valueName("<schedule>").action { (x, c) => c.copy(schedule = Option(x)) },
           opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
           opt[String]("region").valueName("<region>").action { (x, c) => c.copy(region = Option(x)) },
           opt[String]("role").valueName("<role-arn>").action { (x, c) => c.copy(roleArn = Option(x)) },
@@ -60,7 +62,7 @@ trait HyperionCli { this: DataPipelineDef =>
           0
 
         case "create" =>
-          awsClientForPipeline.createPipeline(cli.force, cli.tags) match {
+          awsClientForPipeline.createPipeline(cli.force, cli.schedule, cli.tags) match {
             case Some(id) if cli.activate =>
               if (awsClient.ForPipelineId(id).activatePipelineById()) 0 else 3
 
