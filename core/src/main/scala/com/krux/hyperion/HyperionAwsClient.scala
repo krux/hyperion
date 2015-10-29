@@ -62,6 +62,9 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
     def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map.empty): Option[String] = {
       println(s"Creating pipeline $pipelineName")
 
+      val pipelineObjects: Seq[PipelineObject] = pipelineDef
+      println(s"Pipeline definition has ${pipelineObjects.length} objects")
+
       getPipelineId match {
         case Some(pipelineId) =>
           println("Pipeline already exists")
@@ -85,9 +88,6 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
 
           println(s"Pipeline created: $pipelineId")
           println("Uploading pipeline definition")
-
-          val pipelineObjects: Seq[PipelineObject] = pipelineDef
-          println(s"Pipeline definition has ${pipelineObjects.length} objects")
 
           val putDefinitionResult = client.putPipelineDefinition(
             new PutPipelineDefinitionRequest()

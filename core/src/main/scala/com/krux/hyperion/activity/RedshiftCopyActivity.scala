@@ -1,11 +1,12 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpRedshiftCopyActivity
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.dataformat.{CsvDataFormat, TsvDataFormat}
 import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
 import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
@@ -35,10 +36,28 @@ case class RedshiftCopyActivity private (
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
+  private def validate() =
+    // The following when false will trigger aws datapipeline runtime error:
+    assert(
+      input.dataFormat
+        .map {
+          case f: CsvDataFormat => false
+          case f: TsvDataFormat => false
+          case _ => true
+        }
+        .getOrElse(true)
+      ,
+      "CSV or TSV format cannot be used with commandOptions"
+    )
+
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withCommandOptions(opts: RedshiftCopyOption*) = this.copy(commandOptions = commandOptions ++ opts)
+  def withCommandOptions(opts: RedshiftCopyOption*) = {
+    validate()
+    this.copy(commandOptions = commandOptions ++ opts)
+  }
+
   def withTransformSql(sql: String) = this.copy(transformSql = Option(sql))
   def withQueue(queue: String) = this.copy(queue = Option(queue))
 

@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.14.1 - 2015-10-29
+### Fixed
+- [#224](https://github.com/krux/hyperion/issues/224) - Add more redshift copy options
+- [#225](https://github.com/krux/hyperion/issues/225) - Make HyperionAwsCli fail fast
+
 ## 2.14.0 - 2015-10-27
 ### Added
 - [#239](https://github.com/krux/hyperion/issues/239) - Capability to generate graph of workflow
