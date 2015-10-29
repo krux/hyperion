@@ -19,6 +19,7 @@ val awsSnsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sns"    
 val mailArtifact            = "com.sun.mail"           %  "mailapi"                   % mailVersion
 val smtpArtifact            = "com.sun.mail"           %  "smtp"                      % mailVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
+val slf4ApiArtifact         = "org.slf4j"              %  "slf4j-api"                 % "1.7.12"
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -134,7 +135,8 @@ lazy val core = (project in file("core")).
       nscalaTimeArtifact,
       json4sJacksonArtifact,
       scoptArtifact,
-      configArtifact
+      configArtifact,
+      slf4ApiArtifact
     )
   )
 

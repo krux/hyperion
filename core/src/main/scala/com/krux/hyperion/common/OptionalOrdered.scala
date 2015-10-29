@@ -22,12 +22,12 @@ trait OptionalOrdered[A] {
   /**
    * Returns Some(true) if `this` is less than `that`, or None if they are not comparable.
    */
-  def <  (that: A): Option[Boolean] = (this compare that).map(_ <  0)
+  def < (that: A): Option[Boolean] = (this compare that).map(_ <  0)
 
   /**
    * Returns Some(true) if `this` is greater than `that`, or None if they are not comparable.
    */
-  def >  (that: A): Option[Boolean] = (this compare that).map(_ >  0)
+  def > (that: A): Option[Boolean] = (this compare that).map(_ >  0)
 
   /**
    * Returns Some(true) if `this` is less than or equal to `that`, or None if they are not

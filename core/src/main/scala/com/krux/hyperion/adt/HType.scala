@@ -5,7 +5,8 @@ import scala.language.implicitConversions
 import org.joda.time.{DateTimeZone, DateTime}
 
 import com.krux.hyperion.expression.{DateTimeExp, IntExp, StringExp, DoubleExp,
-  TypedExpression, IntConstantExp, DurationExp, Duration, S3UriExp, BooleanExp}
+  TypedExpression, IntConstantExp, DurationExp, Duration, S3UriExp, BooleanExp,
+  DateTimeConstantExp, Evaluatable}
 import com.krux.hyperion.common.{S3Uri, OptionalOrdered}
 
 sealed abstract class HType {
@@ -57,7 +58,11 @@ case class HInt(value: Either[Int, IntExp]) extends HType with OptionalOrdered[I
 
   def compare(that: Int): Option[Int] = value match {
     case Left(v) => Some(v - that)
-    case _ => None
+    case Right(v) =>
+      v match {
+        case x: Evaluatable[_] => Some(x.evaluate().asInstanceOf[Int] - that)
+        case _ => None
+      }
   }
 
   def + (that: HInt): HInt = this.value match {
@@ -77,7 +82,13 @@ case class HDouble(value: Either[Double, DoubleExp]) extends HType with Optional
 
   def compare(that: Double): Option[Int] = value match {
     case Left(v) => Some(java.lang.Double.compare(v, that))
-    case _ => None
+    case Right(v) =>
+      v match {
+        case x: Evaluatable[_] =>
+          Some(java.lang.Double.compare(x.evaluate().asInstanceOf[Double], that))
+        case _ =>
+          None
+      }
   }
 
 }
@@ -90,7 +101,7 @@ object HBoolean {
 
   implicit def hboolean2Boolean(b: HBoolean): Boolean = b.value match {
     case Left(v) => v
-    case Right(v) => v.evaluate
+    case Right(v) => v.evaluate()
   }
 }
 
@@ -101,6 +112,15 @@ case class HDateTime(value: Either[DateTime, DateTimeExp]) extends HType {
   override def serialize: String = value match {
     case Left(dt) => dt.toDateTime(DateTimeZone.UTC).toString(datetimeFormat)
     case Right(expr) => expr.toString
+  }
+
+}
+
+object HDateTime {
+
+  implicit def hDateTime2DateTimeExp(dt: HDateTime): DateTimeExp = dt.value match {
+    case Left(x) => DateTimeConstantExp(x)
+    case Right(x) => x
   }
 
 }

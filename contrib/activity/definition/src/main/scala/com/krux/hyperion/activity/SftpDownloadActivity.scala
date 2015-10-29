@@ -25,8 +25,8 @@ class SftpDownloadActivity private (
   val password: Option[Parameter[String]],
   val identity: Option[HS3Uri],
   val pattern: Option[HString],
-  val sinceDate: Option[DateTimeConstantExp],
-  val untilDate: Option[DateTimeConstantExp],
+  val sinceDate: Option[HDateTime],
+  val untilDate: Option[HDateTime],
   val skipEmpty: HBoolean,
   val markSuccessfulJobs: HBoolean,
   val input: Option[HString],
@@ -51,8 +51,8 @@ class SftpDownloadActivity private (
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def since(date: DateTimeConstantExp) = this.copy(sinceDate = Option(date))
-  def until(date: DateTimeConstantExp) = this.copy(untilDate = Option(date))
+  def since(date: HDateTime) = this.copy(sinceDate = Option(date))
+  def until(date: HDateTime) = this.copy(untilDate = Option(date))
   def withPort(port: HInt) = this.copy(port = Option(port))
   def withUsername(username: HString) = this.copy(username = Option(username))
   def withPassword(password: Parameter[String]) = this.copy(password = Option(password))
@@ -87,8 +87,8 @@ class SftpDownloadActivity private (
     password: Option[Parameter[String]] = password,
     identity: Option[HS3Uri] = identity,
     pattern: Option[HString] = pattern,
-    sinceDate: Option[DateTimeConstantExp] = sinceDate,
-    untilDate: Option[DateTimeConstantExp] = untilDate,
+    sinceDate: Option[HDateTime] = sinceDate,
+    untilDate: Option[HDateTime] = untilDate,
     skipEmpty: HBoolean = skipEmpty,
     markSuccessfulJobs: HBoolean = markSuccessfulJobs,
     input: Option[HString] = input,

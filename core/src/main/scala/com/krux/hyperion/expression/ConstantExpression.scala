@@ -4,7 +4,12 @@ import scala.language.implicitConversions
 
 import org.joda.time.{DateTimeZone, DateTime}
 
-trait ConstantExpression extends Expression
+trait ConstantExpression[T] extends Expression with Evaluatable[T] {
+  def constantValue: T
+  val content: String = constantValue.toString
+
+  def evaluate(): T = constantValue
+}
 
 object ConstantExpression {
 
@@ -15,31 +20,23 @@ object ConstantExpression {
 
 }
 
-case class StringConstantExp(raw: String) extends ConstantExpression with StringExp {
+case class StringConstantExp(constantValue: String) extends ConstantExpression[String] with StringExp {
 
-  def content: String = s"""\"$raw\""""
-
-}
-
-case class IntConstantExp(num: Int) extends ConstantExpression with IntExp {
-
-  def content: String = num.toString
+  override val content: String = s"""\"$constantValue\""""
 
 }
 
-case class DoubleConstantExp(num: Double) extends ConstantExpression with DoubleExp {
+case class IntConstantExp(constantValue: Int) extends ConstantExpression[Int] with IntExp
 
-  def content: String = num.toString
+case class DoubleConstantExp(constantValue: Double) extends ConstantExpression[Double] with DoubleExp
 
-}
+case class DateTimeConstantExp(constantValue: DateTime) extends ConstantExpression[DateTime] with DateTimeExp {
 
-case class DateTimeConstantExp(dt: DateTime) extends ConstantExpression with DateTimeExp {
+  import ConstantExpression._
 
-  implicit def int2IntExp(n: Int): IntConstantExp = IntConstantExp(n)
+  override val content: String = {
 
-  def content: String = {
-
-    val utc = dt.toDateTime(DateTimeZone.UTC)
+    val utc = constantValue.toDateTime(DateTimeZone.UTC)
 
     val funcDt =
       if (utc.getHourOfDay == 0 && utc.getMinuteOfHour == 0)
@@ -57,3 +54,5 @@ case class DateTimeConstantExp(dt: DateTime) extends ConstantExpression with Dat
   }
 
 }
+
+case class BooleanConstantExp(constantValue: Boolean) extends ConstantExpression[Boolean] with BooleanExp

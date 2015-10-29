@@ -115,11 +115,9 @@ trait StringExp extends TypedExpression { self =>
 
 }
 
-trait BooleanExp extends TypedExpression {
-  // Amazon Datapipeline does not have pipeline server side evaluated boolean expressions, so we
-  // could support evaluate in client side (mainly for parameters)
-  def evaluate: Boolean
-}
+// Amazon Datapipeline does not have pipeline server side evaluated boolean expressions, so we
+// could support evaluate in client side (mainly for parameters)
+trait BooleanExp extends TypedExpression with Evaluatable[Boolean]
 
 trait DateTimeExp extends TypedExpression {
 

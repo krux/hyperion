@@ -17,7 +17,7 @@ case class Parameter[T : TypeTag] private (
   description: Option[String],
   isEncrypted: Boolean,
   value: Option[T]  // Parameter may have empty (None) value as place holder
-) {
+) extends Evaluatable[T] { self =>
 
   final val name = if (isEncrypted) s"*my_$id" else s"my_$id"
 
@@ -27,18 +27,37 @@ case class Parameter[T : TypeTag] private (
 
   def isEmpty: Boolean = value.isEmpty
 
+  def evaluate(): T = value.get
+
   def ref: TypedExpression = typeOf[T] match {
-    case t if t <:< typeOf[Int] => new IntExp { def content = name }
-    case t if t <:< typeOf[Double] => new DoubleExp { def content = name }
-    case t if t <:< typeOf[String] => new StringExp { def content = name }
-    case t if t <:< typeOf[Boolean] =>
-      new BooleanExp {
-        def content = name
-        def evaluate = value.get.asInstanceOf[Boolean]
-      }
-    case t if t <:< typeOf[DateTime] => new DateTimeExp { def content = name }
-    case t if t <:< typeOf[Duration] => new DurationExp { def content = name }
-    case t if t <:< typeOf[S3Uri] => new S3UriExp { def content = name }
+    case t if t <:< typeOf[Int] => new IntExp {
+      def content = name
+      def evaluate() = self.evaluate().asInstanceOf[Int]
+    }
+    case t if t <:< typeOf[Double] => new DoubleExp {
+      def content = name
+      def evaluate() = self.evaluate().asInstanceOf[Double]
+    }
+    case t if t <:< typeOf[String] => new StringExp with Evaluatable[String] {
+      def content = name
+      def evaluate() = self.evaluate().asInstanceOf[String]
+    }
+    case t if t <:< typeOf[Boolean] => new BooleanExp {
+      def content = name
+      def evaluate() = self.evaluate().asInstanceOf[Boolean]
+    }
+    case t if t <:< typeOf[DateTime] => new DateTimeExp {
+      def content = name
+      def evaluate() = self.evaluate().asInstanceOf[DateTime]
+    }
+    case t if t <:< typeOf[Duration] => new DurationExp {
+      def content = name
+      def evaluate() = self.evaluate().asInstanceOf[Duration]
+    }
+    case t if t <:< typeOf[S3Uri] => new S3UriExp {
+      def content = name
+      def evaluate() = self.evaluate().asInstanceOf[S3Uri]
+    }
     case _ => throw new RuntimeException("Unsupported parameter type")
   }
 

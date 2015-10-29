@@ -1,5 +1,7 @@
 package com.krux.hyperion.resource
 
+import org.slf4j.LoggerFactory
+
 import com.krux.hyperion.aws.AdpEmrCluster
 import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.adt.HType._
@@ -43,8 +45,16 @@ class MapReduceCluster private (
   val actionOnTaskFailure: Option[ActionOnTaskFailure]
 ) extends EmrCluster {
 
-  assert((taskInstanceCount >= 0).getOrElse(true))
-  assert((coreInstanceCount >= 1).getOrElse(true))
+  val logger = LoggerFactory.getLogger(SparkCluster.getClass)
+
+  assert((taskInstanceCount >= 0).getOrElse {
+    logger.warn("Server side expression cannot be evaluated. Unchecked comparison.")
+    true
+  })
+  assert((coreInstanceCount >= 1).getOrElse {
+    logger.warn("Server side expression cannot be evaluated. Unchecked comparison.")
+    true
+  })
 
   def copy(id: PipelineObjectId = id,
     amiVersion: HString = amiVersion,
