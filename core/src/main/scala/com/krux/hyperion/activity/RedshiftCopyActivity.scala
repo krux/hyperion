@@ -36,25 +36,22 @@ case class RedshiftCopyActivity private (
   failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends PipelineActivity {
 
-  private def validate() =
-    // The following when false will trigger aws datapipeline runtime error:
-    assert(
-      input.dataFormat
-        .map {
-          case f: CsvDataFormat => false
-          case f: TsvDataFormat => false
-          case _ => true
-        }
-        .getOrElse(true)
-      ,
-      "CSV or TSV format cannot be used with commandOptions"
-    )
-
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
   def withCommandOptions(opts: RedshiftCopyOption*) = {
-    validate()
+    // The following assertion is a mirror of AWS Server runtime assertion.
+    assert(
+      input.dataFormat
+        .forall {
+          case f: CsvDataFormat => false
+          case f: TsvDataFormat => false
+          case _ => true
+        }
+      ,
+      "CSV or TSV format cannot be used with commandOptions"
+    )
+
     this.copy(commandOptions = commandOptions ++ opts)
   }
 

@@ -30,7 +30,7 @@ object RedshiftCopyOption {
     def repr = Seq("NULL", s"'$nullStr'")
   }
 
-  def maxErrorAs(errorCount: Int) = new RedshiftCopyOption {
+  def maxError(errorCount: Int) = new RedshiftCopyOption {
     def repr = Seq("MAXERROR", errorCount.toString)
   }
 
