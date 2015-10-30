@@ -4,7 +4,7 @@ trait FailureAndRerunMode {
 
   def serialize: String
 
-  override val toString: String = serialize
+  override def toString: String = serialize
 
 }
 
