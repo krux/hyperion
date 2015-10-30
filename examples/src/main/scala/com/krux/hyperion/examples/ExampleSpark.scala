@@ -1,5 +1,6 @@
 package com.krux.hyperion.examples
 
+import scala.language.postfixOps
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.{SparkJobActivity, SparkActivity, SparkStep}
 import com.krux.hyperion.datanode.S3DataNode
@@ -33,7 +34,7 @@ object ExampleSpark extends DataPipelineDef {
 
   override def parameters: Iterable[Parameter[_]] = Seq(location, instanceType, instanceCount, instanceBid)
 
-  val dataNode = S3DataNode(s3 / "some-bucket" / "some-path/")
+  val dataNode = S3DataNode(s3 / "some-bucket" / "some-path" /)
 
   // Actions
   val mailAction = SnsAlarm()
