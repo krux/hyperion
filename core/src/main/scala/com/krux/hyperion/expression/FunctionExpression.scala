@@ -1,6 +1,6 @@
 package com.krux.hyperion.expression
 
-trait FunctionExpression extends Expression {
+trait FunctionExpression { this: TypedExpression =>
 
   def name: String
 

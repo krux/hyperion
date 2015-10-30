@@ -6,7 +6,7 @@ import org.joda.time.{DateTimeZone, DateTime}
 
 trait ConstantExpression[T] extends Expression with Evaluatable[T] {
   def constantValue: T
-  val content: String = constantValue.toString
+  def content: String = constantValue.toString
 
   def evaluate(): T = constantValue
 }
@@ -22,11 +22,13 @@ object ConstantExpression {
 
 case class StringConstantExp(constantValue: String) extends ConstantExpression[String] with StringExp {
 
-  override val content: String = s"""\"$constantValue\""""
+  override def content: String = s"""\"$constantValue\""""
 
 }
 
 case class IntConstantExp(constantValue: Int) extends ConstantExpression[Int] with IntExp
+
+case class LongConstantExp(constantValue: Int) extends ConstantExpression[Int] with LongExp
 
 case class DoubleConstantExp(constantValue: Double) extends ConstantExpression[Double] with DoubleExp
 
@@ -34,7 +36,7 @@ case class DateTimeConstantExp(constantValue: DateTime) extends ConstantExpressi
 
   import ConstantExpression._
 
-  override val content: String = {
+  override def content: String = {
 
     val utc = constantValue.toDateTime(DateTimeZone.UTC)
 

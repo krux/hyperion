@@ -8,7 +8,7 @@ import com.krux.hyperion.aws.AdpSqlActivity
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.expression.{RunnableObject, Parameter}
-import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri}
+import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString}
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
@@ -17,11 +17,11 @@ import com.krux.hyperion.resource.{Resource, Ec2Resource}
  */
 case class RedshiftUnloadActivity private (
   id: PipelineObjectId,
-  script: String,
+  script: HString,
   s3Path: HS3Uri,
   database: RedshiftDatabase,
   unloadOptions: Seq[RedshiftUnloadOption],
-  queue: Option[String],
+  queue: Option[HString],
   runsOn: Resource[Ec2Resource],
   dependsOn: Seq[PipelineActivity],
   preconditions: Seq[Precondition],
@@ -102,7 +102,7 @@ case class RedshiftUnloadActivity private (
   }
 
   def unloadScript = s"""
-    |UNLOAD ('${prepareScript(script)}')
+    |UNLOAD ('${prepareScript(script.serialize)}')
     |TO '$s3Path'
     |WITH CREDENTIALS AS
     |'aws_access_key_id=${accessKeyId.ref};aws_secret_access_key=${accessKeySecret.ref}'
@@ -115,7 +115,7 @@ case class RedshiftUnloadActivity private (
   def withUnloadOptions(opts: RedshiftUnloadOption*) =
     this.copy(unloadOptions = unloadOptions ++ opts)
 
-  def withQueue(queue: String) = this.copy(queue = Option(queue))
+  def withQueue(queue: HString) = this.copy(queue = Option(queue))
 
   private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
   def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
@@ -144,7 +144,7 @@ case class RedshiftUnloadActivity private (
     scriptUri = None,
     scriptArgument = None,
     database = database.ref,
-    queue = queue,
+    queue = queue.map(_.serialize),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
     runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(dependsOn)(_.ref),
@@ -163,7 +163,7 @@ case class RedshiftUnloadActivity private (
 
 object RedshiftUnloadActivity extends RunnableObject {
 
-  def apply(database: RedshiftDatabase, script: String, s3Path: HS3Uri,
+  def apply(database: RedshiftDatabase, script: HString, s3Path: HS3Uri,
     accessKeyId: Parameter[String], accessKeySecret: Parameter[String])(runsOn: Resource[Ec2Resource]): RedshiftUnloadActivity =
     new RedshiftUnloadActivity(
       id = PipelineObjectId(RedshiftUnloadActivity.getClass),

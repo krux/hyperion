@@ -1,24 +1,20 @@
 package com.krux.hyperion.activity
 
 trait FailureAndRerunMode {
+
   def serialize: String
+
+  override val toString: String = serialize
+
 }
 
 object FailureAndRerunMode {
 
   case object CascadeOnFailure extends FailureAndRerunMode {
-
-    def serialize = "cascade"
-
-    override val toString: String = serialize
-
+    val serialize = "cascade"
   }
 
   case object None extends FailureAndRerunMode {
-
-    def serialize = "none"
-
-    override val toString: String = serialize
-
+    val serialize = "none"
   }
 }

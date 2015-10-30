@@ -63,6 +63,8 @@ trait IntExp extends TypedExpression { self =>
 
 }
 
+trait LongExp extends TypedExpression
+
 trait DoubleExp extends TypedExpression { self =>
 
   def + (e: IntExp) = new DoubleExp {

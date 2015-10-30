@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean, HType}
+import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean, HType, HLong}
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
@@ -22,7 +22,7 @@ class SplitMergeFilesActivity private (
   val linkOutputs: HBoolean,
   val suffixLength: Option[HInt],
   val numberOfFiles: Option[HInt],
-  val linesPerFile: Option[Long],
+  val linesPerFile: Option[HLong],
   val bytesPerFile: Option[HString],
   val bufferSize: Option[HString],
   val pattern: Option[HString],
@@ -56,7 +56,7 @@ class SplitMergeFilesActivity private (
     linkOutputs: HBoolean = linkOutputs,
     suffixLength: Option[HInt] = suffixLength,
     numberOfFiles: Option[HInt] = numberOfFiles,
-    linesPerFile: Option[Long] = linesPerFile,
+    linesPerFile: Option[HLong] = linesPerFile,
     bytesPerFile: Option[HString] = bytesPerFile,
     bufferSize: Option[HString] = bufferSize,
     pattern: Option[HString] = pattern,
@@ -94,7 +94,7 @@ class SplitMergeFilesActivity private (
   def withHeader(header: HString*) = this.copy(header = Option(header.mkString(","): HString))
   def withSuffixLength(suffixLength: HInt) = this.copy(suffixLength = Option(suffixLength))
   def withNumberOfFiles(numberOfFiles: HInt) = this.copy(numberOfFiles = Option(numberOfFiles))
-  def withNumberOfLinesPerFile(linesPerFile: Long) = this.copy(linesPerFile = Option(linesPerFile))
+  def withNumberOfLinesPerFile(linesPerFile: HLong) = this.copy(linesPerFile = Option(linesPerFile))
   def withNumberOfBytesPerFile(bytesPerFile: HString) = this.copy(bytesPerFile = Option(bytesPerFile))
   def withBufferSize(bufferSize: HString) = this.copy(bufferSize = Option(bufferSize))
   def withInputPattern(pattern: HString) = this.copy(pattern = Option(pattern))

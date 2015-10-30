@@ -30,11 +30,11 @@ case class Parameter[T : TypeTag] private (
   def evaluate(): T = value.get
 
   def ref: TypedExpression = typeOf[T] match {
-    case t if t <:< typeOf[Int] => new IntExp {
+    case t if t <:< typeOf[Int] => new IntExp with Evaluatable[Int] {
       def content = name
       def evaluate() = self.evaluate().asInstanceOf[Int]
     }
-    case t if t <:< typeOf[Double] => new DoubleExp {
+    case t if t <:< typeOf[Double] => new DoubleExp with Evaluatable[Double] {
       def content = name
       def evaluate() = self.evaluate().asInstanceOf[Double]
     }
@@ -42,19 +42,19 @@ case class Parameter[T : TypeTag] private (
       def content = name
       def evaluate() = self.evaluate().asInstanceOf[String]
     }
-    case t if t <:< typeOf[Boolean] => new BooleanExp {
+    case t if t <:< typeOf[Boolean] => new BooleanExp with Evaluatable[Boolean] {
       def content = name
       def evaluate() = self.evaluate().asInstanceOf[Boolean]
     }
-    case t if t <:< typeOf[DateTime] => new DateTimeExp {
+    case t if t <:< typeOf[DateTime] => new DateTimeExp with Evaluatable[DateTime] {
       def content = name
       def evaluate() = self.evaluate().asInstanceOf[DateTime]
     }
-    case t if t <:< typeOf[Duration] => new DurationExp {
+    case t if t <:< typeOf[Duration] => new DurationExp with Evaluatable[Duration] {
       def content = name
       def evaluate() = self.evaluate().asInstanceOf[Duration]
     }
-    case t if t <:< typeOf[S3Uri] => new S3UriExp {
+    case t if t <:< typeOf[S3Uri] => new S3UriExp with Evaluatable[HS3Uri] {
       def content = name
       def evaluate() = self.evaluate().asInstanceOf[S3Uri]
     }

@@ -6,7 +6,7 @@ import org.joda.time.{DateTimeZone, DateTime}
 
 import com.krux.hyperion.expression.{DateTimeExp, IntExp, StringExp, DoubleExp,
   TypedExpression, IntConstantExp, DurationExp, Duration, S3UriExp, BooleanExp,
-  DateTimeConstantExp, Evaluatable}
+  DateTimeConstantExp, Evaluatable, LongExp}
 import com.krux.hyperion.common.{S3Uri, OptionalOrdered}
 
 sealed abstract class HType {
@@ -25,25 +25,28 @@ sealed abstract class HType {
 object HType {
 
   implicit def string2HString(value: String): HString = HString(Left(value))
-  implicit def stringTypedExp2HString(value: StringExp): HString = HString(Right(value))
+  implicit def stringExp2HString(value: StringExp): HString = HString(Right(value))
 
   implicit def int2HInt(value: Int): HInt = HInt(Left(value))
-  implicit def intTypedExp2HInt(value: IntExp): HInt = HInt(Right(value))
+  implicit def intExp2HInt(value: IntExp): HInt = HInt(Right(value))
 
   implicit def double2HDouble(value: Double): HDouble = HDouble(Left(value))
-  implicit def doubleTypedExp2HDouble(value: DoubleExp): HDouble = HDouble(Right(value))
+  implicit def doubleExp2HDouble(value: DoubleExp): HDouble = HDouble(Right(value))
 
   implicit def boolean2HBoolean(value: Boolean): HBoolean = HBoolean(Left(value))
-  implicit def booleanTypedExp2HBoolean(value: BooleanExp): HBoolean = HBoolean(Right(value))
+  implicit def booleanExp2HBoolean(value: BooleanExp): HBoolean = HBoolean(Right(value))
 
   implicit def dateTime2HDateTime(value: DateTime): HDateTime = HDateTime(Left(value))
-  implicit def dateTimeTypedExp2HDateTime(value: DateTimeExp): HDateTime = HDateTime(Right(value))
+  implicit def dateTimeExp2HDateTime(value: DateTimeExp): HDateTime = HDateTime(Right(value))
 
   implicit def duration2HDuration(value: Duration): HDuration = HDuration(Left(value))
-  implicit def durationTypedExp2HDuration(value: DurationExp): HDuration = HDuration(Right(value))
+  implicit def durationExp2HDuration(value: DurationExp): HDuration = HDuration(Right(value))
 
   implicit def s3Uri2HS3Uri(value: S3Uri): HS3Uri = HS3Uri(Left(value))
-  implicit def s3UriTypedExp2HS3Uri(value: S3UriExp): HS3Uri = HS3Uri(Right(value))
+  implicit def s3UriExp2HS3Uri(value: S3UriExp): HS3Uri = HS3Uri(Right(value))
+
+  implicit def long2HLong(value: Long): HLong = HLong(Left(value))
+  implicit def longExp2HLong(value: LongExp): HLong = HLong(Right(value))
 
 }
 
@@ -74,6 +77,21 @@ case class HInt(value: Either[Int, IntExp]) extends HType with OptionalOrdered[I
       case Left(j) => HInt(Right(i + IntConstantExp(j)))
       case Right(j) => HInt(Right(i + j))
     }
+  }
+
+}
+
+case class HLong(value: Either[Long, LongExp]) extends HType with OptionalOrdered[Long] {
+
+  def compare(that: Long): Option[Int] = value match {
+    case Left(v) => Some(java.lang.Long.compare(v, that))
+    case Right(v) =>
+      v match {
+        case x: Evaluatable[_] =>
+          Some(java.lang.Long.compare(x.evaluate().asInstanceOf[Long], that))
+        case _ =>
+          None
+      }
   }
 
 }
