@@ -4,10 +4,10 @@ trait StorageClass
 
 object StorageClass {
   object Standard extends StorageClass {
-    override val toString = "STANDARD"
+    override def toString = "STANDARD"
   }
 
   object ReducedRedundancy extends StorageClass {
-    override val toString = "REDUCED_REDUNDANCY"
+    override def toString = "REDUCED_REDUNDANCY"
   }
 }

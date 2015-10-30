@@ -52,17 +52,17 @@ case class RandomizedObjectId(seed: String, rand: String = UUID.randomUUID.toStr
 }
 
 case class FixedObjectId(seed: String) extends PipelineObjectId {
-  override val toString = seed
+  override def toString = seed
 }
 
 object ScheduleObjectId extends PipelineObjectId {
-  override val toString = "PipelineSchedule"
+  override def toString = "PipelineSchedule"
 }
 
 object TerminateObjectId extends PipelineObjectId {
-  override val toString = "TerminateAction"
+  override def toString = "TerminateAction"
 }
 
 object DefaultObjectId extends PipelineObjectId {
-  override val toString = "Default"
+  override def toString = "Default"
 }

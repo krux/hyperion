@@ -196,23 +196,23 @@ object S3DistCpActivity extends RunnableObject {
 
   object OutputCodec {
     object Gz extends OutputCodec {
-      override val toString = "gz"
+      override def toString = "gz"
     }
 
     object Gzip extends OutputCodec {
-      override val toString = "gzip"
+      override def toString = "gzip"
     }
 
     object Lzo extends OutputCodec {
-      override val toString = "lzo"
+      override def toString = "lzo"
     }
 
     object Snappy extends OutputCodec {
-      override val toString = "snappy"
+      override def toString = "snappy"
     }
 
     object None extends OutputCodec {
-      override val toString = "none"
+      override def toString = "none"
     }
   }
 

@@ -2,7 +2,7 @@ package com.krux.hyperion
 
 sealed trait ScheduleType {
   def serialize: String
-  override val toString = serialize
+  override def toString = serialize
 }
 
 case object Cron extends ScheduleType {

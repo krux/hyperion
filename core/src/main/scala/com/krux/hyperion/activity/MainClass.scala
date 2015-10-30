@@ -5,7 +5,7 @@ import scala.language.implicitConversions
 import com.krux.hyperion.adt.HString
 
 class MainClass private (name: String) {
-  override val toString = name
+  override def toString = name
 }
 
 object MainClass {
