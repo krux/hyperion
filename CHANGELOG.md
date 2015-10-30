@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.14.2 - 2015-10-30
+### Added
+- [#249](https://github.com/krux/hyperion/issues/249) - Implement a simpleName value on MainClass to get just the class name itself
+
 ## 2.14.1 - 2015-10-29
 ### Fixed
 - [#224](https://github.com/krux/hyperion/issues/224) - Add more redshift copy options
