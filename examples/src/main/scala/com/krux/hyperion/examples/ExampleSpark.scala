@@ -47,7 +47,7 @@ object ExampleSpark extends DataPipelineDef with HyperionCli {
 
   // Resources
   val sparkCluster = SparkCluster()
-    .withTaskInstanceCount(1)
+    .withTaskInstanceCount(instanceCount)
     .withTaskInstanceType(instanceType)
 
   // First activity

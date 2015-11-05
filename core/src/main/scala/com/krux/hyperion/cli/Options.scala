@@ -19,5 +19,6 @@ case class Options(
   removeLastNameSegment: Boolean = false,
   includeResources: Boolean = false,
   includeDataNodes: Boolean = false,
-  includeDatabases: Boolean = false
+  includeDatabases: Boolean = false,
+  params: Map[String, String] = Map.empty
 )

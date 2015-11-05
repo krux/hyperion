@@ -11,8 +11,7 @@ import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.aws.{AdpParameterSerializer, AdpPipelineSerializer, AdpJsonSerializer}
 import com.krux.hyperion.common.{S3UriHelper, S3Uri, DefaultObject, PipelineObject}
 import com.krux.hyperion.workflow.WorkflowExpressionImplicits
-import com.krux.hyperion.expression.Parameter
-
+import com.krux.hyperion.expression.{Parameter, ParameterValues}
 
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
@@ -22,6 +21,8 @@ trait DataPipelineDef extends S3UriHelper with WorkflowExpressionImplicits {
   private lazy val context = new HyperionContext()
 
   implicit def hc: HyperionContext = context
+
+  implicit val pv: ParameterValues = new ParameterValues()
 
   def schedule: Schedule
 
@@ -46,6 +47,16 @@ trait DataPipelineDef extends S3UriHelper with WorkflowExpressionImplicits {
     }
 
   def pipelineName: String = MainClass(this).toString
+
+  def setParameterValue(id: String, value: String): Unit = {
+    // Use .get to throw exception when a parameter id is not defined
+    val param = parameters.find(_.id == id).get
+    if (param.`type` == "Integer") {
+      pv.setValue(id, value.toInt)
+    } else {
+      pv.setValue(id, value)
+    }
+  }
 
 }
 

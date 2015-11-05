@@ -75,7 +75,7 @@ class ExampleSparkSpec extends WordSpec {
         ("coreInstanceType" -> "m3.xlarge") ~
         ("coreInstanceCount" -> "2") ~
         ("taskInstanceType" -> "#{my_InstanceType}") ~
-        ("taskInstanceCount" -> "1") ~
+        ("taskInstanceCount" -> "#{my_InstanceCount}") ~
         ("terminateAfter" -> "8 hours") ~
         ("keyPair" -> "your-aws-key-pair") ~
         ("type" -> "EmrCluster") ~

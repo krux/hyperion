@@ -1,13 +1,14 @@
 package com.krux.hyperion.expression
 
-import scala.reflect.runtime.universe._
 import scala.language.implicitConversions
+import scala.reflect.runtime.universe._
 
 import org.joda.time.DateTime
 
+import com.krux.hyperion.adt.{HString, HDouble, HInt, HS3Uri, HDuration, HDateTime, HBoolean}
 import com.krux.hyperion.aws.AdpParameter
 import com.krux.hyperion.common.S3Uri
-import com.krux.hyperion.adt.{HString, HDouble, HInt, HS3Uri, HDuration, HDateTime, HBoolean}
+import com.krux.hyperion.DataPipelineDef
 
 /**
  * @note need to add support for isOptional, allowedValues and isArray
@@ -15,13 +16,19 @@ import com.krux.hyperion.adt.{HString, HDouble, HInt, HS3Uri, HDuration, HDateTi
 case class Parameter[T : TypeTag] private (
   id: String,
   description: Option[String],
-  isEncrypted: Boolean,
-  value: Option[T]  // Parameter may have empty (None) value as place holder
-) extends Evaluatable[T] { self =>
+  isEncrypted: Boolean
+  // value: Option[T]  // Parameter may have empty (None) value as place holder
+)(implicit pv: ParameterValues) extends Evaluatable[T] { self =>
 
   final val name = if (isEncrypted) s"*my_$id" else s"my_$id"
 
-  def withValue(newValue: T): Parameter[T] = this.copy(value = Option(newValue))
+  def value: Option[T] = pv.getValue(this)
+
+  // def withValue(newValue: T): Parameter[T] = this.copy(value = Option(newValue))
+  def withValue(newValue: T): Parameter[T] = {
+    pv.setValue(this, newValue)
+    this
+  }
   def withDescription(desc: String): Parameter[T] = this.copy(description = Option(desc))
   def encrypted: Parameter[T] = this.copy(isEncrypted = true)
 
@@ -90,31 +97,61 @@ case class Parameter[T : TypeTag] private (
 
 object Parameter {
 
-  def apply[T : TypeTag](id: String): Parameter[T] = new Parameter[T](id, None, false, None)
+  def apply[T : TypeTag](id: String)(implicit pv: ParameterValues): Parameter[T] = new Parameter[T](id, None, false)
 
-  def apply[T : TypeTag](id: String, value: T) = new Parameter[T](id, None, false, Option(value))
+  def apply[T : TypeTag](id: String, value: T)(implicit pv: ParameterValues) = new Parameter[T](id, None, false).withValue(value)
 
   implicit def stringParameter2HString(p: Parameter[String]): HString = HString(
-    Right(new StringExp { def content = p.name })
+    Right(
+      new StringExp with Evaluatable[String] {
+        def content = p.name
+        def evaluate() = p.evaluate()
+      }
+    )
   )
 
   implicit def intParameter2HInt(p: Parameter[Int]): HInt = HInt(
-    Right(new IntExp { def content = p.name })
+    Right(
+      new IntExp with Evaluatable[Int] {
+        def content = p.name
+        def evaluate() = p.evaluate()
+      }
+    )
   )
 
   implicit def doubleParameter2HDouble(p: Parameter[Double]): HDouble = HDouble(
-    Right(new DoubleExp { def content = p.name })
+    Right(
+      new DoubleExp with Evaluatable[Double] {
+        def content = p.name
+        def evaluate() = p.evaluate()
+      }
+    )
   )
 
   implicit def dateTimeParameter2HDateTime(p: Parameter[DateTime]): HDateTime = HDateTime(
-    Right(new DateTimeExp { def content = p.name })
+    Right(
+      new DateTimeExp with Evaluatable[DateTime] {
+        def content = p.name
+        def evaluate() = p.evaluate()
+      }
+    )
   )
 
   implicit def durationParameter2HDuration(p: Parameter[Duration]): HDuration = HDuration(
-    Right(new DurationExp { def content = p.name })
+    Right(
+      new DurationExp with Evaluatable[Duration] {
+        def content = p.name
+        def evaluate() = p.evaluate()
+      }
+    )
   )
 
   implicit def s3UriParameter2HS3Uri(p: Parameter[S3Uri]): HS3Uri = HS3Uri(
-    Right(new S3UriExp { def content = p.name })
+    Right(
+      new S3UriExp with Evaluatable[S3Uri] {
+        def content = p.name
+        def evaluate() = p.evaluate()
+      }
+    )
   )
 }

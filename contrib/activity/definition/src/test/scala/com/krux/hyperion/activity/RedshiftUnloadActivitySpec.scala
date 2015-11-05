@@ -10,13 +10,14 @@ import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.resource.Ec2Resource
 import com.krux.hyperion.WorkflowExpression._
-import com.krux.hyperion.expression.Parameter
+import com.krux.hyperion.expression.{Parameter, ParameterValues}
 
 class RedshiftUnloadActivitySpec extends WordSpec {
 
   "RedshiftUnloadActivity" should {
 
     implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
+    implicit val pv: ParameterValues = new ParameterValues()
 
     val ec2 = Ec2Resource()
 
