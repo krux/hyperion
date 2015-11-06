@@ -10,7 +10,9 @@ package com.krux.hyperion.common
 case class S3Uri(ref: String) {
   require(ref.startsWith("s3"), "S3Uri must start with s3 protocol.")
 
-  def /(next: String) = S3Uri(s"$ref/$next")
+  def /(next: String): S3Uri = S3Uri(s"$ref/$next")
+
+  def / : S3Uri = /("")
 
   override val toString = ref
 }

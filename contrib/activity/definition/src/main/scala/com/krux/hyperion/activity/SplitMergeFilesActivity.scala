@@ -19,6 +19,7 @@ class SplitMergeFilesActivity private (
   val header: Option[String],
   val compressedOutput: Boolean,
   val skipFirstInputLine: Boolean,
+  val ignoreEmptyInput: Boolean,
   val linkOutputs: Boolean,
   val suffixLength: Option[Parameter[Int]],
   val numberOfFiles: Option[Parameter[Int]],
@@ -53,6 +54,7 @@ class SplitMergeFilesActivity private (
     header: Option[String] = header,
     compressedOutput: Boolean = compressedOutput,
     skipFirstInputLine: Boolean = skipFirstInputLine,
+    ignoreEmptyInput: Boolean = ignoreEmptyInput,
     linkOutputs: Boolean = linkOutputs,
     suffixLength: Option[Parameter[Int]] = suffixLength,
     numberOfFiles: Option[Parameter[Int]] = numberOfFiles,
@@ -78,7 +80,7 @@ class SplitMergeFilesActivity private (
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode
   ) = new SplitMergeFilesActivity(id,
     scriptUri, jarUri, mainClass,
-    filename, header, compressedOutput, skipFirstInputLine, linkOutputs,
+    filename, header, compressedOutput, skipFirstInputLine, ignoreEmptyInput, linkOutputs,
     suffixLength, numberOfFiles, linesPerFile, bytesPerFile, bufferSize,
     pattern, markSuccessfulJobs, input, output, stdout, stderr, runsOn, dependsOn,
     preconditions, onFailAlarms, onSuccessAlarms, onLateActionAlarms,
@@ -99,6 +101,7 @@ class SplitMergeFilesActivity private (
   def withBufferSize(bufferSize: String) = this.copy(bufferSize = Option(bufferSize))
   def withInputPattern(pattern: String) = this.copy(pattern = Option(pattern))
   def markingSuccessfulJobs() = this.copy(markSuccessfulJobs = true)
+  def ignoringEmptyInput() = this.copy(ignoreEmptyInput = true)
 
   def withInput(inputs: S3DataNode*) = this.copy(input = input ++ inputs)
   def withOutput(outputs: S3DataNode*) = this.copy(output = output ++ outputs)
@@ -124,6 +127,7 @@ class SplitMergeFilesActivity private (
     if (skipFirstInputLine) Option(Seq("--skip-first-line")) else None,
     if (linkOutputs) Option(Seq("--link")) else None,
     if (markSuccessfulJobs) Option(Seq("--mark-successful-jobs")) else None,
+    if (ignoreEmptyInput) Option(Seq("--ignore-empty-input")) else None,
     header.map(h => Seq("--header", h)),
     suffixLength.map(s => Seq("--suffix-length", s.toString)),
     numberOfFiles.map(n => Seq("-n", n.toString)),
@@ -173,6 +177,7 @@ object SplitMergeFilesActivity extends RunnableObject {
       header = None,
       compressedOutput = false,
       skipFirstInputLine = false,
+      ignoreEmptyInput = false,
       linkOutputs = false,
       suffixLength = None,
       numberOfFiles = None,

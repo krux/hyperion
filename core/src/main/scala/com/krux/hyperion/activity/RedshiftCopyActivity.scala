@@ -1,11 +1,12 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpRedshiftCopyActivity
 import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.dataformat.{CsvDataFormat, TsvDataFormat}
 import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
 import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.parameter.Parameter
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, WorkerGroup, Ec2Resource}
@@ -38,7 +39,22 @@ case class RedshiftCopyActivity private (
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withCommandOptions(opts: RedshiftCopyOption*) = this.copy(commandOptions = commandOptions ++ opts)
+  def withCommandOptions(opts: RedshiftCopyOption*) = {
+    // The following assertion is a mirror of AWS Server runtime assertion.
+    assert(
+      input.dataFormat
+        .forall {
+          case f: CsvDataFormat => false
+          case f: TsvDataFormat => false
+          case _ => true
+        }
+      ,
+      "CSV or TSV format cannot be used with commandOptions"
+    )
+
+    this.copy(commandOptions = commandOptions ++ opts)
+  }
+
   def withTransformSql(sql: String) = this.copy(transformSql = Option(sql))
   def withQueue(queue: String) = this.copy(queue = Option(queue))
 

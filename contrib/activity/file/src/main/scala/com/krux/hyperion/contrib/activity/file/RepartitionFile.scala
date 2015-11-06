@@ -93,7 +93,7 @@ object RepartitionFile {
       applyDefaultCompression _
     ).foldLeft(options)((acc, handler) => handler(acc))
 
-  def checkOptions(options: Options): Option[Options] = if (options.inputs.isEmpty) {
+  def checkOptions(options: Options): Option[Options] = if (options.inputs.isEmpty && !options.ignoreEmptyInput) {
     System.err.println("ERROR: No inputs specified.")
     None
   } else if (options.outputDirectory.isEmpty) {
@@ -119,6 +119,8 @@ object RepartitionFile {
         .text("assume the input files have a header in the first line and skip it")
       opt[Unit]('L', "link").optional().action((_, c) => c.copy(link = true))
         .text("link the output files instead of copying into position")
+      opt[Unit]("ignore-empty-input").optional().action((_, c) => c.copy(ignoreEmptyInput = true))
+        .text("Ignores empty inputs")
       opt[Unit]("mark-successful-jobs").optional().action((_, c) => c.copy(markSuccessfulJobs = true))
         .text("Creates a _SUCCESS file to mark the successful completion of the job")
       opt[String]('H', "header").valueName("HEAD").optional().action((x, c) => c.copy(header = Option(s"$x\n")))

@@ -2,6 +2,31 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.14.2 - 2015-10-30
+### Added
+- [#249](https://github.com/krux/hyperion/issues/249) - Implement a simpleName value on MainClass to get just the class name itself
+- [#252](https://github.com/krux/hyperion/issues/252) - Add option to Graph to exclude data nodes (or make it the default)
+
+### Fixed
+- [#251](https://github.com/krux/hyperion/issues/251) - Graph still emits resources (just not resource dependencies) when not using --include-resources
+
+## 2.14.1 - 2015-10-29
+### Fixed
+- [#224](https://github.com/krux/hyperion/issues/224) - Add more redshift copy options
+- [#225](https://github.com/krux/hyperion/issues/225) - Make HyperionAwsCli fail fast
+
+## 2.14.0 - 2015-10-27
+### Added
+- [#239](https://github.com/krux/hyperion/issues/239) - Capability to generate graph of workflow
+
+## 2.13.2 - 2015-10-27
+### Added
+- [#237](https://github.com/krux/hyperion/issues/237) - Allow Spark*Activity to override driver-memory
+
+## 2.13.1 - 2015-10-26
+### Added
+- [#234](https://github.com/krux/hyperion/issues/234) - SplitMergeFiles should allow ignoring cases where there is no input files
+
 ## 2.13.0 - 2015-10-15
 ### Added
 - [#224](https://github.com/krux/hyperion/issues/224) - Spark*Activity should allow setting parameters for spark jobs

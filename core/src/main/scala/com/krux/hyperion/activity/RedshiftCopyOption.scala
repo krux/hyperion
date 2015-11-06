@@ -6,6 +6,14 @@ trait RedshiftCopyOption {
 
 object RedshiftCopyOption {
 
+  def csv(quote: String) = new RedshiftCopyOption {
+    def repr = Seq("CSV", "QUOTE", quote)
+  }
+
+  def csv = new RedshiftCopyOption {
+    def repr = Seq("CSV")
+  }
+
   def gzip = new RedshiftCopyOption {
     def repr = Seq("GZIP")
   }
@@ -20,6 +28,10 @@ object RedshiftCopyOption {
 
   def nullAs(nullStr: String) = new RedshiftCopyOption {
     def repr = Seq("NULL", s"'$nullStr'")
+  }
+
+  def maxError(errorCount: Int) = new RedshiftCopyOption {
+    def repr = Seq("MAXERROR", errorCount.toString)
   }
 
 }
