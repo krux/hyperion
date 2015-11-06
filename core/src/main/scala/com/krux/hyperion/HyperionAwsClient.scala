@@ -28,31 +28,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
     }
   }
 
-  /**
-    * Helper class to write a pipeline def and override its schedule.
-    *
-    * @param inner The inner pipeline to override.
-    * @param schedule The schedule to override with.
-    */
-  private case class ScheduleOverridingDataPipelineDef(
-    inner: DataPipelineDef,
-    schedule: Schedule
-  ) extends DataPipelineDef {
-    def workflow: WorkflowExpression = inner.workflow
-    override def tags = inner.tags
-    override def parameters = inner.parameters
-    override def objects = inner.objects
-    override def pipelineName = inner.pipelineName
-  }
-
-  case class ForPipelineDef(
-    pipeline: DataPipelineDef,
-    customName: Option[String] = None,
-    schedule: Option[Schedule] = None
-  ) {
-
-    val pipelineDef: DataPipelineDef = schedule.map(ScheduleOverridingDataPipelineDef(pipeline, _)).getOrElse(pipeline)
-    val pipelineName = customName.getOrElse(pipelineDef.pipelineName)
+  case class ForPipelineDef(pipelineDef: DataPipelineDef) {
 
     def getPipelineId: Option[String] = {
       @tailrec
@@ -60,7 +36,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
         val response = client.listPipelines(request)
 
         val theseIds: List[String] = response.getPipelineIdList.collect({
-          case idName if idName.getName == pipelineName => idName.getId
+          case idName if idName.getName == pipelineDef.pipelineName => idName.getId
         }).toList
 
         if (response.getHasMoreResults) {
@@ -71,17 +47,18 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
       }
 
       queryPipelines() match {
-        case x :: y :: other =>  // if using Hyperion for all DataPipeline management, this should never happen
-          throw new Exception("Duplicated pipeline name")
-        case x :: Nil => Option(x)
+        // if using Hyperion for all DataPipeline management, this should never happen
+        case _ :: _ :: other => throw new Exception("Duplicated pipeline name")
+        case id :: Nil => Option(id)
         case Nil => None
       }
     }
 
-    def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map.empty): Option[String] = {
-      println(s"Creating pipeline $pipelineName")
+    def createPipeline(force: Boolean = false): Option[String] = {
+      println(s"Creating pipeline ${pipelineDef.pipelineName}")
 
       val pipelineObjects: Seq[PipelineObject] = pipelineDef
+      val parameterObjects: Seq[ParameterObject] = pipelineDef
 
       println(s"Pipeline definition has ${pipelineObjects.length} objects")
 
@@ -92,7 +69,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
             println("Delete the existing pipeline")
             ForPipelineId(pipelineId).deletePipelineById()
             Thread.sleep(10000)  // wait until the data pipeline is really deleted
-            createPipeline(force = true, tags)
+            createPipeline(force)
           } else {
             println("Use --force to force pipeline creation")
             None
@@ -101,9 +78,9 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
         case None =>
           val pipelineId = client.createPipeline(
             new CreatePipelineRequest()
-              .withTags((pipelineDef.tags ++ tags).map { case (k, v) => new Tag().withKey(k).withValue(v.getOrElse("")) } )
-              .withUniqueId(pipelineName)
-              .withName(pipelineName)
+              .withUniqueId(pipelineDef.pipelineName)
+              .withName(pipelineDef.pipelineName)
+              .withTags(pipelineDef.tags.map { case (k, v) => new Tag().withKey(k).withValue(v.getOrElse("")) } )
           ).getPipelineId
 
           println(s"Pipeline created: $pipelineId")
@@ -113,7 +90,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
             new PutPipelineDefinitionRequest()
               .withPipelineId(pipelineId)
               .withPipelineObjects(pipelineObjects)
-              .withParameterObjects(pipelineDef: Seq[ParameterObject])
+              .withParameterObjects(parameterObjects)
           )
 
           putDefinitionResult.getValidationErrors.flatMap(_.getErrors.map(e => s"ERROR: $e")).foreach(println)
@@ -135,15 +112,14 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
       }
     }
 
-    private def pipelineNameAction(): Option[ForPipelineId] =
-      getPipelineId match {
-        case Some(pipelineId) =>
-          Option(ForPipelineId(pipelineId))
+    private def pipelineNameAction(): Option[ForPipelineId] = getPipelineId match {
+      case Some(pipelineId) =>
+        Option(ForPipelineId(pipelineId))
 
-        case None =>
-          println(s"Pipeline $pipelineName does not exist")
-          None
-      }
+      case None =>
+        println(s"Pipeline ${pipelineDef.pipelineName} does not exist")
+        None
+    }
 
     def activatePipeline(): Boolean = pipelineNameAction().exists(_.activatePipelineById())
 

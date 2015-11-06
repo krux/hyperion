@@ -27,7 +27,7 @@ trait DataPipelineDef extends HyperionCli with S3UriHelper with WorkflowExpressi
 
   def workflow: WorkflowExpression
 
-  def defaultObject = DefaultObject(schedule)
+  def defaultObject: DefaultObject = DefaultObject(schedule)
 
   def tags: Map[String, Option[String]] = Map.empty
 
@@ -45,7 +45,7 @@ trait DataPipelineDef extends HyperionCli with S3UriHelper with WorkflowExpressi
       r
     }
 
-  def pipelineName = MainClass(this).toString
+  def pipelineName: String = MainClass(this).toString
 
 }
 
