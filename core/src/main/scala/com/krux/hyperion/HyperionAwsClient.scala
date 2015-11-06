@@ -28,11 +28,30 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
     }
   }
 
+  /**
+    * Helper class to write a pipeline def and override its schedule.
+    *
+    * @param inner The inner pipeline to override.
+    * @param schedule The schedule to override with.
+    */
+  private case class ScheduleOverridingDataPipelineDef(
+    inner: DataPipelineDef,
+    schedule: Schedule
+  ) extends DataPipelineDef {
+    def workflow: WorkflowExpression = inner.workflow
+    override def tags = inner.tags
+    override def parameters = inner.parameters
+    override def objects = inner.objects
+    override def pipelineName = inner.pipelineName
+  }
+
   case class ForPipelineDef(
-    pipelineDef: DataPipelineDef,
-    customName: Option[String] = None
+    pipeline: DataPipelineDef,
+    customName: Option[String] = None,
+    schedule: Option[Schedule] = None
   ) {
 
+    val pipelineDef: DataPipelineDef = schedule.map(ScheduleOverridingDataPipelineDef(pipeline, _)).getOrElse(pipeline)
     val pipelineName = customName.getOrElse(pipelineDef.pipelineName)
 
     def getPipelineId: Option[String] = {
@@ -59,13 +78,11 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
       }
     }
 
-    def createPipeline(
-      force: Boolean = false,
-      tags: Map[String, Option[String]] = Map.empty
-    ): Option[String] = {
+    def createPipeline(force: Boolean = false, tags: Map[String, Option[String]] = Map.empty): Option[String] = {
       println(s"Creating pipeline $pipelineName")
 
       val pipelineObjects: Seq[PipelineObject] = pipelineDef
+
       println(s"Pipeline definition has ${pipelineObjects.length} objects")
 
       getPipelineId match {

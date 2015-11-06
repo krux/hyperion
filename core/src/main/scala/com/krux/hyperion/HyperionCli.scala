@@ -1,11 +1,16 @@
 package com.krux.hyperion
 
 import java.io.{PrintStream, File}
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Locale
 
-import com.krux.hyperion.workflow.WorkflowGraphRenderer
+import com.github.nscala_time.time.Imports.DateTime
 import scopt.OptionParser
 import org.json4s.jackson.JsonMethods._
+import com.krux.hyperion.workflow.WorkflowGraphRenderer
 import com.krux.hyperion.DataPipelineDef._
+import com.krux.hyperion.expression.Duration
 
 trait HyperionCli { this: DataPipelineDef =>
 
@@ -23,8 +28,33 @@ trait HyperionCli { this: DataPipelineDef =>
     includeResources: Boolean = false,
     includeDataNodes: Boolean = false,
     includeDatabases: Boolean = false,
-    tags: Map[String, Option[String]] = Map.empty
+    tags: Map[String, Option[String]] = Map.empty,
+    schedule: Option[Schedule] = None
   )
+
+  lazy val daysOfWeek = Seq(
+    DayOfWeek.MONDAY,
+    DayOfWeek.TUESDAY,
+    DayOfWeek.WEDNESDAY,
+    DayOfWeek.THURSDAY,
+    DayOfWeek.FRIDAY,
+    DayOfWeek.SATURDAY,
+    DayOfWeek.SUNDAY
+  ).flatMap { dow =>
+    Seq(
+      dow.getDisplayName(TextStyle.FULL, Locale.getDefault),
+      dow.getDisplayName(TextStyle.SHORT, Locale.getDefault)
+    )
+  }.map(_.toLowerCase)
+
+  lazy val daysOfMonth = (1 to 31).flatMap { dom =>
+    Seq(dom.toString, dom % 10 match {
+      case 1 => s"${dom}st"
+      case 2 => s"${dom}nd"
+      case 3 => s"${dom}rd"
+      case _ => s"${dom}th"
+    })
+  }
 
   def main(args: Array[String]): Unit = {
     val parser = new OptionParser[Cli](s"hyperion") {
@@ -58,7 +88,21 @@ trait HyperionCli { this: DataPipelineDef =>
               case (k, v) => (k, Option(v))
             }
             c.copy(tags = c.tags + tag)
-          } unbounded()
+          } unbounded(),
+          opt[String]("start").action { (x, c) => c.copy(schedule = x.toLowerCase match {
+            case "now" | "today" => Option(Schedule.cron.startAtActivation)
+            case "yesterday" => Option(Schedule.cron.startDateTime(DateTime.yesterday))
+            case "tomorrow" => Option(Schedule.cron.startDateTime(DateTime.tomorrow))
+            case dow if daysOfWeek contains dow => Option(Schedule.cron.startThisWeekAt(DayOfWeek.valueOf(dow).getValue, 0, 0, 0))
+            case dom if daysOfMonth contains dom => Option(Schedule.cron.startThisMonthAt(dom.toInt, 0, 0, 0))
+            case _ => Option(Schedule.cron.startDateTime(DateTime.parse(x)))
+          }) },
+          opt[String]("every").action { (x, c) => c.copy(schedule = c.schedule.map(_.every(Duration(x)))) },
+          opt[String]("until").action { (x, c) => x match {
+            case "tomorrow" => c.copy(schedule = c.schedule.map(_.until(DateTime.tomorrow)))
+            case _ => c.copy(schedule = c.schedule.map(_.until(DateTime.parse(x))))
+          } },
+          opt[Int]("times").action { (x, c) => c.copy(schedule = c.schedule.map(_.stopAfter(x))) }
         )
 
       cmd("delete").action { (_, c) => c.copy(mode = "delete") }
@@ -78,7 +122,7 @@ trait HyperionCli { this: DataPipelineDef =>
 
     parser.parse(args, Cli()).map { cli =>
       val awsClient = new HyperionAwsClient(cli.region, cli.roleArn)
-      val awsClientForPipeline = awsClient.ForPipelineDef(this, cli.customName)
+      val awsClientForPipeline = awsClient.ForPipelineDef(this, cli.customName, cli.schedule)
 
       cli.mode match {
         case "generate" =>
@@ -92,7 +136,7 @@ trait HyperionCli { this: DataPipelineDef =>
           0
 
         case "create" =>
-          awsClientForPipeline.createPipeline(cli.force, cli.schedule, cli.tags) match {
+          awsClientForPipeline.createPipeline(cli.force, cli.tags) match {
             case Some(id) if cli.activate =>
               if (awsClient.ForPipelineId(id).activatePipelineById()) 0 else 3
 
