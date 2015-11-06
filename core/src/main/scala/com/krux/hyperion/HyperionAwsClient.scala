@@ -8,6 +8,12 @@ import com.amazonaws.services.datapipeline._
 import com.amazonaws.services.datapipeline.model._
 import com.krux.hyperion.DataPipelineDef._
 
+trait HyperionAwsPipelineClient {
+  def createPipeline(force: Boolean, activate: Boolean): Boolean
+  def activatePipeline(): Boolean
+  def deletePipeline(): Boolean
+}
+
 class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String] = None) {
   lazy val region: Region = Region.getRegion(regionId.map(r => Regions.fromName(r)).getOrElse(Regions.US_EAST_1))
   lazy val defaultProvider = new DefaultAWSCredentialsProviderChain()
@@ -15,6 +21,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
   lazy val client: DataPipelineClient = new DataPipelineClient(stsProvider.getOrElse(defaultProvider)).withRegion(region)
 
   case class ForPipelineId(pipelineId: String) {
+
     def deletePipelineById(): Boolean = {
       println(s"Deleting pipeline $pipelineId")
       client.deletePipeline(new DeletePipelineRequest().withPipelineId(pipelineId))
@@ -28,7 +35,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
     }
   }
 
-  case class ForPipelineDef(pipelineDef: DataPipelineDef) {
+  case class ForPipelineDef(pipelineDef: DataPipelineDef) extends HyperionAwsPipelineClient {
 
     def getPipelineId: Option[String] = {
       @tailrec
@@ -54,7 +61,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
       }
     }
 
-    def createPipeline(force: Boolean = false): Option[String] = {
+    def createPipeline(force: Boolean, activate: Boolean): Boolean = {
       println(s"Creating pipeline ${pipelineDef.pipelineName}")
 
       val pipelineObjects: Seq[PipelineObject] = pipelineDef
@@ -69,10 +76,10 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
             println("Delete the existing pipeline")
             ForPipelineId(pipelineId).deletePipelineById()
             Thread.sleep(10000)  // wait until the data pipeline is really deleted
-            createPipeline(force)
+            createPipeline(force, activate)
           } else {
             println("Use --force to force pipeline creation")
-            None
+            false
           }
 
         case None =>
@@ -100,17 +107,20 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
             println("Failed to create pipeline")
             println("Deleting the just created pipeline")
             ForPipelineId(pipelineId).deletePipelineById()
-            None
           } else if (putDefinitionResult.getValidationErrors.isEmpty
             && putDefinitionResult.getValidationWarnings.isEmpty) {
             println("Successfully created pipeline")
-            Option(pipelineId)
+            if (activate) ForPipelineId(pipelineId).activatePipelineById() else true
           } else {
             println("Successful with warnings")
-            Option(pipelineId)
+            if (activate) ForPipelineId(pipelineId).activatePipelineById() else true
           }
       }
     }
+
+    def activatePipeline(): Boolean = pipelineNameAction().exists(_.activatePipelineById())
+
+    def deletePipeline(): Boolean = pipelineNameAction().exists(_.deletePipelineById())
 
     private def pipelineNameAction(): Option[ForPipelineId] = getPipelineId match {
       case Some(pipelineId) =>
@@ -120,10 +130,6 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
         println(s"Pipeline ${pipelineDef.pipelineName} does not exist")
         None
     }
-
-    def activatePipeline(): Boolean = pipelineNameAction().exists(_.activatePipelineById())
-
-    def deletePipeline(): Boolean = pipelineNameAction().exists(_.deletePipelineById())
 
   }
 

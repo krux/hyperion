@@ -1,12 +1,7 @@
 package com.krux.hyperion.cli
 
-import com.krux.hyperion.{HyperionAwsClient, DataPipelineDef}
+import com.krux.hyperion.HyperionAwsPipelineClient
 
-case object ActivateAction extends Action {
-  def execute(options: Options, pipelineDef: DataPipelineDef): Int = {
-    val awsClient = new HyperionAwsClient(options.region, options.roleArn)
-    val awsClientForPipeline = awsClient.ForPipelineDef(pipelineDef)
-
-    if (awsClientForPipeline.activatePipeline()) 0 else 3
-  }
+case object ActivateAction extends AwsAction {
+  def execute(options: Options, client: HyperionAwsPipelineClient): Boolean = client.activatePipeline()
 }

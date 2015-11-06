@@ -71,13 +71,7 @@ trait HyperionCli { this: DataPipelineDef =>
         .withName(cli.customName.getOrElse(this.pipelineName))
         .withSchedule(cli.schedule.getOrElse(this.schedule))
 
-      cli.action.execute(cli, pipelineDef) match {
-        case -1 =>
-          parser.showUsageAsError
-          3
-
-        case x => x
-      }
+      if (cli.action.execute(cli, pipelineDef)) 0 else 3
     }.foreach(System.exit)
   }
 

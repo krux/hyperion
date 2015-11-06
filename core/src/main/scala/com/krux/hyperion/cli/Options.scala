@@ -22,7 +22,7 @@ trait Options {
 }
 
 case class Cli(
-  action: Action = UnknownAction,
+  action: Action = GenerateAction,
   activate: Boolean = false,
   force: Boolean = false,
   pipelineId: Option[String] = None,
