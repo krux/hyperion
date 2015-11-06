@@ -61,7 +61,6 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
 
     def createPipeline(
       force: Boolean = false,
-      schedule: Option[String] = None,
       tags: Map[String, Option[String]] = Map.empty
     ): Option[String] = {
       println(s"Creating pipeline $pipelineName")
@@ -76,7 +75,7 @@ class HyperionAwsClient(regionId: Option[String] = None, roleArn: Option[String]
             println("Delete the existing pipeline")
             ForPipelineId(pipelineId).deletePipelineById()
             Thread.sleep(10000)  // wait until the data pipeline is really deleted
-            createPipeline(force = true, schedule, tags)
+            createPipeline(force = true, tags)
           } else {
             println("Use --force to force pipeline creation")
             None
