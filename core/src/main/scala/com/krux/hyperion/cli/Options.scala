@@ -4,24 +4,7 @@ import java.io.File
 
 import com.krux.hyperion.Schedule
 
-trait Options {
-  def activate: Boolean
-  def force: Boolean
-  def pipelineId: Option[String]
-  def customName: Option[String]
-  def tags: Map[String, Option[String]]
-  def schedule: Option[Schedule]
-  def region: Option[String]
-  def roleArn: Option[String]
-  def output: Option[File]
-  def label: String
-  def removeLastNameSegment: Boolean
-  def includeResources: Boolean
-  def includeDataNodes: Boolean
-  def includeDatabases: Boolean
-}
-
-case class Cli(
+case class Options(
   action: Action = GenerateAction,
   activate: Boolean = false,
   force: Boolean = false,
@@ -37,4 +20,4 @@ case class Cli(
   includeResources: Boolean = false,
   includeDataNodes: Boolean = false,
   includeDatabases: Boolean = false
-) extends Options
+)

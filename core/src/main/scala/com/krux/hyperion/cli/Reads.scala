@@ -8,7 +8,7 @@ import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.Schedule
 import com.krux.hyperion.expression.Duration
 
-object Reads {
+private[hyperion] object Reads {
 
   private lazy val daysOfWeek = Map(
     "monday" -> DateTimeConstants.MONDAY,

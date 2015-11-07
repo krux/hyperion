@@ -6,7 +6,7 @@ import com.krux.hyperion.parameter.Parameter
   * DataPipelineDefWrapper provides a way to wrap other DataPipelineDefs
   * in order to override aspects.
   */
-case class DataPipelineDefWrapper(
+private[hyperion] case class DataPipelineDefWrapper(
   override val pipelineName: String,
   schedule: Schedule,
   workflow: WorkflowExpression,

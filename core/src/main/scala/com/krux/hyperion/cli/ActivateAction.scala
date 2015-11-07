@@ -1,7 +1,7 @@
 package com.krux.hyperion.cli
 
-import com.krux.hyperion.HyperionAwsPipelineClient
+import com.krux.hyperion.HyperionAwsClient
 
-case object ActivateAction extends AwsAction {
-  def execute(options: Options, client: HyperionAwsPipelineClient): Boolean = client.activatePipeline()
+private[hyperion] case object ActivateAction extends AwsAction {
+  def execute(options: Options, client: HyperionAwsClient): Boolean = client.activatePipeline()
 }

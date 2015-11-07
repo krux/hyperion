@@ -5,7 +5,7 @@ import java.io.PrintStream
 import com.krux.hyperion.DataPipelineDef
 import com.krux.hyperion.workflow.WorkflowGraphRenderer
 
-case object GraphAction extends Action {
+private[hyperion] case object GraphAction extends Action {
   def execute(options: Options, pipelineDef: DataPipelineDef): Boolean = {
     val renderer = WorkflowGraphRenderer(pipelineDef, options.removeLastNameSegment,
       options.label, options.includeResources, options.includeDataNodes, options.includeDatabases)

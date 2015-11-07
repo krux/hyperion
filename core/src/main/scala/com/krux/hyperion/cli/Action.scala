@@ -2,6 +2,6 @@ package com.krux.hyperion.cli
 
 import com.krux.hyperion.DataPipelineDef
 
-trait Action {
+private[hyperion] trait Action {
   def execute(options: Options, pipelineDef: DataPipelineDef): Boolean
 }

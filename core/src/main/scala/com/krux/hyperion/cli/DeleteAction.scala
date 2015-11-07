@@ -1,7 +1,7 @@
 package com.krux.hyperion.cli
 
-import com.krux.hyperion.HyperionAwsPipelineClient
+import com.krux.hyperion.HyperionAwsClient
 
-case object DeleteAction extends AwsAction {
-  def execute(options: Options, client: HyperionAwsPipelineClient): Boolean = client.deletePipeline()
+private[hyperion] case object DeleteAction extends AwsAction {
+  def execute(options: Options, client: HyperionAwsClient): Boolean = client.deletePipeline()
 }
