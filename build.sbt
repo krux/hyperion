@@ -1,4 +1,4 @@
-val hyperionVersion = "2.15.0"
+val hyperionVersion = "2.15.1"
 val scala210Version = "2.10.5"
 val scala211Version = "2.11.7"
 val awsSdkVersion   = "1.9.35"
@@ -11,6 +11,7 @@ val scoptArtifact           = "com.github.scopt"       %% "scopt"               
 val jschArtifact            = "com.jcraft"             %  "jsch"                      % "0.1.53"
 val configArtifact          = "com.typesafe"           %  "config"                    % "1.2.1"
 val commonsIoArtifact       = "commons-io"             %  "commons-io"                % "2.4"
+val commonsLoggingArtifact  = "commons-logging"        % "commons-logging"            % "1.1.3"
 val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % awsSdkVersion
 val awsStsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sts"          % awsSdkVersion
 val awsS3Artifact           = "com.amazonaws"          %  "aws-java-sdk-s3"           % awsSdkVersion
@@ -134,7 +135,8 @@ lazy val core = (project in file("core")).
       nscalaTimeArtifact,
       json4sJacksonArtifact,
       scoptArtifact,
-      configArtifact
+      configArtifact,
+      commonsLoggingArtifact
     )
   )
 
