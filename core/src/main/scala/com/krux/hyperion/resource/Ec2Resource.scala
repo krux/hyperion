@@ -1,8 +1,8 @@
 package com.krux.hyperion.resource
 
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.aws.{AdpRef, AdpEc2Resource}
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.aws.{AdpHttpProxy, AdpRef, AdpEc2Resource}
+import com.krux.hyperion.common.{HttpProxy, PipelineObjectId}
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.{DirectValueParameter, Parameter}
 
@@ -28,7 +28,8 @@ case class Ec2Resource private (
   initTimeout: Option[Parameter[Duration]],
   terminateAfter: Option[Parameter[Duration]],
   actionOnResourceFailure: Option[ActionOnResourceFailure],
-  actionOnTaskFailure: Option[ActionOnTaskFailure]
+  actionOnTaskFailure: Option[ActionOnTaskFailure],
+  httpProxy: Option[HttpProxy]
 ) extends ResourceObject {
 
   def named(name: String) = this.copy(id = id.named(name))
@@ -51,6 +52,7 @@ case class Ec2Resource private (
   def withSpotBidPrice(spotBidPrice: Parameter[Double]) = this.copy(spotBidPrice = Option(spotBidPrice))
   def withUseOnDemandOnLastAttempt(useOnDemandOnLastAttempt: Boolean) = this.copy(useOnDemandOnLastAttempt = Option(useOnDemandOnLastAttempt))
   def withInitTimeout(timeout: Parameter[Duration]) = this.copy(initTimeout = Option(timeout))
+  def withHttpProxy(proxy: HttpProxy) = this.copy(httpProxy = Option(proxy))
 
   lazy val serialize = AdpEc2Resource(
     id = id,
@@ -72,7 +74,8 @@ case class Ec2Resource private (
     initTimeout = initTimeout.map(_.toString),
     terminateAfter = terminateAfter.map(_.toString),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
-    actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
+    actionOnTaskFailure = actionOnTaskFailure.map(_.toString),
+    httpProxy = httpProxy.map(_.ref)
   )
 
   def ref: AdpRef[AdpEc2Resource] = AdpRef(serialize)
@@ -99,7 +102,8 @@ object Ec2Resource {
     initTimeout = None,
     terminateAfter = hc.ec2TerminateAfter.map(DirectValueParameter[Duration]),
     actionOnResourceFailure = None,
-    actionOnTaskFailure = None
+    actionOnTaskFailure = None,
+    httpProxy = None
   )
 
 }

@@ -1,6 +1,6 @@
 package com.krux.hyperion.resource
 
-import com.krux.hyperion.common.PipelineObject
+import com.krux.hyperion.common.{HttpProxy, PipelineObject}
 
 /**
  * The base trait of all resource objects.
@@ -11,5 +11,7 @@ trait ResourceObject extends PipelineObject {
 
   def named(name: String): ResourceObject
 
-  def objects: Iterable[PipelineObject] = None
+  def httpProxy: Option[HttpProxy]
+
+  def objects: Iterable[PipelineObject] = httpProxy
 }
