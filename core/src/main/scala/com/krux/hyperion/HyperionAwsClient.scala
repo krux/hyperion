@@ -1,9 +1,9 @@
 package com.krux.hyperion
 
+import org.slf4j.LoggerFactory
+
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
-
-import org.apache.commons.logging.LogFactory
 
 import com.amazonaws.auth.{DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
 import com.amazonaws.regions.{Regions, Region}
@@ -21,7 +21,7 @@ sealed trait HyperionAwsClient {
 }
 
 case class HyperionAwsClientForPipelineId(client: DataPipelineClient, pipelineId: String) extends HyperionAwsClient {
-  private lazy val log = LogFactory.getLog(getClass)
+  private lazy val log = LoggerFactory.getLogger(getClass)
 
   def getPipelineId: Option[String] = Option(pipelineId)
 
@@ -44,7 +44,7 @@ case class HyperionAwsClientForPipelineId(client: DataPipelineClient, pipelineId
 }
 
 case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineDef: DataPipelineDef) extends HyperionAwsClient {
-  private lazy val log = LogFactory.getLog(getClass)
+  private lazy val log = LoggerFactory.getLogger(getClass)
 
   def getPipelineId: Option[String] = {
     @tailrec

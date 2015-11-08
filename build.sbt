@@ -11,7 +11,6 @@ val scoptArtifact           = "com.github.scopt"       %% "scopt"               
 val jschArtifact            = "com.jcraft"             %  "jsch"                      % "0.1.53"
 val configArtifact          = "com.typesafe"           %  "config"                    % "1.2.1"
 val commonsIoArtifact       = "commons-io"             %  "commons-io"                % "2.4"
-val commonsLoggingArtifact  = "commons-logging"        % "commons-logging"            % "1.1.3"
 val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % awsSdkVersion
 val awsStsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sts"          % awsSdkVersion
 val awsS3Artifact           = "com.amazonaws"          %  "aws-java-sdk-s3"           % awsSdkVersion
@@ -20,6 +19,7 @@ val awsSnsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sns"    
 val mailArtifact            = "com.sun.mail"           %  "mailapi"                   % mailVersion
 val smtpArtifact            = "com.sun.mail"           %  "smtp"                      % mailVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
+val slf4ApiArtifact         = "org.slf4j"              %  "slf4j-api"                 % "1.7.12"
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -136,7 +136,7 @@ lazy val core = (project in file("core")).
       json4sJacksonArtifact,
       scoptArtifact,
       configArtifact,
-      commonsLoggingArtifact
+      slf4ApiArtifact
     )
   )
 
