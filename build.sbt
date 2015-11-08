@@ -124,10 +124,13 @@ lazy val root = (project in file(".")).
   )
 
 lazy val core = (project in file("core")).
+  enablePlugins(BuildInfoPlugin).
   settings(commonSettings: _*).
   settings(publishSettings: _*).
   settings(
     name := "hyperion-core",
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.krux.hyperion",
     libraryDependencies ++= Seq(
       awsDatapipelineArtifact,
       awsStsArtifact,

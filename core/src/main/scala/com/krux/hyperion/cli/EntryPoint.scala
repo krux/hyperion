@@ -2,10 +2,12 @@ package com.krux.hyperion.cli
 
 import java.io.File
 
+import scopt.OptionParser
+
 import com.github.nscala_time.time.Imports._
+import com.krux.hyperion.BuildInfo
 import com.krux.hyperion.{DataPipelineDef, DataPipelineDefWrapper, Schedule}
 import com.krux.hyperion.expression.Duration
-import scopt.OptionParser
 import Reads._
 
 /**
@@ -14,55 +16,182 @@ import Reads._
 case class EntryPoint(pipeline: DataPipelineDef) {
 
   private val parser = new OptionParser[Options](s"hyperion") {
-    head("hyperion")
+    head("hyperion", s"${BuildInfo.version} (${BuildInfo.scalaVersion})")
+    help("help").hidden
+    version("version").hidden
+
+    note("Hyperion CLI provides tools to generate, graph and generate Data Pipelines.\n")
 
     cmd("generate").action { (_, c) => c.copy(action = GenerateAction) }
+      .text(
+        """
+          |  Generates a JSON representation of a DataPipeline.  Useful for manually creating a
+          |  DataPipeline via the AWS Console or for manually inspecting the pipeline generated.
+        """.stripMargin)
       .children(
-        opt[File]('o', "output").valueName("<file>").action { (x, c) => c.copy(output = Option(x)) }
+        opt[File]('o', "output").valueName("PATH").action { (x, c) => c.copy(output = Option(x)) }
+          .text(
+            """
+              |     If specified, the pipeline will be generated in the specified PATH.  Otherwise,
+              |     the pipeline will be written to standard output.
+            """.stripMargin)
       )
 
     cmd("graph").action { (_, c) => c.copy(action = GraphAction) }
+      .text(
+        """
+          |  Generates a DOT representation of a DataPipeline.  Useful for visualizing the
+          |  DataPipeline via GraphViz toolset.
+        """.stripMargin)
       .children(
-        opt[File]('o', "output").valueName("<file>").action { (x, c) => c.copy(output = Option(x)) },
-        opt[String]("label").valueName("id|name").action { (x, c) => c.copy(label = x) },
-        opt[Unit]("remove-last-name-segment").action { (_, c) => c.copy(removeLastNameSegment = true) },
-        opt[Unit]("include-resources").action { (_, c) => c.copy(includeResources = true) },
-        opt[Unit]("include-data-nodes").action { (_, c) => c.copy(includeDataNodes = true) },
+        opt[File]('o', "output").valueName("PATH").action { (x, c) => c.copy(output = Option(x)) }
+          .text(
+            """
+              |     If specified, the pipeline will be generated in the specified PATH.  Otherwise,
+              |     the pipeline will be written to standard output.
+            """.stripMargin),
+        opt[String]("label").valueName("PROPERTY").action { (x, c) => c.copy(label = x) }
+          .text(
+            """
+              |     If specified, the given PROPERTY will be used as the label.  (Default: id).
+            """.stripMargin),
+        opt[Unit]("remove-last-name-segment").action { (_, c) => c.copy(removeLastNameSegment = true) }
+          .text(
+            """
+              |     If specified, the portion after the last _ character in the label will be removed.
+            """.stripMargin),
+        opt[Unit]("include-resources").action { (_, c) => c.copy(includeResources = true) }
+          .text(
+            """
+              |     If specified, resources will be included in the output visualization.
+            """.stripMargin),
+        opt[Unit]("include-data-nodes").action { (_, c) => c.copy(includeDataNodes = true) }
+          .text(
+            """
+              |     If specified, data nodes will be included in the output visualization.
+            """.stripMargin),
         opt[Unit]("include-databases").action { (_, c) => c.copy(includeDatabases = true) }
+          .text(
+            """
+              |     If specified, databases will be included in the output visualization.
+            """.stripMargin)
       )
 
     cmd("create").action { (_, c) => c.copy(action = CreateAction) }
+      .text(
+        """
+          |  Creates a DataPipeline by using the AWS SDK.
+        """.stripMargin)
       .children(
-        opt[Unit]("force").action { (_, c) => c.copy(force = true) },
-        opt[Unit]("activate").action { (_, c) => c.copy(activate = true) },
-        opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
-        opt[String]("region").valueName("<region>").action { (x, c) => c.copy(region = Option(x)) },
-        opt[String]("role").valueName("<role-arn>").action { (x, c) => c.copy(roleArn = Option(x)) },
-        opt[(String, String)]('t', "tags").valueName("<tag>").action { (x, c) =>
+        opt[Unit]("force").action { (_, c) => c.copy(force = true) }
+          .text(
+            """
+              |     If specified, and the pipeline already exists, the existing pipeline will be
+              |     deleted before the new pipeline is created.
+            """.stripMargin),
+        opt[Unit]("activate").action { (_, c) => c.copy(activate = true) }
+          .text(
+            """
+              |     If specified, the newly created pipeline will be activated.
+            """.stripMargin),
+        opt[String]('n', "name").valueName("NAME").action { (x, c) => c.copy(customName = Option(x)) }
+          .text(
+            """
+              |     If specified, NAME will be used for the pipeline name instead of the name specified
+              |     in the pipeline definition.
+            """.stripMargin),
+        opt[String]("region").valueName("REGION").action { (x, c) => c.copy(region = Option(x)) }
+          .text(
+            """
+              |     If specified, the pipeline will be created in REGION (default: us-east-1).
+            """.stripMargin),
+        opt[String]("role").valueName("ARN").action { (x, c) => c.copy(roleArn = Option(x)) }
+          .text(
+            """
+              |     If specified, the ARN role will be assumed when creating the pipeline.
+            """.stripMargin),
+        opt[(String, String)]('t', "tags").valueName("TAG").action { (x, c) =>
           val tag = x match {
             case (k, "") => (k, None)
             case (k, v) => (k, Option(v))
           }
           c.copy(tags = c.tags + tag)
-        } unbounded(),
-        opt[Schedule]("start").action { (x, c) => c.copy(schedule = Option(x)) },
-        opt[Duration]("every").action { (x, c) => c.copy(schedule = c.schedule.map(_.every(x))) },
-        opt[DateTime]("until").action { (x, c) => c.copy(schedule = c.schedule.map(_.until(x))) },
-        opt[Int]("times").action { (x, c) => c.copy(schedule = c.schedule.map(_.stopAfter(x))) }
+        }.unbounded()
+          .text(
+            """
+              |     If specified, the TAG will be added to the tags specified in the pipeline definition.
+            """.stripMargin),
+        opt[Schedule]("start").valueName("DATE").action { (x, c) => c.copy(schedule = Option(x)) }
+          .text(
+            """
+              |     If specified, the pipeline will start on DATE, overriding the schedule specified in
+              |     the pipeline definition.  The following special values are recognized: now, today,
+              |     yesterday, tomorrow, the days of the week and ordinal numbers (e.g., 1st, 2nd) for days
+              |     of the month.
+            """.stripMargin),
+        opt[Duration]("every").valueName("PERIOD").action { (x, c) => c.copy(schedule = c.schedule.map(_.every(x))) }
+          .text(
+            """
+              |     If specified, the pipeline will execute every PERIOD (ex: "1 day").
+            """.stripMargin),
+        opt[DateTime]("until").valueName("DATE").action { (x, c) => c.copy(schedule = c.schedule.map(_.until(x))) }
+          .text(
+            """
+              |     If specified, the pipeline will stop on DATE.
+            """.stripMargin),
+        opt[Int]("times").valueName("N").action { (x, c) => c.copy(schedule = c.schedule.map(_.stopAfter(x))) }
+          .text(
+            """
+              |     If specified, the pipeline will stop after executing N times.
+            """.stripMargin)
       )
 
     cmd("delete").action { (_, c) => c.copy(action = DeleteAction) }
+      .text(
+        """
+          |  Deletes the pipeline using the AWS SDK.
+        """.stripMargin)
       .children(
-        opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
-        opt[String]("region").valueName("<region>").action { (x, c) => c.copy(region = Option(x)) },
-        opt[String]("role").valueName("<role-arn>").action { (x, c) => c.copy(roleArn = Option(x)) }
+        opt[String]('n', "name").valueName("NAME").action { (x, c) => c.copy(customName = Option(x)) }
+          .text(
+            """
+              |     If specified, NAME will be used for the pipeline name instead of the name specified
+              |     in the pipeline definition.  This name is used to look up the pipeline.
+            """.stripMargin),
+        opt[String]("region").valueName("REGION").action { (x, c) => c.copy(region = Option(x)) }
+          .text(
+            """
+              |     If specified, the pipeline will be created in REGION (default: us-east-1).
+            """.stripMargin),
+        opt[String]("role").valueName("ARN").action { (x, c) => c.copy(roleArn = Option(x)) }
+          .text(
+            """
+              |     If specified, the ARN role will be assumed when creating the pipeline.
+            """.stripMargin)
       )
 
     cmd("activate").action { (_, c) => c.copy(action = ActivateAction) }
+      .text(
+        """
+          |  Activates the pipeline using the AWS SDK.
+        """.stripMargin)
       .children(
-        opt[String]('n', "name").valueName("<name>").action { (x, c) => c.copy(customName = Option(x)) },
-        opt[String]("region").valueName("<region>").action { (x, c) => c.copy(region = Option(x)) },
-        opt[String]("role").valueName("<role-arn>").action { (x, c) => c.copy(roleArn = Option(x)) }
+        opt[String]('n', "name").valueName("NAME").action { (x, c) => c.copy(customName = Option(x)) }
+          .text(
+            """
+              |     If specified, NAME will be used for the pipeline name instead of the name specified
+              |     in the pipeline definition.  This name is used to look up the pipeline.
+            """.stripMargin),
+        opt[String]("region").valueName("REGION").action { (x, c) => c.copy(region = Option(x)) }
+          .text(
+            """
+              |     If specified, the pipeline will be created in REGION (default: us-east-1).
+            """.stripMargin),
+        opt[String]("role").valueName("ARN").action { (x, c) => c.copy(roleArn = Option(x)) }
+          .text(
+            """
+              |     If specified, the ARN role will be assumed when creating the pipeline.
+            """.stripMargin)
       )
   }
 
