@@ -30,7 +30,7 @@ case class HttpProxy private (
 }
 
 object HttpProxy {
-  def apply() = HttpProxy(
+  def apply(): HttpProxy = HttpProxy(
     id = PipelineObjectId(HttpProxy.getClass),
     hostname = None,
     port = None,

@@ -42,7 +42,7 @@ class SparkCluster private (
   val terminateAfter: Option[Parameter[Duration]],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
   val actionOnTaskFailure: Option[ActionOnTaskFailure],
-  httpProxy: Option[HttpProxy]
+  val httpProxy: Option[HttpProxy]
 ) extends EmrCluster {
 
   assert(coreInstanceCount.value >= 2)
