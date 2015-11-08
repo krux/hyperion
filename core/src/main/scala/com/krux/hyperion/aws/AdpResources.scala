@@ -71,7 +71,8 @@ case class AdpEc2Resource(
   initTimeout: Option[String],
   terminateAfter: Option[String],
   actionOnResourceFailure: Option[String],
-  actionOnTaskFailure: Option[String]
+  actionOnTaskFailure: Option[String],
+  httpProxy: Option[AdpRef[AdpHttpProxy]]
 ) extends AdpResource {
 
   val `type` = "Ec2Resource"
@@ -134,7 +135,8 @@ class AdpEmrCluster(
   val initTimeout: Option[String],
   val terminateAfter: Option[String],
   val actionOnResourceFailure: Option[String],
-  val actionOnTaskFailure: Option[String]
+  val actionOnTaskFailure: Option[String],
+  val httpProxy: Option[AdpRef[AdpHttpProxy]]
 ) extends AdpResource {
 
   val `type` = "EmrCluster"

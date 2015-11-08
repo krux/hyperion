@@ -2,7 +2,7 @@ package com.krux.hyperion.resource
 
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpEmrCluster
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{HttpProxy, PipelineObjectId}
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.{DirectValueParameter, Parameter}
 
@@ -40,7 +40,8 @@ class MapReduceCluster private (
   val initTimeout: Option[Parameter[Duration]],
   val terminateAfter: Option[Parameter[Duration]],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
-  val actionOnTaskFailure: Option[ActionOnTaskFailure]
+  val actionOnTaskFailure: Option[ActionOnTaskFailure],
+  val httpProxy: Option[HttpProxy]
 ) extends EmrCluster {
 
   assert(taskInstanceCount.value >= 0)
@@ -76,14 +77,15 @@ class MapReduceCluster private (
     initTimeout: Option[Parameter[Duration]] = initTimeout,
     terminateAfter: Option[Parameter[Duration]] = terminateAfter,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
-    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure
+    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure,
+    httpProxy: Option[HttpProxy] = httpProxy
   ) = new MapReduceCluster(id, amiVersion, supportedProducts, standardBootstrapAction, bootstrapAction, enableDebugging,
     hadoopSchedulerType, keyPair, masterInstanceBidPrice, masterInstanceType,
     coreInstanceBidPrice, coreInstanceCount, coreInstanceType,
     taskInstanceBidPrice, taskInstanceCount, taskInstanceType, region, availabilityZone, resourceRole, role, subnetId,
     masterSecurityGroupId, additionalMasterSecurityGroupIds, slaveSecurityGroupId, additionalSlaveSecurityGroupIds,
     useOnDemandOnLastAttempt, visibleToAllUsers, initTimeout, terminateAfter,
-    actionOnResourceFailure, actionOnTaskFailure)
+    actionOnResourceFailure, actionOnTaskFailure, httpProxy)
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
@@ -117,6 +119,7 @@ class MapReduceCluster private (
   def terminatingAfter(terminateAfter: Parameter[Duration]) = this.copy(terminateAfter = Option(terminateAfter))
   def withActionOnResourceFailure(actionOnResourceFailure: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(actionOnResourceFailure))
   def withActionOnTaskFailure(actionOnTaskFailure: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(actionOnTaskFailure))
+  def withHttpProxy(proxy: HttpProxy) = this.copy(httpProxy = Option(proxy))
 
   lazy val instanceCount = 1 + coreInstanceCount.value + taskInstanceCount.value
 
@@ -166,7 +169,8 @@ class MapReduceCluster private (
     initTimeout = initTimeout.map(_.toString),
     terminateAfter = terminateAfter.map(_.toString),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
-    actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
+    actionOnTaskFailure = actionOnTaskFailure.map(_.toString),
+    httpProxy = httpProxy.map(_.ref)
   )
 
 }
@@ -203,6 +207,7 @@ object MapReduceCluster {
     initTimeout = None,
     terminateAfter = hc.emrTerminateAfter.map(DirectValueParameter[Duration]),
     actionOnResourceFailure = None,
-    actionOnTaskFailure = None
+    actionOnTaskFailure = None,
+    httpProxy = None
   )
 }
