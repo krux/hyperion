@@ -72,7 +72,7 @@ case class EntryPoint(pipeline: DataPipelineDef) {
       .withName(cli.customName.getOrElse(pipeline.pipelineName))
       .withSchedule(cli.schedule.getOrElse(pipeline.schedule))
 
-    if (cli.action.execute(cli, wrappedPipeline)) 0 else 3
+    if (cli.action(cli, wrappedPipeline)) 0 else 3
   }.getOrElse(3)
 
 }

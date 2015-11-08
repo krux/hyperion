@@ -85,7 +85,7 @@ case class FileRepartitioner(options: Options) {
 
     // Mark a successful job
     if (options.markSuccessfulJobs) {
-      Paths.get(System.getenv("OUTPUT1_STAGING_DIR"), "_SUCCESS").toFile.createNewFile()
+      Paths.get(dir.getPath, "_SUCCESS").toFile.createNewFile()
     }
 
     true

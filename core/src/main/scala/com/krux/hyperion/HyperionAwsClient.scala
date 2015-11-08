@@ -1,11 +1,15 @@
 package com.krux.hyperion
 
+import org.slf4j.LoggerFactory
+
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
+
 import com.amazonaws.auth.{DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
 import com.amazonaws.regions.{Regions, Region}
 import com.amazonaws.services.datapipeline._
 import com.amazonaws.services.datapipeline.model._
+
 import com.krux.hyperion.DataPipelineDef._
 
 sealed trait HyperionAwsClient {
@@ -17,6 +21,7 @@ sealed trait HyperionAwsClient {
 }
 
 case class HyperionAwsClientForPipelineId(client: DataPipelineClient, pipelineId: String) extends HyperionAwsClient {
+  private lazy val log = LoggerFactory.getLogger(getClass)
 
   def getPipelineId: Option[String] = Option(pipelineId)
 
@@ -25,13 +30,13 @@ case class HyperionAwsClientForPipelineId(client: DataPipelineClient, pipelineId
   def createPipeline(force: Boolean, activate: Boolean): Boolean = false
 
   def deletePipeline(): Boolean = {
-    println(s"Deleting pipeline $pipelineId")
+    log.info(s"Deleting pipeline $pipelineId")
     client.deletePipeline(new DeletePipelineRequest().withPipelineId(pipelineId))
     true
   }
 
   def activatePipeline(): Boolean = {
-    println(s"Activating pipeline $pipelineId")
+    log.info(s"Activating pipeline $pipelineId")
     client.activatePipeline(new ActivatePipelineRequest().withPipelineId(pipelineId))
     true
   }
@@ -39,6 +44,7 @@ case class HyperionAwsClientForPipelineId(client: DataPipelineClient, pipelineId
 }
 
 case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineDef: DataPipelineDef) extends HyperionAwsClient {
+  private lazy val log = LoggerFactory.getLogger(getClass)
 
   def getPipelineId: Option[String] = {
     @tailrec
@@ -65,29 +71,29 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
       case id :: Nil => Option(id)
 
       case Nil =>
-        println(s"Pipeline ${pipelineDef.pipelineName} does not exist")
+        log.debug(s"Pipeline ${pipelineDef.pipelineName} does not exist")
         None
     }
   }
 
   def createPipeline(force: Boolean): Option[String] = {
-    println(s"Creating pipeline ${pipelineDef.pipelineName}")
+    log.info(s"Creating pipeline ${pipelineDef.pipelineName}")
 
     val pipelineObjects: Seq[PipelineObject] = pipelineDef
     val parameterObjects: Seq[ParameterObject] = pipelineDef
 
-    println(s"Pipeline definition has ${pipelineObjects.length} objects")
+    log.info(s"Pipeline definition has ${pipelineObjects.length} objects")
 
     getPipelineId match {
       case Some(pipelineId) =>
-        println("Pipeline already exists")
+        log.warn("Pipeline already exists")
         if (force) {
-          println("Delete the existing pipeline")
+          log.info("Delete the existing pipeline")
           HyperionAwsClientForPipelineId(client, pipelineId).deletePipeline()
           Thread.sleep(10000) // wait until the data pipeline is really deleted
           createPipeline(force)
         } else {
-          println("Use --force to force pipeline creation")
+          log.error("Use --force to force pipeline creation")
           None
         }
 
@@ -99,8 +105,8 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
             .withTags(pipelineDef.tags.map { case (k, v) => new Tag().withKey(k).withValue(v.getOrElse("")) })
         ).getPipelineId
 
-        println(s"Pipeline created: $pipelineId")
-        println("Uploading pipeline definition")
+        log.info(s"Pipeline created: $pipelineId")
+        log.info("Uploading pipeline definition")
 
         val putDefinitionResult = client.putPipelineDefinition(
           new PutPipelineDefinitionRequest()
@@ -109,20 +115,20 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
             .withParameterObjects(parameterObjects)
         )
 
-        putDefinitionResult.getValidationErrors.flatMap(_.getErrors.map(e => s"ERROR: $e")).foreach(println)
-        putDefinitionResult.getValidationWarnings.flatMap(_.getWarnings.map(e => s"WARNING: $e")).foreach(println)
+        putDefinitionResult.getValidationErrors.flatMap(_.getErrors).foreach(log.error)
+        putDefinitionResult.getValidationWarnings.flatMap(_.getWarnings).foreach(log.warn)
 
         if (putDefinitionResult.getErrored) {
-          println("Failed to create pipeline")
-          println("Deleting the just created pipeline")
+          log.error("Failed to create pipeline")
+          log.error("Deleting the just created pipeline")
           HyperionAwsClientForPipelineId(client, pipelineId).deletePipeline()
           None
         } else if (putDefinitionResult.getValidationErrors.isEmpty
           && putDefinitionResult.getValidationWarnings.isEmpty) {
-          println("Successfully created pipeline")
+          log.info("Successfully created pipeline")
           Option(pipelineId)
         } else {
-          println("Successful with warnings")
+          log.warn("Successful with warnings")
           Option(pipelineId)
         }
     }
