@@ -1,8 +1,8 @@
 package com.krux.hyperion.resource
 
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.aws.AdpEmrCluster
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.aws.{AdpRef, AdpEmrCluster}
+import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.expression.Duration
 import com.krux.hyperion.parameter.{DirectValueParameter, Parameter}
 
@@ -11,7 +11,7 @@ import com.krux.hyperion.parameter.{DirectValueParameter, Parameter}
  */
 class MapReduceCluster private (
   val id: PipelineObjectId,
-  val amiVersion: String,
+  val amiVersion: Option[String],
   val supportedProducts: Option[String],
   val standardBootstrapAction: Seq[String],
   val bootstrapAction: Seq[String],
@@ -40,14 +40,17 @@ class MapReduceCluster private (
   val initTimeout: Option[Parameter[Duration]],
   val terminateAfter: Option[Parameter[Duration]],
   val actionOnResourceFailure: Option[ActionOnResourceFailure],
-  val actionOnTaskFailure: Option[ActionOnTaskFailure]
+  val actionOnTaskFailure: Option[ActionOnTaskFailure],
+  val releaseLabel: Option[String],
+  val applications: Seq[String],
+  val configuration: Option[EmrConfiguration]
 ) extends EmrCluster {
 
   assert(taskInstanceCount.value >= 0)
   assert(coreInstanceCount.value >= 1)
 
   def copy(id: PipelineObjectId = id,
-    amiVersion: String = amiVersion,
+    amiVersion: Option[String] = amiVersion,
     supportedProducts: Option[String] = supportedProducts,
     standardBootstrapAction: Seq[String] = standardBootstrapAction,
     bootstrapAction: Seq[String] = bootstrapAction,
@@ -76,19 +79,23 @@ class MapReduceCluster private (
     initTimeout: Option[Parameter[Duration]] = initTimeout,
     terminateAfter: Option[Parameter[Duration]] = terminateAfter,
     actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
-    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure
+    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure,
+    releaseLabel: Option[String] = releaseLabel,
+    applications: Seq[String] = applications,
+    configuration: Option[EmrConfiguration] = configuration
   ) = new MapReduceCluster(id, amiVersion, supportedProducts, standardBootstrapAction, bootstrapAction, enableDebugging,
     hadoopSchedulerType, keyPair, masterInstanceBidPrice, masterInstanceType,
     coreInstanceBidPrice, coreInstanceCount, coreInstanceType,
     taskInstanceBidPrice, taskInstanceCount, taskInstanceType, region, availabilityZone, resourceRole, role, subnetId,
     masterSecurityGroupId, additionalMasterSecurityGroupIds, slaveSecurityGroupId, additionalSlaveSecurityGroupIds,
     useOnDemandOnLastAttempt, visibleToAllUsers, initTimeout, terminateAfter,
-    actionOnResourceFailure, actionOnTaskFailure)
+    actionOnResourceFailure, actionOnTaskFailure, releaseLabel, applications, configuration
+  )
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
 
-  def withAmiVersion(ver: String) = this.copy(amiVersion = ver)
+  def withAmiVersion(ver: String) = this.copy(amiVersion = Option(ver))
   def withSupportedProducts(products: String) = this.copy(supportedProducts = Option(products))
   def withBootstrapAction(action: String*) = this.copy(bootstrapAction = bootstrapAction ++ action)
   def withDebuggingEnabled() = this.copy(enableDebugging = Option(true))
@@ -117,13 +124,18 @@ class MapReduceCluster private (
   def terminatingAfter(terminateAfter: Parameter[Duration]) = this.copy(terminateAfter = Option(terminateAfter))
   def withActionOnResourceFailure(actionOnResourceFailure: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(actionOnResourceFailure))
   def withActionOnTaskFailure(actionOnTaskFailure: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(actionOnTaskFailure))
+  def withReleaseLabel(releaseLabel: String) = this.copy(releaseLabel = Option(releaseLabel), amiVersion = None)
+  def withApplication(application: String*) = this.copy(applications = this.applications ++ application)
+  def withConfiguration(configuration: EmrConfiguration) = this.copy(configuration = Option(configuration))
+
+  override def objects: Iterable[PipelineObject] = configuration
 
   lazy val instanceCount = 1 + coreInstanceCount.value + taskInstanceCount.value
 
   lazy val serialize = new AdpEmrCluster(
     id = id,
     name = id.toOption,
-    amiVersion = Option(amiVersion),
+    amiVersion = amiVersion,
     supportedProducts = supportedProducts,
     bootstrapAction = standardBootstrapAction ++ bootstrapAction,
     enableDebugging = enableDebugging.map(_.toString),
@@ -166,13 +178,20 @@ class MapReduceCluster private (
     initTimeout = initTimeout.map(_.toString),
     terminateAfter = terminateAfter.map(_.toString),
     actionOnResourceFailure = actionOnResourceFailure.map(_.toString),
-    actionOnTaskFailure = actionOnTaskFailure.map(_.toString)
+    actionOnTaskFailure = actionOnTaskFailure.map(_.toString),
+    releaseLabel = releaseLabel,
+    applications = applications,
+    configuration = configuration.map(_.ref)
   )
 
 }
 
 object MapReduceCluster {
-  def apply()(implicit hc: HyperionContext) = new MapReduceCluster(
+  def apply()(implicit hc: HyperionContext): MapReduceCluster = apply(None)
+
+  def apply(configuration: EmrConfiguration)(implicit hc: HyperionContext): MapReduceCluster = apply(Option(configuration))
+
+  private def apply(configuration: Option[EmrConfiguration])(implicit hc: HyperionContext): MapReduceCluster = new MapReduceCluster(
     id = PipelineObjectId(MapReduceCluster.getClass),
     amiVersion = hc.emrAmiVersion,
     supportedProducts = None,
@@ -203,6 +222,9 @@ object MapReduceCluster {
     initTimeout = None,
     terminateAfter = hc.emrTerminateAfter.map(DirectValueParameter[Duration]),
     actionOnResourceFailure = None,
-    actionOnTaskFailure = None
+    actionOnTaskFailure = None,
+    releaseLabel = hc.emrReleaseLabel,
+    applications = Seq.empty,
+    configuration = configuration
   )
 }

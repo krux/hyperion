@@ -48,11 +48,12 @@ class HyperionContext(config: Config) {
   lazy val emrRole = Try(config.getString("hyperion.aws.emr.role")).toOption.getOrElse(role)
   lazy val emrResourceRole = Try(config.getString("hyperion.aws.emr.resource.role")).toOption.getOrElse(resourceRole)
 
-  lazy val emrAmiVersion = config.getString("hyperion.aws.emr.ami.version")
+  lazy val emrAmiVersion = Try(config.getString("hyperion.aws.emr.ami.version")).toOption
+  lazy val emrReleaseLabel = Try(config.getString("hyperion.aws.emr.release_label")).toOption
   lazy val emrInstanceType = config.getString("hyperion.aws.emr.instance.type")
   lazy val emrEnvironmentUri = Try(config.getString("hyperion.aws.emr.env.uri")).toOption
   lazy val emrTerminateAfter = Try(config.getString("hyperion.aws.emr.terminate")).toOption.map(Duration(_))
-  lazy val emrSparkVersion = config.getString("hyperion.aws.emr.spark.version")
+  lazy val emrSparkVersion = Try(config.getString("hyperion.aws.emr.spark.version")).toOption
 
   //
   // SNS default configuration
