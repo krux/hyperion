@@ -3,7 +3,7 @@ package com.krux.hyperion.expression
 import scala.language.implicitConversions
 import scala.reflect.runtime.universe._
 
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone}
 
 import com.krux.hyperion.adt.{HString, HDouble, HInt, HS3Uri, HDuration, HDateTime, HBoolean}
 import com.krux.hyperion.aws.AdpParameter
@@ -16,19 +16,29 @@ import com.krux.hyperion.DataPipelineDef
 case class Parameter[T : TypeTag] private (
   id: String,
   description: Option[String],
-  isEncrypted: Boolean
-  // value: Option[T]  // Parameter may have empty (None) value as place holder
-)(implicit pv: ParameterValues) extends Evaluatable[T] { self =>
+  isEncrypted: Boolean,
+  value: Option[T]  // Parameter may have empty (None) value as place holder
+) extends Evaluatable[T] { self =>
 
   final val name = if (isEncrypted) s"*my_$id" else s"my_$id"
 
-  def value: Option[T] = pv.getValue(this)
+  def withValue(newValue: T): Parameter[T] = this.copy(value = Option(newValue))
 
-  // def withValue(newValue: T): Parameter[T] = this.copy(value = Option(newValue))
-  def withValue(newValue: T): Parameter[T] = {
-    pv.setValue(this, newValue)
-    this
+  def withStringValue(newValue: String): Parameter[T] = withValue{
+    val v = typeOf[T] match {
+      case t if t <:< typeOf[Int] => newValue.toInt
+      case t if t <:< typeOf[Double] => newValue.toDouble
+      case t if t <:< typeOf[String] => newValue
+      case t if t <:< typeOf[Boolean] => newValue.toBoolean
+      case t if t <:< typeOf[DateTime] => new DateTime(newValue, DateTimeZone.UTC)
+      case t if t <:< typeOf[Duration] => Duration(newValue)
+      case t if t <:< typeOf[S3Uri] => S3Uri(newValue)
+      case _ => throw new RuntimeException("Unsupported parameter type")
+    }
+
+    v.asInstanceOf[T]
   }
+
   def withDescription(desc: String): Parameter[T] = this.copy(description = Option(desc))
   def encrypted: Parameter[T] = this.copy(isEncrypted = true)
 
@@ -97,9 +107,9 @@ case class Parameter[T : TypeTag] private (
 
 object Parameter {
 
-  def apply[T : TypeTag](id: String)(implicit pv: ParameterValues): Parameter[T] = new Parameter[T](id, None, false)
+  def apply[T : TypeTag](id: String): Parameter[T] = new Parameter[T](id, None, false, None)
 
-  def apply[T : TypeTag](id: String, value: T)(implicit pv: ParameterValues) = new Parameter[T](id, None, false).withValue(value)
+  def apply[T : TypeTag](id: String, value: T) = new Parameter[T](id, None, false, Option(value))
 
   implicit def stringParameter2HString(p: Parameter[String]): HString = HString(
     Right(

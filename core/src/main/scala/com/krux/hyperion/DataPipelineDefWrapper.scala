@@ -19,6 +19,17 @@ private[hyperion] case class DataPipelineDefWrapper(
   def withTags(tags: Map[String, Option[String]]) = this.copy(tags = this.tags ++ tags)
   def withParameters(parameters: Iterable[Parameter[_]]) = this.copy(parameters = parameters)
 
+  def withParameterValues(parameterKeyValues: Map[String, String]) = {
+    val parameterMap: Map[String, Parameter[_]] = parameters.map(p => (p.id, p)).toMap
+    val newParameters = parameterKeyValues
+      .foldLeft(parameterMap) { case (m, (k, v)) =>
+        m + (k -> m(k).withStringValue(v))
+      }
+      .values
+
+    withParameters(newParameters)
+  }
+
 }
 
 object DataPipelineDefWrapper {
