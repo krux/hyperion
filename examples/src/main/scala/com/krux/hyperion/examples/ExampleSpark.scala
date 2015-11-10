@@ -29,10 +29,10 @@ object ExampleSpark extends DataPipelineDef with HyperionCli {
     .every(1.day)
     .stopAfter(3)
 
-  val location = Parameter[S3Uri]("S3Location").withValue(s3"your-location")
-  val instanceType = Parameter[String]("InstanceType").withValue("c3.8xlarge")
-  val instanceCount = Parameter[Int]("InstanceCount").withValue(8)
-  val instanceBid = Parameter[Double]("InstanceBid").withValue(3.40)
+  val location = Parameter[S3Uri]("S3Location").setValue(s3"your-location")
+  val instanceType = Parameter[String]("InstanceType").setValue("c3.8xlarge")
+  val instanceCount = Parameter[Int]("InstanceCount").setValue(8)
+  val instanceBid = Parameter[Double]("InstanceBid").setValue(3.40)
 
   override def parameters: Iterable[Parameter[_]] = Seq(location, instanceType, instanceCount, instanceBid)
 

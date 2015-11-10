@@ -2,7 +2,7 @@ package com.krux.hyperion.expression
 
 import scala.collection.mutable.{Map => MutableMap}
 
-class ParameterValues private (val valueMap: MutableMap[String, Any]) {
+class ParameterValues private (valueMap: MutableMap[String, Any]) {
 
   def this() = this(MutableMap.empty)
 
