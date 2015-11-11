@@ -51,15 +51,6 @@ class MapReduceCluster private (
 
   val logger = LoggerFactory.getLogger(SparkCluster.getClass)
 
-  assert((taskInstanceCount >= 0).getOrElse {
-    logger.warn("Server side expression cannot be evaluated. Unchecked comparison.")
-    true
-  })
-  assert((coreInstanceCount >= 1).getOrElse {
-    logger.warn("Server side expression cannot be evaluated. Unchecked comparison.")
-    true
-  })
-
   def copy(id: PipelineObjectId = id,
     amiVersion: Option[HString] = amiVersion,
     supportedProducts: Option[HString] = supportedProducts,
@@ -145,43 +136,57 @@ class MapReduceCluster private (
 
   lazy val instanceCount: HInt = 1 + coreInstanceCount + taskInstanceCount
 
-  lazy val serialize = new AdpEmrCluster(
-    id = id,
-    name = id.toOption,
-    amiVersion = amiVersion.map(_.serialize),
-    supportedProducts = supportedProducts.map(_.serialize),
-    bootstrapAction = (standardBootstrapAction ++ bootstrapAction).map(_.serialize),
-    enableDebugging = enableDebugging.map(_.serialize),
-    hadoopSchedulerType = hadoopSchedulerType.map(_.serialize),
-    keyPair = keyPair.map(_.serialize),
-    masterInstanceBidPrice = masterInstanceBidPrice.map(_.serialize),
-    masterInstanceType = masterInstanceType.map(_.serialize),
-    coreInstanceBidPrice = coreInstanceBidPrice.map(_.serialize),
-    coreInstanceCount = Option(coreInstanceCount.serialize),
-    coreInstanceType = coreInstanceType.map(_.serialize),
-    taskInstanceBidPrice = if (taskInstanceCount.isZero.forall(! _)) taskInstanceBidPrice.map(_.serialize) else None,
-    taskInstanceCount = if (taskInstanceCount.isZero.forall(! _)) Option(taskInstanceCount.serialize) else None,
-    taskInstanceType = if (taskInstanceCount.isZero.forall(! _)) taskInstanceType.map(_.serialize) else None,
-    region = region.map(_.serialize),
-    availabilityZone = availabilityZone.map(_.serialize),
-    resourceRole = resourceRole.map(_.serialize),
-    role = role.map(_.serialize),
-    subnetId = subnetId.map(_.serialize),
-    masterSecurityGroupId = masterSecurityGroupId.map(_.serialize),
-    additionalMasterSecurityGroupIds = additionalMasterSecurityGroupIds.map(_.serialize),
-    slaveSecurityGroupId = slaveSecurityGroupId.map(_.serialize),
-    additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIds.map(_.serialize),
-    useOnDemandOnLastAttempt = useOnDemandOnLastAttempt.map(_.serialize),
-    visibleToAllUsers = visibleToAllUsers.map(_.serialize),
-    initTimeout = initTimeout.map(_.serialize),
-    terminateAfter = terminateAfter.map(_.serialize),
-    actionOnResourceFailure = actionOnResourceFailure.map(_.serialize),
-    actionOnTaskFailure = actionOnTaskFailure.map(_.serialize),
-    httpProxy = httpProxy.map(_.ref),
-    releaseLabel = releaseLabel.map(_.serialize),
-    applications = applications.map(_.serialize),
-    configuration = configuration.map(_.ref)
-  )
+  lazy val serialize = {
+
+    assert((taskInstanceCount >= 0).getOrElse {
+      logger.warn("Server side expression cannot be evaluated. Unchecked comparison.")
+      true
+    })
+
+    assert((coreInstanceCount >= 1).getOrElse {
+      logger.warn("Server side expression cannot be evaluated. Unchecked comparison.")
+      true
+    })
+
+
+    new AdpEmrCluster(
+      id = id,
+      name = id.toOption,
+      amiVersion = amiVersion.map(_.serialize),
+      supportedProducts = supportedProducts.map(_.serialize),
+      bootstrapAction = (standardBootstrapAction ++ bootstrapAction).map(_.serialize),
+      enableDebugging = enableDebugging.map(_.serialize),
+      hadoopSchedulerType = hadoopSchedulerType.map(_.serialize),
+      keyPair = keyPair.map(_.serialize),
+      masterInstanceBidPrice = masterInstanceBidPrice.map(_.serialize),
+      masterInstanceType = masterInstanceType.map(_.serialize),
+      coreInstanceBidPrice = coreInstanceBidPrice.map(_.serialize),
+      coreInstanceCount = Option(coreInstanceCount.serialize),
+      coreInstanceType = coreInstanceType.map(_.serialize),
+      taskInstanceBidPrice = if (taskInstanceCount.isZero.forall(! _)) taskInstanceBidPrice.map(_.serialize) else None,
+      taskInstanceCount = if (taskInstanceCount.isZero.forall(! _)) Option(taskInstanceCount.serialize) else None,
+      taskInstanceType = if (taskInstanceCount.isZero.forall(! _)) taskInstanceType.map(_.serialize) else None,
+      region = region.map(_.serialize),
+      availabilityZone = availabilityZone.map(_.serialize),
+      resourceRole = resourceRole.map(_.serialize),
+      role = role.map(_.serialize),
+      subnetId = subnetId.map(_.serialize),
+      masterSecurityGroupId = masterSecurityGroupId.map(_.serialize),
+      additionalMasterSecurityGroupIds = additionalMasterSecurityGroupIds.map(_.serialize),
+      slaveSecurityGroupId = slaveSecurityGroupId.map(_.serialize),
+      additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIds.map(_.serialize),
+      useOnDemandOnLastAttempt = useOnDemandOnLastAttempt.map(_.serialize),
+      visibleToAllUsers = visibleToAllUsers.map(_.serialize),
+      initTimeout = initTimeout.map(_.serialize),
+      terminateAfter = terminateAfter.map(_.serialize),
+      actionOnResourceFailure = actionOnResourceFailure.map(_.serialize),
+      actionOnTaskFailure = actionOnTaskFailure.map(_.serialize),
+      httpProxy = httpProxy.map(_.ref),
+      releaseLabel = releaseLabel.map(_.serialize),
+      applications = applications.map(_.serialize),
+      configuration = configuration.map(_.ref)
+    )
+  }
 
 }
 
