@@ -123,7 +123,7 @@ object SftpActivity {
 
     // Set password info
     session.setUserInfo(new UserInfo {
-      override def promptPassword(s: String): Boolean = false
+      override def promptPassword(s: String): Boolean = options.password.nonEmpty
       override def promptYesNo(s: String): Boolean = true
       override def promptPassphrase(s: String): Boolean = false
       override def showMessage(s: String): Unit = println(s)
