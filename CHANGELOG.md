@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.16.3 - 2015-11-11
+### Fixed
+- [#269](https://github.com/krux/hyperion/issues/269) - Sftp download auth cancel when using username and password
+
 ## 2.16.2 - 2015-11-09
 ### Fixed
 - [#264](https://github.com/krux/hyperion/issues/264) - CLI schedule override only the explicitly specified part
