@@ -34,7 +34,15 @@ case class EntryPoint(pipeline: DataPipelineDef) {
             """
               |     If specified, the pipeline will be generated in the specified PATH.  Otherwise,
               |     the pipeline will be written to standard output.
+            """.stripMargin),
+        opt[Map[String, String]]("params").valueName("KWARGS (e.g. k1=v1,k2=v2)")
+          .action { (x, c) => c.copy(params = c.params ++ x) }
+          .text(
+            """
+              |     If specified, the pipeline will override the parameters specified in the pipeline
+              |     definition.
             """.stripMargin)
+          .unbounded()
       )
 
     cmd("graph").action { (_, c) => c.copy(action = GraphAction) }
@@ -163,6 +171,7 @@ case class EntryPoint(pipeline: DataPipelineDef) {
               |     If specified, the pipeline will override the parameters specified in the pipeline
               |     definition.
             """.stripMargin)
+          .unbounded()
       )
 
     cmd("delete").action { (_, c) => c.copy(action = DeleteAction) }
