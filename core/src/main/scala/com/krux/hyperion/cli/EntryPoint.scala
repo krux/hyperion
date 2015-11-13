@@ -7,7 +7,7 @@ import scopt.OptionParser
 import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.BuildInfo
 import com.krux.hyperion.{DataPipelineDef, DataPipelineDefWrapper, Schedule}
-import com.krux.hyperion.expression.{Duration, Parameter, ParameterValues}
+import com.krux.hyperion.expression.Duration
 import Reads._
 
 /**
@@ -224,18 +224,14 @@ case class EntryPoint(pipeline: DataPipelineDef) {
   }
 
   def run(args: Array[String]): Int = parser.parse(args, Options()).map { cli =>
-
-    val parameterMap: Map[String, Parameter[_]] = pipeline.parameters.map(p => (p.id, p)).toMap
-
-    val newPvs = cli.params.map { case (k, v) => (k, parameterMap(k).getValueFromString(v)) }
-    // for { (id, value) <- cli.params } {
-    //   // wrappedPipeline.setParameterValue(id, value)
-    // }
     val wrappedPipeline = DataPipelineDefWrapper(pipeline)
       .withTags(cli.tags)
       .withName(cli.customName.getOrElse(pipeline.pipelineName))
       .withSchedule(cli.schedule.getOrElse(pipeline.schedule))
-      .withParameterValues(new ParameterValues(newPvs))
+
+    for { (id, value) <- cli.params } {
+      wrappedPipeline.setParameterValue(id, value)
+    }
 
     if (cli.action(cli, wrappedPipeline)) 0 else 3
   }.getOrElse(3)
