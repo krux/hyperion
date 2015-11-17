@@ -23,12 +23,12 @@ case class Parameter[T : TypeTag] private (
 
   def value: Option[T] = pv.getValue(this)
 
-  def setValue(newValue: T): Parameter[T] = {
+  def withValue(newValue: T): Parameter[T] = {
     pv.setValue(this, newValue)
     this
   }
 
-  def setValueFromString(newValue: String): Parameter[T] = setValue {
+  def withValueFromString(newValue: String): Parameter[T] = withValue {
     val v = typeOf[T] match {
       case t if t <:< typeOf[Int] => newValue.toInt
       case t if t <:< typeOf[Double] => newValue.toDouble
@@ -112,7 +112,7 @@ object Parameter {
 
   def apply[T : TypeTag](id: String)(implicit pv: ParameterValues): Parameter[T] = new Parameter[T](id, None, false)
 
-  def apply[T : TypeTag](id: String, value: T)(implicit pv: ParameterValues) = new Parameter[T](id, None, false).setValue(value)
+  def apply[T : TypeTag](id: String, value: T)(implicit pv: ParameterValues) = new Parameter[T](id, None, false).withValue(value)
 
   implicit def stringParameter2HString(p: Parameter[String]): HString = HString(
     Right(

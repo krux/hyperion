@@ -50,7 +50,7 @@ trait DataPipelineDef extends S3UriHelper with WorkflowExpressionImplicits {
 
   def setParameterValue(id: String, value: String): Unit =
     // Use .get to throw exception when a parameter id is not defined
-    parameters.find(_.id == id).get.setValueFromString(value)
+    parameters.find(_.id == id).get.withValueFromString(value)
 
 }
 
