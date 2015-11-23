@@ -4,24 +4,26 @@ case class RedshiftCopyOption(repr: Seq[String])
 
 object RedshiftCopyOption {
 
+  def quoted[T](x: T): String = s"'$x'"
+
   def csv(quote: String) = RedshiftCopyOption(Seq("CSV", "QUOTE", quote))
 
   def csv = RedshiftCopyOption(Seq("CSV"))
 
   def gzip = RedshiftCopyOption(Seq("GZIP"))
 
-  def delimiter(delChar: String) = RedshiftCopyOption(Seq("DELIMITER", s"'$delChar'"))
+  def delimiter(delChar: String) = RedshiftCopyOption(Seq("DELIMITER", quoted(delChar)))
 
   def escape = RedshiftCopyOption(Seq("ESCAPE"))
 
-  def nullAs(nullStr: String) = RedshiftCopyOption(Seq("NULL", s"'$nullStr'"))
+  def nullAs(nullStr: String) = RedshiftCopyOption(Seq("NULL", quoted(nullStr)))
 
   def maxError(errorCount: Int) = RedshiftCopyOption(Seq("MAXERROR", errorCount.toString))
 
   def acceptInvChars = RedshiftCopyOption(Seq("ACCEPTINVCHARS"))
 
   def acceptInvChars(replacementChar: Char) =
-    RedshiftCopyOption(Seq("ACCEPTINVCHARS", s"'$replacementChar'"))
+    RedshiftCopyOption(Seq("ACCEPTINVCHARS", quoted(replacementChar)))
 
   def acceptAnyDate = RedshiftCopyOption(Seq("ACCEPTANYDATE"))
 
@@ -29,7 +31,8 @@ object RedshiftCopyOption {
 
   def dateFormat = RedshiftCopyOption(Seq("DATEFORMAT"))
 
-  def dateFormat(dateFormatString: String) = RedshiftCopyOption(Seq("DATEFORMAT", s"'$dateFormatString'"))
+  def dateFormat(dateFormatString: String) =
+    RedshiftCopyOption(Seq("DATEFORMAT", quoted(dateFormatString)))
 
   def encoding(fileEncoding: String) = RedshiftCopyOption(Seq("ENCODING", fileEncoding))
 
@@ -45,7 +48,7 @@ object RedshiftCopyOption {
 
   def roundec = RedshiftCopyOption(Seq("ROUNDEC"))
 
-  def timeFormat(format: String) = RedshiftCopyOption(Seq("TIMEFORMAT", s"'$format'"))
+  def timeFormat(format: String) = RedshiftCopyOption(Seq("TIMEFORMAT", quoted(format)))
 
   def trimBlanks = RedshiftCopyOption(Seq("TRIMBLANKS"))
 
