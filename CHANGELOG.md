@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.16.4 - 2015-11-23
+### Fixed
+- [#273](https://github.com/krux/hyperion/issues/273) - Add `ACCEPTINVCHARS` and the rest of Data Conversion Parameters to redshift copy options
+
 ## 2.16.3 - 2015-11-11
 ### Fixed
 - [#269](https://github.com/krux/hyperion/issues/269) - Sftp download auth cancel when using username and password
