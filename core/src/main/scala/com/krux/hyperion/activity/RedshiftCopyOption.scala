@@ -6,7 +6,7 @@ object RedshiftCopyOption {
 
   def quoted[T](x: T): String = s"'$x'"
 
-  def csv(quote: String) = RedshiftCopyOption(Seq("CSV", "QUOTE", quote))
+  def csv(quote: String) = RedshiftCopyOption(Seq("CSV", "QUOTE", quoted(quote)))
 
   def csv = RedshiftCopyOption(Seq("CSV"))
 
