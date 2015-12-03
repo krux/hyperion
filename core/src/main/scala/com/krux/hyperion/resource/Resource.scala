@@ -5,6 +5,8 @@ import scala.language.implicitConversions
 sealed trait Resource[T] {
   def asWorkerGroup: Option[WorkerGroup]
   def asManagedResource: Option[T]
+
+  // TODO: this should be called toResourceObject and also this will not work with WorkerGroup
   def toSeq: Seq[T]
 }
 

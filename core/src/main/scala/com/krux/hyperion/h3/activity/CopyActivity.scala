@@ -1,0 +1,72 @@
+package com.krux.hyperion.h3.activity
+
+import shapeless._
+
+import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.{HInt, HDuration}
+import com.krux.hyperion.aws.AdpCopyActivity
+import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.datanode.Copyable
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.h3.common.{ PipelineObject, ObjectFields }
+import com.krux.hyperion.precondition.Precondition
+import com.krux.hyperion.resource.{Resource, Ec2Resource}
+
+/**
+ * The activity that copies data from one data node to the other.
+ *
+ * @note it seems that both input and output format needs to be in CsvDataFormat for this copy to
+ * work properly and it needs to be a specific variance of the CSV, for more information check the
+ * web page:
+ *
+ * http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-object-copyactivity.html
+ *
+ * From our experience it's really hard to export using TsvDataFormat, in both import and export
+ * especially for tasks involving RedshiftCopyActivity. A general rule of thumb is always use
+ * default CsvDataFormat for tasks involving both exporting to S3 and copy to redshift.
+ */
+case class CopyActivity private (
+  baseFields: ObjectFields,
+  activityFields: ActivityFields[Ec2Resource],
+  input: Copyable,
+  output: Copyable
+) extends PipelineActivity[Ec2Resource] {
+
+  type Self = CopyActivity
+
+  def baseFieldsLens = lens[Self] >> 'baseFields
+  def activityFieldsLens = lens[Self] >> 'activityFields
+
+  override def objects: Iterable[PipelineObject] = super.objects // :+ input :+ output
+
+  lazy val serialize = AdpCopyActivity(
+    id = baseFields.id,
+    name = baseFields.id.toOption,
+    input = input.ref,
+    output = output.ref,
+    workerGroup = runsOn.asWorkerGroup.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
+    dependsOn = seqToOption(activityFields.dependsOn)(_.ref),
+    precondition = seqToOption(activityFields.preconditions)(_.ref),
+    onFail = seqToOption(activityFields.onFailAlarms)(_.ref),
+    onSuccess = seqToOption(activityFields.onSuccessAlarms)(_.ref),
+    onLateAction = seqToOption(activityFields.onLateActionAlarms)(_.ref),
+    attemptTimeout = activityFields.attemptTimeout.map(_.serialize),
+    lateAfterTimeout = activityFields.lateAfterTimeout.map(_.serialize),
+    maximumRetries = activityFields.maximumRetries.map(_.serialize),
+    retryDelay = activityFields.retryDelay.map(_.serialize),
+    failureAndRerunMode = activityFields.failureAndRerunMode.map(_.serialize)
+  )
+}
+
+object CopyActivity extends RunnableObject {
+
+  def apply(input: Copyable, output: Copyable)(runsOn: Resource[Ec2Resource]): CopyActivity =
+    new CopyActivity(
+      baseFields = ObjectFields(PipelineObjectId(CopyActivity.getClass)),
+      activityFields = ActivityFields(runsOn),
+      input = input,
+      output = output
+    )
+
+}

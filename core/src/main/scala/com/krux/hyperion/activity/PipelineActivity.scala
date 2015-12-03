@@ -4,6 +4,7 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.{AdpActivity, AdpRef}
 import com.krux.hyperion.common.PipelineObject
 import com.krux.hyperion.precondition.Precondition
+import com.krux.hyperion.resource.{ ResourceObject, Resource }
 
 /**
  * The activity trait. All activities should mixin this trait.
