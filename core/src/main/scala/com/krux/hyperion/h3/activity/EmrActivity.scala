@@ -15,9 +15,11 @@ trait EmrActivity[A <: EmrCluster] extends PipelineActivity[A] {
   def emrActivityFields: EmrActivityFields
   def emrActivityFieldsLens: Lens[Self, EmrActivityFields]
 
+  def preStepCommands = emrActivityFieldsLens.preStepCommands
   def withPreStepCommand(commands: HString*): Self =
     (emrActivityFieldsLens >> 'preStepCommands).modify(self)(_ ++ commands)
 
+  def postStepCommands = emrActivityFieldsLens.postStepCommands
   def withPostStepCommand(commands: HString*): Self =
     (emrActivityFieldsLens >> 'postStepCommands).modify(self)(_ ++ commands)
 

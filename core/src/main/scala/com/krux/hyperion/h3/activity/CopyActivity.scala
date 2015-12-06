@@ -40,22 +40,22 @@ case class CopyActivity private (
   override def objects: Iterable[PipelineObject] = super.objects // :+ input :+ output
 
   lazy val serialize = AdpCopyActivity(
-    id = baseFields.id,
-    name = baseFields.id.toOption,
+    id = id,
+    name = id.toOption,
     input = input.ref,
     output = output.ref,
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
     runsOn = runsOn.asManagedResource.map(_.ref),
-    dependsOn = seqToOption(activityFields.dependsOn)(_.ref),
-    precondition = seqToOption(activityFields.preconditions)(_.ref),
-    onFail = seqToOption(activityFields.onFailAlarms)(_.ref),
-    onSuccess = seqToOption(activityFields.onSuccessAlarms)(_.ref),
-    onLateAction = seqToOption(activityFields.onLateActionAlarms)(_.ref),
-    attemptTimeout = activityFields.attemptTimeout.map(_.serialize),
-    lateAfterTimeout = activityFields.lateAfterTimeout.map(_.serialize),
-    maximumRetries = activityFields.maximumRetries.map(_.serialize),
-    retryDelay = activityFields.retryDelay.map(_.serialize),
-    failureAndRerunMode = activityFields.failureAndRerunMode.map(_.serialize)
+    dependsOn = seqToOption(dependsOn)(_.ref),
+    precondition = seqToOption(preconditions)(_.ref),
+    onFail = seqToOption(onFailAlarms)(_.ref),
+    onSuccess = seqToOption(onSuccessAlarms)(_.ref),
+    onLateAction = seqToOption(onLateActionAlarms)(_.ref),
+    attemptTimeout = attemptTimeout.map(_.serialize),
+    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
+    maximumRetries = maximumRetries.map(_.serialize),
+    retryDelay = retryDelay.map(_.serialize),
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 }
 

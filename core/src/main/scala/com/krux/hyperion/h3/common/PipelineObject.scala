@@ -21,6 +21,7 @@ trait PipelineObject extends Ordered[PipelineObject] {
   def baseFieldsLens: Lens[Self, ObjectFields]
 
   private def idLens: Lens[Self, PipelineObjectId] = baseFieldsLens >> 'id
+  def id = baseFields.id
   def named(name: String) = idLens.modify(self)(_.named(name))
   def groupedBy(group: String) = idLens.modify(self)(_.groupedBy(group))
 

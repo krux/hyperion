@@ -20,33 +20,43 @@ trait PipelineActivity[A <: ResourceObject] extends PipelineObject {
   def activityFields: ActivityFields[A]
   def activityFieldsLens: Lens[Self, ActivityFields[A]]
 
-  private[hyperion] def dependsOn(activities: PipelineActivity[_]*): PipelineActivity[A] =
+  def dependsOn = activityFields.dependsOn
+  private[hyperion] def dependsOn(activities: PipelineActivity[_]*): Self =
     (activityFieldsLens >> 'dependsOn).modify(self)(_ ++ activities)
 
-  def whenMet(conditions: Precondition*): PipelineActivity[A] =
+  def preconditions = activityFields.preconditions
+  def whenMet(conditions: Precondition*): Self =
     (activityFieldsLens >> 'preconditions).modify(self)(_ ++ conditions)
 
+  def onFailAlarms = activityFields.onFailAlarms
   def onFail(alarms: SnsAlarm*): Self =
     (activityFieldsLens >> 'onFailAlarms).modify(self)(_ ++ alarms)
 
+  def onSuccessAlarms = activityFields.onSuccessAlarms
   def onSuccess(alarms: SnsAlarm*): Self =
     (activityFieldsLens >> 'onSuccessAlarms).modify(self)(_ ++ alarms)
 
+  def onLateActionAlarms = activityFields.onLateActionAlarms
   def onLateAction(alarms: SnsAlarm*): Self =
     (activityFieldsLens >> 'onLateActionAlarms).modify(self)(_ ++ alarms)
 
+  def maximumRetries = activityFields.maximumRetries
   def withMaximumRetries(retries: HInt): Self =
     (activityFieldsLens >> 'maximumRetries).set(self)(Option(retries))
 
+  def attemptTimeout = activityFields.attemptTimeout
   def withAttemptTimeout(duration: HDuration): Self =
     (activityFieldsLens >> 'attemptTimeout).set(self)(Option(duration))
 
+  def lateAfterTimeout = activityFields.lateAfterTimeout
   def withLateAfterTimeout(duration: HDuration): Self =
     (activityFieldsLens >> 'lateAfterTimeout).set(self)(Option(duration))
 
+  def retryDelay = activityFields.retryDelay
   def withRetryDelay(duration: HDuration): Self =
     (activityFieldsLens >> 'retryDelay).set(self)(Option(duration))
 
+  def failureAndRerunMode = activityFields.failureAndRerunMode
   def withFailureAndRerunMode(mode: FailureAndRerunMode): Self =
     (activityFieldsLens >> 'failureAndRerunMode).set(self)(Option(mode))
 
