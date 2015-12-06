@@ -62,7 +62,7 @@ case class HadoopActivity[A <: EmrCluster] private (
     input = seqToOption(inputs)(_.ref),
     output = seqToOption(outputs)(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
-    runsOn = activityFields.runsOn.asManagedResource.map(_.ref),
+    runsOn = runsOn.asManagedResource.map(_.ref),
     dependsOn = seqToOption(activityFields.dependsOn)(_.ref),
     precondition = seqToOption(activityFields.preconditions)(_.ref),
     onFail = seqToOption(activityFields.onFailAlarms)(_.ref),
