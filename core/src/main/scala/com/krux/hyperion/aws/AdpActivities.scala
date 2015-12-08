@@ -222,9 +222,7 @@ case class AdpEmrActivity (
   lateAfterTimeout: Option[String],
   maximumRetries: Option[String],
   retryDelay: Option[String],
-  failureAndRerunMode: Option[String],
-  actionOnResourceFailure: Option[String],
-  actionOnTaskFailure: Option[String]
+  failureAndRerunMode: Option[String]
 ) extends AdpActivity {
 
   val `type` = "EmrActivity"

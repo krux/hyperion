@@ -45,8 +45,6 @@ class S3DistCpActivity private (
   val maximumRetries: Option[HInt],
   val retryDelay: Option[HDuration],
   val failureAndRerunMode: Option[FailureAndRerunMode],
-  val actionOnResourceFailure: Option[ActionOnResourceFailure],
-  val actionOnTaskFailure: Option[ActionOnTaskFailure],
   val arguments: Seq[HString]
 ) extends EmrActivity {
 
@@ -85,16 +83,13 @@ class S3DistCpActivity private (
     maximumRetries: Option[HInt] = maximumRetries,
     retryDelay: Option[HDuration] = retryDelay,
     failureAndRerunMode: Option[FailureAndRerunMode] = failureAndRerunMode,
-    actionOnResourceFailure: Option[ActionOnResourceFailure] = actionOnResourceFailure,
-    actionOnTaskFailure: Option[ActionOnTaskFailure] = actionOnTaskFailure,
     arguments: Seq[HString] = arguments
   ) = new S3DistCpActivity(id, source, dest, sourcePattern, groupBy, targetSize, appendLastToFile,
     outputCodec, s3ServerSideEncryption, deleteOnSuccess, disableMultipartUpload, chunkSize, numberFiles,
     startingIndex, outputManifest, previousManifest, requirePreviousManifest, copyFromManifest, endpoint,
     storageClass, sourcePrefixesFile, preStepCommands, postStepCommands, runsOn, dependsOn, preconditions,
     onFailAlarms, onSuccessAlarms, onLateActionAlarms,
-    attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode,
-    actionOnResourceFailure, actionOnTaskFailure, arguments)
+    attemptTimeout, lateAfterTimeout, maximumRetries, retryDelay, failureAndRerunMode, arguments)
 
   def named(name: String) = this.copy(id = id.named(name))
   def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
@@ -132,8 +127,6 @@ class S3DistCpActivity private (
   def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
   def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
-  def withActionOnResourceFailure(action: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(action))
-  def withActionOnTaskFailure(action: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(action))
   def withArgument(argument: HString*) = this.copy(arguments = arguments ++ argument)
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
@@ -183,9 +176,7 @@ class S3DistCpActivity private (
     lateAfterTimeout = lateAfterTimeout.map(_.serialize),
     maximumRetries = maximumRetries.map(_.serialize),
     retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
-    actionOnResourceFailure = actionOnResourceFailure.map(_.serialize),
-    actionOnTaskFailure = actionOnTaskFailure.map(_.serialize)
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }
@@ -252,8 +243,6 @@ object S3DistCpActivity extends RunnableObject {
       maximumRetries = None,
       retryDelay = None,
       failureAndRerunMode = None,
-      actionOnResourceFailure = None,
-      actionOnTaskFailure = None,
       arguments = Seq.empty
     )
 

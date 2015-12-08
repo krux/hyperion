@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 3.0.0-SNAPSHOT
 ### Changed
 - [#215](https://github.com/krux/hyperion/issues/215) - Revisit and refactor expression and parameter
+  - Note that all activities are assummed to have only one input and one output, this is a breaking
+    change, as before emr activities are considered to be able to have multiple inputs and outputs.
+    this does not seems correct according to the AWS documentation.
+  - Also the actionOnTaskFailure and actionOnResource failure is removed from emr activities, they
+    do not belong there.
+
 - [#271](https://github.com/krux/hyperion/issues/271) - Separate CLI with DataPipelineDef
 - [#214](https://github.com/krux/hyperion/issues/214) - Extend CLI to be able to read parameters to be passed from pipeline
 

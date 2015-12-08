@@ -29,9 +29,7 @@ case class MapReduceActivity private (
   lateAfterTimeout: Option[HDuration],
   maximumRetries: Option[HInt],
   retryDelay: Option[HDuration],
-  failureAndRerunMode: Option[FailureAndRerunMode],
-  actionOnResourceFailure: Option[ActionOnResourceFailure],
-  actionOnTaskFailure: Option[ActionOnTaskFailure]
+  failureAndRerunMode: Option[FailureAndRerunMode]
 ) extends EmrActivity {
 
   def named(name: String) = this.copy(id = id.named(name))
@@ -53,8 +51,6 @@ case class MapReduceActivity private (
   def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
   def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
   def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
-  def withActionOnResourceFailure(action: ActionOnResourceFailure) = this.copy(actionOnResourceFailure = Option(action))
-  def withActionOnTaskFailure(action: ActionOnTaskFailure) = this.copy(actionOnTaskFailure = Option(action))
 
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
@@ -77,9 +73,7 @@ case class MapReduceActivity private (
     lateAfterTimeout = lateAfterTimeout.map(_.serialize),
     maximumRetries = maximumRetries.map(_.serialize),
     retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
-    actionOnResourceFailure = actionOnResourceFailure.map(_.serialize),
-    actionOnTaskFailure = actionOnTaskFailure.map(_.serialize)
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
 
 }
@@ -103,8 +97,6 @@ object MapReduceActivity extends RunnableObject {
       lateAfterTimeout = None,
       maximumRetries = None,
       retryDelay = None,
-      failureAndRerunMode = None,
-      actionOnResourceFailure = None,
-      actionOnTaskFailure = None
+      failureAndRerunMode = None
     )
 }

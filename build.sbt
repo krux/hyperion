@@ -5,7 +5,7 @@ val awsSdkVersion   = "1.9.35"
 val mailVersion     = "1.5.4"
 val slf4jVersion    = "1.7.12"
 
-val nscalaTimeArtifact      = "com.github.nscala-time" %% "nscala-time"               % "1.8.0"
+val nscalaTimeArtifact      = "com.github.nscala-time" %% "nscala-time"               % "2.6.0"
 val jodaConvertArtifact     = "org.joda"               %  "joda-convert"              % "1.7"    % "provided"
 val json4sJacksonArtifact   = "org.json4s"             %% "json4s-jackson"            % "3.2.10"
 val scoptArtifact           = "com.github.scopt"       %% "scopt"                     % "3.3.0"
