@@ -4,9 +4,8 @@ import shapeless._
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRedshiftDataNode
-import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.database.RedshiftDatabase
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * The abstracted RedshiftDataNode

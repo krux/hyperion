@@ -5,8 +5,7 @@ import shapeless._
 import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.adt.{ HDouble, HBoolean, HString }
 import com.krux.hyperion.aws.{ AdpRef, AdpEc2Resource }
-import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 import com.krux.hyperion.HyperionContext
 
 /**

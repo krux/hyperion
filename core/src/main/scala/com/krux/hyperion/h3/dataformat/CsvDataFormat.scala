@@ -4,8 +4,7 @@ import shapeless._
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpCsvDataFormat
-import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * A comma-delimited data format where the column separator is a comma and the record separator is

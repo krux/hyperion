@@ -3,7 +3,6 @@ package com.krux.hyperion.h3.common
 import shapeless._
 
 import com.krux.hyperion.aws.{AdpDataPipelineAbstractObject, AdpRef}
-import com.krux.hyperion.common.PipelineObjectId
 import scala.language.implicitConversions
 
 /**

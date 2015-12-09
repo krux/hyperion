@@ -3,11 +3,11 @@ package com.krux.hyperion.h3.datanode
 import shapeless._
 
 import com.krux.hyperion.aws.AdpS3DataNode
-import com.krux.hyperion.common.{ S3Uri, PipelineObjectId }
+import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.h3.common.PipelineObject
 import com.krux.hyperion.h3.dataformat.DataFormat
 import com.krux.hyperion.adt.{HS3Uri, HBoolean}
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 
 sealed trait S3DataNode extends Copyable {
 

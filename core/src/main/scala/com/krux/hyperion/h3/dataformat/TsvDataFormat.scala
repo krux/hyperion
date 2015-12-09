@@ -4,8 +4,7 @@ import shapeless._
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpTsvDataFormat
-import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * A tab-delimited data format where the record separator is a newline character.

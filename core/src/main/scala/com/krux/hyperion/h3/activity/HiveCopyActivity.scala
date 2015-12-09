@@ -6,7 +6,7 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.ShellScriptConfig
 import com.krux.hyperion.adt.{HInt, HDuration, HString, HS3Uri}
 import com.krux.hyperion.aws.AdpHiveCopyActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.h3.common.PipelineObjectId
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.h3.common.ObjectFields

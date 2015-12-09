@@ -3,9 +3,8 @@ package com.krux.hyperion.h3.activity
 import shapeless._
 
 import com.krux.hyperion.activity.Script
-import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 import com.krux.hyperion.resource.{ Resource, Ec2Resource }
 
 /**

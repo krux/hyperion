@@ -5,7 +5,6 @@ import shapeless._
 import com.krux.hyperion.adt.{HString, HInt}
 import com.krux.hyperion.aws.{AdpRef, AdpHttpProxy}
 import com.krux.hyperion.expression.Parameter
-import com.krux.hyperion.common.PipelineObjectId
 
 case class HttpProxy private (
   baseFields: ObjectFields,

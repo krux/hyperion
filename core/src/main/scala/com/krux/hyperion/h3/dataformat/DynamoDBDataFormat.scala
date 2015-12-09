@@ -4,8 +4,7 @@ import shapeless._
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpDynamoDBDataFormat
-import com.krux.hyperion.common.PipelineObjectId
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * Applies a schema to a DynamoDB table to make it accessible by a Hive query. DynamoDBDataFormat

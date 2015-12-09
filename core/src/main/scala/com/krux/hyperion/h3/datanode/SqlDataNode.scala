@@ -4,10 +4,9 @@ import shapeless._
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlDataNode
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.database.Database
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * @note that the AWS Datapipeline SqlDataNode does not require a JdbcDatabase parameter, but

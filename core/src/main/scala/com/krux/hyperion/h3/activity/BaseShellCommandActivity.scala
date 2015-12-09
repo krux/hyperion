@@ -7,10 +7,9 @@ import com.krux.hyperion.activity.Script
 import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean}
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.aws.{ AdpActivity, AdpRef }
-import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.h3.common.{ PipelineObject, ObjectFields }
+import com.krux.hyperion.h3.common.{ PipelineObjectId, PipelineObject, ObjectFields }
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{ Resource, Ec2Resource }
 
