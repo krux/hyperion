@@ -14,9 +14,13 @@ trait ResourceObject extends PipelineObject {
 
   def resourceFieldsLens: Lens[Self, ResourceFields]
 
+  private val roleLens = resourceFieldsLens >> 'role
+  def role = roleLens.get(self)
+  def withRole(r: HString) = roleLens.set(self)(Option(r))
+
   private val resourceRoleLens = resourceFieldsLens >> 'resourceRole
   def resourceRole = resourceRoleLens.get(self)
-  def withResourceRole(role: HString) = resourceRoleLens.set(self)(Option(role))
+  def withResourceRole(r: HString) = resourceRoleLens.set(self)(Option(r))
 
   private val keyPairLens = resourceFieldsLens >> 'keyPair
   def keyPair = keyPairLens.get(self)
@@ -41,6 +45,18 @@ trait ResourceObject extends PipelineObject {
   private val initTimeoutLens = resourceFieldsLens >> 'initTimeout
   def initTimeout = initTimeoutLens.get(self)
   def withInitTimeout(timeout: HDuration) = initTimeoutLens.set(self)(Option(timeout))
+
+  private val terminateAfterLens = resourceFieldsLens >> 'terminateAfter
+  def terminateAfter = terminateAfterLens.get(self)
+  def terminateAfter(after: HDuration) = terminateAfterLens.set(self)(Option(after))
+
+  private val actionOnResourceFailureLens = resourceFieldsLens >> 'actionOnResourceFailure
+  def actionOnResourceFailure = actionOnResourceFailureLens.get(self)
+  def withActionOnResourceFailure(action: ActionOnResourceFailure) = actionOnResourceFailureLens.set(self)(Option(action))
+
+  private val actionOnTaskFailureLens = resourceFieldsLens >> 'actionOnTaskFailure
+  def actionOnTaskFailure = actionOnTaskFailureLens.get(self)
+  def withActionOnTaskFailure(action: ActionOnTaskFailure) = actionOnTaskFailureLens.set(self)(Option(action))
 
   private val httpProxyLens = resourceFieldsLens >> 'httpProxy
   def httpProxy = httpProxyLens.get(self)
