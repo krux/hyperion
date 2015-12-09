@@ -10,6 +10,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     this does not seems correct according to the AWS documentation.
   - Also the actionOnTaskFailure and actionOnResource failure is removed from emr activities, they
     do not belong there.
+  - Removed alarm from data nodes, although there's nothing that stops from you to specify one, it
+    does not make sense to have those in non activity fields.
 
 - [#271](https://github.com/krux/hyperion/issues/271) - Separate CLI with DataPipelineDef
 - [#214](https://github.com/krux/hyperion/issues/214) - Extend CLI to be able to read parameters to be passed from pipeline
