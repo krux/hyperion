@@ -4,23 +4,25 @@ import com.krux.hyperion.adt.{ HInt, HDouble, HString, HBoolean }
 
 case class EmrClusterFields(
   amiVersion: Option[HString],
-  supportedProducts: Option[HString],
   standardBootstrapAction: Seq[HString],
-  bootstrapAction: Seq[HString],
-  enableDebugging: Option[HBoolean],
-  hadoopSchedulerType: Option[SchedulerType],
-  coreInstanceBidPrice: Option[HDouble],
+  masterInstanceType: Option[HString],
   coreInstanceCount: HInt,
   coreInstanceType: Option[HString],
-  taskInstanceBidPrice: Option[HDouble],
   taskInstanceCount: HInt,
   taskInstanceType: Option[HString],
-  masterSecurityGroupId: Option[HString],
-  additionalMasterSecurityGroupIds: Seq[HString],
-  slaveSecurityGroupId: Option[HString],
-  additionalSlaveSecurityGroupIds: Seq[HString],
-  visibleToAllUsers: Option[HBoolean],
   releaseLabel: Option[HString],  // do not use ami version with release label
-  applications: Seq[HString],  // use with release label
-  configuration: Option[EmrConfiguration]
+  supportedProducts: Option[HString] = None,
+  bootstrapAction: Seq[HString] = Seq.empty,
+  enableDebugging: Option[HBoolean] = None,
+  hadoopSchedulerType: Option[SchedulerType] = None,
+  masterInstanceBidPrice: Option[HDouble] = None,
+  coreInstanceBidPrice: Option[HDouble] = None,
+  taskInstanceBidPrice: Option[HDouble] = None,
+  masterSecurityGroupId: Option[HString] = None,
+  additionalMasterSecurityGroupIds: Seq[HString] = Seq.empty,
+  slaveSecurityGroupId: Option[HString] = None,
+  additionalSlaveSecurityGroupIds: Seq[HString] = Seq.empty,
+  visibleToAllUsers: Option[HBoolean] = None,
+  applications: Seq[HString] = Seq.empty,  // use with release label
+  configuration: Option[EmrConfiguration] = None
 )
