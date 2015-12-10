@@ -1,7 +1,6 @@
 package com.krux.hyperion.h3.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.adt.{HInt, HDuration, HString}
 import com.krux.hyperion.aws._
 import com.krux.hyperion.h3.common.PipelineObjectId
@@ -22,7 +21,6 @@ import com.krux.hyperion.activity.ShellScriptConfig
 case class HadoopActivity[A <: EmrCluster] private (
   baseFields: ObjectFields,
   activityFields: ActivityFields[A],
-  emrActivityFields: EmrActivityFields,
   jarUri: HString,
   mainClass: Option[MainClass],
   argument: Seq[HString],
@@ -37,7 +35,6 @@ case class HadoopActivity[A <: EmrCluster] private (
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
-  def updateEmrActivityFields(fields: EmrActivityFields) = copy(emrActivityFields = fields)
 
   def withArguments(arguments: HString*) = this.copy(argument = argument ++ arguments)
   def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
@@ -82,7 +79,6 @@ object HadoopActivity extends RunnableObject {
   def apply[A <: EmrCluster](jarUri: HString, mainClass: Option[MainClass] = None)(runsOn: Resource[A]): HadoopActivity[A] = new HadoopActivity(
     baseFields = ObjectFields(PipelineObjectId(HadoopActivity.getClass)),
     activityFields = ActivityFields(runsOn),
-    emrActivityFields = EmrActivityFields(),
     jarUri = jarUri,
     mainClass = mainClass,
     argument = Seq.empty,

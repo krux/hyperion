@@ -1,7 +1,6 @@
 package com.krux.hyperion.h3.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.activity.MapReduceStep
 import com.krux.hyperion.adt.{HInt, HDuration, HString}
 import com.krux.hyperion.aws.AdpEmrActivity
 import com.krux.hyperion.h3.common.PipelineObjectId
@@ -18,20 +17,24 @@ case class MapReduceActivity[A <: EmrCluster] private (
   steps: Seq[MapReduceStep],
   baseFields: ObjectFields,
   activityFields: ActivityFields[A],
-  emrActivityFields: EmrActivityFields,
   inputs: Seq[S3DataNode],
-  outputs: Seq[S3DataNode]
+  outputs: Seq[S3DataNode],
+  preStepCommands: Seq[HString],
+  postStepCommands: Seq[HString]
 ) extends EmrActivity[A] {
 
   type Self = MapReduceActivity[A]
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
-  def updateEmrActivityFields(fields: EmrActivityFields) = copy(emrActivityFields = fields)
 
-  def withSteps(step: MapReduceStep*) = this.copy(steps = steps ++ step)
-  def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
-  def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
+  def withSteps(step: MapReduceStep*) = copy(steps = steps ++ step)
+  def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
+  def withOutput(output: S3DataNode*) = copy(outputs = outputs ++ output)
+
+  def withPreStepCommand(commands: HString*): Self = copy(preStepCommands = preStepCommands ++ commands)
+
+  def withPostStepCommand(commands: HString*): Self = copy(postStepCommands = postStepCommands ++ commands)
 
   // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
@@ -65,10 +68,11 @@ object MapReduceActivity extends RunnableObject {
     new MapReduceActivity(
       baseFields = ObjectFields(PipelineObjectId(MapReduceActivity.getClass)),
       activityFields = ActivityFields(runsOn),
-      emrActivityFields = EmrActivityFields(),
       steps = Seq.empty,
       inputs = Seq.empty,
-      outputs = Seq.empty
+      outputs = Seq.empty,
+      preStepCommands = Seq.empty,
+      postStepCommands = Seq.empty
     )
 
 }

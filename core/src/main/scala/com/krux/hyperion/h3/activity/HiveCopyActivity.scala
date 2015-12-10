@@ -19,7 +19,6 @@ import com.krux.hyperion.resource.{Resource, EmrCluster}
 case class HiveCopyActivity[A <: EmrCluster] private (
   baseFields: ObjectFields,
   activityFields: ActivityFields[A],
-  emrActivityFields: EmrActivityFields,
   filterSql: Option[HString],
   generatedScriptsPath: Option[HS3Uri],
   input: DataNode,
@@ -33,7 +32,6 @@ case class HiveCopyActivity[A <: EmrCluster] private (
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
-  def updateEmrActivityFields(fields: EmrActivityFields) = copy(emrActivityFields = fields)
 
   def withFilterSql(filterSql: HString) = this.copy(filterSql = Option(filterSql))
   def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
@@ -74,7 +72,6 @@ object HiveCopyActivity extends RunnableObject {
     new HiveCopyActivity(
       baseFields = ObjectFields(PipelineObjectId(HiveActivity.getClass)),
       activityFields = ActivityFields(runsOn),
-      emrActivityFields = EmrActivityFields(),
       filterSql = None,
       generatedScriptsPath = None,
       input = input,

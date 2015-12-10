@@ -1,11 +1,9 @@
 package com.krux.hyperion.h3.activity
 
-import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.adt.{ HS3Uri, HString }
 import com.krux.hyperion.common.S3Uri
-import com.krux.hyperion.h3.common.PipelineObjectId
+import com.krux.hyperion.h3.common.{ PipelineObjectId, ObjectFields }
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.h3.common.ObjectFields
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
 

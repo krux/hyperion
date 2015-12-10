@@ -23,7 +23,6 @@ import com.krux.hyperion.activity.{ Script, ShellScriptConfig }
 case class HiveActivity[A <: EmrCluster] private (
   baseFields: ObjectFields,
   activityFields: ActivityFields[A],
-  emrActivityFields: EmrActivityFields,
   hiveScript: Script,
   scriptVariables: Seq[HString],
   input: DataNode,
@@ -37,7 +36,6 @@ case class HiveActivity[A <: EmrCluster] private (
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
-  def updateEmrActivityFields(fields: EmrActivityFields) = copy(emrActivityFields = fields)
 
   def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
@@ -79,7 +77,6 @@ object HiveActivity extends RunnableObject {
     new HiveActivity(
       baseFields = ObjectFields(PipelineObjectId(HiveActivity.getClass)),
       activityFields = ActivityFields(runsOn),
-      emrActivityFields = EmrActivityFields(),
       hiveScript = hiveScript,
       scriptVariables = Seq.empty,
       input = input,
