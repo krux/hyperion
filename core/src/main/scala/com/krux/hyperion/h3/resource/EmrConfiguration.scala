@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.resource
 
-import shapeless._
-
 import com.krux.hyperion.aws.{ AdpEmrConfiguration, AdpRef }
 import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId, PipelineObject }
 import com.krux.hyperion.adt.HString
@@ -15,7 +13,7 @@ case class EmrConfiguration private (
 
   type Self = EmrConfiguration
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
 
   def withClassification(classification: HString) =
     this.copy(classification = Option(classification))

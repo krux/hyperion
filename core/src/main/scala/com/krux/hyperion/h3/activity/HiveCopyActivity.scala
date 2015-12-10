@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.ShellScriptConfig
 import com.krux.hyperion.adt.{HInt, HDuration, HString, HS3Uri}
@@ -33,9 +31,9 @@ case class HiveCopyActivity[A <: EmrCluster] private (
 
   type Self = HiveCopyActivity[A]
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def activityFieldsLens = lens[Self] >> 'activityFields
-  def emrActivityFieldsLens = lens[Self] >> 'emrActivityFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
+  def updateEmrActivityFields(fields: EmrActivityFields) = copy(emrActivityFields = fields)
 
   def withFilterSql(filterSql: HString) = this.copy(filterSql = Option(filterSql))
   def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))

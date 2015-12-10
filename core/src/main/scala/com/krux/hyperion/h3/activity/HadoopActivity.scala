@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.adt.{HInt, HDuration, HString}
@@ -37,9 +35,9 @@ case class HadoopActivity[A <: EmrCluster] private (
 
   type Self = HadoopActivity[A]
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def activityFieldsLens = lens[Self] >> 'activityFields
-  def emrActivityFieldsLens = lens[Self] >> 'emrActivityFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
+  def updateEmrActivityFields(fields: EmrActivityFields) = copy(emrActivityFields = fields)
 
   def withArguments(arguments: HString*) = this.copy(argument = argument ++ arguments)
   def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))

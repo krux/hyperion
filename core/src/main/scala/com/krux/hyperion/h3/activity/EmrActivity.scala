@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.resource.EmrCluster
 
@@ -13,14 +11,16 @@ trait EmrActivity[A <: EmrCluster] extends PipelineActivity[A] {
   type Self <: EmrActivity[A]
 
   def emrActivityFields: EmrActivityFields
-  def emrActivityFieldsLens: Lens[Self, EmrActivityFields]
+  def updateEmrActivityFields(fields: EmrActivityFields): Self
 
   def preStepCommands = emrActivityFields.preStepCommands
-  def withPreStepCommand(commands: HString*): Self =
-    (emrActivityFieldsLens >> 'preStepCommands).modify(self)(_ ++ commands)
+  def withPreStepCommand(commands: HString*): Self = updateEmrActivityFields(
+    emrActivityFields.copy(preStepCommands = emrActivityFields.preStepCommands ++ commands)
+  )
 
   def postStepCommands = emrActivityFields.postStepCommands
-  def withPostStepCommand(commands: HString*): Self =
-    (emrActivityFieldsLens >> 'postStepCommands).modify(self)(_ ++ commands)
+  def withPostStepCommand(commands: HString*): Self = updateEmrActivityFields(
+    emrActivityFields.copy(postStepCommands = emrActivityFields.postStepCommands ++ commands)
+  )
 
 }

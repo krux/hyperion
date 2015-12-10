@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.resource
 
-import shapeless._
-
 import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.adt.{ HDouble, HBoolean, HString }
 import com.krux.hyperion.aws.{ AdpRef, AdpEc2Resource }
@@ -25,8 +23,8 @@ case class Ec2Resource private (
 
   type Self = Ec2Resource
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def resourceFieldsLens = lens[Self] >> 'resourceFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
 
   def runAsUser(user: HString) = this.copy(runAsUser = Option(user))
   def withInstanceType(instanceType: HString) = this.copy(instanceType = instanceType)

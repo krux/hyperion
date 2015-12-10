@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.dataformat
 
-import shapeless._
-
 import com.krux.hyperion.aws.{ AdpRef, AdpDataFormat }
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.h3.common.PipelineObject
@@ -13,11 +11,13 @@ trait DataFormat extends PipelineObject {
 
   type Self <: DataFormat
 
-  def dataFormatFieldsLens: Lens[Self, DataFormatFields]
+  def dataFormatFields: DataFormatFields
+  def updateDataFormatFields(fields: DataFormatFields): Self
 
-  private val columnsLens = dataFormatFieldsLens >> 'columns
-  def columns = columnsLens.get(self)
-  def withColumns(cols: HString*) = columnsLens.modify(self)(_ ++ cols)
+  def columns = dataFormatFields.columns
+  def withColumns(cols: HString*) = updateDataFormatFields(
+    dataFormatFields.copy(columns = dataFormatFields.columns ++ cols)
+  )
 
   def serialize: AdpDataFormat
 

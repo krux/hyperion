@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.datanode
 
-import shapeless._
-
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRedshiftDataNode
 import com.krux.hyperion.database.RedshiftDatabase
@@ -22,8 +20,8 @@ case class RedshiftDataNode private (
 
   type Self = RedshiftDataNode
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def dataNodeFieldsLens = lens[Self] >> 'dataNodeFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
 
   def withCreateTableSql(createSql: HString): RedshiftDataNode = this.copy(createTableSql = Option(createSql))
   def withSchema(name: HString): RedshiftDataNode = this.copy(schemaName = Option(name))

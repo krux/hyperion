@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean}
 import com.krux.hyperion.aws.{AdpActivity, AdpRef}
@@ -17,47 +15,58 @@ trait PipelineActivity[A <: ResourceObject] extends PipelineObject {
 
   type Self <: PipelineActivity[A]
 
-  def activityFieldsLens: Lens[Self, ActivityFields[A]]
+  def activityFields: ActivityFields[A]
+  def updateActivityFields(fields: ActivityFields[A]): Self
 
-  def dependsOn = (activityFieldsLens >> 'dependsOn).get(self)
-  private[hyperion] def dependsOn(activities: PipelineActivity[_]*): Self =
-    (activityFieldsLens >> 'dependsOn).modify(self)(_ ++ activities)
+  def dependsOn = activityFields.dependsOn
+  private[hyperion] def dependsOn(activities: PipelineActivity[_]*): Self = updateActivityFields(
+    activityFields.copy(dependsOn = activityFields.dependsOn ++ activities)
+  )
 
-  def preconditions = (activityFieldsLens >> 'preconditions).get(self)
-  def whenMet(conditions: Precondition*): Self =
-    (activityFieldsLens >> 'preconditions).modify(self)(_ ++ conditions)
+  def preconditions = activityFields.preconditions
+  def whenMet(conditions: Precondition*): Self = updateActivityFields(
+    activityFields.copy(preconditions = activityFields.preconditions ++ conditions)
+  )
 
-  def onFailAlarms = (activityFieldsLens >> 'onFailAlarms).get(self)
-  def onFail(alarms: SnsAlarm*): Self =
-    (activityFieldsLens >> 'onFailAlarms).modify(self)(_ ++ alarms)
+  def onFailAlarms = activityFields.onFailAlarms
+  def onFail(alarms: SnsAlarm*): Self = updateActivityFields(
+    activityFields.copy(onFailAlarms = activityFields.onFailAlarms ++ alarms)
+  )
 
-  def onSuccessAlarms = (activityFieldsLens >> 'onSuccessAlarms).get(self)
-  def onSuccess(alarms: SnsAlarm*): Self =
-    (activityFieldsLens >> 'onSuccessAlarms).modify(self)(_ ++ alarms)
+  def onSuccessAlarms = activityFields.onSuccessAlarms
+  def onSuccess(alarms: SnsAlarm*): Self = updateActivityFields(
+    activityFields.copy(onSuccessAlarms = activityFields.onSuccessAlarms ++ alarms)
+  )
 
-  def onLateActionAlarms = (activityFieldsLens >> 'onLateActionAlarms).get(self)
-  def onLateAction(alarms: SnsAlarm*): Self =
-    (activityFieldsLens >> 'onLateActionAlarms).modify(self)(_ ++ alarms)
+  def onLateActionAlarms = activityFields.onLateActionAlarms
+  def onLateAction(alarms: SnsAlarm*): Self = updateActivityFields(
+    activityFields.copy(onLateActionAlarms = activityFields.onLateActionAlarms ++ alarms)
+  )
 
-  def maximumRetries = (activityFieldsLens >> 'maximumRetries).get(self)
-  def withMaximumRetries(retries: HInt): Self =
-    (activityFieldsLens >> 'maximumRetries).set(self)(Option(retries))
+  def maximumRetries = activityFields.maximumRetries
+  def withMaximumRetries(retries: HInt): Self = updateActivityFields(
+    activityFields.copy(maximumRetries = Option(retries))
+  )
 
-  def attemptTimeout = (activityFieldsLens >> 'attemptTimeout).get(self)
-  def withAttemptTimeout(duration: HDuration): Self =
-    (activityFieldsLens >> 'attemptTimeout).set(self)(Option(duration))
+  def attemptTimeout = activityFields.attemptTimeout
+  def withAttemptTimeout(duration: HDuration): Self = updateActivityFields(
+    activityFields.copy(attemptTimeout = Option(duration))
+  )
 
-  def lateAfterTimeout = (activityFieldsLens >> 'lateAfterTimeout).get(self)
-  def withLateAfterTimeout(duration: HDuration): Self =
-    (activityFieldsLens >> 'lateAfterTimeout).set(self)(Option(duration))
+  def lateAfterTimeout = activityFields.lateAfterTimeout
+  def withLateAfterTimeout(duration: HDuration): Self = updateActivityFields(
+    activityFields.copy(lateAfterTimeout = Option(duration))
+  )
 
-  def retryDelay = (activityFieldsLens >> 'retryDelay).get(self)
-  def withRetryDelay(duration: HDuration): Self =
-    (activityFieldsLens >> 'retryDelay).set(self)(Option(duration))
+  def retryDelay = activityFields.retryDelay
+  def withRetryDelay(duration: HDuration): Self = updateActivityFields(
+    activityFields.copy(retryDelay = Option(duration))
+  )
 
-  def failureAndRerunMode = (activityFieldsLens >> 'failureAndRerunMode).get(self)
-  def withFailureAndRerunMode(mode: FailureAndRerunMode): Self =
-    (activityFieldsLens >> 'failureAndRerunMode).set(self)(Option(mode))
+  def failureAndRerunMode = activityFields.failureAndRerunMode
+  def withFailureAndRerunMode(mode: FailureAndRerunMode): Self = updateActivityFields(
+    activityFields.copy(failureAndRerunMode = Option(mode))
+  )
 
   // TODO: Uncomment the following once the other activities has been transformed
   def objects: Iterable[PipelineObject] = dependsOn // ++
@@ -67,7 +76,7 @@ trait PipelineActivity[A <: ResourceObject] extends PipelineObject {
     // activityFields.preconditions :+
     // activityFields.runsOn
 
-  def runsOn: Resource[A] = (activityFieldsLens >> 'runsOn).get(self)
+  def runsOn: Resource[A] = activityFields.runsOn
 
   def serialize: AdpActivity
   def ref: AdpRef[AdpActivity] = AdpRef(serialize)

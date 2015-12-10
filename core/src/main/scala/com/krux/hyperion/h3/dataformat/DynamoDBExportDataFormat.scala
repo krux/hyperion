@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.dataformat
 
-import shapeless._
-
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpDynamoDBExportDataFormat
 import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
@@ -24,8 +22,8 @@ case class DynamoDBExportDataFormat private (
 
   type Self = DynamoDBExportDataFormat
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def dataFormatFieldsLens = lens[Self] >> 'dataFormatFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
   lazy val serialize = AdpDynamoDBExportDataFormat(
     id = id,

@@ -22,7 +22,6 @@ val smtpArtifact            = "com.sun.mail"           %  "smtp"                
 val slf4jApiArtifact        = "org.slf4j"              %  "slf4j-api"                 % slf4jVersion
 val slf4jSimpleArtifact     = "org.slf4j"              %  "slf4j-simple"              % slf4jVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
-val shapelessArtifact       = "com.chuusai"            %% "shapeless"                 % "2.2.5"
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -90,10 +89,6 @@ lazy val commonSettings = Seq(
       "-doc-source-url",
       "https://github.com/krux/hyperion/tree/master/€{FILE_PATH}.scala")
   },
-  libraryDependencies ++= Seq(
-    scalatestArtifact,
-    compilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full)
-  ),
   test in assembly := {} // skip test during assembly
 )
 
@@ -145,8 +140,7 @@ lazy val core = (project in file("core")).
       json4sJacksonArtifact,
       scoptArtifact,
       configArtifact,
-      slf4jApiArtifact,
-      shapelessArtifact
+      slf4jApiArtifact
     )
   )
 

@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.datanode
 
-import shapeless._
-
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.{ AdpRef, AdpDataNode }
 import com.krux.hyperion.h3.common.PipelineObject
@@ -11,20 +9,23 @@ trait DataNode extends PipelineObject {
 
   type Self <: DataNode
 
-  def dataNodeFieldsLens: Lens[Self, DataNodeFields]
+  def dataNodeFields: DataNodeFields
+  def updateDataNodeFields(fields: DataNodeFields): Self
 
-  def preconditions = (dataNodeFieldsLens >> 'precondition).get(self)
-  def whenMet(conditions: Precondition*) =
-    (dataNodeFieldsLens >> 'precondition).modify(self)(_ ++ conditions)
+  def preconditions = dataNodeFields.precondition
+  def whenMet(conditions: Precondition*) = updateDataNodeFields(
+    dataNodeFields.copy(precondition = dataNodeFields.precondition ++ conditions)
+  )
 
+  def onFailAlarms = dataNodeFields.onFailAlarms
+  def onFail(alarms: SnsAlarm*): Self = updateDataNodeFields(
+    dataNodeFields.copy(onFailAlarms = dataNodeFields.onFailAlarms ++ alarms)
+  )
 
-  def onFailAlarms = (dataNodeFieldsLens >> 'onFailAlarms).get(self)
-  def onFail(alarms: SnsAlarm*): Self =
-    (dataNodeFieldsLens >> 'onFailAlarms).modify(self)(_ ++ alarms)
-
-  def onSuccessAlarms = (dataNodeFieldsLens >> 'onSuccessAlarms).get(self)
-  def onSuccess(alarms: SnsAlarm*): Self =
-    (dataNodeFieldsLens >> 'onSuccessAlarms).modify(self)(_ ++ alarms)
+  def onSuccessAlarms = dataNodeFields.onSuccessAlarms
+  def onSuccess(alarms: SnsAlarm*): Self = updateDataNodeFields(
+    dataNodeFields.copy(onSuccessAlarms = dataNodeFields.onSuccessAlarms ++ alarms)
+  )
 
   lazy val ref: AdpRef[AdpDataNode] = AdpRef(serialize)
 

@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.MapReduceStep
 import com.krux.hyperion.adt.{HInt, HDuration, HString}
@@ -27,9 +25,9 @@ case class MapReduceActivity[A <: EmrCluster] private (
 
   type Self = MapReduceActivity[A]
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def activityFieldsLens = lens[Self] >> 'activityFields
-  def emrActivityFieldsLens = lens[Self] >> 'emrActivityFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
+  def updateEmrActivityFields(fields: EmrActivityFields) = copy(emrActivityFields = fields)
 
   def withSteps(step: MapReduceStep*) = this.copy(steps = steps ++ step)
   def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)

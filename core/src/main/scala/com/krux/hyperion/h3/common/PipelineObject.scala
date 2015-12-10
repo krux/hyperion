@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.common
 
-import shapeless._
-
 import com.krux.hyperion.aws.{AdpDataPipelineAbstractObject, AdpRef}
 import scala.language.implicitConversions
 
@@ -17,12 +15,15 @@ trait PipelineObject extends Ordered[PipelineObject] {
   implicit def seq2Option[A](anySeq: Seq[A]): Option[Seq[A]] = seqToOption(anySeq)(x => x)
 
   def baseFields: ObjectFields
-  def baseFieldsLens: Lens[Self, ObjectFields]
+  def updateBaseFields(fields: ObjectFields): Self
 
-  private def idLens: Lens[Self, PipelineObjectId] = baseFieldsLens >> 'id
   def id = baseFields.id
-  def named(name: String) = idLens.modify(self)(_.named(name))
-  def groupedBy(group: String) = idLens.modify(self)(_.groupedBy(group))
+  def named(name: String) = updateBaseFields(
+    baseFields.copy(id = baseFields.id.named(name))
+  )
+  def groupedBy(group: String) = updateBaseFields(
+    baseFields.copy(id = baseFields.id.groupedBy(group))
+  )
 
   def objects: Iterable[PipelineObject]
 

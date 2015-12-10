@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.activity.Script
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
@@ -18,9 +16,9 @@ case class ShellCommandActivity private (
 
   type Self = ShellCommandActivity
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def activityFieldsLens = lens[Self] >> 'activityFields
-  def shellCommandActivityFieldsLens = lens[Self] >> 'shellCommandActivityFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
+  def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
 }
 

@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.adt.{ HS3Uri, HString }
 import com.krux.hyperion.common.S3Uri
@@ -25,9 +23,9 @@ case class JarActivity private (
 
   type Self = JarActivity
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def activityFieldsLens = lens[Self] >> 'activityFields
-  def shellCommandActivityFieldsLens = lens[Self] >> 'shellCommandActivityFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
+  def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
   assert(script.uri.nonEmpty)
 

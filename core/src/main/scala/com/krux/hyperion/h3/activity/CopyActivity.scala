@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.adt.{HInt, HDuration}
 import com.krux.hyperion.aws.AdpCopyActivity
@@ -33,8 +31,8 @@ case class CopyActivity private (
 
   type Self = CopyActivity
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def activityFieldsLens = lens[Self] >> 'activityFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
   override def objects: Iterable[PipelineObject] = super.objects // :+ input :+ output
 

@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.resource
 
-import shapeless._
-
 import com.krux.hyperion.h3.common.{ PipelineObject, HttpProxy }
 import com.krux.hyperion.adt.{ HString, HBoolean, HDuration }
 
@@ -12,55 +10,68 @@ trait ResourceObject extends PipelineObject {
 
   type Self <: ResourceObject
 
-  def resourceFieldsLens: Lens[Self, ResourceFields]
+  def resourceFields: ResourceFields
+  def updateResourceFields(fields: ResourceFields): Self
 
-  private val roleLens = resourceFieldsLens >> 'role
-  def role = roleLens.get(self)
-  def withRole(r: HString): Self = roleLens.set(self)(Option(r))
+  def role = resourceFields.role
+  def withRole(r: HString): Self = updateResourceFields(
+    resourceFields.copy(role = Option(r))
+  )
 
-  private val resourceRoleLens = resourceFieldsLens >> 'resourceRole
-  def resourceRole = resourceRoleLens.get(self)
-  def withResourceRole(r: HString): Self = resourceRoleLens.set(self)(Option(r))
+  def resourceRole = resourceFields.resourceRole
+  def withResourceRole(r: HString): Self = updateResourceFields(
+    resourceFields.copy(resourceRole = Option(r))
+  )
 
-  private val keyPairLens = resourceFieldsLens >> 'keyPair
-  def keyPair = keyPairLens.get(self)
-  def withKeyPair(theKeyPair: HString): Self = keyPairLens.set(self)(Option(theKeyPair))
+  def keyPair = resourceFields.keyPair
+  def withKeyPair(theKeyPair: HString): Self = updateResourceFields(
+    resourceFields.copy(keyPair = Option(theKeyPair))
+  )
 
-  private val regionLens = resourceFieldsLens >> 'region
-  def region = regionLens.get(self)
-  def withRegion(r: HString): Self = regionLens.set(self)(Option(r))
+  def region = resourceFields.region
+  def withRegion(r: HString): Self = updateResourceFields(
+    resourceFields.copy(region = Option(r))
+  )
 
-  private val availabilityZoneLens = resourceFieldsLens >> 'availabilityZone
-  def availabilityZone = availabilityZoneLens.get(self)
-  def withAvailabilityZone(az: HString): Self = availabilityZoneLens.set(self)(Option(az))
+  def availabilityZone = resourceFields.availabilityZone
+  def withAvailabilityZone(az: HString): Self = updateResourceFields(
+    resourceFields.copy(availabilityZone = Option(az))
+  )
 
-  private val subnetIdLens = resourceFieldsLens >> 'subnetId
-  def subnetId = subnetIdLens.get(self)
-  def withSubnetId(subnet: HString): Self = subnetIdLens.set(self)(Option(subnet))
+  def subnetId = resourceFields.subnetId
+  def withSubnetId(subnet: HString): Self = updateResourceFields(
+    resourceFields.copy(subnetId = Option(subnet))
+  )
 
-  private val useOnDemandOnLastAttemptLens = resourceFieldsLens >> 'useOnDemandOnLastAttempt
-  def useOnDemandOnLastAttempt = useOnDemandOnLastAttemptLens.get(self)
-  def withUseOnDemandOnLastAttempt(use: HBoolean): Self = useOnDemandOnLastAttemptLens.set(self)(Option(use))
+  def useOnDemandOnLastAttempt = resourceFields.useOnDemandOnLastAttempt
+  def withUseOnDemandOnLastAttempt(use: HBoolean): Self = updateResourceFields(
+    resourceFields.copy(useOnDemandOnLastAttempt = Option(use))
+  )
 
-  private val initTimeoutLens = resourceFieldsLens >> 'initTimeout
-  def initTimeout = initTimeoutLens.get(self)
-  def withInitTimeout(timeout: HDuration): Self = initTimeoutLens.set(self)(Option(timeout))
+  def initTimeout = resourceFields.initTimeout
+  def withInitTimeout(timeout: HDuration): Self = updateResourceFields(
+    resourceFields.copy(initTimeout = Option(timeout))
+  )
 
-  private val terminateAfterLens = resourceFieldsLens >> 'terminateAfter
-  def terminateAfter = terminateAfterLens.get(self)
-  def terminateAfter(after: HDuration) = terminateAfterLens.set(self)(Option(after))
+  def terminateAfter = resourceFields.terminateAfter
+  def terminateAfter(after: HDuration) = updateResourceFields(
+    resourceFields.copy(terminateAfter = Option(after))
+  )
 
-  private val actionOnResourceFailureLens = resourceFieldsLens >> 'actionOnResourceFailure
-  def actionOnResourceFailure = actionOnResourceFailureLens.get(self)
-  def withActionOnResourceFailure(action: ActionOnResourceFailure): Self = actionOnResourceFailureLens.set(self)(Option(action))
+  def actionOnResourceFailure = resourceFields.actionOnResourceFailure
+  def withActionOnResourceFailure(action: ActionOnResourceFailure): Self = updateResourceFields(
+    resourceFields.copy(actionOnResourceFailure = Option(action))
+  )
 
-  private val actionOnTaskFailureLens = resourceFieldsLens >> 'actionOnTaskFailure
-  def actionOnTaskFailure = actionOnTaskFailureLens.get(self)
-  def withActionOnTaskFailure(action: ActionOnTaskFailure): Self = actionOnTaskFailureLens.set(self)(Option(action))
+  def actionOnTaskFailure = resourceFields.actionOnTaskFailure
+  def withActionOnTaskFailure(action: ActionOnTaskFailure): Self = updateResourceFields(
+    resourceFields.copy(actionOnTaskFailure = Option(action))
+  )
 
-  private val httpProxyLens = resourceFieldsLens >> 'httpProxy
-  def httpProxy = httpProxyLens.get(self)
-  def withHttpProxy(proxy: HttpProxy): Self = httpProxyLens.set(self)(Option(proxy))
+  def httpProxy = resourceFields.httpProxy
+  def withHttpProxy(proxy: HttpProxy): Self = updateResourceFields(
+    resourceFields.copy(httpProxy = Option(proxy))
+  )
 
   def objects: Iterable[PipelineObject] = httpProxy
 

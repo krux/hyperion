@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.activity
 
-import shapeless._
-
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity.Script
 import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean}
@@ -18,35 +16,42 @@ trait BaseShellCommandActivity extends PipelineActivity[Ec2Resource] {
   type Self <: BaseShellCommandActivity
 
   def shellCommandActivityFields: ShellCommandActivityFields
-  def shellCommandActivityFieldsLens: Lens[Self, ShellCommandActivityFields]
+  def updateShellCommandActivityFields(fields: ShellCommandActivityFields): Self
 
   def script = shellCommandActivityFields.script
 
   def scriptArguments = shellCommandActivityFields.scriptArguments
-  def withArguments(args: HString*): Self =
-    (shellCommandActivityFieldsLens >> 'scriptArguments).modify(self)(_ ++ args)
+  def withArguments(args: HString*): Self = updateShellCommandActivityFields(
+    shellCommandActivityFields.copy(scriptArguments = shellCommandActivityFields.scriptArguments ++ args)
+  )
 
   def stdout = shellCommandActivityFields.stdout
-  def withStdoutTo(out: HString): Self =
-    (shellCommandActivityFieldsLens >> 'stdout).set(self)(Option(out))
+  def withStdoutTo(out: HString): Self = updateShellCommandActivityFields(
+    shellCommandActivityFields.copy(stdout = Option(out))
+  )
 
   def stderr = shellCommandActivityFields.stderr
-  def withStderrTo(err: HString): Self =
-    (shellCommandActivityFieldsLens >> 'stderr).set(self)(Option(err))
+  def withStderrTo(err: HString): Self = updateShellCommandActivityFields(
+    shellCommandActivityFields.copy(stderr = Option(err))
+  )
 
   def stage = shellCommandActivityFields.stage
 
   def input = shellCommandActivityFields.input
-  def withInput(inputs: S3DataNode*): Self = {
-    (shellCommandActivityFieldsLens >> 'input).modify(self)(_ ++ inputs)
-    (shellCommandActivityFieldsLens >> 'stage).set(self)(Option(HBoolean.True))
-  }
+  def withInput(inputs: S3DataNode*): Self = updateShellCommandActivityFields(
+    shellCommandActivityFields.copy(
+      input = shellCommandActivityFields.input ++ inputs,
+      stage = Option(HBoolean.True)
+    )
+  )
 
   def output = shellCommandActivityFields.output
-  def withOutput(outputs: S3DataNode*): Self = {
-    (shellCommandActivityFieldsLens >> 'output).modify(self)(_ ++ outputs)
-    (shellCommandActivityFieldsLens >> 'stage).set(self)(Option(HBoolean.True))
-  }
+  def withOutput(outputs: S3DataNode*): Self = updateShellCommandActivityFields(
+    shellCommandActivityFields.copy(
+      output = shellCommandActivityFields.output ++ outputs,
+      stage = Option(HBoolean.True)
+    )
+  )
 
   // TODO: Uncomment the following once they are transformed
   override def objects = super.objects // :+ input :+ output

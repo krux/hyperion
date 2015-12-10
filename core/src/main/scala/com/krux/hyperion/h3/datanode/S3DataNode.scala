@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.datanode
 
-import shapeless._
-
 import com.krux.hyperion.aws.AdpS3DataNode
 import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.h3.common.PipelineObject
@@ -13,11 +11,13 @@ sealed trait S3DataNode extends Copyable {
 
   type Self <: S3DataNode
 
-  def s3DataNodeFieldsLens: Lens[Self, S3DataNodeFields]
+  def s3DataNodeFields: S3DataNodeFields
+  def updateS3DataNodeFields(fields: S3DataNodeFields): Self
 
-  private val dataFormatLens: Lens[Self, Option[DataFormat]] = s3DataNodeFieldsLens >> 'dataFormat
-  def dataFormat: Option[DataFormat] = dataFormatLens.get(self)
-  def withDataFormat(fmt: DataFormat): Self = dataFormatLens.set(self)(Option(fmt))
+  def dataFormat = s3DataNodeFields.dataFormat
+  def withDataFormat(fmt: DataFormat): Self = updateS3DataNodeFields(
+    s3DataNodeFields.copy(dataFormat = Option(fmt))
+  )
 
   def asInput(): String = asInput(1)
   def asInput(n: Integer): String = "${" + s"INPUT${n}_STAGING_DIR}"
@@ -25,17 +25,20 @@ sealed trait S3DataNode extends Copyable {
   def asOutput(): String = asOutput(1)
   def asOutput(n: Integer): String = "${" + s"OUTPUT${n}_STAGING_DIR}"
 
-  private val manifestFilePathLens = s3DataNodeFieldsLens >> 'manifestFilePath
-  def manifestFilePath = manifestFilePathLens.get(self)
-  def withManifestFilePath(path: HS3Uri): Self = manifestFilePathLens.set(self)(Option(path))
+  def manifestFilePath = s3DataNodeFields.manifestFilePath
+  def withManifestFilePath(path: HS3Uri): Self = updateS3DataNodeFields(
+    s3DataNodeFields.copy(manifestFilePath = Option(path))
+  )
 
-  private val isCompressedLens = s3DataNodeFieldsLens >> 'isCompressed
-  def isCompressed = isCompressedLens.get(self)
-  def compressed: Self = isCompressedLens.set(self)(HBoolean.True)
+  def isCompressed = s3DataNodeFields.isCompressed
+  def compressed: Self = updateS3DataNodeFields(
+    s3DataNodeFields.copy(isCompressed = HBoolean.True)
+  )
 
-  private val isEncryptedLens = s3DataNodeFieldsLens >> 'isEncrypted
-  def isEncrypted = isEncryptedLens.get(self)
-  def unencrypted: Self = isEncryptedLens.set(self)(HBoolean.False)
+  def isEncrypted = s3DataNodeFields.isEncrypted
+  def unencrypted: Self = updateS3DataNodeFields(
+    s3DataNodeFields.copy(isEncrypted = HBoolean.False)
+  )
 
   def objects: Iterable[PipelineObject] = None // super.objects ++ dataFormat
 }
@@ -60,9 +63,9 @@ case class S3File private (
 
   type Self = S3File
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def dataNodeFieldsLens = lens[Self] >> 'dataNodeFields
-  def s3DataNodeFieldsLens = lens[Self] >> 's3DataNodeFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
+  def updateS3DataNodeFields(fields: S3DataNodeFields) = copy(s3DataNodeFields = fields)
 
   override def toString = filePath.toString
 
@@ -104,9 +107,9 @@ case class S3Folder private(
 
   type Self = S3Folder
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def dataNodeFieldsLens = lens[Self] >> 'dataNodeFields
-  def s3DataNodeFieldsLens = lens[Self] >> 's3DataNodeFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
+  def updateS3DataNodeFields(fields: S3DataNodeFields) = copy(s3DataNodeFields = fields)
 
   override def toString = directoryPath.toString
 

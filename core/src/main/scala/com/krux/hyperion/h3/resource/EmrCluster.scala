@@ -1,6 +1,5 @@
 package com.krux.hyperion.h3.resource
 
-import shapeless._
 import org.slf4j.Logger
 
 import com.krux.hyperion.adt.HType._
@@ -14,95 +13,118 @@ trait EmrCluster extends ResourceObject {
 
   def logger: Logger
 
-  def emrClusterFieldsLens: Lens[Self, EmrClusterFields]
+  def emrClusterFields: EmrClusterFields
+  def updateEmrClusterFields(fields: EmrClusterFields): Self
 
-  private val amiVersionLens = emrClusterFieldsLens >> 'amiVersion
-  def amiVersion = amiVersionLens.get(self)
-  def withAmiVersion(version: HString): Self = amiVersionLens.set(self)(Option(version))
+  def amiVersion = emrClusterFields.amiVersion
+  def withAmiVersion(version: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(amiVersion = (Option(version)))
+  )
 
-  private val supportedProductsLens = emrClusterFieldsLens >> 'supportedProducts
-  def supportedProducts = supportedProductsLens.get(self)
-  def withSupportedProducts(products: HString): Self = supportedProductsLens.set(self)(Option(products))
+  def supportedProducts = emrClusterFields.supportedProducts
+  def withSupportedProducts(products: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(supportedProducts = Option(products))
+  )
 
-  private val standardBootstrapActionLens = emrClusterFieldsLens >> 'standardBootstrapAction
-  def standardBootstrapAction = standardBootstrapActionLens.get(self)
-  def withStandardBootstrapAction(actions: HString*): Self = standardBootstrapActionLens.modify(self)(_ ++ actions)
+  def standardBootstrapAction = emrClusterFields.standardBootstrapAction
+  def withStandardBootstrapAction(actions: HString*): Self = updateEmrClusterFields(
+    emrClusterFields.copy(standardBootstrapAction = emrClusterFields.standardBootstrapAction ++ actions)
+  )
 
-  private val bootstrapActionLens = emrClusterFieldsLens >> 'bootstrapAction
-  def bootstrapAction = bootstrapActionLens.get(self)
-  def withBootstrapAction(actions: HString*): Self = bootstrapActionLens.modify(self)(_ ++ actions)
+  def bootstrapAction = emrClusterFields.bootstrapAction
+  def withBootstrapAction(actions: HString*): Self = updateEmrClusterFields(
+    emrClusterFields.copy(bootstrapAction = emrClusterFields.bootstrapAction ++ actions)
+  )
 
-  private val enableDebuggingLens = emrClusterFieldsLens >> 'enableDebugging
-  def enableDebugging = enableDebuggingLens.get(self)
-  def withDebuggingEnabled(enabled: HBoolean): Self = enableDebuggingLens.set(self)(Option(enabled))
+  def enableDebugging = emrClusterFields.enableDebugging
+  def withDebuggingEnabled(enabled: HBoolean): Self = updateEmrClusterFields(
+    emrClusterFields.copy(enableDebugging = Option(enabled))
+  )
 
-  private val hadoopSchedulerTypeLens = emrClusterFieldsLens >> 'hadoopSchedulerType
-  def hadoopSchedulerType = hadoopSchedulerTypeLens.get(self)
-  def withHadoopSchedulerType(scheduleType: SchedulerType): Self = hadoopSchedulerTypeLens.set(self)(Option(scheduleType))
+  def hadoopSchedulerType = emrClusterFields.hadoopSchedulerType
+  def withHadoopSchedulerType(scheduleType: SchedulerType): Self = updateEmrClusterFields(
+    emrClusterFields.copy(hadoopSchedulerType = Option(scheduleType))
+  )
 
-  private val masterInstanceBidPriceLens = emrClusterFieldsLens >> 'masterInstanceBidPrice
-  def masterInstanceBidPrice = masterInstanceBidPriceLens.get(self)
-  def withMasterInstanceBidPrice(price: HDouble): Self = masterInstanceBidPriceLens.set(self)(Option(price))
+  def masterInstanceBidPrice = emrClusterFields.masterInstanceBidPrice
+  def withMasterInstanceBidPrice(price: HDouble): Self = updateEmrClusterFields(
+    emrClusterFields.copy(masterInstanceBidPrice = Option(price))
+  )
 
-  private val masterInstanceTypeLens = emrClusterFieldsLens >> 'masterInstanceType
-  def masterInstanceType = masterInstanceTypeLens.get(self)
-  def withMasterInstanceType(instanceType: HString): Self = masterInstanceTypeLens.set(self)(Option(instanceType))
+  def masterInstanceType = emrClusterFields.masterInstanceType
+  def withMasterInstanceType(instanceType: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(masterInstanceType = Option(instanceType))
+  )
 
-  private val coreInstanceBidPriceLens = emrClusterFieldsLens >> 'coreInstanceBidPrice
-  def coreInstanceBidPrice = coreInstanceBidPriceLens.get(self)
-  def withCoreInstanceBidPrice(price: HDouble): Self = coreInstanceBidPriceLens.set(self)(Option(price))
+  def coreInstanceBidPrice = emrClusterFields.coreInstanceBidPrice
+  def withCoreInstanceBidPrice(price: HDouble): Self = updateEmrClusterFields(
+    emrClusterFields.copy(coreInstanceBidPrice = Option(price))
+  )
 
-  private val coreInstanceCountLens = emrClusterFieldsLens >> 'coreInstanceCount
-  def coreInstanceCount = coreInstanceCountLens.get(self)
-  def withCoreInstanceCount(count: HInt): Self = coreInstanceCountLens.set(self)(count)
+  def coreInstanceCount = emrClusterFields.coreInstanceCount
+  def withCoreInstanceCount(count: HInt): Self = updateEmrClusterFields(
+    emrClusterFields.copy(coreInstanceCount = count)
+  )
 
-  private val coreInstanceTypeLens = emrClusterFieldsLens >> 'coreInstanceType
-  def coreInstanceType = coreInstanceTypeLens.get(self)
-  def withCoreInstanceType(instanceType: HString): Self = coreInstanceTypeLens.set(self)(Option(instanceType))
+  def coreInstanceType = emrClusterFields.coreInstanceType
+  def withCoreInstanceType(instanceType: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(coreInstanceType = Option(instanceType))
+  )
 
-  private val taskInstanceBidPriceLens = emrClusterFieldsLens >> 'taskInstanceBidPrice
-  def taskInstanceBidPrice = taskInstanceBidPriceLens.get(self)
-  def withTaskInstanceBidPrice(price: HDouble): Self = taskInstanceBidPriceLens.set(self)(Option(price))
+  def taskInstanceBidPrice = emrClusterFields.taskInstanceBidPrice
+  def withTaskInstanceBidPrice(price: HDouble): Self = updateEmrClusterFields(
+    emrClusterFields.copy(taskInstanceBidPrice = Option(price))
+  )
 
-  private val taskInstanceCountLens = emrClusterFieldsLens >> 'taskInstanceCount
-  def taskInstanceCount = taskInstanceCountLens.get(self)
-  def withTaskInstanceCount(count: HInt): Self = taskInstanceCountLens.set(self)(count)
+  def taskInstanceCount = emrClusterFields.taskInstanceCount
+  def withTaskInstanceCount(count: HInt): Self = updateEmrClusterFields(
+    emrClusterFields.copy(taskInstanceCount = count)
+  )
 
-  private val taskInstanceTypeLens = emrClusterFieldsLens >> 'taskInstanceType
-  def taskInstanceType = taskInstanceTypeLens.get(self)
-  def withTaskInstanceType(instanceType: HString): Self = taskInstanceTypeLens.set(self)(Option(instanceType))
+  def taskInstanceType = emrClusterFields.taskInstanceType
+  def withTaskInstanceType(instanceType: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(taskInstanceType = Option(instanceType))
+  )
 
-  private val masterSecurityGroupIdLens = emrClusterFieldsLens >> 'masterSecurityGroupId
-  def masterSecurityGroupId = masterSecurityGroupIdLens.get(self)
-  def withMasterSecurityGroupId(groupId: HString): Self = masterSecurityGroupIdLens.set(self)(Option(groupId))
+  def masterSecurityGroupId = emrClusterFields.masterSecurityGroupId
+  def withMasterSecurityGroupId(groupId: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(masterSecurityGroupId = Option(groupId))
+  )
 
-  private val additionalMasterSecurityGroupIdsLens = emrClusterFieldsLens >> 'additionalMasterSecurityGroupIds
-  def additionalMasterSecurityGroupIds = additionalMasterSecurityGroupIdsLens.get(self)
-  def withAdditionalMasterSecurityGroupIds(groupIds: HString*): Self = additionalMasterSecurityGroupIdsLens.modify(self)(_ ++ groupIds)
+  def additionalMasterSecurityGroupIds = emrClusterFields.additionalMasterSecurityGroupIds
+  def withAdditionalMasterSecurityGroupIds(groupIds: HString*): Self =  updateEmrClusterFields(
+    emrClusterFields.copy(additionalMasterSecurityGroupIds = emrClusterFields.additionalMasterSecurityGroupIds ++ groupIds)
+  )
 
-  private val slaveSecurityGroupIdLens = emrClusterFieldsLens >> 'slaveSecurityGroupId
-  def slaveSecurityGroupId = slaveSecurityGroupIdLens.get(self)
-  def withSlaveSecurityGroupId(groupId: HString): Self = slaveSecurityGroupIdLens.set(self)(Option(groupId))
+  def slaveSecurityGroupId = emrClusterFields.slaveSecurityGroupId
+  def withSlaveSecurityGroupId(groupId: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(slaveSecurityGroupId = Option(groupId))
+  )
 
-  private val additionalSlaveSecurityGroupIdsLens = emrClusterFieldsLens >> 'additionalSlaveSecurityGroupIds
-  def additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIdsLens.get(self)
-  def withAdditionalSlaveSecurityGroupIds(groupIds: HString*): Self = additionalSlaveSecurityGroupIdsLens.modify(self)(_ ++ groupIds)
+  def additionalSlaveSecurityGroupIds = emrClusterFields.additionalSlaveSecurityGroupIds
+  def withAdditionalSlaveSecurityGroupIds(groupIds: HString*): Self =  updateEmrClusterFields(
+    emrClusterFields.copy(additionalSlaveSecurityGroupIds = emrClusterFields.additionalSlaveSecurityGroupIds ++ groupIds)
+  )
 
-  private val visibleToAllUsersLens = emrClusterFieldsLens >> 'visibleToAllUsers
-  def visibleToAllUsers = visibleToAllUsersLens.get(self)
-  def withVisibleToAllUsers(visible: HBoolean): Self = visibleToAllUsersLens.set(self)(Option(visible))
+  def visibleToAllUsers = emrClusterFields.visibleToAllUsers
+  def withVisibleToAllUsers(visible: HBoolean): Self = updateEmrClusterFields(
+    emrClusterFields.copy(visibleToAllUsers = Option(visible))
+  )
 
-  private val releaseLabelLens = emrClusterFieldsLens >> 'releaseLabel
-  def releaseLabel = releaseLabelLens.get(self)
-  def withReleaseLabel(label: HString): Self = releaseLabelLens.set(self)(Option(label))
+  def releaseLabel = emrClusterFields.releaseLabel
+  def withReleaseLabel(label: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(releaseLabel = Option(label))
+  )
 
-  private val applicationsLens = emrClusterFieldsLens >> 'applications
-  def applications = applicationsLens.get(self)
-  def withApplications(apps: HString*): Self = applicationsLens.modify(self)(_ ++ apps)
+  def applications = emrClusterFields.applications
+  def withApplications(apps: HString*): Self = updateEmrClusterFields(
+    emrClusterFields.copy(applications = emrClusterFields.applications ++ apps)
+  )
 
-  private val configurationLens = emrClusterFieldsLens >> 'configuration
-  def configuration = configurationLens.get(self)
-  def withConfiguration(conf: EmrConfiguration): Self = configurationLens.set(self)(Option(conf))
+  def configuration = emrClusterFields.configuration
+  def withConfiguration(conf: EmrConfiguration): Self = updateEmrClusterFields(
+    emrClusterFields.copy(configuration = Option(conf))
+  )
 
   override def ref: AdpRef[AdpEmrCluster] = AdpRef(serialize)
 

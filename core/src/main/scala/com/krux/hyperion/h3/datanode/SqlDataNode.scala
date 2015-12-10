@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.datanode
 
-import shapeless._
-
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlDataNode
 import com.krux.hyperion.database.Database
@@ -22,8 +20,8 @@ case class SqlDataNode (
 
   type Self = SqlDataNode
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def dataNodeFieldsLens = lens[Self] >> 'dataNodeFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
 
   def objects = None
   // def objects: Iterable[PipelineObject] = Some(database) ++ preconditions ++ onSuccessAlarms ++ onFailAlarms

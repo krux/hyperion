@@ -1,6 +1,5 @@
 package com.krux.hyperion.h3.resource
 
-import shapeless._
 import org.slf4j.LoggerFactory
 
 import com.krux.hyperion.adt.HType._
@@ -22,9 +21,9 @@ case class MapReduceCluster private (
 
   val logger = LoggerFactory.getLogger(MapReduceCluster.getClass)
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
-  def resourceFieldsLens = lens[Self] >> 'resourceFields
-  def emrClusterFieldsLens = lens[Self] >> 'emrClusterFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
+  def updateEmrClusterFields(fields: EmrClusterFields) = copy(emrClusterFields = fields)
 
   override def objects = None
   // override def objects: Iterable[PipelineObject] = configuration.toList ++ httpProxy.toList

@@ -1,7 +1,5 @@
 package com.krux.hyperion.h3.common
 
-import shapeless._
-
 import com.krux.hyperion.adt.{HString, HInt}
 import com.krux.hyperion.aws.{AdpRef, AdpHttpProxy}
 import com.krux.hyperion.expression.Parameter
@@ -18,7 +16,7 @@ case class HttpProxy private (
 
   type Self = HttpProxy
 
-  def baseFieldsLens = lens[Self] >> 'baseFields
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
 
   def withHostname(hostname: HString) = this.copy(hostname = Option(hostname))
   def withPort(port: HInt) = this.copy(port = Option(port))
