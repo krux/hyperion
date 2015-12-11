@@ -3,9 +3,9 @@ package com.krux.hyperion.h3.resource
 import org.slf4j.Logger
 
 import com.krux.hyperion.adt.HType._
-import com.krux.hyperion.adt.{ HInt, HDouble, HString, HBoolean }
+import com.krux.hyperion.adt.{ HInt, HDouble, HString, HBoolean, HDuration }
 import com.krux.hyperion.aws.{ AdpRef, AdpEmrCluster }
-
+import com.krux.hyperion.HyperionContext
 
 trait EmrCluster extends ResourceObject {
 
@@ -26,7 +26,7 @@ trait EmrCluster extends ResourceObject {
     emrClusterFields.copy(supportedProducts = Option(products))
   )
 
-  def standardBootstrapAction = emrClusterFields.standardBootstrapAction
+  def standardBootstrapAction: Seq[HString] = emrClusterFields.standardBootstrapAction
   def withStandardBootstrapAction(actions: HString*): Self = updateEmrClusterFields(
     emrClusterFields.copy(standardBootstrapAction = emrClusterFields.standardBootstrapAction ++ actions)
   )
@@ -180,5 +180,30 @@ trait EmrCluster extends ResourceObject {
       configuration = configuration.map(_.ref)
     )
   }
+
+}
+
+object EmrCluster {
+
+  def defaultEmrClusterFields(hc: HyperionContext) = EmrClusterFields(
+    amiVersion = hc.emrAmiVersion,
+    standardBootstrapAction = hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env": HString).toList,
+    masterInstanceType = Option(hc.emrInstanceType: HString),
+    coreInstanceCount = 2,
+    coreInstanceType = Option(hc.emrInstanceType: HString),
+    taskInstanceCount = 0,
+    taskInstanceType = Option(hc.emrInstanceType: HString),
+    releaseLabel = hc.emrReleaseLabel
+  )
+
+  def defaultResourceFields(hc: HyperionContext) = ResourceFields(
+    keyPair = hc.emrKeyPair.map(x => x: HString),
+    region = Option(hc.emrRegion: HString),
+    availabilityZone = hc.emrAvailabilityZone.map(x => x: HString),
+    resourceRole = Option(hc.emrResourceRole: HString),
+    role = Option(hc.emrRole: HString),
+    subnetId = hc.emrSubnetId.map(x => x: HString),
+    terminateAfter = hc.emrTerminateAfter.map(x => x: HDuration)
+  )
 
 }

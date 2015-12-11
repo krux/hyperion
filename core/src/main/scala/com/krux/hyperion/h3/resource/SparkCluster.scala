@@ -3,37 +3,45 @@ package com.krux.hyperion.h3.resource
 import org.slf4j.LoggerFactory
 
 import com.krux.hyperion.adt.HType._
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.h3.common.{ PipelineObjectId, ObjectFields }
 import com.krux.hyperion.HyperionContext
 
 /**
- * Launch a map reduce cluster
+ * Launch a Spark cluster
  */
-case class MapReduceCluster private (
+case class SparkCluster private (
   baseFields: ObjectFields,
   resourceFields: ResourceFields,
-  emrClusterFields: EmrClusterFields
+  emrClusterFields: EmrClusterFields,
+  sparkVersion: HString
 ) extends EmrCluster {
 
-  type Self = MapReduceCluster
+  type Self = SparkCluster
 
-  val logger = LoggerFactory.getLogger(MapReduceCluster.getClass)
+  val logger = LoggerFactory.getLogger(SparkCluster.getClass)
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
   def updateEmrClusterFields(fields: EmrClusterFields) = copy(emrClusterFields = fields)
 
-  override def objects = None
+  def withSparkVersion(sparkVersion: HString) = this.copy(sparkVersion = sparkVersion)
+
+  override def standardBootstrapAction = super.standardBootstrapAction :+ (
+    s"s3://support.elasticmapreduce/spark/install-spark,-v,${sparkVersion},-x": HString)
+
   // override def objects: Iterable[PipelineObject] = configuration.toList ++ httpProxy.toList
+  override def objects = None
 
 }
 
-object MapReduceCluster {
+object SparkCluster {
 
-  def apply()(implicit hc: HyperionContext): MapReduceCluster = new MapReduceCluster(
+  def apply()(implicit hc: HyperionContext): SparkCluster = new SparkCluster(
     baseFields = ObjectFields(PipelineObjectId(MapReduceCluster.getClass)),
     resourceFields = EmrCluster.defaultResourceFields(hc),
-    emrClusterFields = EmrCluster.defaultEmrClusterFields(hc)
+    emrClusterFields = EmrCluster.defaultEmrClusterFields(hc),
+    sparkVersion = hc.emrSparkVersion.get
   )
 
 }
