@@ -1,12 +1,12 @@
 package com.krux.hyperion.h3.resource
 
-import com.krux.hyperion.h3.common.{ PipelineObject, HttpProxy }
+import com.krux.hyperion.h3.common.{ PipelineObject, HttpProxy, NamedPipelineObject }
 import com.krux.hyperion.adt.{ HString, HBoolean, HDuration }
 
 /**
  * The base trait of all resource objects.
  */
-trait ResourceObject extends PipelineObject {
+trait ResourceObject extends NamedPipelineObject {
 
   type Self <: ResourceObject
 

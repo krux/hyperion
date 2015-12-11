@@ -12,7 +12,7 @@ case class HttpProxy private (
   password: Option[Parameter[String]],
   windowsDomain: Option[HString],
   windowsWorkGroup: Option[HString]
-) extends PipelineObject {
+) extends NamedPipelineObject {
 
   type Self = HttpProxy
 

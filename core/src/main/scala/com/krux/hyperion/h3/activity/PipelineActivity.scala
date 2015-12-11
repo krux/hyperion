@@ -3,14 +3,14 @@ package com.krux.hyperion.h3.activity
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.adt.{ HInt, HDuration }
 import com.krux.hyperion.aws.{ AdpActivity, AdpRef }
-import com.krux.hyperion.h3.common.PipelineObject
+import com.krux.hyperion.h3.common.{ PipelineObject, NamedPipelineObject }
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.h3.resource.{ Resource, ResourceObject }
 
 /**
  * The activity trait. All activities should mixin this trait.
  */
-trait PipelineActivity[A <: ResourceObject] extends PipelineObject {
+trait PipelineActivity[A <: ResourceObject] extends NamedPipelineObject {
 
   type Self <: PipelineActivity[A]
 

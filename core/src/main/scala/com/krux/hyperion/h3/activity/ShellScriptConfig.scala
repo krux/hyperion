@@ -1,14 +1,14 @@
 package com.krux.hyperion.h3.activity
 
 import com.krux.hyperion.aws.{ AdpRef, AdpShellScriptConfig }
-import com.krux.hyperion.h3.common.{ PipelineObject, ObjectFields, PipelineObjectId }
+import com.krux.hyperion.h3.common.{ PipelineObject, ObjectFields, PipelineObjectId, NamedPipelineObject }
 import com.krux.hyperion.adt.{ HS3Uri, HString }
 
 case class ShellScriptConfig(
   baseFields: ObjectFields,
   scriptUri: HS3Uri,
   scriptArguments: Seq[HString]
-) extends PipelineObject {
+) extends NamedPipelineObject {
 
   type Self = ShellScriptConfig
 

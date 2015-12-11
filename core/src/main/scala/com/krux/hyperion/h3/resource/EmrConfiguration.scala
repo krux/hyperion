@@ -1,7 +1,7 @@
 package com.krux.hyperion.h3.resource
 
 import com.krux.hyperion.aws.{ AdpEmrConfiguration, AdpRef }
-import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId, PipelineObject }
+import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId, PipelineObject, NamedPipelineObject }
 import com.krux.hyperion.adt.HString
 
 case class EmrConfiguration private (
@@ -9,7 +9,7 @@ case class EmrConfiguration private (
   classification: Option[HString],
   properties: Seq[Property],
   configurations: Seq[EmrConfiguration]
-) extends PipelineObject {
+) extends NamedPipelineObject {
 
   type Self = EmrConfiguration
 

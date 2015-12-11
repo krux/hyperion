@@ -2,12 +2,12 @@ package com.krux.hyperion.h3.dataformat
 
 import com.krux.hyperion.aws.{ AdpRef, AdpDataFormat }
 import com.krux.hyperion.adt.HString
-import com.krux.hyperion.h3.common.PipelineObject
+import com.krux.hyperion.h3.common.{ PipelineObject, NamedPipelineObject }
 
 /**
  * The base trait of all data formats
  */
-trait DataFormat extends PipelineObject {
+trait DataFormat extends NamedPipelineObject {
 
   type Self <: DataFormat
 

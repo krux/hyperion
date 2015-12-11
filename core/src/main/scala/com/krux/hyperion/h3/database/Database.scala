@@ -2,12 +2,13 @@ package com.krux.hyperion.h3.database
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.{ AdpDatabase, AdpRef }
-import com.krux.hyperion.h3.common.{ PipelineObject, PipelineObjectId, ObjectFields }
+import com.krux.hyperion.h3.common.{ PipelineObject, NamedPipelineObject, PipelineObjectId,
+  ObjectFields }
 
 /**
  * The base trait of all database objects
  */
-trait Database extends PipelineObject {
+trait Database extends NamedPipelineObject {
 
   type Self <: Database
 

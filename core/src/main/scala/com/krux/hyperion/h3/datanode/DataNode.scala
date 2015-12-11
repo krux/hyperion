@@ -2,10 +2,10 @@ package com.krux.hyperion.h3.datanode
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.{ AdpRef, AdpDataNode }
-import com.krux.hyperion.h3.common.PipelineObject
+import com.krux.hyperion.h3.common.{ PipelineObject, NamedPipelineObject }
 import com.krux.hyperion.precondition.Precondition
 
-trait DataNode extends PipelineObject {
+trait DataNode extends NamedPipelineObject {
 
   type Self <: DataNode
 

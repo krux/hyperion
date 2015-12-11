@@ -14,16 +14,7 @@ trait PipelineObject extends Ordered[PipelineObject] {
   implicit def uniquePipelineId2String(id: PipelineObjectId): String = id.toString
   implicit def seq2Option[A](anySeq: Seq[A]): Option[Seq[A]] = seqToOption(anySeq)(x => x)
 
-  def baseFields: ObjectFields
-  def updateBaseFields(fields: ObjectFields): Self
-
-  def id = baseFields.id
-  def named(name: String) = updateBaseFields(
-    baseFields.copy(id = baseFields.id.named(name))
-  )
-  def groupedBy(group: String) = updateBaseFields(
-    baseFields.copy(id = baseFields.id.groupedBy(group))
-  )
+  def id: PipelineObjectId
 
   def objects: Iterable[PipelineObject]
 
@@ -37,6 +28,6 @@ trait PipelineObject extends Ordered[PipelineObject] {
     }
   }
 
-  def compare(that: PipelineObject): Int =  self.baseFields.id.compare(that.baseFields.id)
+  def compare(that: PipelineObject): Int =  self.id.compare(that.id)
 
 }
