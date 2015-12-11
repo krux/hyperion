@@ -1,55 +1,58 @@
 package com.krux.hyperion.h3.activity
 
-import com.krux.hyperion.adt.{ HString, HBoolean }
-import com.krux.hyperion.aws.AdpHiveActivity
-import com.krux.hyperion.h3.common.PipelineObjectId
-import com.krux.hyperion.datanode.DataNode
+import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.{ HString, HS3Uri, HBoolean }
+import com.krux.hyperion.aws.AdpPigActivity
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.h3.common.ObjectFields
+import com.krux.hyperion.h3.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.h3.datanode.DataNode
 import com.krux.hyperion.h3.resource.{ Resource, EmrCluster }
 
 /**
- * Runs a Hive query on an Amazon EMR cluster. HiveActivity makes it easier to set up an Amzon EMR
- * activity and automatically creates Hive tables based on input data coming in from either Amazon
- * S3 or Amazon RDS. All you need to specify is the HiveQL to run on the source data. AWS Data
- * Pipeline automatically creates Hive tables with \${input1}, \${input2}, etc. based on the input
- * fields in the Hive Activity object. For S3 inputs, the dataFormat field is used to create the
- * Hive column names. For MySQL (RDS) inputs, the column names for the SQL query are used to create
- * the Hive column names.
+ * PigActivity provides native support for Pig scripts in AWS Data Pipeline without the requirement
+ * to use ShellCommandActivity or EmrActivity. In addition, PigActivity supports data staging. When
+ * the stage field is set to true, AWS Data Pipeline stages the input data as a schema in Pig
+ * without additional code from the user.
  */
-case class HiveActivity[A <: EmrCluster] private (
+case class PigActivity[A <: EmrCluster] private (
   baseFields: ObjectFields,
   activityFields: ActivityFields[A],
-  hiveScript: Script,
+  script: Script,
   scriptVariables: Seq[HString],
-  input: DataNode,
-  output: DataNode,
+  generatedScriptsPath: Option[HS3Uri],
+  stage: Option[HBoolean],
+  input: Option[DataNode],
+  output: Option[DataNode],
   hadoopQueue: Option[HString],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig]
 ) extends EmrActivity[A] {
 
-  type Self = HiveActivity[A]
+  type Self = PigActivity[A]
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
 
   def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
+  def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
+  def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(HBoolean.True))
+  def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(HBoolean.True))
   def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
 
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  lazy val serialize = new AdpHiveActivity(
+  lazy val serialize = new AdpPigActivity(
     id = id,
     name = id.toOption,
-    hiveScript = hiveScript.content.map(_.serialize),
-    scriptUri = hiveScript.uri.map(_.serialize),
+    script = script.content.map(_.serialize),
+    scriptUri = script.uri.map(_.serialize),
     scriptVariable = seqToOption(scriptVariables)(_.serialize),
-    stage = Option(HBoolean.True.serialize),
-    input = Option(input.ref),
-    output = Option(output.ref),
+    generatedScriptsPath = generatedScriptsPath.map(_.serialize),
+    stage = stage.map(_.serialize),
+    input = input.map(_.ref),
+    output = output.map(_.ref),
     hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
@@ -68,19 +71,20 @@ case class HiveActivity[A <: EmrCluster] private (
   )
 }
 
-object HiveActivity extends RunnableObject {
+object PigActivity extends RunnableObject {
 
-  def apply[A <: EmrCluster](input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
-    new HiveActivity(
-      baseFields = ObjectFields(PipelineObjectId(HiveActivity.getClass)),
+  def apply[A <: EmrCluster](script: Script)(runsOn: Resource[A]): PigActivity[A] =
+    new PigActivity(
+      baseFields = ObjectFields(PipelineObjectId(PigActivity.getClass)),
       activityFields = ActivityFields(runsOn),
-      hiveScript = hiveScript,
+      script = script,
       scriptVariables = Seq.empty,
-      input = input,
-      output = output,
+      generatedScriptsPath = None,
+      stage = None,
+      input = None,
+      output = None,
       hadoopQueue = None,
       preActivityTaskConfig = None,
       postActivityTaskConfig = None
     )
-
 }

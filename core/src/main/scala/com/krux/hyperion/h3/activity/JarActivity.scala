@@ -5,7 +5,7 @@ import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.h3.common.{ PipelineObjectId, ObjectFields }
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.h3.resource.{Resource, Ec2Resource}
 
 /**
  * Shell command activity that runs a given Jar

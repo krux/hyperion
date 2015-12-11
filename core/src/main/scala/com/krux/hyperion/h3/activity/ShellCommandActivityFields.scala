@@ -1,7 +1,6 @@
 package com.krux.hyperion.h3.activity
 
-import com.krux.hyperion.activity.Script
-import com.krux.hyperion.adt.{HString, HBoolean}
+import com.krux.hyperion.adt.{ HString, HBoolean }
 import com.krux.hyperion.datanode.S3DataNode
 
 case class ShellCommandActivityFields(

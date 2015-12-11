@@ -1,10 +1,9 @@
 package com.krux.hyperion.h3.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.activity.FailureAndRerunMode
 import com.krux.hyperion.adt.{ HInt, HDuration, HString, HBoolean }
+import com.krux.hyperion.h3.resource.{ ResourceObject, Resource }
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{ ResourceObject, Resource }
 
 /**
  * TODO: with this implementation workerGroup is not supported.

@@ -1,13 +1,10 @@
 package com.krux.hyperion.h3.activity
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{HInt, HDuration}
 import com.krux.hyperion.aws.AdpCopyActivity
 import com.krux.hyperion.datanode.Copyable
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.h3.common.{ PipelineObjectId, PipelineObject, ObjectFields }
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.h3.resource.{ Resource, Ec2Resource }
 
 /**
  * The activity that copies data from one data node to the other.

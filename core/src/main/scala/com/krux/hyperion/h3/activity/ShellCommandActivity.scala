@@ -1,9 +1,8 @@
 package com.krux.hyperion.h3.activity
 
-import com.krux.hyperion.activity.Script
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
-import com.krux.hyperion.resource.{ Resource, Ec2Resource }
+import com.krux.hyperion.h3.resource.{ Resource, Ec2Resource }
 
 /**
  * Runs a command or script

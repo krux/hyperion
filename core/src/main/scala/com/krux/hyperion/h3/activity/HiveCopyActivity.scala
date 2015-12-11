@@ -1,15 +1,13 @@
 package com.krux.hyperion.h3.activity
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.activity.ShellScriptConfig
-import com.krux.hyperion.adt.{HInt, HDuration, HString, HS3Uri}
+import com.krux.hyperion.adt.{ HString, HS3Uri }
 import com.krux.hyperion.aws.AdpHiveCopyActivity
 import com.krux.hyperion.h3.common.PipelineObjectId
-import com.krux.hyperion.datanode.DataNode
+import com.krux.hyperion.h3.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.h3.common.ObjectFields
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, EmrCluster}
+import com.krux.hyperion.h3.resource.{ Resource, EmrCluster }
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveCopyActivity makes it easier to copy data between
