@@ -1,42 +1,41 @@
 package com.krux.hyperion.h3.activity
 
-import com.krux.hyperion.adt.HString
+import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.h3.common.{ PipelineObjectId, PipelineObject, ObjectFields }
 import com.krux.hyperion.h3.datanode.S3DataNode
-import com.krux.hyperion.h3.resource.{ Resource, EmrCluster }
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.adt.{ HInt, HDuration, HString }
 import com.krux.hyperion.precondition.Precondition
+import com.krux.hyperion.h3.resource._
 
 /**
- * Runs map reduce steps on an Amazon EMR cluster
+ * Runs spark steps on given spark cluster with Amazon EMR
  */
-case class MapReduceActivity[A <: EmrCluster] private (
+case class SparkActivity private (
   baseFields: ObjectFields,
-  activityFields: ActivityFields[A],
-  steps: Seq[MapReduceStep],
+  activityFields: ActivityFields[SparkCluster],
+  steps: Seq[SparkStep],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-) extends EmrActivity[A] {
+) extends EmrActivity[SparkCluster] {
 
-  type Self = MapReduceActivity[A]
+  type Self = SparkActivity
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
-  def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
+  def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
-  def withSteps(step: MapReduceStep*) = copy(steps = steps ++ step)
-  def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
-  def withOutput(output: S3DataNode*) = copy(outputs = outputs ++ output)
-
-  def withPreStepCommand(commands: HString*): Self = copy(preStepCommands = preStepCommands ++ commands)
-
-  def withPostStepCommand(commands: HString*): Self = copy(postStepCommands = postStepCommands ++ commands)
+  def withSteps(step: SparkStep*) = this.copy(steps = steps ++ step)
+  def withPreStepCommand(command: HString*) = this.copy(preStepCommands = preStepCommands ++ command)
+  def withPostStepCommand(command: HString*) = this.copy(postStepCommands = postStepCommands ++ command)
+  def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
+  def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
 
   // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
-  def serialize = AdpEmrActivity(
+  lazy val serialize = AdpEmrActivity(
     id = id,
     name = id.toOption,
     step = steps.map(_.serialize),
@@ -57,13 +56,12 @@ case class MapReduceActivity[A <: EmrCluster] private (
     retryDelay = retryDelay.map(_.serialize),
     failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
-
 }
 
-object MapReduceActivity extends RunnableObject {
+object SparkActivity extends RunnableObject {
 
-  def apply[A <: EmrCluster](runsOn: Resource[A]): MapReduceActivity[A] = new MapReduceActivity(
-    baseFields = ObjectFields(PipelineObjectId(MapReduceActivity.getClass)),
+  def apply(runsOn: Resource[SparkCluster]): SparkActivity = new SparkActivity(
+    baseFields = ObjectFields(PipelineObjectId(SparkActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     steps = Seq.empty,
     inputs = Seq.empty,
