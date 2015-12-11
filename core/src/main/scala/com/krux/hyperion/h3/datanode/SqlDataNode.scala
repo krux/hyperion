@@ -2,7 +2,7 @@ package com.krux.hyperion.h3.datanode
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlDataNode
-import com.krux.hyperion.database.Database
+import com.krux.hyperion.h3.database.Database
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 

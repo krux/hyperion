@@ -1,57 +1,54 @@
 package com.krux.hyperion.h3.database
 
 import com.krux.hyperion.adt.HString
-import com.krux.hyperion.aws.AdpJdbcDatabase
+import com.krux.hyperion.aws.AdpRdsDatabase
 import com.krux.hyperion.h3.common.{ PipelineObjectId, ObjectFields }
 
-/**
- * Defines a JDBC database
- */
-case class JdbcDatabase private (
+case class RdsDatabase private (
   baseFields: ObjectFields,
   databaseFields: DatabaseFields,
-  connectionString: HString,
-  jdbcDriverClass: HString,
+  rdsInstanceId: HString,
   jdbcDriverJarUri: Option[HString],
-  jdbcProperties: Seq[HString]
+  jdbcProperties: Seq[HString],
+  region: Option[HString]
 ) extends Database {
 
-  type Self = JdbcDatabase
+  type Self = RdsDatabase
 
   def updateBaseFields(fields: ObjectFields): Self = copy(baseFields = fields)
   def updateDatabaseFields(fields: DatabaseFields): Self = copy(databaseFields = fields)
 
   def withJdbcDriverJarUri(uri: HString): Self = copy(jdbcDriverJarUri = Option(uri))
-  def withJdbcProperties(props: HString*): Self = copy(jdbcProperties = jdbcProperties ++ props)
+  def withJdbcProperties(props: HString*): Self = copy(jdbcProperties = props)
+  def withRegion(r: HString): Self = copy(region = Option(r))
 
-  lazy val serialize = AdpJdbcDatabase(
+  lazy val serialize = AdpRdsDatabase(
     id = id,
     name = id.toOption,
-    connectionString = connectionString.serialize,
     databaseName = databaseName.map(_.serialize),
+    jdbcProperties = jdbcProperties.map(_.serialize),
     username = username.serialize,
     `*password` = `*password`.serialize,
-    jdbcDriverJarUri = jdbcDriverJarUri.map(_.serialize),
-    jdbcDriverClass = jdbcDriverClass.serialize,
-    jdbcProperties = jdbcProperties.map(_.serialize)
+    rdsInstanceId = rdsInstanceId.serialize,
+    region = region.map(_.serialize),
+    jdbcDriverJarUri = jdbcDriverJarUri.map(_.serialize)
   )
 
 }
 
-object JdbcDatabase {
+object RdsDatabase {
 
   def apply(
     username: HString,
     password: HString,
-    connectionString: HString,
-    jdbcDriverClass: HString
-  ) = new JdbcDatabase(
-    baseFields = ObjectFields(PipelineObjectId(JdbcDatabase.getClass)),
+    rdsInstanceId: HString
+  ) = new RdsDatabase(
+    baseFields = ObjectFields(PipelineObjectId(RdsDatabase.getClass)),
     databaseFields = DatabaseFields(username = username, `*password` = password),
-    connectionString = connectionString,
-    jdbcDriverClass = jdbcDriverClass,
+    rdsInstanceId = rdsInstanceId,
     jdbcDriverJarUri = None,
-    jdbcProperties = Seq.empty
+    jdbcProperties = Seq.empty,
+    region = None
   )
 
 }

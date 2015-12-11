@@ -12,6 +12,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     do not belong there.
   - Removed alarm from data nodes, although there's nothing that stops from you to specify one, it
     does not make sense to have those in non activity fields.
+  - Database objects are changed to be consistent with other objects, this
+    means that one needs to initialize a database object instead of extending a
+    trait
 
 - [#271](https://github.com/krux/hyperion/issues/271) - Separate CLI with DataPipelineDef
 - [#214](https://github.com/krux/hyperion/issues/214) - Extend CLI to be able to read parameters to be passed from pipeline

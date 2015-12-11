@@ -78,7 +78,7 @@ case class AdpRdsDatabase(
   username: String,
   `*password`: String,
   rdsInstanceId: String,
-  region: String,
+  region: Option[String],
   jdbcDriverJarUri: Option[String]
 ) extends AdpDatabase {
 

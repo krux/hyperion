@@ -2,7 +2,7 @@ package com.krux.hyperion.h3.datanode
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRedshiftDataNode
-import com.krux.hyperion.database.RedshiftDatabase
+import com.krux.hyperion.h3.database.RedshiftDatabase
 import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 
 /**

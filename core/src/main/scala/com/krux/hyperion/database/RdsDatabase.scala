@@ -19,7 +19,7 @@ trait RdsDatabase extends Database {
 
   def rdsInstanceId: String
 
-  def region: String
+  def region: Option[String]
 
   lazy val serialize = AdpRdsDatabase(
     id = id,
