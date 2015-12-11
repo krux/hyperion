@@ -20,7 +20,6 @@ case class HiveCopyActivity private (
   generatedScriptsPath: Option[HS3Uri],
   input: DataNode,
   output: DataNode,
-  hadoopQueue: Option[HString],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
   runsOn: Resource[EmrCluster],
@@ -41,7 +40,6 @@ case class HiveCopyActivity private (
 
   def withFilterSql(filterSql: HString) = this.copy(filterSql = Option(filterSql))
   def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
-  def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
 
@@ -65,7 +63,6 @@ case class HiveCopyActivity private (
     generatedScriptsPath = generatedScriptsPath.map(_.serialize),
     input = Option(input.ref),
     output = Option(output.ref),
-    hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -91,7 +88,6 @@ object HiveCopyActivity extends RunnableObject {
       generatedScriptsPath = None,
       input = input,
       output = output,
-      hadoopQueue = None,
       preActivityTaskConfig = None,
       postActivityTaskConfig = None,
       runsOn = runsOn,

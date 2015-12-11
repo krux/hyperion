@@ -15,6 +15,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - Database objects are changed to be consistent with other objects, this
     means that one needs to initialize a database object instead of extending a
     trait
+  - Removed hadoopQueue from `HiveCopyActivity` and `PigActivity` as it is not documented by AWS
+  - `SparkJobActivity` is renamed to `SparkTaskActivity` to be consistent with the
+    `preActivityTaskConfig` field for similar activity naming from AWS
 
 - [#271](https://github.com/krux/hyperion/issues/271) - Separate CLI with DataPipelineDef
 - [#214](https://github.com/krux/hyperion/issues/214) - Extend CLI to be able to read parameters to be passed from pipeline

@@ -1,11 +1,10 @@
 package com.krux.hyperion.h3.activity
 
 import com.krux.hyperion.adt.HString
-import com.krux.hyperion.aws._
+import com.krux.hyperion.aws.AdpHadoopActivity
+import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.h3.common.{ ObjectFields, PipelineObjectId }
 import com.krux.hyperion.h3.datanode.S3DataNode
-import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.h3.resource.{ Resource, EmrCluster }
 
 /**
@@ -18,27 +17,25 @@ import com.krux.hyperion.h3.resource.{ Resource, EmrCluster }
 case class HadoopActivity[A <: EmrCluster] private (
   baseFields: ObjectFields,
   activityFields: ActivityFields[A],
+  emrTaskActivityFields: EmrTaskActivityFields,
   jarUri: HString,
   mainClass: Option[MainClass],
-  argument: Seq[HString],
+  arguments: Seq[HString],
   hadoopQueue: Option[HString],
-  preActivityTaskConfig: Option[ShellScriptConfig],
-  postActivityTaskConfig: Option[ShellScriptConfig],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode]
-) extends EmrActivity[A] {
+) extends EmrTaskActivity[A] {
 
   type Self = HadoopActivity[A]
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
+  def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
-  def withArguments(arguments: HString*) = this.copy(argument = argument ++ arguments)
-  def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
-  def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
-  def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
-  def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
-  def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
+  def withArguments(arguments: HString*) = copy(arguments = arguments ++ arguments)
+  def withHadoopQueue(queue: HString) = copy(hadoopQueue = Option(queue))
+  def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
+  def withOutput(output: S3DataNode*) = copy(outputs = outputs ++ output)
 
   // def objects: Iterable[PipelineObject] = inputs ++ outputs ++ runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
@@ -47,7 +44,7 @@ case class HadoopActivity[A <: EmrCluster] private (
     name = id.toOption,
     jarUri = jarUri.serialize,
     mainClass = mainClass.map(_.toString),
-    argument = argument.map(_.serialize),
+    argument = arguments.map(_.serialize),
     hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
@@ -76,12 +73,11 @@ object HadoopActivity extends RunnableObject {
   def apply[A <: EmrCluster](jarUri: HString, mainClass: Option[MainClass] = None)(runsOn: Resource[A]): HadoopActivity[A] = new HadoopActivity(
     baseFields = ObjectFields(PipelineObjectId(HadoopActivity.getClass)),
     activityFields = ActivityFields(runsOn),
+    emrTaskActivityFields = EmrTaskActivityFields(),
     jarUri = jarUri,
     mainClass = mainClass,
-    argument = Seq.empty,
+    arguments = Seq.empty,
     hadoopQueue = None,
-    preActivityTaskConfig = None,
-    postActivityTaskConfig = None,
     inputs = Seq.empty,
     outputs = Seq.empty
   )

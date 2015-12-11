@@ -23,7 +23,6 @@ case class PigActivity private (
   stage: Option[HBoolean],
   input: Option[DataNode],
   output: Option[DataNode],
-  hadoopQueue: Option[HString],
   preActivityTaskConfig: Option[ShellScriptConfig],
   postActivityTaskConfig: Option[ShellScriptConfig],
   runsOn: Resource[EmrCluster],
@@ -46,7 +45,6 @@ case class PigActivity private (
   def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
   def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(HBoolean.True))
   def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(HBoolean.True))
-  def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
   def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
   def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
 
@@ -73,7 +71,6 @@ case class PigActivity private (
     stage = stage.map(_.serialize),
     input = input.map(_.ref),
     output = output.map(_.ref),
-    hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
     workerGroup = runsOn.asWorkerGroup.map(_.ref),
@@ -101,7 +98,6 @@ object PigActivity extends RunnableObject {
       stage = None,
       input = None,
       output = None,
-      hadoopQueue = None,
       preActivityTaskConfig = None,
       postActivityTaskConfig = None,
       runsOn = runsOn,

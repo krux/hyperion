@@ -20,24 +20,22 @@ import com.krux.hyperion.h3.resource.{ Resource, EmrCluster }
 case class HiveActivity[A <: EmrCluster] private (
   baseFields: ObjectFields,
   activityFields: ActivityFields[A],
+  emrTaskActivityFields: EmrTaskActivityFields,
   hiveScript: Script,
   scriptVariables: Seq[HString],
   input: DataNode,
   output: DataNode,
-  hadoopQueue: Option[HString],
-  preActivityTaskConfig: Option[ShellScriptConfig],
-  postActivityTaskConfig: Option[ShellScriptConfig]
-) extends EmrActivity[A] {
+  hadoopQueue: Option[HString]
+) extends EmrTaskActivity[A] {
 
   type Self = HiveActivity[A]
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
+  def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
   def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
-  def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
-  def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
 
   // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
@@ -74,13 +72,12 @@ object HiveActivity extends RunnableObject {
     new HiveActivity(
       baseFields = ObjectFields(PipelineObjectId(HiveActivity.getClass)),
       activityFields = ActivityFields(runsOn),
+      emrTaskActivityFields = EmrTaskActivityFields(),
       hiveScript = hiveScript,
       scriptVariables = Seq.empty,
       input = input,
       output = output,
-      hadoopQueue = None,
-      preActivityTaskConfig = None,
-      postActivityTaskConfig = None
+      hadoopQueue = None
     )
 
 }
