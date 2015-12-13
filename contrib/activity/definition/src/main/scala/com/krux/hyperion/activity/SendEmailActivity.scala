@@ -15,7 +15,7 @@ case class SendEmailActivity private (
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   jarUri: HS3Uri,
-  mainClass: Option[MainClass],
+  mainClass: HString,
   host: Option[HString],
   port: Option[HInt],
   username: Option[HString],
@@ -66,7 +66,7 @@ case class SendEmailActivity private (
     if (debug) Option(Seq[HString]("--debug")) else None
   ).flatten.flatten
 
-  override def scriptArguments = (jarUri.serialize: HString) +: (mainClass.fullName: HString) +: arguments
+  override def scriptArguments = (jarUri.serialize: HString) +: mainClass +: arguments
 
 }
 
@@ -78,7 +78,7 @@ object SendEmailActivity extends RunnableObject {
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = S3Uri(s"${hc.scriptUri}activities/hyperion-email-activity-current-assembly.jar"),
-      mainClass = Option(MainClass("com.krux.hyperion.contrib.activity.email.SendEmailActivity")),
+      mainClass = "com.krux.hyperion.contrib.activity.email.SendEmailActivity",
       host = None,
       port = None,
       username = None,
