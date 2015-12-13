@@ -1,6 +1,7 @@
 package com.krux.hyperion.action
 
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{ PipelineObjectId, NamedPipelineObject, PipelineObject,
+  ObjectFields }
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.{AdpSnsAlarm, AdpRef}
 
@@ -8,15 +9,16 @@ import com.krux.hyperion.aws.{AdpSnsAlarm, AdpRef}
  * Sends an Amazon SNS notification message when an activity fails or finishes successfully.
  */
 case class SnsAlarm private (
-  id: PipelineObjectId,
+  baseFields: ObjectFields,
   subject: String,
   message: String,
   topicArn: Option[String],
   role: Option[String]
-) extends PipelineObject {
+) extends NamedPipelineObject {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = SnsAlarm
+
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
 
   def withSubject(subject: String) = this.copy(subject = subject)
   def withMessage(message: String) = this.copy(message = message)
@@ -39,12 +41,14 @@ case class SnsAlarm private (
 }
 
 object SnsAlarm {
+
   def apply()(implicit hc: HyperionContext) =
     new SnsAlarm(
-      id = PipelineObjectId(SnsAlarm.getClass),
+      baseFields = ObjectFields(PipelineObjectId(SnsAlarm.getClass)),
       subject = "",
       message = "",
       topicArn = hc.snsTopic,
       role = hc.snsRole
     )
+
 }

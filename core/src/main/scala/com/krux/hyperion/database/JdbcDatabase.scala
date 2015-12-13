@@ -1,39 +1,57 @@
 package com.krux.hyperion.database
 
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpJdbcDatabase
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
 
 /**
  * Defines a JDBC database
  */
-trait JdbcDatabase extends Database {
+case class JdbcDatabase private (
+  baseFields: ObjectFields,
+  databaseFields: DatabaseFields,
+  connectionString: HString,
+  jdbcDriverClass: HString,
+  jdbcDriverJarUri: Option[HString],
+  jdbcProperties: Seq[HString]
+) extends Database {
 
-  def id: PipelineObjectId
+  type Self = JdbcDatabase
 
-  def connectionString: String
+  def updateBaseFields(fields: ObjectFields): Self = copy(baseFields = fields)
+  def updateDatabaseFields(fields: DatabaseFields): Self = copy(databaseFields = fields)
 
-  def databaseName: Option[String] = None
-
-  def username: String
-
-  def `*password`: String
-
-  def jdbcDriverJarUri: Option[String] = None
-
-  def jdbcDriverClass: String
-
-  def jdbcProperties: Seq[String] = Seq.empty
+  def withJdbcDriverJarUri(uri: HString): Self = copy(jdbcDriverJarUri = Option(uri))
+  def withJdbcProperties(props: HString*): Self = copy(jdbcProperties = jdbcProperties ++ props)
 
   lazy val serialize = AdpJdbcDatabase(
     id = id,
     name = id.toOption,
+    connectionString = connectionString.serialize,
+    databaseName = databaseName.map(_.serialize),
+    username = username.serialize,
+    `*password` = `*password`.serialize,
+    jdbcDriverJarUri = jdbcDriverJarUri.map(_.serialize),
+    jdbcDriverClass = jdbcDriverClass.serialize,
+    jdbcProperties = jdbcProperties.map(_.serialize)
+  )
+
+}
+
+object JdbcDatabase {
+
+  def apply(
+    username: HString,
+    password: HString,
+    connectionString: HString,
+    jdbcDriverClass: HString
+  ) = new JdbcDatabase(
+    baseFields = ObjectFields(PipelineObjectId(JdbcDatabase.getClass)),
+    databaseFields = DatabaseFields(username = username, `*password` = password),
     connectionString = connectionString,
-    databaseName = databaseName,
-    username = username,
-    `*password` = `*password`,
-    jdbcDriverJarUri = jdbcDriverJarUri,
     jdbcDriverClass = jdbcDriverClass,
-    jdbcProperties = jdbcProperties
+    jdbcDriverJarUri = None,
+    jdbcProperties = Seq.empty
   )
 
 }

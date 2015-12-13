@@ -1,7 +1,7 @@
 package com.krux.hyperion.action
 
-import com.krux.hyperion.aws.{AdpTerminate, AdpRef}
-import com.krux.hyperion.common.{TerminateObjectId, PipelineObject}
+import com.krux.hyperion.aws.{ AdpTerminate, AdpRef }
+import com.krux.hyperion.common.{ TerminateObjectId, PipelineObject }
 
 /**
  * An action to trigger the cancellation of a pending or unfinished activity, resource, or data

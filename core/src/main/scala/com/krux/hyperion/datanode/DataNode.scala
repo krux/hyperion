@@ -1,27 +1,34 @@
 package com.krux.hyperion.datanode
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.aws.{AdpDataNode, AdpRef}
-import com.krux.hyperion.common.PipelineObject
+import com.krux.hyperion.aws.{ AdpRef, AdpDataNode }
+import com.krux.hyperion.common.{ PipelineObject, NamedPipelineObject }
 import com.krux.hyperion.precondition.Precondition
 
-/**
- * The base trait of all data nodes
- */
-trait DataNode extends PipelineObject {
+trait DataNode extends NamedPipelineObject {
 
-  def named(name: String): DataNode
-  def groupedBy(group: String): DataNode
+  type Self <: DataNode
 
-  def preconditions: Seq[Precondition]
-  def onSuccessAlarms: Seq[SnsAlarm]
-  def onFailAlarms: Seq[SnsAlarm]
+  def dataNodeFields: DataNodeFields
+  def updateDataNodeFields(fields: DataNodeFields): Self
 
-  def whenMet(conditions: Precondition*): DataNode
-  def onSuccess(alarms: SnsAlarm*): DataNode
-  def onFail(alarms: SnsAlarm*): DataNode
+  def preconditions = dataNodeFields.precondition
+  def whenMet(conditions: Precondition*) = updateDataNodeFields(
+    dataNodeFields.copy(precondition = dataNodeFields.precondition ++ conditions)
+  )
+
+  def onFailAlarms = dataNodeFields.onFailAlarms
+  def onFail(alarms: SnsAlarm*): Self = updateDataNodeFields(
+    dataNodeFields.copy(onFailAlarms = dataNodeFields.onFailAlarms ++ alarms)
+  )
+
+  def onSuccessAlarms = dataNodeFields.onSuccessAlarms
+  def onSuccess(alarms: SnsAlarm*): Self = updateDataNodeFields(
+    dataNodeFields.copy(onSuccessAlarms = dataNodeFields.onSuccessAlarms ++ alarms)
+  )
+
+  lazy val ref: AdpRef[AdpDataNode] = AdpRef(serialize)
 
   def serialize: AdpDataNode
-  def ref: AdpRef[AdpDataNode] = AdpRef(serialize)
 
 }

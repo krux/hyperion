@@ -1,38 +1,41 @@
 package com.krux.hyperion.dataformat
 
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRegExDataFormat
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * A custom data format defined by a regular expression.
  */
 case class RegExDataFormat private (
-  id: PipelineObjectId,
-  inputRegEx: String,
-  outputFormat: String,
-  columns: Seq[String]
+  baseFields: ObjectFields,
+  dataFormatFields: DataFormatFields,
+  inputRegEx: HString,
+  outputFormat: HString
 ) extends DataFormat {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = RegExDataFormat
 
-  def withColumns(col: String*) = this.copy(columns = columns ++ col)
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
   lazy val serialize = AdpRegExDataFormat(
     id = id,
     name = id.toOption,
-    column = columns,
-    inputRegEx = inputRegEx,
-    outputFormat = outputFormat
+    column = columns.map(_.serialize),
+    inputRegEx = inputRegEx.serialize,
+    outputFormat = outputFormat.serialize
   )
 
 }
 
 object RegExDataFormat {
-  def apply(inputRegEx: String, outputFormat: String) = new RegExDataFormat(
-    id = PipelineObjectId(RegExDataFormat.getClass),
+
+  def apply(inputRegEx: HString, outputFormat: HString) = new RegExDataFormat(
+    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    dataFormatFields = DataFormatFields(),
     inputRegEx = inputRegEx,
-    outputFormat = outputFormat,
-    columns = Seq.empty
+    outputFormat = outputFormat
   )
+
 }

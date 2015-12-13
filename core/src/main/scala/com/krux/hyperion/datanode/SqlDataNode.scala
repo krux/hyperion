@@ -2,9 +2,9 @@ package com.krux.hyperion.datanode
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlDataNode
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
 import com.krux.hyperion.database.Database
 import com.krux.hyperion.precondition.Precondition
+import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * @note that the AWS Datapipeline SqlDataNode does not require a JdbcDatabase parameter, but
@@ -12,22 +12,19 @@ import com.krux.hyperion.precondition.Precondition
  * object for consistency with other database data node objects.
  */
 case class SqlDataNode (
-  id: PipelineObjectId,
+  baseFields: ObjectFields,
+  dataNodeFields: DataNodeFields,
   tableQuery: TableQuery,
-  database: Database,
-  preconditions: Seq[Precondition],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onFailAlarms: Seq[SnsAlarm]
+  database: Database
 ) extends Copyable {
 
-  def named(name: String): SqlDataNode = this.copy(id = id.named(name))
-  def groupedBy(group: String): SqlDataNode = this.copy(id = id.groupedBy(group))
+  type Self = SqlDataNode
 
-  def whenMet(conditions: Precondition*): SqlDataNode = this.copy(preconditions = preconditions ++ conditions)
-  def onFail(alarms: SnsAlarm*): SqlDataNode = this.copy(onFailAlarms = onFailAlarms ++ alarms)
-  def onSuccess(alarms: SnsAlarm*): SqlDataNode = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
 
-  def objects: Iterable[PipelineObject] = Some(database) ++ preconditions ++ onSuccessAlarms ++ onFailAlarms
+  def objects = None
+  // def objects: Iterable[PipelineObject] = Some(database) ++ preconditions ++ onSuccessAlarms ++ onFailAlarms
 
   lazy val serialize = AdpSqlDataNode(
     id = id,
@@ -53,12 +50,10 @@ object SqlDataNode {
 
   def apply(tableQuery: TableQuery, database: Database): SqlDataNode =
    new SqlDataNode(
-      id = PipelineObjectId(SqlDataNode.getClass),
+      baseFields = ObjectFields(PipelineObjectId(SqlDataNode.getClass)),
+      dataNodeFields = DataNodeFields(),
       tableQuery = tableQuery,
-      database = database,
-      preconditions = Seq.empty,
-      onSuccessAlarms = Seq.empty,
-      onFailAlarms = Seq.empty
+      database = database
     )
 
 }

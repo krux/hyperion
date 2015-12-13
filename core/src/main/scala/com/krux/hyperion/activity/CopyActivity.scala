@@ -1,13 +1,10 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpCopyActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
 import com.krux.hyperion.datanode.Copyable
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{HInt, HDuration}
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, ObjectFields }
+import com.krux.hyperion.resource.{ Resource, Ec2Resource }
 
 /**
  * The activity that copies data from one data node to the other.
@@ -23,37 +20,18 @@ import com.krux.hyperion.resource.{Resource, Ec2Resource}
  * default CsvDataFormat for tasks involving both exporting to S3 and copy to redshift.
  */
 case class CopyActivity private (
-  id: PipelineObjectId,
+  baseFields: ObjectFields,
+  activityFields: ActivityFields[Ec2Resource],
   input: Copyable,
-  output: Copyable,
-  runsOn: Resource[Ec2Resource],
-  dependsOn: Seq[PipelineActivity],
-  preconditions: Seq[Precondition],
-  onFailAlarms: Seq[SnsAlarm],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[HDuration],
-  lateAfterTimeout: Option[HDuration],
-  maximumRetries: Option[HInt],
-  retryDelay: Option[HDuration],
-  failureAndRerunMode: Option[FailureAndRerunMode]
-) extends PipelineActivity {
+  output: Copyable
+) extends PipelineActivity[Ec2Resource] {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = CopyActivity
 
-  private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
-  def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
-  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
-  def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
-  def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = super.objects // :+ input :+ output
 
   lazy val serialize = AdpCopyActivity(
     id = id,
@@ -79,20 +57,10 @@ object CopyActivity extends RunnableObject {
 
   def apply(input: Copyable, output: Copyable)(runsOn: Resource[Ec2Resource]): CopyActivity =
     new CopyActivity(
-      id = PipelineObjectId(CopyActivity.getClass),
+      baseFields = ObjectFields(PipelineObjectId(CopyActivity.getClass)),
+      activityFields = ActivityFields(runsOn),
       input = input,
-      output = output,
-      runsOn = runsOn,
-      dependsOn = Seq.empty,
-      preconditions = Seq.empty,
-      onFailAlarms = Seq.empty,
-      onSuccessAlarms = Seq.empty,
-      onLateActionAlarms = Seq.empty,
-      attemptTimeout = None,
-      lateAfterTimeout = None,
-      maximumRetries = None,
-      retryDelay = None,
-      failureAndRerunMode = None
+      output = output
     )
 
 }

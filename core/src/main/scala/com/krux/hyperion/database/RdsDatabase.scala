@@ -1,35 +1,54 @@
 package com.krux.hyperion.database
 
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRdsDatabase
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
 
-trait RdsDatabase extends Database {
+case class RdsDatabase private (
+  baseFields: ObjectFields,
+  databaseFields: DatabaseFields,
+  rdsInstanceId: HString,
+  jdbcDriverJarUri: Option[HString],
+  jdbcProperties: Seq[HString],
+  region: Option[HString]
+) extends Database {
 
-  def id: PipelineObjectId
+  type Self = RdsDatabase
 
-  def databaseName: Option[String] = None
+  def updateBaseFields(fields: ObjectFields): Self = copy(baseFields = fields)
+  def updateDatabaseFields(fields: DatabaseFields): Self = copy(databaseFields = fields)
 
-  def username: String
-
-  def `*password`: String
-
-  def jdbcDriverJarUri: Option[String] = None
-
-  def jdbcProperties: Seq[String] = Seq.empty
-
-  def rdsInstanceId: String
-
-  def region: Option[String]
+  def withJdbcDriverJarUri(uri: HString): Self = copy(jdbcDriverJarUri = Option(uri))
+  def withJdbcProperties(props: HString*): Self = copy(jdbcProperties = props)
+  def withRegion(r: HString): Self = copy(region = Option(r))
 
   lazy val serialize = AdpRdsDatabase(
     id = id,
     name = id.toOption,
-    databaseName = databaseName,
-    jdbcProperties = Option(jdbcProperties),
-    username = username,
-    `*password` = `*password`,
-    rdsInstanceId = rdsInstanceId,
-    region = region,
-    jdbcDriverJarUri = jdbcDriverJarUri
+    databaseName = databaseName.map(_.serialize),
+    jdbcProperties = jdbcProperties.map(_.serialize),
+    username = username.serialize,
+    `*password` = `*password`.serialize,
+    rdsInstanceId = rdsInstanceId.serialize,
+    region = region.map(_.serialize),
+    jdbcDriverJarUri = jdbcDriverJarUri.map(_.serialize)
   )
+
+}
+
+object RdsDatabase {
+
+  def apply(
+    username: HString,
+    password: HString,
+    rdsInstanceId: HString
+  ) = new RdsDatabase(
+    baseFields = ObjectFields(PipelineObjectId(RdsDatabase.getClass)),
+    databaseFields = DatabaseFields(username = username, `*password` = password),
+    rdsInstanceId = rdsInstanceId,
+    jdbcDriverJarUri = None,
+    jdbcProperties = Seq.empty,
+    region = None
+  )
+
 }

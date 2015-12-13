@@ -2,41 +2,33 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpRedshiftCopyActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
-import com.krux.hyperion.dataformat.{CsvDataFormat, TsvDataFormat}
-import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
+import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, ObjectFields }
+import com.krux.hyperion.dataformat.{ CsvDataFormat, TsvDataFormat }
+import com.krux.hyperion.datanode.{ S3DataNode, RedshiftDataNode }
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{HInt, HDuration, HString}
+import com.krux.hyperion.adt.{ HInt, HDuration, HString }
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.resource.{ Resource, Ec2Resource }
 
 /**
  * Copies data directly from DynamoDB or Amazon S3 to Amazon Redshift. You can load data into a new
  * table, or easily merge data into an existing table.
  */
 case class RedshiftCopyActivity private (
-  id: PipelineObjectId,
+  baseFields: ObjectFields,
+  activityFields: ActivityFields[Ec2Resource],
   insertMode: RedshiftCopyActivity.InsertMode,
   transformSql: Option[HString],
   queue: Option[HString],
   commandOptions: Seq[RedshiftCopyOption],
   input: S3DataNode,
-  output: RedshiftDataNode,
-  runsOn: Resource[Ec2Resource],
-  dependsOn: Seq[PipelineActivity],
-  preconditions: Seq[Precondition],
-  onFailAlarms: Seq[SnsAlarm],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[HDuration],
-  lateAfterTimeout: Option[HDuration],
-  maximumRetries: Option[HInt],
-  retryDelay: Option[HDuration],
-  failureAndRerunMode: Option[FailureAndRerunMode]
-) extends PipelineActivity {
+  output: RedshiftDataNode
+) extends PipelineActivity[Ec2Resource] {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = RedshiftCopyActivity
+
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
   def withCommandOptions(opts: RedshiftCopyOption*) = {
     // The following assertion is a mirror of AWS Server runtime assertion.
@@ -57,18 +49,7 @@ case class RedshiftCopyActivity private (
   def withTransformSql(sql: HString) = this.copy(transformSql = Option(sql))
   def withQueue(queue: HString) = this.copy(queue = Option(queue))
 
-  private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
-  def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
-  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
-  def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
-
-  def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   lazy val serialize = AdpRedshiftCopyActivity(
     id = id,
@@ -104,24 +85,14 @@ object RedshiftCopyActivity extends Enumeration with RunnableObject {
 
   def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode)(runsOn: Resource[Ec2Resource]): RedshiftCopyActivity =
     new RedshiftCopyActivity(
-      id = PipelineObjectId(RedshiftCopyActivity.getClass),
+      baseFields = ObjectFields(PipelineObjectId(RedshiftCopyActivity.getClass)),
+      activityFields = ActivityFields(runsOn),
       insertMode = insertMode,
       transformSql = None,
       queue = None,
       commandOptions = Seq.empty,
       input = input,
-      output = output,
-      runsOn = runsOn,
-      dependsOn = Seq.empty,
-      preconditions = Seq.empty,
-      onFailAlarms = Seq.empty,
-      onSuccessAlarms = Seq.empty,
-      onLateActionAlarms = Seq.empty,
-      attemptTimeout = None,
-      lateAfterTimeout = None,
-      maximumRetries = None,
-      retryDelay = None,
-      failureAndRerunMode = None
+      output = output
     )
 
 }

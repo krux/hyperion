@@ -1,8 +1,8 @@
 package com.krux.hyperion.precondition
 
-import com.krux.hyperion.adt.{HDuration, HString}
+import com.krux.hyperion.adt.{ HDuration, HString }
 import com.krux.hyperion.aws.AdpDynamoDBTableExistsPrecondition
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -11,17 +11,15 @@ import com.krux.hyperion.HyperionContext
  * @param tableName The DynamoDB table to check.
  */
 case class DynamoDBTableExistsPrecondition private (
-  id: PipelineObjectId,
-  tableName: HString,
-  role: HString,
-  preconditionTimeout: Option[HDuration]
+  baseFields: ObjectFields,
+  preconditionFields: PreconditionFields,
+  tableName: HString
 ) extends Precondition {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = DynamoDBTableExistsPrecondition
 
-  def withRole(role: HString) = this.copy(role = role)
-  def withPreconditionTimeout(timeout: HDuration) = this.copy(preconditionTimeout = Option(timeout))
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updatePreconditionFields(fields: PreconditionFields) = copy(preconditionFields = fields)
 
   lazy val serialize = AdpDynamoDBTableExistsPrecondition(
     id = id,
@@ -34,11 +32,11 @@ case class DynamoDBTableExistsPrecondition private (
 }
 
 object DynamoDBTableExistsPrecondition {
-  def apply(tableName: HString)(implicit hc: HyperionContext) =
-    new DynamoDBTableExistsPrecondition(
-      id = PipelineObjectId(DynamoDBTableExistsPrecondition.getClass),
-      tableName = tableName,
-      role = hc.role,
-      preconditionTimeout = None
-    )
+
+  def apply(tableName: HString)(implicit hc: HyperionContext) = new DynamoDBTableExistsPrecondition(
+    baseFields = ObjectFields(PipelineObjectId(DynamoDBTableExistsPrecondition.getClass)),
+    preconditionFields = Precondition.defaultPreconditionFields,
+    tableName = tableName
+  )
+
 }

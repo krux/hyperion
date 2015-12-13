@@ -1,7 +1,8 @@
 package com.krux.hyperion.common
 
-import com.krux.hyperion.aws.{AdpDataPipelineDefaultObject, AdpDataPipelineObject, AdpRef}
-import com.krux.hyperion.{HyperionContext, Schedule}
+import com.krux.hyperion.aws.{ AdpDataPipelineDefaultObject, AdpDataPipelineObject, AdpRef }
+import com.krux.hyperion.Schedule
+import com.krux.hyperion.HyperionContext
 
 /**
   * Defines the overall behaviour of a data pipeline.

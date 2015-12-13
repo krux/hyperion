@@ -1,34 +1,40 @@
 package com.krux.hyperion.dataformat
 
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpTsvDataFormat
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * A tab-delimited data format where the record separator is a newline character.
  */
 case class TsvDataFormat private (
-  id: PipelineObjectId,
-  columns: Seq[String] = Seq.empty,
-  escapeChar: Option[String] = None
+  baseFields: ObjectFields,
+  dataFormatFields: DataFormatFields,
+  escapeChar: Option[HString]
 ) extends DataFormat {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = TsvDataFormat
 
-  def withColumns(col: String*) = this.copy(columns = columns ++ col)
-  def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
+
+  def withEscapeChar(escapeChar: HString) = this.copy(escapeChar = Option(escapeChar))
 
   lazy val serialize = AdpTsvDataFormat(
     id = id,
     name = id.toOption,
-    column = columns,
-    escapeChar = escapeChar
+    column = columns.map(_.serialize),
+    escapeChar = escapeChar.map(_.serialize)
   )
 
 }
 
 object TsvDataFormat {
 
-  def apply() = new TsvDataFormat(PipelineObjectId(TsvDataFormat.getClass))
+  def apply() = new TsvDataFormat(
+    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    dataFormatFields = DataFormatFields(),
+    escapeChar = None
+  )
 
 }

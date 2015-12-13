@@ -17,14 +17,17 @@ import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext, HyperionCl
  */
 object ExampleRedshiftLoad extends DataPipelineDef with HyperionCli {
 
-  object MockRedshift extends RedshiftDatabase {
-    val id = PipelineObjectId.fixed("_MockRedshift")
-    val name = id
-    val clusterId = "mock-redshift"
-    val username = "mockuser"
-    val `*password` = "mockpass"
-    val databaseName = "mock_db"
-  }
+  // object MockRedshift extends RedshiftDatabase {
+  //   val id = PipelineObjectId.fixed("_MockRedshift")
+  //   val name = id
+  //   val clusterId = "mock-redshift"
+  //   val username = "mockuser"
+  //   val `*password` = "mockpass"
+  //   val databaseName = "mock_db"
+  // }
+  val mockRedshift = RedshiftDatabase("mockuser", "mockpass", "mock-redshift")
+    .named("_MockRedshift")
+    .withDatabaseName("mock_db")
 
   override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
 
@@ -37,7 +40,7 @@ object ExampleRedshiftLoad extends DataPipelineDef with HyperionCli {
   val s3Format = TsvDataFormat()
 
   val redshiftTable = RedshiftDataNode(
-    MockRedshift,
+    mockRedshift,
     "monthly_campaign_frequency_distribution"
   )
     .withSchema("kexin")

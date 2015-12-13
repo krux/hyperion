@@ -5,10 +5,11 @@ import com.krux.hyperion.common.PipelineObjectId
 import scala.collection.mutable.Buffer
 import scala.language.implicitConversions
 import scala.annotation.tailrec
+import com.krux.hyperion.resource.ResourceObject
 
 class WorkflowGraph private (
   val flow: Map[PipelineObjectId, Set[PipelineObjectId]],
-  val activities: Map[PipelineObjectId, PipelineActivity]
+  val activities: Map[PipelineObjectId, PipelineActivity[_ <: ResourceObject]]
 ) {
 
   type Flow = Map[PipelineObjectId, Set[PipelineObjectId]]
@@ -16,10 +17,10 @@ class WorkflowGraph private (
   def this() =
     this(
       Map.empty[PipelineObjectId, Set[PipelineObjectId]],
-      Map.empty[PipelineObjectId, PipelineActivity]
+      Map.empty[PipelineObjectId, PipelineActivity[_ <: ResourceObject]]
     )
 
-  def this(act: PipelineActivity) = {
+  def this(act: PipelineActivity[_ <: ResourceObject]) = {
     this(
       Map.empty[PipelineObjectId, Set[PipelineObjectId]],
       Map(act.id -> act)
@@ -48,11 +49,11 @@ class WorkflowGraph private (
   /**
    * Add a single activity
    */
-  def +(act: PipelineActivity) =
+  def +(act: PipelineActivity[_ <: ResourceObject]) =
     if (activities.contains(act.id)) this
     else new WorkflowGraph(flow, activities + (act.id -> act))
 
-  def +(act1: PipelineActivity, act2: PipelineActivity) = {
+  def +(act1: PipelineActivity[_ <: ResourceObject], act2: PipelineActivity[_ <: ResourceObject]) = {
     val dependents = flow.get(act1.id) match {
       case Some(acts) => acts + act2.id
       case None => Set(act2.id)
@@ -93,10 +94,10 @@ class WorkflowGraph private (
       f + (act -> newDependents)
     }
 
-  implicit def pipelineId2Activity(pId: PipelineObjectId): PipelineActivity = activities(pId)
+  implicit def pipelineId2Activity(pId: PipelineObjectId): PipelineActivity[_ <: ResourceObject] = activities(pId)
 
   @tailrec
-  final def toActivities: Iterable[PipelineActivity] = {
+  final def toActivities: Iterable[PipelineActivity[_ <: ResourceObject]] = {
     assert(roots.nonEmpty)
     assert(leaves.nonEmpty)
 

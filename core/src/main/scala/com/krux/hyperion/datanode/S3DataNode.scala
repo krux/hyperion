@@ -1,15 +1,23 @@
 package com.krux.hyperion.datanode
 
-import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpS3DataNode
-import com.krux.hyperion.common.{S3Uri, PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.S3Uri
+import com.krux.hyperion.common.PipelineObject
 import com.krux.hyperion.dataformat.DataFormat
 import com.krux.hyperion.adt.{HS3Uri, HBoolean}
-import com.krux.hyperion.precondition.Precondition
+import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
 
 sealed trait S3DataNode extends Copyable {
 
-  def dataFormat: Option[DataFormat]
+  type Self <: S3DataNode
+
+  def s3DataNodeFields: S3DataNodeFields
+  def updateS3DataNodeFields(fields: S3DataNodeFields): Self
+
+  def dataFormat = s3DataNodeFields.dataFormat
+  def withDataFormat(fmt: DataFormat): Self = updateS3DataNodeFields(
+    s3DataNodeFields.copy(dataFormat = Option(fmt))
+  )
 
   def asInput(): String = asInput(1)
   def asInput(n: Integer): String = "${" + s"INPUT${n}_STAGING_DIR}"
@@ -17,16 +25,22 @@ sealed trait S3DataNode extends Copyable {
   def asOutput(): String = asOutput(1)
   def asOutput(n: Integer): String = "${" + s"OUTPUT${n}_STAGING_DIR}"
 
-  def named(name: String): S3DataNode
-  def groupedBy(client: String): S3DataNode
+  def manifestFilePath = s3DataNodeFields.manifestFilePath
+  def withManifestFilePath(path: HS3Uri): Self = updateS3DataNodeFields(
+    s3DataNodeFields.copy(manifestFilePath = Option(path))
+  )
 
-  def withDataFormat(fmt: DataFormat): S3DataNode
-  def withManifestFilePath(path: HS3Uri): S3DataNode
-  def compressed: S3DataNode
-  def unencrypted: S3DataNode
-  def whenMet(conditions: Precondition*): S3DataNode
-  def onFail(alarms: SnsAlarm*): S3DataNode
-  def onSuccess(alarms: SnsAlarm*): S3DataNode
+  def isCompressed = s3DataNodeFields.isCompressed
+  def compressed: Self = updateS3DataNodeFields(
+    s3DataNodeFields.copy(isCompressed = HBoolean.True)
+  )
+
+  def isEncrypted = s3DataNodeFields.isEncrypted
+  def unencrypted: Self = updateS3DataNodeFields(
+    s3DataNodeFields.copy(isEncrypted = HBoolean.False)
+  )
+
+  def objects: Iterable[PipelineObject] = None // super.objects ++ dataFormat
 }
 
 object S3DataNode {
@@ -41,31 +55,19 @@ object S3DataNode {
  * Defines data from s3
  */
 case class S3File private (
-  id: PipelineObjectId,
-  filePath: HS3Uri,
-  dataFormat: Option[DataFormat],
-  manifestFilePath: Option[HS3Uri],
-  isCompressed: HBoolean,
-  isEncrypted: Boolean,
-  preconditions: Seq[Precondition],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onFailAlarms: Seq[SnsAlarm]
+  baseFields: ObjectFields,
+  dataNodeFields: DataNodeFields,
+  s3DataNodeFields: S3DataNodeFields,
+  filePath: HS3Uri
 ) extends S3DataNode {
 
-  def named(name: String): S3File = this.copy(id = id.named(name))
-  def groupedBy(group: String): S3File = this.copy(id = id.groupedBy(group))
+  type Self = S3File
 
-  def withDataFormat(fmt: DataFormat): S3File = this.copy(dataFormat = Option(fmt))
-  def withManifestFilePath(path: HS3Uri): S3File = this.copy(manifestFilePath = Option(path))
-  def compressed: S3File = this.copy(isCompressed = true)
-  def unencrypted: S3File = this.copy(isEncrypted = false)
-  def whenMet(conditions: Precondition*): S3File = this.copy(preconditions = preconditions ++ conditions)
-  def onFail(alarms: SnsAlarm*): S3File = this.copy(onFailAlarms = onFailAlarms ++ alarms)
-  def onSuccess(alarms: SnsAlarm*): S3File = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
+  def updateS3DataNodeFields(fields: S3DataNodeFields) = copy(s3DataNodeFields = fields)
 
   override def toString = filePath.toString
-
-  def objects: Iterable[PipelineObject] = dataFormat ++ preconditions ++ onSuccessAlarms ++ onFailAlarms
 
   lazy val serialize = AdpS3DataNode(
     id = id,
@@ -75,7 +77,7 @@ case class S3File private (
     dataFormat = dataFormat.map(_.ref),
     manifestFilePath = manifestFilePath.map(_.serialize),
     compression = if (isCompressed) Option("gzip") else None,
-    s3EncryptionType = if (isEncrypted) None else Option("NONE"),
+    s3EncryptionType = if (isEncrypted) Some("SERVER_SIDE_ENCRYPTION") else Option("NONE"),
     precondition = seqToOption(preconditions)(_.ref),
     onSuccess = seqToOption(onSuccessAlarms)(_.ref),
     onFail = seqToOption(onFailAlarms)(_.ref)
@@ -86,15 +88,10 @@ case class S3File private (
 object S3File {
   def apply(filePath: HS3Uri): S3File =
     new S3File(
-      id = PipelineObjectId(S3File.getClass),
-      filePath = filePath,
-      dataFormat = None,
-      manifestFilePath = None,
-      isCompressed = false,
-      isEncrypted = true,
-      preconditions = Seq.empty,
-      onSuccessAlarms = Seq.empty,
-      onFailAlarms = Seq.empty
+      baseFields = ObjectFields(PipelineObjectId(S3File.getClass)),
+      dataNodeFields = DataNodeFields(),
+      s3DataNodeFields = S3DataNodeFields(),
+      filePath = filePath
     )
 }
 
@@ -102,31 +99,21 @@ object S3File {
  * Defines data from s3 directory
  */
 case class S3Folder private(
-  id: PipelineObjectId,
-  directoryPath: HS3Uri,
-  dataFormat: Option[DataFormat],
-  manifestFilePath: Option[HS3Uri],
-  isCompressed: HBoolean,
-  isEncrypted: HBoolean,
-  preconditions: Seq[Precondition],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onFailAlarms: Seq[SnsAlarm]
+  baseFields: ObjectFields,
+  dataNodeFields: DataNodeFields,
+  s3DataNodeFields: S3DataNodeFields,
+  directoryPath: HS3Uri
 ) extends S3DataNode {
 
-  def named(name: String): S3Folder = this.copy(id = id.named(name))
-  def groupedBy(group: String): S3Folder = this.copy(id = id.groupedBy(group))
+  type Self = S3Folder
 
-  def withDataFormat(fmt: DataFormat): S3Folder = this.copy(dataFormat = Option(fmt))
-  def withManifestFilePath(path: HS3Uri): S3Folder = this.copy(manifestFilePath = Option(path))
-  def compressed: S3Folder = this.copy(isCompressed = true)
-  def unencrypted: S3Folder = this.copy(isEncrypted = false)
-  def whenMet(preconditions: Precondition*): S3Folder = this.copy(preconditions = preconditions ++ preconditions)
-  def onFail(alarms: SnsAlarm*): S3Folder = this.copy(onFailAlarms = onFailAlarms ++ alarms)
-  def onSuccess(alarms: SnsAlarm*): S3Folder = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
+  def updateS3DataNodeFields(fields: S3DataNodeFields) = copy(s3DataNodeFields = fields)
 
   override def toString = directoryPath.toString
 
-  def objects: Iterable[PipelineObject] = dataFormat ++ preconditions ++ onSuccessAlarms ++ onFailAlarms
+  // def objects: Iterable[PipelineObject] = dataFormat ++ preconditions ++ onSuccessAlarms ++ onFailAlarms
 
   lazy val serialize = AdpS3DataNode(
     id = id,
@@ -144,16 +131,13 @@ case class S3Folder private(
 }
 
 object S3Folder {
+
   def apply(directoryPath: HS3Uri): S3Folder =
     new S3Folder(
-      id = PipelineObjectId(S3Folder.getClass),
-      directoryPath = directoryPath,
-      dataFormat = None,
-      manifestFilePath = None,
-      isCompressed = false,
-      isEncrypted = true,
-      preconditions = Seq.empty,
-      onSuccessAlarms = Seq.empty,
-      onFailAlarms = Seq.empty
+      baseFields = ObjectFields(PipelineObjectId(S3File.getClass)),
+      dataNodeFields = DataNodeFields(),
+      s3DataNodeFields = S3DataNodeFields(),
+      directoryPath = directoryPath
     )
+
 }

@@ -5,7 +5,7 @@ import scala.language.postfixOps
 import com.typesafe.config.ConfigFactory
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.activity.{SparkJobActivity, SparkActivity, SparkStep}
+import com.krux.hyperion.activity.{SparkTaskActivity, SparkActivity, SparkStep}
 import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.ConstantExpression._
@@ -51,7 +51,7 @@ object ExampleSpark extends DataPipelineDef with HyperionCli {
     .withTaskInstanceType(instanceType)
 
   // First activity
-  val filterActivity = SparkJobActivity(jar.toString, "com.krux.hyperion.FilterJob")(sparkCluster)
+  val filterActivity = SparkTaskActivity(jar.toString, "com.krux.hyperion.FilterJob")(sparkCluster)
     .named("filterActivity")
     .onFail(mailAction)
     .withInput(dataNode)

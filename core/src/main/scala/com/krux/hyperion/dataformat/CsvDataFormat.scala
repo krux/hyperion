@@ -1,37 +1,41 @@
 package com.krux.hyperion.dataformat
 
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpCsvDataFormat
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * A comma-delimited data format where the column separator is a comma and the record separator is
  * a newline character.
  */
 case class CsvDataFormat private (
-  id: PipelineObjectId,
-  columns: Seq[String],
-  escapeChar: Option[String]
+  baseFields: ObjectFields,
+  dataFormatFields: DataFormatFields,
+  escapeChar: Option[HString]
 ) extends DataFormat {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = CsvDataFormat
 
-  def withColumns(col: String*) = this.copy(columns = columns ++ col)
-  def withEscapeChar(escapeChar: String) = this.copy(escapeChar = Option(escapeChar))
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
+
+  def withEscapeChar(escapeChar: HString) = this.copy(escapeChar = Option(escapeChar))
 
   lazy val serialize = AdpCsvDataFormat(
     id = id,
     name = id.toOption,
-    column = columns,
-    escapeChar = None
+    column = columns.map(_.serialize),
+    escapeChar = escapeChar.map(_.serialize)
   )
 
 }
 
 object CsvDataFormat {
+
   def apply() = new CsvDataFormat(
-    id = PipelineObjectId(CsvDataFormat.getClass),
-    columns = Seq.empty,
+    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    dataFormatFields = DataFormatFields(),
     escapeChar = None
   )
+
 }

@@ -2,38 +2,30 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, ObjectFields }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{HInt, HDuration, HString}
+import com.krux.hyperion.adt.{ HInt, HDuration, HString }
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource._
+import com.krux.hyperion.resource.{ Resource, SparkCluster }
 
 /**
  * Runs spark steps on given spark cluster with Amazon EMR
  */
 case class SparkActivity private (
-  id: PipelineObjectId,
+  baseFields: ObjectFields,
+  activityFields: ActivityFields[SparkCluster],
   steps: Seq[SparkStep],
-  preStepCommands: Seq[HString],
-  postStepCommands: Seq[HString],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
-  runsOn: Resource[SparkCluster],
-  dependsOn: Seq[PipelineActivity],
-  preconditions: Seq[Precondition],
-  onFailAlarms: Seq[SnsAlarm],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[HDuration],
-  lateAfterTimeout: Option[HDuration],
-  maximumRetries: Option[HInt],
-  retryDelay: Option[HDuration],
-  failureAndRerunMode: Option[FailureAndRerunMode]
-) extends EmrActivity {
+  preStepCommands: Seq[HString],
+  postStepCommands: Seq[HString]
+) extends EmrActivity[SparkCluster] {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = SparkActivity
+
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
   def withSteps(step: SparkStep*) = this.copy(steps = steps ++ step)
   def withPreStepCommand(command: HString*) = this.copy(preStepCommands = preStepCommands ++ command)
@@ -41,19 +33,7 @@ case class SparkActivity private (
   def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
   def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
 
-  private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
-  def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
-  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
-  def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
-
-  def objects: Iterable[PipelineObject] =
-    runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
   lazy val serialize = AdpEmrActivity(
     id = id,
@@ -80,24 +60,14 @@ case class SparkActivity private (
 
 object SparkActivity extends RunnableObject {
 
-  def apply(runsOn: Resource[SparkCluster]): SparkActivity =
-    new SparkActivity(
-      id = PipelineObjectId(SparkActivity.getClass),
-      steps = Seq.empty,
-      preStepCommands = Seq.empty,
-      postStepCommands = Seq.empty,
-      inputs = Seq.empty,
-      outputs = Seq.empty,
-      runsOn = runsOn,
-      dependsOn = Seq.empty,
-      preconditions = Seq.empty,
-      onFailAlarms = Seq.empty,
-      onSuccessAlarms = Seq.empty,
-      onLateActionAlarms = Seq.empty,
-      attemptTimeout = None,
-      lateAfterTimeout = None,
-      maximumRetries = None,
-      retryDelay = None,
-      failureAndRerunMode = None
-    )
+  def apply(runsOn: Resource[SparkCluster]): SparkActivity = new SparkActivity(
+    baseFields = ObjectFields(PipelineObjectId(SparkActivity.getClass)),
+    activityFields = ActivityFields(runsOn),
+    steps = Seq.empty,
+    inputs = Seq.empty,
+    outputs = Seq.empty,
+    preStepCommands = Seq.empty,
+    postStepCommands = Seq.empty
+  )
+
 }

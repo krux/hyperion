@@ -1,6 +1,14 @@
 package com.krux.hyperion.activity
 
+
+import com.krux.hyperion.adt.HString
+import com.krux.hyperion.resource.EmrCluster
+
 /**
  * The base trait for activities that run on an Amazon EMR cluster
  */
-trait EmrActivity extends PipelineActivity
+trait EmrActivity[A <: EmrCluster] extends PipelineActivity[A] {
+
+  type Self <: EmrActivity[A]
+
+}

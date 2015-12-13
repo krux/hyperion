@@ -1,7 +1,8 @@
 package com.krux.hyperion.dataformat
 
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpDynamoDBDataFormat
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
 
 /**
  * Applies a schema to a DynamoDB table to make it accessible by a Hive query. DynamoDBDataFormat
@@ -9,26 +10,28 @@ import com.krux.hyperion.common.PipelineObjectId
  * requires that you specify all columns in your Hive query.
  */
 case class DynamoDBDataFormat private (
-  id: PipelineObjectId,
-  columns: Seq[String]
+  baseFields: ObjectFields,
+  dataFormatFields: DataFormatFields
 ) extends DataFormat {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = DynamoDBDataFormat
 
-  def withColumns(col: String*) = this.copy(columns = columns ++ col)
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
   lazy val serialize = AdpDynamoDBDataFormat(
     id = id,
     name = id.toOption,
-    column = columns
+    column = columns.map(_.serialize)
   )
 
 }
 
 object DynamoDBDataFormat {
+
   def apply() = new DynamoDBDataFormat(
-    id = PipelineObjectId(DynamoDBDataFormat.getClass),
-    columns = Seq.empty
+    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    dataFormatFields = DataFormatFields()
   )
+
 }

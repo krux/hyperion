@@ -1,60 +1,42 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
-import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{HInt, HDuration, HString}
+import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.datanode.S3DataNode
+import com.krux.hyperion.resource.{ Resource, EmrCluster }
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource._
 
 /**
  * Runs map reduce steps on an Amazon EMR cluster
  */
-case class MapReduceActivity private (
-  id: PipelineObjectId,
+case class MapReduceActivity[A <: EmrCluster] private (
+  baseFields: ObjectFields,
+  activityFields: ActivityFields[A],
   steps: Seq[MapReduceStep],
-  preStepCommands: Seq[HString],
-  postStepCommands: Seq[HString],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
-  runsOn: Resource[EmrCluster],
-  dependsOn: Seq[PipelineActivity],
-  preconditions: Seq[Precondition],
-  onFailAlarms: Seq[SnsAlarm],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[HDuration],
-  lateAfterTimeout: Option[HDuration],
-  maximumRetries: Option[HInt],
-  retryDelay: Option[HDuration],
-  failureAndRerunMode: Option[FailureAndRerunMode]
-) extends EmrActivity {
+  preStepCommands: Seq[HString],
+  postStepCommands: Seq[HString]
+) extends EmrActivity[A] {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = MapReduceActivity[A]
 
-  def withSteps(step: MapReduceStep*) = this.copy(steps = steps ++ step)
-  def withPreStepCommand(command: HString*) = this.copy(preStepCommands = preStepCommands ++ command)
-  def withPostStepCommand(command: HString*) = this.copy(postStepCommands = postStepCommands ++ command)
-  def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
-  def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
 
-  private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
-  def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
-  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
-  def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
+  def withSteps(step: MapReduceStep*) = copy(steps = steps ++ step)
+  def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
+  def withOutput(output: S3DataNode*) = copy(outputs = outputs ++ output)
 
-  def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  def withPreStepCommand(commands: HString*): Self = copy(preStepCommands = preStepCommands ++ commands)
 
-  lazy val serialize = AdpEmrActivity(
+  def withPostStepCommand(commands: HString*): Self = copy(postStepCommands = postStepCommands ++ commands)
+
+  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+
+  def serialize = AdpEmrActivity(
     id = id,
     name = id.toOption,
     step = steps.map(_.serialize),
@@ -79,24 +61,15 @@ case class MapReduceActivity private (
 }
 
 object MapReduceActivity extends RunnableObject {
-  def apply(runsOn: Resource[EmrCluster]): MapReduceActivity =
-    new MapReduceActivity(
-      id = PipelineObjectId(MapReduceActivity.getClass),
-      steps = Seq.empty,
-      preStepCommands = Seq.empty,
-      postStepCommands = Seq.empty,
-      inputs = Seq.empty,
-      outputs = Seq.empty,
-      runsOn = runsOn,
-      dependsOn = Seq.empty,
-      preconditions = Seq.empty,
-      onFailAlarms = Seq.empty,
-      onSuccessAlarms = Seq.empty,
-      onLateActionAlarms = Seq.empty,
-      attemptTimeout = None,
-      lateAfterTimeout = None,
-      maximumRetries = None,
-      retryDelay = None,
-      failureAndRerunMode = None
-    )
+
+  def apply[A <: EmrCluster](runsOn: Resource[A]): MapReduceActivity[A] = new MapReduceActivity(
+    baseFields = ObjectFields(PipelineObjectId(MapReduceActivity.getClass)),
+    activityFields = ActivityFields(runsOn),
+    steps = Seq.empty,
+    inputs = Seq.empty,
+    outputs = Seq.empty,
+    preStepCommands = Seq.empty,
+    postStepCommands = Seq.empty
+  )
+
 }

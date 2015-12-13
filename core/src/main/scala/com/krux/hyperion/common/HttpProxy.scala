@@ -5,14 +5,18 @@ import com.krux.hyperion.aws.{AdpRef, AdpHttpProxy}
 import com.krux.hyperion.expression.Parameter
 
 case class HttpProxy private (
-  id: PipelineObjectId,
+  baseFields: ObjectFields,
   hostname: Option[HString],
   port: Option[HInt],
   username: Option[HString],
   password: Option[Parameter[String]],
   windowsDomain: Option[HString],
   windowsWorkGroup: Option[HString]
-) extends PipelineObject {
+) extends NamedPipelineObject {
+
+  type Self = HttpProxy
+
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
 
   def withHostname(hostname: HString) = this.copy(hostname = Option(hostname))
   def withPort(port: HInt) = this.copy(port = Option(port))
@@ -42,8 +46,9 @@ case class HttpProxy private (
 }
 
 object HttpProxy {
+
   def apply(host: HString, port: HInt): HttpProxy = HttpProxy(
-    id = PipelineObjectId(HttpProxy.getClass),
+    baseFields = ObjectFields(PipelineObjectId(HttpProxy.getClass)),
     hostname = Option(host),
     port = Option(port),
     username = None,
@@ -51,4 +56,5 @@ object HttpProxy {
     windowsDomain = None,
     windowsWorkGroup = None
   )
+
 }

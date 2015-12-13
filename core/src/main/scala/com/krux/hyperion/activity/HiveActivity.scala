@@ -1,13 +1,12 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean}
+import com.krux.hyperion.adt.{ HString, HBoolean }
 import com.krux.hyperion.aws.AdpHiveActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject}
+import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, EmrCluster}
+import com.krux.hyperion.common.ObjectFields
+import com.krux.hyperion.resource.{ Resource, EmrCluster }
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveActivity makes it easier to set up an Amzon EMR
@@ -18,48 +17,27 @@ import com.krux.hyperion.resource.{Resource, EmrCluster}
  * Hive column names. For MySQL (RDS) inputs, the column names for the SQL query are used to create
  * the Hive column names.
  */
-case class HiveActivity private (
-  id: PipelineObjectId,
+case class HiveActivity[A <: EmrCluster] private (
+  baseFields: ObjectFields,
+  activityFields: ActivityFields[A],
+  emrTaskActivityFields: EmrTaskActivityFields,
   hiveScript: Script,
   scriptVariables: Seq[HString],
   input: DataNode,
   output: DataNode,
-  hadoopQueue: Option[HString],
-  preActivityTaskConfig: Option[ShellScriptConfig],
-  postActivityTaskConfig: Option[ShellScriptConfig],
-  runsOn: Resource[EmrCluster],
-  dependsOn: Seq[PipelineActivity],
-  preconditions: Seq[Precondition],
-  onFailAlarms: Seq[SnsAlarm],
-  onSuccessAlarms: Seq[SnsAlarm],
-  onLateActionAlarms: Seq[SnsAlarm],
-  attemptTimeout: Option[HDuration],
-  lateAfterTimeout: Option[HDuration],
-  maximumRetries: Option[HInt],
-  retryDelay: Option[HDuration],
-  failureAndRerunMode: Option[FailureAndRerunMode]
-) extends PipelineActivity {
+  hadoopQueue: Option[HString]
+) extends EmrTaskActivity[A] {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = HiveActivity[A]
+
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
+  def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
   def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
-  def withPreActivityTaskConfig(script: ShellScriptConfig) = this.copy(preActivityTaskConfig = Option(script))
-  def withPostActivityTaskConfig(script: ShellScriptConfig) = this.copy(postActivityTaskConfig = Option(script))
 
-  private[hyperion] def dependsOn(activities: PipelineActivity*) = this.copy(dependsOn = dependsOn ++ activities)
-  def whenMet(conditions: Precondition*) = this.copy(preconditions = preconditions ++ conditions)
-  def onFail(alarms: SnsAlarm*) = this.copy(onFailAlarms = onFailAlarms ++ alarms)
-  def onSuccess(alarms: SnsAlarm*) = this.copy(onSuccessAlarms = onSuccessAlarms ++ alarms)
-  def onLateAction(alarms: SnsAlarm*) = this.copy(onLateActionAlarms = onLateActionAlarms ++ alarms)
-  def withAttemptTimeout(timeout: HDuration) = this.copy(attemptTimeout = Option(timeout))
-  def withLateAfterTimeout(timeout: HDuration) = this.copy(lateAfterTimeout = Option(timeout))
-  def withMaximumRetries(retries: HInt) = this.copy(maximumRetries = Option(retries))
-  def withRetryDelay(delay: HDuration) = this.copy(retryDelay = Option(delay))
-  def withFailureAndRerunMode(mode: FailureAndRerunMode) = this.copy(failureAndRerunMode = Option(mode))
-
-  def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
 
   lazy val serialize = new AdpHiveActivity(
     id = id,
@@ -89,26 +67,17 @@ case class HiveActivity private (
 }
 
 object HiveActivity extends RunnableObject {
-  def apply(input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[EmrCluster]): HiveActivity =
+
+  def apply[A <: EmrCluster](input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
     new HiveActivity(
-      id = PipelineObjectId(HiveActivity.getClass),
+      baseFields = ObjectFields(PipelineObjectId(HiveActivity.getClass)),
+      activityFields = ActivityFields(runsOn),
+      emrTaskActivityFields = EmrTaskActivityFields(),
       hiveScript = hiveScript,
       scriptVariables = Seq.empty,
       input = input,
       output = output,
-      hadoopQueue = None,
-      preActivityTaskConfig = None,
-      postActivityTaskConfig = None,
-      runsOn = runsOn,
-      dependsOn = Seq.empty,
-      preconditions = Seq.empty,
-      onFailAlarms = Seq.empty,
-      onSuccessAlarms = Seq.empty,
-      onLateActionAlarms = Seq.empty,
-      attemptTimeout = None,
-      lateAfterTimeout = None,
-      maximumRetries = None,
-      retryDelay = None,
-      failureAndRerunMode = None
+      hadoopQueue = None
     )
+
 }

@@ -22,6 +22,6 @@ object Script {
   def apply(uri: HS3Uri): Script = ScriptUri(Option(uri))
   def apply(content: HString): Script = ScriptContent(Option(content))
 
-  implicit def s3UriToScript(uri: S3Uri): Script = Script(uri)
-  implicit def stringToScript(content: String): Script = Script(content)
+  implicit def s3Uri2Script(uri: S3Uri): Script = Script(uri)
+  implicit def string2Script(content: String): Script = Script(content)
 }

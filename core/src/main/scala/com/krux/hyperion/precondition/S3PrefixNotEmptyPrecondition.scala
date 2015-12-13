@@ -1,8 +1,8 @@
 package com.krux.hyperion.precondition
 
-import com.krux.hyperion.adt.{HDuration, HS3Uri, HString}
+import com.krux.hyperion.adt.{ HDuration, HS3Uri, HString }
 import com.krux.hyperion.aws.AdpS3PrefixNotEmptyPrecondition
-import com.krux.hyperion.common.PipelineObjectId
+import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -11,17 +11,15 @@ import com.krux.hyperion.HyperionContext
  * @param s3Prefix  The Amazon S3 prefix to check for existence of objects.
  */
 case class S3PrefixNotEmptyPrecondition private (
-  id: PipelineObjectId,
-  s3Prefix: HS3Uri,
-  role: HString,
-  preconditionTimeout: Option[HDuration]
+  baseFields: ObjectFields,
+  preconditionFields: PreconditionFields,
+  s3Prefix: HS3Uri
 ) extends Precondition {
 
-  def named(name: String) = this.copy(id = id.named(name))
-  def groupedBy(group: String) = this.copy(id = id.groupedBy(group))
+  type Self = S3PrefixNotEmptyPrecondition
 
-  def withRole(role: HString) = this.copy(role = role)
-  def withPreconditionTimeout(timeout: HDuration) = this.copy(preconditionTimeout = Option(timeout))
+  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updatePreconditionFields(fields: PreconditionFields) = copy(preconditionFields = fields)
 
   lazy val serialize = AdpS3PrefixNotEmptyPrecondition(
     id = id,
@@ -34,11 +32,11 @@ case class S3PrefixNotEmptyPrecondition private (
 }
 
 object S3PrefixNotEmptyPrecondition {
-  def apply(s3Prefix: HS3Uri)(implicit hc: HyperionContext) =
-    new S3PrefixNotEmptyPrecondition(
-      id = PipelineObjectId(S3PrefixNotEmptyPrecondition.getClass),
-      s3Prefix = s3Prefix,
-      role = hc.role,
-      preconditionTimeout = None
-    )
+
+  def apply(s3Prefix: HS3Uri)(implicit hc: HyperionContext) = new S3PrefixNotEmptyPrecondition(
+    baseFields = ObjectFields(PipelineObjectId(S3PrefixNotEmptyPrecondition.getClass)),
+    preconditionFields = Precondition.defaultPreconditionFields,
+    s3Prefix = s3Prefix
+  )
+
 }

@@ -1,3 +1,3 @@
-package com.krux.hyperion.activity
-
-trait SftpActivity extends PipelineActivity
+// package com.krux.hyperion.activity
+// 
+// trait SftpActivity extends PipelineActivity

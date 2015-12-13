@@ -1,12 +1,13 @@
 package com.krux.hyperion.resource
 
-import com.krux.hyperion.aws.{AdpProperty, AdpRef}
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId}
+import com.krux.hyperion.adt.HString
+import com.krux.hyperion.aws.{ AdpProperty, AdpRef }
+import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId }
 
 case class Property private (
   id: PipelineObjectId,
-  key: Option[String],
-  value: Option[String]
+  key: Option[HString],
+  value: Option[HString]
 ) extends PipelineObject {
 
   def objects: Iterable[PipelineObject] = None
@@ -14,8 +15,8 @@ case class Property private (
   lazy val serialize = AdpProperty(
     id = id,
     name = id.toOption,
-    key = key,
-    value = value
+    key = key.map(_.serialize),
+    value = value.map(_.serialize)
   )
 
   def ref: AdpRef[AdpProperty] = AdpRef(serialize)
@@ -23,7 +24,7 @@ case class Property private (
 
 object Property {
 
-  def apply(key: String, value: String): Property = Property(
+  def apply(key: HString, value: HString): Property = Property(
     id = PipelineObjectId(Property.getClass),
     key = Option(key),
     value = Option(value)
