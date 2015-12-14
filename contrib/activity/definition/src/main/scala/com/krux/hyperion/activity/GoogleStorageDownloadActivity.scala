@@ -1,10 +1,9 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.adt.HType._
-import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString, HBoolean}
+import com.krux.hyperion.adt.{ HS3Uri, HString, HBoolean }
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, ObjectFields, S3Uri }
+import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields, S3Uri }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
@@ -19,8 +18,8 @@ case class GoogleStorageDownloadActivity private (
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   botoConfigUrl: HS3Uri,
-  gsInput: HString
-) extends GoogleStorageActivity {
+  googleStorageUri: HString
+) extends GoogleStorageActivity with WithS3Output {
 
   type Self = GoogleStorageDownloadActivity
 
@@ -28,16 +27,7 @@ case class GoogleStorageDownloadActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  override private[hyperion] def serializedOutput = output
-  def output = shellCommandActivityFields.output
-  def withOutput(outputs: S3DataNode*): Self = updateShellCommandActivityFields(
-    shellCommandActivityFields.copy(
-      output = shellCommandActivityFields.output ++ outputs,
-      stage = Option(HBoolean.True)
-    )
-  )
-
-  override def scriptArguments = Seq(botoConfigUrl.serialize: HString, gsInput)
+  def withInput(in: HString): Self = copy(googleStorageUri = in)
 
 }
 
@@ -47,8 +37,9 @@ object GoogleStorageDownloadActivity extends RunnableObject {
     new GoogleStorageDownloadActivity(
       baseFields = ObjectFields(PipelineObjectId(GoogleStorageDownloadActivity.getClass)),
       activityFields = ActivityFields(runsOn),
-      shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/gsutil-download.sh")),
+      shellCommandActivityFields = ShellCommandActivityFields(GoogleStorageActivity.downloadScript),
       botoConfigUrl = botoConfigUrl,
-      gsInput = ""
+      googleStorageUri = ""
     )
+
 }

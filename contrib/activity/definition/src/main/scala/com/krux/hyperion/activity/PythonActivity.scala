@@ -24,7 +24,7 @@ case class PythonActivity private (
   pipIndexUrl: Option[HString],
   pipExtraIndexUrls: Seq[HString],
   arguments: Seq[HString]
-) extends BaseShellCommandActivity {
+) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = PythonActivity
 

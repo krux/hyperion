@@ -11,7 +11,7 @@ case class ShellCommandActivity private (
   baseFields: ObjectFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields
-) extends BaseShellCommandActivity {
+) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = ShellCommandActivity
 

@@ -19,8 +19,8 @@ case class SftpUploadActivity private (
   shellCommandActivityFields: ShellCommandActivityFields,
   sftpActivityFields: SftpActivityFields,
   scriptUriBase: HString,
-  sftpOutput: Option[HString]
-) extends SftpActivity {
+  sftpPath: Option[HString]
+) extends SftpActivity with WithS3Input {
 
   type Self = SftpUploadActivity
 
@@ -29,17 +29,7 @@ case class SftpUploadActivity private (
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
   def updateSftpActivityFields(fields: SftpActivityFields) = copy(sftpActivityFields = fields)
 
-  def input = shellCommandActivityFields.input
-  override private[hyperion] def serializedInput = input
-  def withInput(inputs: S3DataNode*): Self = updateShellCommandActivityFields(
-    shellCommandActivityFields.copy(
-      input = shellCommandActivityFields.input ++ input,
-      stage = Option(HBoolean.True)
-    )
-  )
-
-  def withOutput(out: HString) = copy(sftpOutput = Option(out))
-  def inputOutput = sftpOutput
+  def withOutput(out: HString) = copy(sftpPath = Option(out))
 
 }
 
@@ -52,7 +42,7 @@ object SftpUploadActivity extends RunnableObject {
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       sftpActivityFields = SftpActivityFields(host),
       scriptUriBase = hc.scriptUri,
-      sftpOutput = None
+      sftpPath = None
     )
 
 }

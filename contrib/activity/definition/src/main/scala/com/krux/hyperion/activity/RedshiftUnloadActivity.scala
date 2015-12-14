@@ -109,6 +109,8 @@ case class RedshiftUnloadActivity private (
 
   def withQueue(queue: HString) = this.copy(queue = Option(queue))
 
+  override def objects = Seq(database) ++ super.objects
+
   lazy val serialize = AdpSqlActivity(
     id = id,
     name = id.toOption,

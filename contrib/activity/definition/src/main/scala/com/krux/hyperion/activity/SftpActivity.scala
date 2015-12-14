@@ -21,23 +21,16 @@ case class SftpActivityFields(
   markSuccessfulJobs: HBoolean = false
 )
 
-trait SftpActivity extends PipelineActivity[Ec2Resource] {
+trait SftpActivity extends BaseShellCommandActivity {
 
   type Self <: SftpActivity
-
-  def scriptUriBase: HString
-
-  private val DateTimeFormat = "yyyy-MM-dd\\'T\\'HH:mm:ssZZ"
-
-  def shellCommandActivityFields: ShellCommandActivityFields
-  def updateShellCommandActivityFields(fields: ShellCommandActivityFields): Self
 
   def sftpActivityFields: SftpActivityFields
   def updateSftpActivityFields(fields: SftpActivityFields): Self
 
-  require(password.forall(_.isEncrypted), "The password must be an encrypted string parameter")
+  def sftpPath: Option[HString]
 
-  val mainClass: HString = "com.krux.hyperion.contrib.activity.sftp.SftpActivity"
+  require(password.forall(_.isEncrypted), "The password must be an encrypted string parameter")
 
   def host = sftpActivityFields.host
 
@@ -86,21 +79,7 @@ trait SftpActivity extends PipelineActivity[Ec2Resource] {
     sftpActivityFields.copy(markSuccessfulJobs = true)
   )
 
-  def stdout = shellCommandActivityFields.stdout
-  def withStdoutTo(out: HString): Self = updateShellCommandActivityFields(
-    shellCommandActivityFields.copy(stdout = Option(out))
-  )
-
-  def stderr = shellCommandActivityFields.stderr
-  def withStderrTo(err: HString): Self = updateShellCommandActivityFields(
-    shellCommandActivityFields.copy(stderr = Option(err))
-  )
-
-  def inputOutput: Option[HString]
-
-  private[hyperion] def serializedInput: Seq[S3DataNode] = Seq.empty
-
-  private[hyperion] def serializedOutput: Seq[S3DataNode] = Seq.empty
+  private val DateTimeFormat = "yyyy-MM-dd\\'T\\'HH:mm:ssZZ"
 
   private def arguments: Seq[HType] = Seq(
     Option(Seq[HString]("download")),
@@ -114,33 +93,14 @@ trait SftpActivity extends PipelineActivity[Ec2Resource] {
     untilDate.map(d => Seq[HString]("--until", Format(d, DateTimeFormat))),
     if (skipEmpty) Option(Seq[HString]("--skip-empty")) else None,
     if (markSuccessfulJobs) Option(Seq[HString]("--mark-successful-jobs")) else None,
-    Option(inputOutput.toSeq)
+    Option(sftpPath.toSeq)
   ).flatten.flatten
 
-  lazy val serialize = AdpShellCommandActivity(
-    id = id,
-    name = id.toOption,
-    command = None,
-    scriptUri = Option(s"${scriptUriBase}activities/run-jar.sh"),
-    scriptArgument = Option((jarUri +: mainClass +: arguments).map(_.serialize)),
-    stdout = stdout.map(_.serialize),
-    stderr = stderr.map(_.serialize),
-    stage = Option(HBoolean.True.serialize),
-    input = seqToOption(serializedInput)(_.ref),
-    output = seqToOption(serializedOutput)(_.ref),
-    workerGroup = runsOn.asWorkerGroup.map(_.ref),
-    runsOn = runsOn.asManagedResource.map(_.ref),
-    dependsOn = seqToOption(dependsOn)(_.ref),
-    precondition = seqToOption(preconditions)(_.ref),
-    onFail = seqToOption(onFailAlarms)(_.ref),
-    onSuccess = seqToOption(onSuccessAlarms)(_.ref),
-    onLateAction = seqToOption(onLateActionAlarms)(_.ref),
-    attemptTimeout = attemptTimeout.map(_.serialize),
-    lateAfterTimeout = lateAfterTimeout.map(_.serialize),
-    maximumRetries = maximumRetries.map(_.serialize),
-    retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
-  )
+  val mainClass: HString = "com.krux.hyperion.contrib.activity.sftp.SftpActivity"
+
+  override def scriptArguments = (jarUri.serialize: HString) +: mainClass +: arguments
+
+  def scriptUriBase: HString
 
   def jarUri: HString = s"${scriptUriBase}activities/hyperion-sftp-activity-current-assembly.jar"
 

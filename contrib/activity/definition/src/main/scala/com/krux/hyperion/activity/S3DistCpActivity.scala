@@ -150,6 +150,8 @@ case class S3DistCpActivity[A <: EmrCluster] private (
 
   def withArgument(argument: HString*) = copy(arguments = arguments ++ argument)
 
+  override def objects = source ++ dest ++ super.objects
+
   private def allArguments: Seq[HString] = Seq(
     Option(arguments),
     source.map(s => Seq[HString]("--src", s.toString)),

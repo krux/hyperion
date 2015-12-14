@@ -29,7 +29,7 @@ case class SplitMergeFilesActivity private (
   bufferSize: Option[HString],
   pattern: Option[HString],
   markSuccessfulJobs: HBoolean
-) extends BaseShellCommandActivity {
+) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = SplitMergeFilesActivity
 

@@ -17,7 +17,7 @@ case class JarActivity private (
   jarUri: HS3Uri,
   mainClass: Option[MainClass],
   arguments: Seq[HString]
-) extends BaseShellCommandActivity {
+) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = JarActivity
 

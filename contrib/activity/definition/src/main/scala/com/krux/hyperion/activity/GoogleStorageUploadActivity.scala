@@ -19,8 +19,8 @@ case class GoogleStorageUploadActivity private (
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   botoConfigUrl: HS3Uri,
-  gsOutput: HString
-) extends GoogleStorageActivity {
+  googleStorageUri: HString
+) extends GoogleStorageActivity with WithS3Output {
 
   type Self = GoogleStorageUploadActivity
 
@@ -28,16 +28,7 @@ case class GoogleStorageUploadActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  override private[hyperion] def serializedInput = input
-  def input = shellCommandActivityFields.input
-  def withInput(inputs: S3DataNode*): Self = updateShellCommandActivityFields(
-    shellCommandActivityFields.copy(
-      input = shellCommandActivityFields.input ++ inputs,
-      stage = Option(HBoolean.True)
-    )
-  )
-
-  override def scriptArguments = Seq(botoConfigUrl.serialize: HString, gsOutput)
+  def withOutput(out: HString): Self = copy(googleStorageUri = out)
 
 }
 
@@ -47,9 +38,9 @@ object GoogleStorageUploadActivity extends RunnableObject {
     new GoogleStorageUploadActivity(
       baseFields = ObjectFields(PipelineObjectId(GoogleStorageUploadActivity.getClass)),
       activityFields = ActivityFields(runsOn),
-      shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/gsutil-upload.sh")),
+      shellCommandActivityFields = ShellCommandActivityFields(GoogleStorageActivity.uploadScript),
       botoConfigUrl = botoConfigUrl,
-      gsOutput = ""
+      googleStorageUri = ""
     )
 
 }

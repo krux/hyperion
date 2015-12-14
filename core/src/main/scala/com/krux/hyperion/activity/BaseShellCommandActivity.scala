@@ -32,20 +32,8 @@ trait BaseShellCommandActivity extends PipelineActivity[Ec2Resource] {
   def stage = shellCommandActivityFields.stage
 
   def input = shellCommandActivityFields.input
-  def withInput(inputs: S3DataNode*): Self = updateShellCommandActivityFields(
-    shellCommandActivityFields.copy(
-      input = shellCommandActivityFields.input ++ inputs,
-      stage = Option(HBoolean.True)
-    )
-  )
 
   def output = shellCommandActivityFields.output
-  def withOutput(outputs: S3DataNode*): Self = updateShellCommandActivityFields(
-    shellCommandActivityFields.copy(
-      output = shellCommandActivityFields.output ++ outputs,
-      stage = Option(HBoolean.True)
-    )
-  )
 
   override def objects = input ++ output ++ super.objects
 
