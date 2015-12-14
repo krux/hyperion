@@ -12,9 +12,9 @@ trait DataNode extends NamedPipelineObject {
   def dataNodeFields: DataNodeFields
   def updateDataNodeFields(fields: DataNodeFields): Self
 
-  def preconditions = dataNodeFields.precondition
+  def preconditions = dataNodeFields.preconditions
   def whenMet(conditions: Precondition*) = updateDataNodeFields(
-    dataNodeFields.copy(precondition = dataNodeFields.precondition ++ conditions)
+    dataNodeFields.copy(preconditions = dataNodeFields.preconditions ++ conditions)
   )
 
   def onFailAlarms = dataNodeFields.onFailAlarms
@@ -30,5 +30,7 @@ trait DataNode extends NamedPipelineObject {
   lazy val ref: AdpRef[AdpDataNode] = AdpRef(serialize)
 
   def serialize: AdpDataNode
+
+  def objects = preconditions ++ onFailAlarms ++ onSuccessAlarms
 
 }

@@ -28,7 +28,7 @@ case class SqlActivity private (
   def withArguments(arg: HString*) = this.copy(scriptArgument = scriptArgument ++ arg)
   def withQueue(queue: HString) = this.copy(queue = Option(queue))
 
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(database) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects = Seq(database) ++ super.objects
 
   lazy val serialize = AdpSqlActivity(
     id = id,

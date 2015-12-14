@@ -27,8 +27,7 @@ case class RedshiftDataNode private (
   def withSchema(name: HString): RedshiftDataNode = this.copy(schemaName = Option(name))
   def withPrimaryKeys(pks: HString*): RedshiftDataNode = this.copy(primaryKeys = primaryKeys ++ pks)
 
-  // def objects: Iterable[PipelineObject] = Option(database) ++ preconditions ++ onSuccessAlarms ++ onFailAlarms
-  def objects = None
+  override def objects = Seq(database) ++ super.objects
 
   lazy val serialize = AdpRedshiftDataNode(
     id = id,

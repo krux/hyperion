@@ -36,7 +36,7 @@ case class PigActivity[A <: EmrCluster] private (
   def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(HBoolean.True))
   def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(HBoolean.True))
 
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects = input ++ output ++ super.objects
 
   lazy val serialize = new AdpPigActivity(
     id = id,

@@ -1,7 +1,5 @@
 package com.krux.hyperion.activity
 
-
-import com.krux.hyperion.adt.HString
 import com.krux.hyperion.resource.EmrCluster
 
 /**

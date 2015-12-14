@@ -40,7 +40,7 @@ sealed trait S3DataNode extends Copyable {
     s3DataNodeFields.copy(isEncrypted = HBoolean.False)
   )
 
-  def objects: Iterable[PipelineObject] = None // super.objects ++ dataFormat
+  override def objects: Iterable[PipelineObject] = dataFormat ++ super.objects
 }
 
 object S3DataNode {
@@ -112,8 +112,6 @@ case class S3Folder private(
   def updateS3DataNodeFields(fields: S3DataNodeFields) = copy(s3DataNodeFields = fields)
 
   override def toString = directoryPath.toString
-
-  // def objects: Iterable[PipelineObject] = dataFormat ++ preconditions ++ onSuccessAlarms ++ onFailAlarms
 
   lazy val serialize = AdpS3DataNode(
     id = id,

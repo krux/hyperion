@@ -1,9 +1,9 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.aws.AdpCopyActivity
+import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
 import com.krux.hyperion.datanode.Copyable
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, ObjectFields }
 import com.krux.hyperion.resource.{ Resource, Ec2Resource }
 
 /**
@@ -30,8 +30,6 @@ case class CopyActivity private (
 
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
-
-  override def objects: Iterable[PipelineObject] = super.objects // :+ input :+ output
 
   lazy val serialize = AdpCopyActivity(
     id = id,

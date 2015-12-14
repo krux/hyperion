@@ -23,9 +23,6 @@ case class MapReduceCluster private (
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
   def updateEmrClusterFields(fields: EmrClusterFields) = copy(emrClusterFields = fields)
 
-  override def objects = None
-  // override def objects: Iterable[PipelineObject] = configuration.toList ++ httpProxy.toList
-
 }
 
 object MapReduceCluster {

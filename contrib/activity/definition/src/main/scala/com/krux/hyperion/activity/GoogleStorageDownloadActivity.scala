@@ -19,7 +19,7 @@ case class GoogleStorageDownloadActivity private (
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   botoConfigUrl: HS3Uri,
-  input: HString
+  gsInput: HString
 ) extends GoogleStorageActivity {
 
   type Self = GoogleStorageDownloadActivity
@@ -37,7 +37,7 @@ case class GoogleStorageDownloadActivity private (
     )
   )
 
-  override def scriptArguments = Seq(botoConfigUrl.serialize: HString, input)
+  override def scriptArguments = Seq(botoConfigUrl.serialize: HString, gsInput)
 
 }
 
@@ -49,6 +49,6 @@ object GoogleStorageDownloadActivity extends RunnableObject {
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/gsutil-download.sh")),
       botoConfigUrl = botoConfigUrl,
-      input = ""
+      gsInput = ""
     )
 }

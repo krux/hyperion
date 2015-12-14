@@ -34,7 +34,7 @@ case class MapReduceActivity[A <: EmrCluster] private (
 
   def withPostStepCommand(commands: HString*): Self = copy(postStepCommands = postStepCommands ++ commands)
 
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects = inputs ++ outputs ++ super.objects
 
   def serialize = AdpEmrActivity(
     id = id,

@@ -20,7 +20,7 @@ case class SftpDownloadActivity private (
   shellCommandActivityFields: ShellCommandActivityFields,
   sftpActivityFields: SftpActivityFields,
   scriptUriBase: HString,
-  input: Option[HString]
+  sftpInput: Option[HString]
 ) extends SftpActivity {
 
   type Self = SftpDownloadActivity
@@ -39,8 +39,8 @@ case class SftpDownloadActivity private (
     )
   )
 
-  def withInput(in: HString) = copy(input = Option(in))
-  def inputOutput = input
+  def withInput(in: HString) = copy(sftpInput = Option(in))
+  def inputOutput = sftpInput
 
 }
 
@@ -53,7 +53,7 @@ object SftpDownloadActivity extends RunnableObject {
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       sftpActivityFields = SftpActivityFields(host),
       scriptUriBase = hc.scriptUri,
-      input = None
+      sftpInput = None
     )
 
 }

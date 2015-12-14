@@ -33,7 +33,7 @@ case class SparkActivity private (
   def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
   def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
 
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ inputs ++ outputs ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects = inputs ++ inputs ++ super.objects
 
   lazy val serialize = AdpEmrActivity(
     id = id,

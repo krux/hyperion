@@ -37,7 +37,7 @@ case class HadoopActivity[A <: EmrCluster] private (
   def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
   def withOutput(output: S3DataNode*) = copy(outputs = outputs ++ output)
 
-  // def objects: Iterable[PipelineObject] = inputs ++ outputs ++ runsOn.toSeq ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  override def objects = inputs ++ outputs ++ super.objects
 
   lazy val serialize = AdpHadoopActivity(
     id = id,

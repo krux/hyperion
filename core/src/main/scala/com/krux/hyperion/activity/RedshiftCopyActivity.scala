@@ -49,7 +49,7 @@ case class RedshiftCopyActivity private (
   def withTransformSql(sql: HString) = this.copy(transformSql = Option(sql))
   def withQueue(queue: HString) = this.copy(queue = Option(queue))
 
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
+  override def objects: Iterable[PipelineObject] = Seq(input, output) ++ super.objects
 
   lazy val serialize = AdpRedshiftCopyActivity(
     id = id,

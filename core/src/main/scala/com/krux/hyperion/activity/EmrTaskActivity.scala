@@ -19,4 +19,6 @@ trait EmrTaskActivity[A <: EmrCluster] extends EmrActivity[A] {
     emrTaskActivityFields.copy(postActivityTaskConfig = Option(config))
   )
 
+  override def objects = preActivityTaskConfig ++: postActivityTaskConfig ++: super.objects
+
 }

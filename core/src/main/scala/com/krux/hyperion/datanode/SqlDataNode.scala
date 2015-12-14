@@ -23,8 +23,7 @@ case class SqlDataNode (
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
 
-  def objects = None
-  // def objects: Iterable[PipelineObject] = Some(database) ++ preconditions ++ onSuccessAlarms ++ onFailAlarms
+  override def objects = Seq(database) ++ super.objects
 
   lazy val serialize = AdpSqlDataNode(
     id = id,

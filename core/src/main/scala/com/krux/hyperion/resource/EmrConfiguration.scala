@@ -23,8 +23,7 @@ case class EmrConfiguration private (
   def withConfiguration(configuration: EmrConfiguration*) =
     this.copy(configurations = this.configurations ++ configuration)
 
-  // def objects: Iterable[PipelineObject] = properties ++ configurations
-  def objects: Iterable[PipelineObject] = None
+  def objects = configurations ++ properties
 
   lazy val serialize = AdpEmrConfiguration(
     id = id,

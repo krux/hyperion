@@ -33,7 +33,7 @@ case class HiveCopyActivity[A <: EmrCluster] private (
   def withFilterSql(filterSql: HString) = this.copy(filterSql = Option(filterSql))
   def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
 
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  override def objects = Seq(input, output) ++ super.objects
 
   lazy val serialize = AdpHiveCopyActivity(
     id = id,

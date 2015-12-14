@@ -22,4 +22,3 @@ object MainClass {
     case mc => apply(mc.getClass)
   }
 }
-

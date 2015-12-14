@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.adt.{ HType, HString, HBoolean }
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.resource.{ Resource, Ec2Resource }
+import com.krux.hyperion.resource.Ec2Resource
 
 trait BaseShellCommandActivity extends PipelineActivity[Ec2Resource] {
 

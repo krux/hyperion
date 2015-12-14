@@ -1,14 +1,14 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString, HBoolean, HType}
+import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString, HBoolean, HType }
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ObjectFields, S3Uri}
+import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, ObjectFields, S3Uri }
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.{RunnableObject, Parameter}
+import com.krux.hyperion.expression.{ RunnableObject, Parameter }
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.resource.{ Resource, Ec2Resource }
 
 /**
  * Shell command activity that runs a given Jar
@@ -19,7 +19,7 @@ case class SftpUploadActivity private (
   shellCommandActivityFields: ShellCommandActivityFields,
   sftpActivityFields: SftpActivityFields,
   scriptUriBase: HString,
-  output: Option[HString]
+  sftpOutput: Option[HString]
 ) extends SftpActivity {
 
   type Self = SftpUploadActivity
@@ -38,8 +38,8 @@ case class SftpUploadActivity private (
     )
   )
 
-  def withOutput(out: HString) = copy(output = Option(out))
-  def inputOutput = output
+  def withOutput(out: HString) = copy(sftpOutput = Option(out))
+  def inputOutput = sftpOutput
 
 }
 
@@ -52,7 +52,7 @@ object SftpUploadActivity extends RunnableObject {
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       sftpActivityFields = SftpActivityFields(host),
       scriptUriBase = hc.scriptUri,
-      output = None
+      sftpOutput = None
     )
 
 }

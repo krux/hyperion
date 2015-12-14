@@ -37,7 +37,7 @@ case class HiveActivity[A <: EmrCluster] private (
   def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
 
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ Seq(input, output) ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms ++ preActivityTaskConfig.toSeq ++ postActivityTaskConfig.toSeq
+  override def objects = Seq(input, output) ++ super.objects
 
   lazy val serialize = new AdpHiveActivity(
     id = id,

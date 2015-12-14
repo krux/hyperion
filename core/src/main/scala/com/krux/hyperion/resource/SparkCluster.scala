@@ -30,9 +30,6 @@ case class SparkCluster private (
   override def standardBootstrapAction = super.standardBootstrapAction :+ (
     s"s3://support.elasticmapreduce/spark/install-spark,-v,${sparkVersion},-x": HString)
 
-  // override def objects: Iterable[PipelineObject] = configuration.toList ++ httpProxy.toList
-  override def objects = None
-
 }
 
 object SparkCluster {

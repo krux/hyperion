@@ -67,7 +67,6 @@ trait PipelineActivity[A <: ResourceObject] extends NamedPipelineObject {
     activityFields.copy(failureAndRerunMode = Option(mode))
   )
 
-  // TODO: Uncomment the following once the other activities has been transformed
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++
     activityFields.onFailAlarms ++
     activityFields.onSuccessAlarms ++

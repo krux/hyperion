@@ -126,6 +126,8 @@ trait EmrCluster extends ResourceObject {
     emrClusterFields.copy(configuration = Option(conf))
   )
 
+  override def objects = configuration ++ super.objects
+
   override def ref: AdpRef[AdpEmrCluster] = AdpRef(serialize)
 
   lazy val instanceCount: HInt = 1 + coreInstanceCount + taskInstanceCount

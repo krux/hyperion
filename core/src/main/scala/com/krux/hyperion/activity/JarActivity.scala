@@ -21,18 +21,14 @@ case class JarActivity private (
 
   type Self = JarActivity
 
+  assert(script.uri.nonEmpty)
+
   def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  assert(script.uri.nonEmpty)
-
   def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
 
-  /**
-   * The arguments passed to the script (if any)
-   * TODO write unit test to make sure super act as intended
-   */
   def withOptions(opts: HString*) = super.withArguments(opts: _*)
   def options = shellCommandActivityFields.scriptArguments
 
@@ -43,8 +39,6 @@ case class JarActivity private (
 
   override def scriptArguments =
     (jarUri.serialize: HString) +: options ++: (mainClass.fullName: HString) +: arguments
-
-  // def objects: Iterable[PipelineObject] = runsOn.toSeq ++ input ++ output ++ dependsOn ++ preconditions ++ onFailAlarms ++ onSuccessAlarms ++ onLateActionAlarms
 
 }
 

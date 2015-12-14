@@ -19,7 +19,7 @@ case class GoogleStorageUploadActivity private (
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   botoConfigUrl: HS3Uri,
-  output: HString
+  gsOutput: HString
 ) extends GoogleStorageActivity {
 
   type Self = GoogleStorageUploadActivity
@@ -37,7 +37,7 @@ case class GoogleStorageUploadActivity private (
     )
   )
 
-  override def scriptArguments = Seq(botoConfigUrl.serialize: HString, output)
+  override def scriptArguments = Seq(botoConfigUrl.serialize: HString, gsOutput)
 
 }
 
@@ -49,7 +49,7 @@ object GoogleStorageUploadActivity extends RunnableObject {
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/gsutil-upload.sh")),
       botoConfigUrl = botoConfigUrl,
-      output = ""
+      gsOutput = ""
     )
 
 }
