@@ -68,12 +68,11 @@ trait PipelineActivity[A <: ResourceObject] extends NamedPipelineObject {
   )
 
   // TODO: Uncomment the following once the other activities has been transformed
-  def objects: Iterable[PipelineObject] = dependsOn // ++
-    // activityFields.onFailAlarms ++
-    // activityFields.onSuccessAlarms ++
-    // activityFields.onLateActionAlarms ++
-    // activityFields.preconditions :+
-    // activityFields.runsOn
+  def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++
+    activityFields.onFailAlarms ++
+    activityFields.onSuccessAlarms ++
+    activityFields.onLateActionAlarms ++
+    activityFields.preconditions
 
   def runsOn: Resource[A] = activityFields.runsOn
 

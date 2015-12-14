@@ -73,4 +73,5 @@ trait BaseShellCommandActivity extends PipelineActivity[Ec2Resource] {
     retryDelay = retryDelay.map(_.serialize),
     failureAndRerunMode = failureAndRerunMode.map(_.serialize)
   )
+
 }
