@@ -1,6 +1,5 @@
 package com.krux.hyperion.dataformat
 
-import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpDynamoDBDataFormat
 import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 

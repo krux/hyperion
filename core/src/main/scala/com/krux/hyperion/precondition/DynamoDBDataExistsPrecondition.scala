@@ -1,6 +1,6 @@
 package com.krux.hyperion.precondition
 
-import com.krux.hyperion.adt.{ HDuration, HString }
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpDynamoDBDataExistsPrecondition
 import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 import com.krux.hyperion.HyperionContext

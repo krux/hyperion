@@ -1,7 +1,7 @@
 package com.krux.hyperion.datanode
 
 import com.krux.hyperion.dataformat.DataFormat
-import com.krux.hyperion.adt.{HS3Uri, HBoolean}
+import com.krux.hyperion.adt.{ HS3Uri, HBoolean }
 
 case class S3DataNodeFields(
   dataFormat: Option[DataFormat] = None,

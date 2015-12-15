@@ -1,7 +1,7 @@
 package com.krux.hyperion.common
 
-import com.krux.hyperion.adt.{HString, HInt}
-import com.krux.hyperion.aws.{AdpRef, AdpHttpProxy}
+import com.krux.hyperion.adt.{ HString, HInt }
+import com.krux.hyperion.aws.{ AdpRef, AdpHttpProxy }
 import com.krux.hyperion.expression.Parameter
 
 case class HttpProxy private (

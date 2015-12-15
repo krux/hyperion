@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import scala.language.implicitConversions
 
-import com.krux.hyperion.adt.{HString, HS3Uri}
+import com.krux.hyperion.adt.{ HString, HS3Uri }
 import com.krux.hyperion.common.S3Uri
 
 sealed trait Script {

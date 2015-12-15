@@ -1,12 +1,10 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, BaseFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{ HInt, HDuration, HString }
-import com.krux.hyperion.precondition.Precondition
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.resource.{ Resource, SparkCluster }
 
 /**

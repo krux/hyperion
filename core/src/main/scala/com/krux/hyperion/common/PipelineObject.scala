@@ -1,6 +1,6 @@
 package com.krux.hyperion.common
 
-import com.krux.hyperion.aws.{AdpDataPipelineAbstractObject, AdpRef}
+import com.krux.hyperion.aws.{ AdpDataPipelineAbstractObject, AdpRef }
 import scala.language.implicitConversions
 
 /**

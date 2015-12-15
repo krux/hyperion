@@ -1,6 +1,6 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{HS3Uri, HString, HInt}
+import com.krux.hyperion.adt.{ HS3Uri, HString, HInt }
 import com.krux.hyperion.common.Memory
 import com.krux.hyperion.HyperionContext
 

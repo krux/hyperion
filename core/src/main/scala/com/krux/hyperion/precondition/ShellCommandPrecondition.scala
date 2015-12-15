@@ -1,7 +1,7 @@
 package com.krux.hyperion.precondition
 
 import com.krux.hyperion.activity.Script
-import com.krux.hyperion.adt.{HDuration, HString}
+import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpShellCommandPrecondition
 import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.HyperionContext

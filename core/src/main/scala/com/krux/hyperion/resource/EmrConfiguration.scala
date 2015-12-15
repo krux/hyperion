@@ -1,7 +1,7 @@
 package com.krux.hyperion.resource
 
 import com.krux.hyperion.aws.{ AdpEmrConfiguration, AdpRef }
-import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, PipelineObject, NamedPipelineObject }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, NamedPipelineObject }
 import com.krux.hyperion.adt.HString
 
 case class EmrConfiguration private (

@@ -1,6 +1,6 @@
 package com.krux.hyperion.precondition
 
-import com.krux.hyperion.adt.{ HDuration, HS3Uri, HString }
+import com.krux.hyperion.adt.HS3Uri
 import com.krux.hyperion.aws.AdpS3PrefixNotEmptyPrecondition
 import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.HyperionContext

@@ -2,7 +2,6 @@ package com.krux.hyperion.resource
 
 import org.slf4j.LoggerFactory
 
-import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.HyperionContext
 

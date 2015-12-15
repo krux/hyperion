@@ -6,7 +6,6 @@ import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.resource.{ Resource, EmrCluster }
-import com.krux.hyperion.precondition.Precondition
 
 /**
  * Runs map reduce steps on an Amazon EMR cluster
