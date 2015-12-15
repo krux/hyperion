@@ -11,10 +11,10 @@ import com.krux.hyperion.HyperionContext
  * Launch a Spark cluster
  */
 case class SparkCluster private (
-                                  baseFields: BaseFields,
-                                  resourceFields: ResourceFields,
-                                  emrClusterFields: EmrClusterFields,
-                                  sparkVersion: HString
+  baseFields: BaseFields,
+  resourceFields: ResourceFields,
+  emrClusterFields: EmrClusterFields,
+  sparkVersion: HString
 ) extends EmrCluster {
 
   type Self = SparkCluster

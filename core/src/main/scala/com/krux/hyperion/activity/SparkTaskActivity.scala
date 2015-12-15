@@ -18,19 +18,19 @@ import com.krux.hyperion.resource.{ SparkCluster, Resource }
  * you can still use SparkActivity.
  */
 case class SparkTaskActivity private (
-                                       baseFields: BaseFields,
-                                       activityFields: ActivityFields[SparkCluster],
-                                       emrTaskActivityFields: EmrTaskActivityFields,
-                                       scriptRunner: HString,
-                                       jobRunner: HString,
-                                       jarUri: HString,
-                                       mainClass: MainClass,
-                                       arguments: Seq[HString],
-                                       hadoopQueue: Option[HString],
-                                       inputs: Seq[S3DataNode],
-                                       outputs: Seq[S3DataNode],
-                                       sparkOptions: Seq[HString],
-                                       sparkConfig: Map[HString, HString]
+  baseFields: BaseFields,
+  activityFields: ActivityFields[SparkCluster],
+  emrTaskActivityFields: EmrTaskActivityFields,
+  scriptRunner: HString,
+  jobRunner: HString,
+  jarUri: HString,
+  mainClass: MainClass,
+  arguments: Seq[HString],
+  hadoopQueue: Option[HString],
+  inputs: Seq[S3DataNode],
+  outputs: Seq[S3DataNode],
+  sparkOptions: Seq[HString],
+  sparkConfig: Map[HString, HString]
 ) extends EmrTaskActivity[SparkCluster] {
 
   type Self = SparkTaskActivity

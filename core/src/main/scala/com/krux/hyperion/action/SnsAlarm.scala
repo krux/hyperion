@@ -10,11 +10,11 @@ import com.krux.hyperion.aws.{AdpSnsAlarm, AdpRef}
  * Sends an Amazon SNS notification message when an activity fails or finishes successfully.
  */
 case class SnsAlarm private (
-                              baseFields: BaseFields,
-                              subject: HString,
-                              message: HString,
-                              role: HString,
-                              topicArn: HString
+  baseFields: BaseFields,
+  subject: HString,
+  message: HString,
+  role: HString,
+  topicArn: HString
 ) extends NamedPipelineObject {
 
   type Self = SnsAlarm

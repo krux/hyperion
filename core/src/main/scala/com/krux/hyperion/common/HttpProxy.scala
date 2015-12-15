@@ -5,13 +5,13 @@ import com.krux.hyperion.aws.{AdpRef, AdpHttpProxy}
 import com.krux.hyperion.expression.Parameter
 
 case class HttpProxy private (
-                               baseFields: BaseFields,
-                               hostname: Option[HString],
-                               port: Option[HInt],
-                               username: Option[HString],
-                               password: Option[Parameter[String]],
-                               windowsDomain: Option[HString],
-                               windowsWorkGroup: Option[HString]
+  baseFields: BaseFields,
+  hostname: Option[HString],
+  port: Option[HInt],
+  username: Option[HString],
+  password: Option[Parameter[String]],
+  windowsDomain: Option[HString],
+  windowsWorkGroup: Option[HString]
 ) extends NamedPipelineObject {
 
   type Self = HttpProxy
