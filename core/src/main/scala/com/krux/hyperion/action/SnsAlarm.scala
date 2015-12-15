@@ -47,7 +47,7 @@ object SnsAlarm {
     baseFields = ObjectFields(PipelineObjectId(SnsAlarm.getClass)),
     subject = "",
     message = "",
-    topicArn = hc.snsTopic.get,
+    topicArn = hc.snsTopic.getOrElse("").toString,
     role = hc.snsRole.get
   )
 

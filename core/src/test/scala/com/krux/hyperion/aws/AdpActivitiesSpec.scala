@@ -92,9 +92,7 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None,
-        actionOnResourceFailure = None,
-        actionOnTaskFailure = None
+        failureAndRerunMode = None
       )
       val objShouldBe = ("id" -> "MyEmrActivity") ~
         ("input" ->  Seq(("ref" -> "MyS3Input"))) ~
@@ -157,7 +155,6 @@ class AdpActivitiesSpec extends WordSpec {
         generatedScriptsPath = None,
         input = Option(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode")),
         output = Option(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode")),
-        hadoopQueue = None,
         preActivityTaskConfig = None,
         postActivityTaskConfig = None,
         workerGroup = None,
@@ -195,7 +192,6 @@ class AdpActivitiesSpec extends WordSpec {
         stage = Option("true"),
         input = Option(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode")),
         output = Option(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode")),
-        hadoopQueue = None,
         preActivityTaskConfig = None,
         postActivityTaskConfig = None,
         workerGroup = None,

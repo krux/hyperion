@@ -24,14 +24,9 @@ class RedshiftUnloadActivitySpec extends WordSpec {
     val awsAccessKeyId = Parameter("AwsAccessKeyId", "someId").encrypted
     val awsAccessKeySecret = Parameter("AwsAccessKeySecret", "someSecret").encrypted
 
-    object MockRedshift extends RedshiftDatabase {
-      val id = PipelineObjectId.fixed("_MockRedshift")
-      val name = id
-      val clusterId = "mock-redshift"
-      val username = "mockuser"
-      val `*password` = "mockpass"
-      val databaseName = "mock_db"
-    }
+    val mockRedshift = RedshiftDatabase("mockuser", "mockpass", "mock-redshift")
+      .named("_MockRedshift")
+      .withDatabaseName("mock_db")
 
     "Produce the correct unload script" in {
       val testingQuery = """
@@ -56,7 +51,7 @@ class RedshiftUnloadActivitySpec extends WordSpec {
       """.stripMargin
 
       val act = RedshiftUnloadActivity(
-          MockRedshift, testingQuery, s3 / "not-important/", awsAccessKeyId, awsAccessKeySecret
+          mockRedshift, testingQuery, s3 / "not-important/", awsAccessKeyId, awsAccessKeySecret
         )(ec2)
 
       assert(act.unloadScript.trim === escapedUnloadScript.trim)

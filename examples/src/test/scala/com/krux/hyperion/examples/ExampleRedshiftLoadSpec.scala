@@ -79,9 +79,11 @@ class ExampleRedshiftLoadSpec extends WordSpec {
       assert(s3DataNode === s3DataNodeShouldBe)
 
       val mockRedshift = objectsField(7)
+      val mockRedshiftId: String = (mockRedshift \ "id").values.toString
+      assert(mockRedshiftId.startsWith("_MockRedshift"))
       val mockRedshiftShouldBe =
-        ("id" -> "_MockRedshift") ~
-        ("name" -> "_MockRedshift") ~
+        ("id" -> mockRedshiftId) ~
+        ("name" -> mockRedshiftId) ~
         ("clusterId" -> "mock-redshift") ~
         ("databaseName" -> "mock_db") ~
         ("*password" -> "mockpass") ~
@@ -95,7 +97,7 @@ class ExampleRedshiftLoadSpec extends WordSpec {
       val destTableShouldBe =
         ("id" -> destTableId) ~
         ("name" -> destTableId) ~
-        ("database" -> ("ref" -> "_MockRedshift")) ~
+        ("database" -> ("ref" -> mockRedshiftId)) ~
         ("schemaName" -> "kexin") ~
         ("tableName" -> "monthly_campaign_frequency_distribution") ~
         ("primaryKeys" -> List("publisher_id", "campaign_id", "month")) ~

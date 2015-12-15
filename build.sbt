@@ -89,6 +89,7 @@ lazy val commonSettings = Seq(
       "-doc-source-url",
       "https://github.com/krux/hyperion/tree/master/€{FILE_PATH}.scala")
   },
+  libraryDependencies += scalatestArtifact,
   test in assembly := {} // skip test during assembly
 )
 

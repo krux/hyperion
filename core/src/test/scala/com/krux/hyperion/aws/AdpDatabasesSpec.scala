@@ -63,7 +63,7 @@ class AdpDatabasesSpec extends WordSpec {
         `*password` = "supersecretpassword",
         username = "notsosupersecretuser",
         rdsInstanceId = "21234",
-        region = "us-west-2",
+        region = Option("us-west-2"),
         jdbcDriverJarUri = None
       )
       val objShoudBe = ("id" -> "rds") ~

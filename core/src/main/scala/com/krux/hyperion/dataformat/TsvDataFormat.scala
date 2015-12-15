@@ -32,7 +32,7 @@ case class TsvDataFormat private (
 object TsvDataFormat {
 
   def apply() = new TsvDataFormat(
-    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    baseFields = ObjectFields(PipelineObjectId(TsvDataFormat.getClass)),
     dataFormatFields = DataFormatFields(),
     escapeChar = None
   )

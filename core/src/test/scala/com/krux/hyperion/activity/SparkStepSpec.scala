@@ -9,9 +9,7 @@ import com.krux.hyperion.Implicits._
 class SparkStepSpec extends WordSpec {
   class SomeClass
 
-  object SomeObject {
-
-  }
+  object SomeObject
 
   implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
 

@@ -1,7 +1,7 @@
 package com.krux.hyperion.resource
 
 import com.krux.hyperion.adt.HType._
-import com.krux.hyperion.adt.{ HDouble, HBoolean, HString }
+import com.krux.hyperion.adt.{ HDouble, HBoolean, HString, HDuration }
 import com.krux.hyperion.aws.{ AdpRef, AdpEc2Resource }
 import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
 import com.krux.hyperion.HyperionContext
@@ -81,7 +81,8 @@ object Ec2Resource {
     keyPair = hc.ec2KeyPair.map(x => x: HString),
     region = Option(hc.ec2Region: HString),
     availabilityZone = hc.ec2AvailabilityZone.map(x => x: HString),
-    subnetId = hc.ec2SubnetId.map(x => x: HString)
+    subnetId = hc.ec2SubnetId.map(x => x: HString),
+    terminateAfter = hc.ec2TerminateAfter.map(x => x: HDuration)
   )
 
 }

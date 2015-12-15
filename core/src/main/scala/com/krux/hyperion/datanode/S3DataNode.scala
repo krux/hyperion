@@ -132,7 +132,7 @@ object S3Folder {
 
   def apply(directoryPath: HS3Uri): S3Folder =
     new S3Folder(
-      baseFields = ObjectFields(PipelineObjectId(S3File.getClass)),
+      baseFields = ObjectFields(PipelineObjectId(S3Folder.getClass)),
       dataNodeFields = DataNodeFields(),
       s3DataNodeFields = S3DataNodeFields(),
       directoryPath = directoryPath

@@ -27,15 +27,16 @@ case class SparkCluster private (
 
   def withSparkVersion(sparkVersion: HString) = this.copy(sparkVersion = sparkVersion)
 
-  override def standardBootstrapAction = super.standardBootstrapAction :+ (
-    s"s3://support.elasticmapreduce/spark/install-spark,-v,${sparkVersion},-x": HString)
+  override def standardBootstrapAction = 
+    (s"s3://support.elasticmapreduce/spark/install-spark,-v,${sparkVersion},-x": HString) +:
+    super.standardBootstrapAction
 
 }
 
 object SparkCluster {
 
   def apply()(implicit hc: HyperionContext): SparkCluster = new SparkCluster(
-    baseFields = ObjectFields(PipelineObjectId(MapReduceCluster.getClass)),
+    baseFields = ObjectFields(PipelineObjectId(SparkCluster.getClass)),
     resourceFields = EmrCluster.defaultResourceFields(hc),
     emrClusterFields = EmrCluster.defaultEmrClusterFields(hc),
     sparkVersion = hc.emrSparkVersion.get
