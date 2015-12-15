@@ -1,6 +1,5 @@
 package com.krux.hyperion.common
 
-
 trait NamedPipelineObject extends PipelineObject {
 
   type Self <: NamedPipelineObject

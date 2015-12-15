@@ -63,7 +63,7 @@ object HiveCopyActivity extends RunnableObject {
 
   def apply[A <: EmrCluster](input: DataNode, output: DataNode)(runsOn: Resource[A]): HiveCopyActivity[A] =
     new HiveCopyActivity(
-      baseFields = ObjectFields(PipelineObjectId(HiveActivity.getClass)),
+      baseFields = ObjectFields(PipelineObjectId(HiveCopyActivity.getClass)),
       activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
       filterSql = None,

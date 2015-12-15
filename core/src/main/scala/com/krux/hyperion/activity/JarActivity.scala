@@ -46,7 +46,7 @@ object JarActivity extends RunnableObject {
 
   def apply(jarUri: HS3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): JarActivity =
     new JarActivity(
-      baseFields = ObjectFields(PipelineObjectId(ShellCommandActivity.getClass)),
+      baseFields = ObjectFields(PipelineObjectId(JarActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = jarUri,

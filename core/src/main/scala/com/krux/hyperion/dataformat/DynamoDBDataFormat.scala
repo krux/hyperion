@@ -30,7 +30,7 @@ case class DynamoDBDataFormat private (
 object DynamoDBDataFormat {
 
   def apply() = new DynamoDBDataFormat(
-    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    baseFields = ObjectFields(PipelineObjectId(DynamoDBDataFormat.getClass)),
     dataFormatFields = DataFormatFields()
   )
 

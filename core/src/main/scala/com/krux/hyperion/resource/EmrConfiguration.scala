@@ -39,7 +39,7 @@ case class EmrConfiguration private (
 object EmrConfiguration {
 
   def apply(property: Property*): EmrConfiguration = EmrConfiguration(
-    baseFields = ObjectFields(PipelineObjectId(Property.getClass)),
+    baseFields = ObjectFields(PipelineObjectId(EmrConfiguration.getClass)),
     classification = None,
     properties = property,
     configurations = Seq.empty
