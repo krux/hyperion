@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ObjectFields, S3Uri}
+import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, BaseFields, S3Uri}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.{RunnableObject, Parameter}
 import com.krux.hyperion.adt.{ HInt, HDuration, HString, HBoolean, HType, HS3Uri }
@@ -11,7 +11,7 @@ import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
 
 case class SendEmailActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   jarUri: HS3Uri,
@@ -34,7 +34,7 @@ case class SendEmailActivity private (
 
   require(password.forall(_.isEncrypted), "The password must be an encrypted string parameter")
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
@@ -74,7 +74,7 @@ object SendEmailActivity extends RunnableObject {
 
   def apply(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SendEmailActivity =
     new SendEmailActivity(
-      baseFields = ObjectFields(PipelineObjectId(SendEmailActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(SendEmailActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = S3Uri(s"${hc.scriptUri}activities/hyperion-email-activity-current-assembly.jar"),

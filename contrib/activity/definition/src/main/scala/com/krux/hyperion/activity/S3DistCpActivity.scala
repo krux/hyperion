@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId, ObjectFields}
+import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean}
@@ -34,7 +34,7 @@ case class S3DistCpActivityFields(
 )
 
 case class S3DistCpActivity[A <: EmrCluster] private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[A],
   s3DistCpActivityFields: S3DistCpActivityFields,
   preStepCommands: Seq[HString],
@@ -44,7 +44,7 @@ case class S3DistCpActivity[A <: EmrCluster] private (
 
   type Self = S3DistCpActivity[A]
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateS3DistCpActivityFields(fields: S3DistCpActivityFields) = copy(s3DistCpActivityFields = fields)
 
@@ -230,7 +230,7 @@ object S3DistCpActivity extends RunnableObject {
 
   def apply[A <: EmrCluster](runsOn: Resource[A]): S3DistCpActivity[A] =
     new S3DistCpActivity(
-      baseFields = ObjectFields(PipelineObjectId(S3DistCpActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(S3DistCpActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       s3DistCpActivityFields = S3DistCpActivityFields(
         source = None,

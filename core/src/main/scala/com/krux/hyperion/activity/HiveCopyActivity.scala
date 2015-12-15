@@ -5,7 +5,7 @@ import com.krux.hyperion.aws.AdpHiveCopyActivity
 import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.common.ObjectFields
+import com.krux.hyperion.common.BaseFields
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{ Resource, EmrCluster }
 
@@ -15,7 +15,7 @@ import com.krux.hyperion.resource.{ Resource, EmrCluster }
  * Amazon S3 or DynomoDB at the column and row level.
  */
 case class HiveCopyActivity[A <: EmrCluster] private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[A],
   emrTaskActivityFields: EmrTaskActivityFields,
   filterSql: Option[HString],
@@ -26,7 +26,7 @@ case class HiveCopyActivity[A <: EmrCluster] private (
 
   type Self = HiveCopyActivity[A]
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
@@ -63,7 +63,7 @@ object HiveCopyActivity extends RunnableObject {
 
   def apply[A <: EmrCluster](input: DataNode, output: DataNode)(runsOn: Resource[A]): HiveCopyActivity[A] =
     new HiveCopyActivity(
-      baseFields = ObjectFields(PipelineObjectId(HiveCopyActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(HiveCopyActivity.getClass)),
       activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
       filterSql = None,

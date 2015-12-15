@@ -2,20 +2,20 @@ package com.krux.hyperion.precondition
 
 import com.krux.hyperion.adt.{ HDuration, HString }
 import com.krux.hyperion.aws.AdpExistsPrecondition
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.HyperionContext
 
 /**
  * Checks whether a data node object exists.
  */
 case class ExistsPrecondition private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   preconditionFields: PreconditionFields
 ) extends Precondition {
 
   type Self = ExistsPrecondition
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updatePreconditionFields(fields: PreconditionFields) = copy(preconditionFields = fields)
 
   lazy val serialize = AdpExistsPrecondition(
@@ -30,7 +30,7 @@ case class ExistsPrecondition private (
 object ExistsPrecondition {
 
   def apply()(implicit hc: HyperionContext) = new ExistsPrecondition(
-    baseFields = ObjectFields(PipelineObjectId(ExistsPrecondition.getClass)),
+    baseFields = BaseFields(PipelineObjectId(ExistsPrecondition.getClass)),
     preconditionFields = Precondition.defaultPreconditionFields
   )
 

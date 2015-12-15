@@ -3,14 +3,14 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.adt.{HString, HInt, HDuration, HBoolean}
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, S3Uri, PipelineObjectId, ObjectFields}
+import com.krux.hyperion.common.{PipelineObject, S3Uri, PipelineObjectId, BaseFields}
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
 case class SendFlowdockMessageActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   jarUri: HString,
@@ -24,7 +24,7 @@ case class SendFlowdockMessageActivity private (
 
   type Self = SendFlowdockMessageActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
@@ -48,7 +48,7 @@ object SendFlowdockMessageActivity extends RunnableObject {
 
   def apply(flowApiToken: String, message: String)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SendFlowdockMessageActivity =
     new SendFlowdockMessageActivity(
-      baseFields = ObjectFields(PipelineObjectId(SendFlowdockMessageActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(SendFlowdockMessageActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = s"${hc.scriptUri}activities/hyperion-notification-activity-current-assembly.jar",

@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString, HBoolean, HType }
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, ObjectFields, S3Uri }
+import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, BaseFields, S3Uri }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.{ RunnableObject, Parameter }
 import com.krux.hyperion.HyperionContext
@@ -14,7 +14,7 @@ import com.krux.hyperion.resource.{ Resource, Ec2Resource }
  * Shell command activity that runs a given Jar
  */
 case class SftpUploadActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   sftpActivityFields: SftpActivityFields,
@@ -24,7 +24,7 @@ case class SftpUploadActivity private (
 
   type Self = SftpUploadActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
   def updateSftpActivityFields(fields: SftpActivityFields) = copy(sftpActivityFields = fields)
@@ -37,7 +37,7 @@ object SftpUploadActivity extends RunnableObject {
 
   def apply(host: String)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SftpUploadActivity =
     new SftpUploadActivity(
-      baseFields = ObjectFields(PipelineObjectId(SftpUploadActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(SftpUploadActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       sftpActivityFields = SftpActivityFields(host),

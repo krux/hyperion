@@ -4,8 +4,8 @@ trait NamedPipelineObject extends PipelineObject {
 
   type Self <: NamedPipelineObject
 
-  def baseFields: ObjectFields
-  def updateBaseFields(fields: ObjectFields): Self
+  def baseFields: BaseFields
+  def updateBaseFields(fields: BaseFields): Self
 
   def id = baseFields.id
   def named(name: String) = updateBaseFields(

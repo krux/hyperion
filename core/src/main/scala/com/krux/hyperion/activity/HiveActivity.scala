@@ -5,7 +5,7 @@ import com.krux.hyperion.aws.AdpHiveActivity
 import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.common.ObjectFields
+import com.krux.hyperion.common.BaseFields
 import com.krux.hyperion.resource.{ Resource, EmrCluster }
 
 /**
@@ -18,7 +18,7 @@ import com.krux.hyperion.resource.{ Resource, EmrCluster }
  * the Hive column names.
  */
 case class HiveActivity[A <: EmrCluster] private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[A],
   emrTaskActivityFields: EmrTaskActivityFields,
   hiveScript: Script,
@@ -30,7 +30,7 @@ case class HiveActivity[A <: EmrCluster] private (
 
   type Self = HiveActivity[A]
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
@@ -70,7 +70,7 @@ object HiveActivity extends RunnableObject {
 
   def apply[A <: EmrCluster](input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
     new HiveActivity(
-      baseFields = ObjectFields(PipelineObjectId(HiveActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(HiveActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       emrTaskActivityFields = EmrTaskActivityFields(),
       hiveScript = hiveScript,

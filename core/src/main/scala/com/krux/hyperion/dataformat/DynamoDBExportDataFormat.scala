@@ -2,7 +2,7 @@ package com.krux.hyperion.dataformat
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpDynamoDBExportDataFormat
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 
 /**
  * Applies a schema to an DynamoDB table to make it accessible by a Hive query. Use
@@ -16,13 +16,13 @@ import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
  *   - Exports all attributes from DynamoDB even if you have a sparse schema
  */
 case class DynamoDBExportDataFormat private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   dataFormatFields: DataFormatFields
 ) extends DataFormat {
 
   type Self = DynamoDBExportDataFormat
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
   lazy val serialize = AdpDynamoDBExportDataFormat(
@@ -36,7 +36,7 @@ case class DynamoDBExportDataFormat private (
 object DynamoDBExportDataFormat {
 
   def apply() = new DynamoDBExportDataFormat(
-    baseFields = ObjectFields(PipelineObjectId(DynamoDBExportDataFormat.getClass)),
+    baseFields = BaseFields(PipelineObjectId(DynamoDBExportDataFormat.getClass)),
     dataFormatFields = DataFormatFields()
   )
 

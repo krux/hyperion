@@ -2,7 +2,7 @@ package com.krux.hyperion.precondition
 
 import com.krux.hyperion.adt.{ HDuration, HS3Uri, HString }
 import com.krux.hyperion.aws.AdpS3PrefixNotEmptyPrecondition
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -11,14 +11,14 @@ import com.krux.hyperion.HyperionContext
  * @param s3Prefix  The Amazon S3 prefix to check for existence of objects.
  */
 case class S3PrefixNotEmptyPrecondition private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   preconditionFields: PreconditionFields,
   s3Prefix: HS3Uri
 ) extends Precondition {
 
   type Self = S3PrefixNotEmptyPrecondition
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updatePreconditionFields(fields: PreconditionFields) = copy(preconditionFields = fields)
 
   lazy val serialize = AdpS3PrefixNotEmptyPrecondition(
@@ -34,7 +34,7 @@ case class S3PrefixNotEmptyPrecondition private (
 object S3PrefixNotEmptyPrecondition {
 
   def apply(s3Prefix: HS3Uri)(implicit hc: HyperionContext) = new S3PrefixNotEmptyPrecondition(
-    baseFields = ObjectFields(PipelineObjectId(S3PrefixNotEmptyPrecondition.getClass)),
+    baseFields = BaseFields(PipelineObjectId(S3PrefixNotEmptyPrecondition.getClass)),
     preconditionFields = Precondition.defaultPreconditionFields,
     s3Prefix = s3Prefix
   )

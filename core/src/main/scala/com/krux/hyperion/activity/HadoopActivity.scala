@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpHadoopActivity
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.resource.{ Resource, EmrCluster }
 
@@ -15,7 +15,7 @@ import com.krux.hyperion.resource.{ Resource, EmrCluster }
  * you can still use EmrActivity.
  */
 case class HadoopActivity[A <: EmrCluster] private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[A],
   emrTaskActivityFields: EmrTaskActivityFields,
   jarUri: HString,
@@ -28,7 +28,7 @@ case class HadoopActivity[A <: EmrCluster] private (
 
   type Self = HadoopActivity[A]
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
@@ -71,7 +71,7 @@ object HadoopActivity extends RunnableObject {
   def apply[A <: EmrCluster](jarUri: HString, mainClass: MainClass)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, Option(mainClass))(runsOn)
 
   def apply[A <: EmrCluster](jarUri: HString, mainClass: Option[MainClass] = None)(runsOn: Resource[A]): HadoopActivity[A] = new HadoopActivity(
-    baseFields = ObjectFields(PipelineObjectId(HadoopActivity.getClass)),
+    baseFields = BaseFields(PipelineObjectId(HadoopActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
     jarUri = jarUri,

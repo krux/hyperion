@@ -2,13 +2,13 @@ package com.krux.hyperion.database
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpJdbcDatabase
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 
 /**
  * Defines a JDBC database
  */
 case class JdbcDatabase private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   databaseFields: DatabaseFields,
   connectionString: HString,
   jdbcDriverClass: HString,
@@ -18,7 +18,7 @@ case class JdbcDatabase private (
 
   type Self = JdbcDatabase
 
-  def updateBaseFields(fields: ObjectFields): Self = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields): Self = copy(baseFields = fields)
   def updateDatabaseFields(fields: DatabaseFields): Self = copy(databaseFields = fields)
 
   def withJdbcDriverJarUri(uri: HString): Self = copy(jdbcDriverJarUri = Option(uri))
@@ -46,7 +46,7 @@ object JdbcDatabase {
     connectionString: HString,
     jdbcDriverClass: HString
   ) = new JdbcDatabase(
-    baseFields = ObjectFields(PipelineObjectId(JdbcDatabase.getClass)),
+    baseFields = BaseFields(PipelineObjectId(JdbcDatabase.getClass)),
     databaseFields = DatabaseFields(username = username, `*password` = password),
     connectionString = connectionString,
     jdbcDriverClass = jdbcDriverClass,

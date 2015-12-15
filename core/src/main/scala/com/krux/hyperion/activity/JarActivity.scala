@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.adt.{ HS3Uri, HString }
 import com.krux.hyperion.common.S3Uri
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
@@ -11,7 +11,7 @@ import com.krux.hyperion.resource.{Resource, Ec2Resource}
  * Shell command activity that runs a given Jar
  */
 case class JarActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   jarUri: HS3Uri,
@@ -23,7 +23,7 @@ case class JarActivity private (
 
   assert(script.uri.nonEmpty)
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
@@ -46,7 +46,7 @@ object JarActivity extends RunnableObject {
 
   def apply(jarUri: HS3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): JarActivity =
     new JarActivity(
-      baseFields = ObjectFields(PipelineObjectId(JarActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(JarActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = jarUri,

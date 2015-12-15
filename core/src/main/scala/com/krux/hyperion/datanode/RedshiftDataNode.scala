@@ -3,13 +3,13 @@ package com.krux.hyperion.datanode
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRedshiftDataNode
 import com.krux.hyperion.database.RedshiftDatabase
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 
 /**
  * The abstracted RedshiftDataNode
  */
 case class RedshiftDataNode private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   dataNodeFields: DataNodeFields,
   database: RedshiftDatabase,
   tableName: HString,
@@ -20,7 +20,7 @@ case class RedshiftDataNode private (
 
   type Self = RedshiftDataNode
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
 
   def withCreateTableSql(createSql: HString): RedshiftDataNode = this.copy(createTableSql = Option(createSql))
@@ -48,7 +48,7 @@ object RedshiftDataNode {
 
   def apply(database: RedshiftDatabase, tableName: HString): RedshiftDataNode =
     new RedshiftDataNode(
-      baseFields = ObjectFields(PipelineObjectId(RedshiftDataNode.getClass)),
+      baseFields = BaseFields(PipelineObjectId(RedshiftDataNode.getClass)),
       dataNodeFields = DataNodeFields(),
       database = database,
       tableName = tableName,

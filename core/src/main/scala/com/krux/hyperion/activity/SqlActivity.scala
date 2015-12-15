@@ -4,7 +4,7 @@ import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpSqlActivity
 import com.krux.hyperion.database.Database
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.resource.{ Resource, Ec2Resource }
 
 /**
@@ -12,7 +12,7 @@ import com.krux.hyperion.resource.{ Resource, Ec2Resource }
  * a new table with that name is created.
  */
 case class SqlActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   script: Script,
   scriptArgument: Seq[HString],
@@ -22,7 +22,7 @@ case class SqlActivity private (
 
   type Self = SqlActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
   def withArguments(arg: HString*) = this.copy(scriptArgument = scriptArgument ++ arg)
@@ -57,7 +57,7 @@ object SqlActivity extends RunnableObject {
 
   def apply(database: Database, script: Script)(runsOn: Resource[Ec2Resource]): SqlActivity =
     new SqlActivity(
-      baseFields = ObjectFields(PipelineObjectId(SqlActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(SqlActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       script = script,
       scriptArgument = Seq.empty,

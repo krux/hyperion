@@ -2,7 +2,7 @@ package com.krux.hyperion.precondition
 
 import com.krux.hyperion.adt.{ HDuration, HString }
 import com.krux.hyperion.aws.AdpDynamoDBTableExistsPrecondition
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -11,14 +11,14 @@ import com.krux.hyperion.HyperionContext
  * @param tableName The DynamoDB table to check.
  */
 case class DynamoDBTableExistsPrecondition private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   preconditionFields: PreconditionFields,
   tableName: HString
 ) extends Precondition {
 
   type Self = DynamoDBTableExistsPrecondition
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updatePreconditionFields(fields: PreconditionFields) = copy(preconditionFields = fields)
 
   lazy val serialize = AdpDynamoDBTableExistsPrecondition(
@@ -34,7 +34,7 @@ case class DynamoDBTableExistsPrecondition private (
 object DynamoDBTableExistsPrecondition {
 
   def apply(tableName: HString)(implicit hc: HyperionContext) = new DynamoDBTableExistsPrecondition(
-    baseFields = ObjectFields(PipelineObjectId(DynamoDBTableExistsPrecondition.getClass)),
+    baseFields = BaseFields(PipelineObjectId(DynamoDBTableExistsPrecondition.getClass)),
     preconditionFields = Precondition.defaultPreconditionFields,
     tableName = tableName
   )

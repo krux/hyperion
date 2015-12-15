@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.adt.{ HString, HS3Uri, HBoolean }
 import com.krux.hyperion.aws.AdpPigActivity
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.resource.{ Resource, EmrCluster }
 
@@ -14,7 +14,7 @@ import com.krux.hyperion.resource.{ Resource, EmrCluster }
  * without additional code from the user.
  */
 case class PigActivity[A <: EmrCluster] private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[A],
   emrTaskActivityFields: EmrTaskActivityFields,
   script: Script,
@@ -27,7 +27,7 @@ case class PigActivity[A <: EmrCluster] private (
 
   type Self = PigActivity[A]
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
@@ -69,7 +69,7 @@ object PigActivity extends RunnableObject {
 
   def apply[A <: EmrCluster](script: Script)(runsOn: Resource[A]): PigActivity[A] =
     new PigActivity(
-      baseFields = ObjectFields(PipelineObjectId(PigActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(PigActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       emrTaskActivityFields = EmrTaskActivityFields(),
       script = script,

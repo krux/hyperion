@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, BaseFields }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.{ HInt, HDuration, HString }
@@ -13,7 +13,7 @@ import com.krux.hyperion.resource.{ Resource, SparkCluster }
  * Runs spark steps on given spark cluster with Amazon EMR
  */
 case class SparkActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[SparkCluster],
   steps: Seq[SparkStep],
   inputs: Seq[S3DataNode],
@@ -24,7 +24,7 @@ case class SparkActivity private (
 
   type Self = SparkActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
   def withSteps(step: SparkStep*) = this.copy(steps = steps ++ step)
@@ -61,7 +61,7 @@ case class SparkActivity private (
 object SparkActivity extends RunnableObject {
 
   def apply(runsOn: Resource[SparkCluster]): SparkActivity = new SparkActivity(
-    baseFields = ObjectFields(PipelineObjectId(SparkActivity.getClass)),
+    baseFields = BaseFields(PipelineObjectId(SparkActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     steps = Seq.empty,
     inputs = Seq.empty,

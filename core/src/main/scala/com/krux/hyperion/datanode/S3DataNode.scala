@@ -5,7 +5,7 @@ import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.common.PipelineObject
 import com.krux.hyperion.dataformat.DataFormat
 import com.krux.hyperion.adt.{HS3Uri, HBoolean}
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 
 sealed trait S3DataNode extends Copyable {
 
@@ -55,7 +55,7 @@ object S3DataNode {
  * Defines data from s3
  */
 case class S3File private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   dataNodeFields: DataNodeFields,
   s3DataNodeFields: S3DataNodeFields,
   filePath: HS3Uri
@@ -63,7 +63,7 @@ case class S3File private (
 
   type Self = S3File
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
   def updateS3DataNodeFields(fields: S3DataNodeFields) = copy(s3DataNodeFields = fields)
 
@@ -88,7 +88,7 @@ case class S3File private (
 object S3File {
   def apply(filePath: HS3Uri): S3File =
     new S3File(
-      baseFields = ObjectFields(PipelineObjectId(S3File.getClass)),
+      baseFields = BaseFields(PipelineObjectId(S3File.getClass)),
       dataNodeFields = DataNodeFields(),
       s3DataNodeFields = S3DataNodeFields(),
       filePath = filePath
@@ -99,7 +99,7 @@ object S3File {
  * Defines data from s3 directory
  */
 case class S3Folder private(
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   dataNodeFields: DataNodeFields,
   s3DataNodeFields: S3DataNodeFields,
   directoryPath: HS3Uri
@@ -107,7 +107,7 @@ case class S3Folder private(
 
   type Self = S3Folder
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
   def updateS3DataNodeFields(fields: S3DataNodeFields) = copy(s3DataNodeFields = fields)
 
@@ -132,7 +132,7 @@ object S3Folder {
 
   def apply(directoryPath: HS3Uri): S3Folder =
     new S3Folder(
-      baseFields = ObjectFields(PipelineObjectId(S3Folder.getClass)),
+      baseFields = BaseFields(PipelineObjectId(S3Folder.getClass)),
       dataNodeFields = DataNodeFields(),
       s3DataNodeFields = S3DataNodeFields(),
       directoryPath = directoryPath

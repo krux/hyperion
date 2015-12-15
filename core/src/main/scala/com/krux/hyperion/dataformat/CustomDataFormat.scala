@@ -2,14 +2,14 @@ package com.krux.hyperion.dataformat
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpCustomDataFormat
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 
 /**
  * A custom data format defined by a combination of a certain column separator, record separator,
  * and escape character.
  */
 case class CustomDataFormat private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   dataFormatFields: DataFormatFields,
   columnSeparator: HString,
   recordSeparator: HString
@@ -17,7 +17,7 @@ case class CustomDataFormat private (
 
   type Self = CustomDataFormat
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
   def withColumnSeparator(columnSeparator: HString) = this.copy(columnSeparator = columnSeparator)
@@ -36,7 +36,7 @@ case class CustomDataFormat private (
 object CustomDataFormat {
 
   def apply() = new CustomDataFormat(
-    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    baseFields = BaseFields(PipelineObjectId(CsvDataFormat.getClass)),
     dataFormatFields = DataFormatFields(),
     columnSeparator = ",",
     recordSeparator = "\n"

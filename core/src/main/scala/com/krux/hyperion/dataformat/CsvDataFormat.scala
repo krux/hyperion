@@ -2,21 +2,21 @@ package com.krux.hyperion.dataformat
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpCsvDataFormat
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 
 /**
  * A comma-delimited data format where the column separator is a comma and the record separator is
  * a newline character.
  */
 case class CsvDataFormat private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   dataFormatFields: DataFormatFields,
   escapeChar: Option[HString]
 ) extends DataFormat {
 
   type Self = CsvDataFormat
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
   def withEscapeChar(escapeChar: HString) = this.copy(escapeChar = Option(escapeChar))
@@ -33,7 +33,7 @@ case class CsvDataFormat private (
 object CsvDataFormat {
 
   def apply() = new CsvDataFormat(
-    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    baseFields = BaseFields(PipelineObjectId(CsvDataFormat.getClass)),
     dataFormatFields = DataFormatFields(),
     escapeChar = None
   )

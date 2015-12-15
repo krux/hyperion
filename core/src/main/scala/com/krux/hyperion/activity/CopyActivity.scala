@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.aws.AdpCopyActivity
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.datanode.Copyable
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource.{ Resource, Ec2Resource }
@@ -20,7 +20,7 @@ import com.krux.hyperion.resource.{ Resource, Ec2Resource }
  * default CsvDataFormat for tasks involving both exporting to S3 and copy to redshift.
  */
 case class CopyActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   input: Copyable,
   output: Copyable
@@ -28,7 +28,7 @@ case class CopyActivity private (
 
   type Self = CopyActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
   lazy val serialize = AdpCopyActivity(
@@ -55,7 +55,7 @@ object CopyActivity extends RunnableObject {
 
   def apply(input: Copyable, output: Copyable)(runsOn: Resource[Ec2Resource]): CopyActivity =
     new CopyActivity(
-      baseFields = ObjectFields(PipelineObjectId(CopyActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(CopyActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       input = input,
       output = output

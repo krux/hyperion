@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, ObjectFields, S3Uri }
+import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, BaseFields, S3Uri }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString, HBoolean, HType }
@@ -14,7 +14,7 @@ import com.krux.hyperion.resource.{ Resource, Ec2Resource }
  * Shell command activity that runs a given python script
  */
 case class PythonActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   pythonScriptUri: Option[HS3Uri],
@@ -28,7 +28,7 @@ case class PythonActivity private (
 
   type Self = PythonActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
@@ -54,7 +54,7 @@ object PythonActivity extends RunnableObject {
 
   def apply(pythonScriptUri: HS3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): PythonActivity =
     new PythonActivity(
-      baseFields = ObjectFields(PipelineObjectId(PythonActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(PythonActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-python.sh")),
       pythonScriptUri = Option(pythonScriptUri),

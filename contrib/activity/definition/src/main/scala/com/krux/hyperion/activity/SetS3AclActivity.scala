@@ -3,14 +3,14 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString, HBoolean, HType }
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{ PipelineObject, S3Uri, PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObject, S3Uri, PipelineObjectId, BaseFields }
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{ Ec2Resource, Resource }
 
 case class SetS3AclActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   jarUri: HString,
@@ -23,7 +23,7 @@ case class SetS3AclActivity private (
 
   type Self = SetS3AclActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
@@ -56,7 +56,7 @@ object SetS3AclActivity extends RunnableObject {
     )(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SetS3AclActivity = {
 
     new SetS3AclActivity(
-        baseFields = ObjectFields(PipelineObjectId(SetS3AclActivity.getClass)),
+        baseFields = BaseFields(PipelineObjectId(SetS3AclActivity.getClass)),
         activityFields = ActivityFields(runsOn),
         shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
         jarUri = s"${hc.scriptUri}activities/hyperion-s3-activity-current-assembly.jar",

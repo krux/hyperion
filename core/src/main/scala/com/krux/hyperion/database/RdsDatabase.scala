@@ -2,10 +2,10 @@ package com.krux.hyperion.database
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRdsDatabase
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 
 case class RdsDatabase private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   databaseFields: DatabaseFields,
   rdsInstanceId: HString,
   jdbcDriverJarUri: Option[HString],
@@ -15,7 +15,7 @@ case class RdsDatabase private (
 
   type Self = RdsDatabase
 
-  def updateBaseFields(fields: ObjectFields): Self = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields): Self = copy(baseFields = fields)
   def updateDatabaseFields(fields: DatabaseFields): Self = copy(databaseFields = fields)
 
   def withJdbcDriverJarUri(uri: HString): Self = copy(jdbcDriverJarUri = Option(uri))
@@ -43,7 +43,7 @@ object RdsDatabase {
     password: HString,
     rdsInstanceId: HString
   ) = new RdsDatabase(
-    baseFields = ObjectFields(PipelineObjectId(RdsDatabase.getClass)),
+    baseFields = BaseFields(PipelineObjectId(RdsDatabase.getClass)),
     databaseFields = DatabaseFields(username = username, `*password` = password),
     rdsInstanceId = rdsInstanceId,
     jdbcDriverJarUri = None,

@@ -4,7 +4,7 @@ import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlDataNode
 import com.krux.hyperion.database.Database
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 
 /**
  * @note that the AWS Datapipeline SqlDataNode does not require a JdbcDatabase parameter, but
@@ -12,7 +12,7 @@ import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
  * object for consistency with other database data node objects.
  */
 case class SqlDataNode (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   dataNodeFields: DataNodeFields,
   tableQuery: TableQuery,
   database: Database
@@ -20,7 +20,7 @@ case class SqlDataNode (
 
   type Self = SqlDataNode
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
 
   override def objects = Seq(database) ++ super.objects
@@ -49,7 +49,7 @@ object SqlDataNode {
 
   def apply(tableQuery: TableQuery, database: Database): SqlDataNode =
    new SqlDataNode(
-      baseFields = ObjectFields(PipelineObjectId(SqlDataNode.getClass)),
+      baseFields = BaseFields(PipelineObjectId(SqlDataNode.getClass)),
       dataNodeFields = DataNodeFields(),
       tableQuery = tableQuery,
       database = database

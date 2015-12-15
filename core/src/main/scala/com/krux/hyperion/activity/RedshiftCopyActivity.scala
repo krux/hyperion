@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpRedshiftCopyActivity
-import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, BaseFields }
 import com.krux.hyperion.dataformat.{ CsvDataFormat, TsvDataFormat }
 import com.krux.hyperion.datanode.{ S3DataNode, RedshiftDataNode }
 import com.krux.hyperion.expression.RunnableObject
@@ -15,7 +15,7 @@ import com.krux.hyperion.resource.{ Resource, Ec2Resource }
  * table, or easily merge data into an existing table.
  */
 case class RedshiftCopyActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   insertMode: RedshiftCopyActivity.InsertMode,
   transformSql: Option[HString],
@@ -27,7 +27,7 @@ case class RedshiftCopyActivity private (
 
   type Self = RedshiftCopyActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
   def withCommandOptions(opts: RedshiftCopyOption*) = {
@@ -85,7 +85,7 @@ object RedshiftCopyActivity extends Enumeration with RunnableObject {
 
   def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode)(runsOn: Resource[Ec2Resource]): RedshiftCopyActivity =
     new RedshiftCopyActivity(
-      baseFields = ObjectFields(PipelineObjectId(RedshiftCopyActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(RedshiftCopyActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       insertMode = insertMode,
       transformSql = None,

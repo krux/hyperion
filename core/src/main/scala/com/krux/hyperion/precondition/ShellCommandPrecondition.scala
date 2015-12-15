@@ -3,7 +3,7 @@ package com.krux.hyperion.precondition
 import com.krux.hyperion.activity.Script
 import com.krux.hyperion.adt.{HDuration, HString}
 import com.krux.hyperion.aws.AdpShellCommandPrecondition
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -16,7 +16,7 @@ import com.krux.hyperion.HyperionContext
  *
  */
 case class ShellCommandPrecondition private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   preconditionFields: PreconditionFields,
   script: Script,
   scriptArgument: Seq[HString],
@@ -26,7 +26,7 @@ case class ShellCommandPrecondition private (
 
   type Self = ShellCommandPrecondition
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updatePreconditionFields(fields: PreconditionFields) = copy(preconditionFields = fields)
 
   def withScriptArgument(argument: HString*) = this.copy(scriptArgument = scriptArgument ++ argument)
@@ -51,7 +51,7 @@ object ShellCommandPrecondition {
 
   def apply(script: Script)(implicit hc: HyperionContext): ShellCommandPrecondition =
     new ShellCommandPrecondition(
-      baseFields = ObjectFields(PipelineObjectId(ShellCommandPrecondition.getClass)),
+      baseFields = BaseFields(PipelineObjectId(ShellCommandPrecondition.getClass)),
       preconditionFields = Precondition.defaultPreconditionFields,
       script = script,
       scriptArgument = Seq.empty,

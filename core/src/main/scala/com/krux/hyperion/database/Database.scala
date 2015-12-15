@@ -3,7 +3,7 @@ package com.krux.hyperion.database
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.{ AdpDatabase, AdpRef }
 import com.krux.hyperion.common.{ PipelineObject, NamedPipelineObject, PipelineObjectId,
-  ObjectFields }
+  BaseFields }
 
 /**
  * The base trait of all database objects

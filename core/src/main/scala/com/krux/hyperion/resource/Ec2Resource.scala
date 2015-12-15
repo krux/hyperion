@@ -3,14 +3,14 @@ package com.krux.hyperion.resource
 import com.krux.hyperion.adt.HType._
 import com.krux.hyperion.adt.{ HDouble, HBoolean, HString, HDuration }
 import com.krux.hyperion.aws.{ AdpRef, AdpEc2Resource }
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 import com.krux.hyperion.HyperionContext
 
 /**
  * EC2 resource
  */
 case class Ec2Resource private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   resourceFields: ResourceFields,
   instanceType: HString,
   imageId: Option[HString],
@@ -23,7 +23,7 @@ case class Ec2Resource private (
 
   type Self = Ec2Resource
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
 
   def runAsUser(user: HString) = this.copy(runAsUser = Option(user))
@@ -64,7 +64,7 @@ case class Ec2Resource private (
 object Ec2Resource {
 
   def apply()(implicit hc: HyperionContext) = new Ec2Resource(
-    baseFields = ObjectFields(PipelineObjectId(Ec2Resource.getClass)),
+    baseFields = BaseFields(PipelineObjectId(Ec2Resource.getClass)),
     resourceFields = defaultResourceFields(hc),
     instanceType = hc.ec2InstanceType,
     imageId = Option(hc.ec2ImageId: HString),

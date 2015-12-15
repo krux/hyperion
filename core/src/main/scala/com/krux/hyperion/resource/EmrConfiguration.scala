@@ -1,11 +1,11 @@
 package com.krux.hyperion.resource
 
 import com.krux.hyperion.aws.{ AdpEmrConfiguration, AdpRef }
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId, PipelineObject, NamedPipelineObject }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, PipelineObject, NamedPipelineObject }
 import com.krux.hyperion.adt.HString
 
 case class EmrConfiguration private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   classification: Option[HString],
   properties: Seq[Property],
   configurations: Seq[EmrConfiguration]
@@ -13,7 +13,7 @@ case class EmrConfiguration private (
 
   type Self = EmrConfiguration
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
 
   def withClassification(classification: HString) =
     this.copy(classification = Option(classification))
@@ -39,7 +39,7 @@ case class EmrConfiguration private (
 object EmrConfiguration {
 
   def apply(property: Property*): EmrConfiguration = EmrConfiguration(
-    baseFields = ObjectFields(PipelineObjectId(EmrConfiguration.getClass)),
+    baseFields = BaseFields(PipelineObjectId(EmrConfiguration.getClass)),
     classification = None,
     properties = property,
     configurations = Seq.empty

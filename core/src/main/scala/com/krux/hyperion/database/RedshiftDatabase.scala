@@ -2,20 +2,20 @@ package com.krux.hyperion.database
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.{ AdpRedshiftDatabase, AdpRef }
-import com.krux.hyperion.common.{ PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 
 /**
  * Redshift database trait, to use this please extend with an object.
  */
 case class RedshiftDatabase private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   databaseFields: DatabaseFields,
   clusterId: HString
 ) extends Database {
 
   type Self = RedshiftDatabase
 
-  def updateBaseFields(fields: ObjectFields): Self = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields): Self = copy(baseFields = fields)
   def updateDatabaseFields(fields: DatabaseFields): Self = copy(databaseFields = fields)
 
   lazy val serialize = AdpRedshiftDatabase(
@@ -40,7 +40,7 @@ object RedshiftDatabase {
     password: HString,
     clusterId: HString
   ) = new RedshiftDatabase(
-    baseFields = ObjectFields(PipelineObjectId(RdsDatabase.getClass)),
+    baseFields = BaseFields(PipelineObjectId(RdsDatabase.getClass)),
     databaseFields = DatabaseFields(username = username, `*password` = password),
     clusterId = clusterId
   )

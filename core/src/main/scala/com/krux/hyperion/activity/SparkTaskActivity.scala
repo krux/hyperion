@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws._
-import com.krux.hyperion.common.{ Memory, PipelineObject, PipelineObjectId, ObjectFields }
+import com.krux.hyperion.common.{ Memory, PipelineObject, PipelineObjectId, BaseFields }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.{ HInt, HDuration, HString }
@@ -18,24 +18,24 @@ import com.krux.hyperion.resource.{ SparkCluster, Resource }
  * you can still use SparkActivity.
  */
 case class SparkTaskActivity private (
-  baseFields: ObjectFields,
-  activityFields: ActivityFields[SparkCluster],
-  emrTaskActivityFields: EmrTaskActivityFields,
-  scriptRunner: HString,
-  jobRunner: HString,
-  jarUri: HString,
-  mainClass: MainClass,
-  arguments: Seq[HString],
-  hadoopQueue: Option[HString],
-  inputs: Seq[S3DataNode],
-  outputs: Seq[S3DataNode],
-  sparkOptions: Seq[HString],
-  sparkConfig: Map[HString, HString]
+                                       baseFields: BaseFields,
+                                       activityFields: ActivityFields[SparkCluster],
+                                       emrTaskActivityFields: EmrTaskActivityFields,
+                                       scriptRunner: HString,
+                                       jobRunner: HString,
+                                       jarUri: HString,
+                                       mainClass: MainClass,
+                                       arguments: Seq[HString],
+                                       hadoopQueue: Option[HString],
+                                       inputs: Seq[S3DataNode],
+                                       outputs: Seq[S3DataNode],
+                                       sparkOptions: Seq[HString],
+                                       sparkConfig: Map[HString, HString]
 ) extends EmrTaskActivity[SparkCluster] {
 
   type Self = SparkTaskActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
@@ -91,7 +91,7 @@ case class SparkTaskActivity private (
 object SparkTaskActivity extends RunnableObject {
 
   def apply(jarUri: HString, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkTaskActivity = new SparkTaskActivity(
-    baseFields = ObjectFields(PipelineObjectId(SparkTaskActivity.getClass)),
+    baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
     scriptRunner = "s3://elasticmapreduce/libs/script-runner/script-runner.jar",

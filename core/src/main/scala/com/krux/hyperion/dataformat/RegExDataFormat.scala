@@ -2,13 +2,13 @@ package com.krux.hyperion.dataformat
 
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.aws.AdpRegExDataFormat
-import com.krux.hyperion.common.{ ObjectFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 
 /**
  * A custom data format defined by a regular expression.
  */
 case class RegExDataFormat private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   dataFormatFields: DataFormatFields,
   inputRegEx: HString,
   outputFormat: HString
@@ -16,7 +16,7 @@ case class RegExDataFormat private (
 
   type Self = RegExDataFormat
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
   lazy val serialize = AdpRegExDataFormat(
@@ -32,7 +32,7 @@ case class RegExDataFormat private (
 object RegExDataFormat {
 
   def apply(inputRegEx: HString, outputFormat: HString) = new RegExDataFormat(
-    baseFields = ObjectFields(PipelineObjectId(CsvDataFormat.getClass)),
+    baseFields = BaseFields(PipelineObjectId(CsvDataFormat.getClass)),
     dataFormatFields = DataFormatFields(),
     inputRegEx = inputRegEx,
     outputFormat = outputFormat

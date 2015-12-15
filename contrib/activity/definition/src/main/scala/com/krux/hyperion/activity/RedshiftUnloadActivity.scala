@@ -5,7 +5,7 @@ import scala.collection.mutable.StringBuilder
 
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.aws.AdpSqlActivity
-import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, ObjectFields }
+import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, BaseFields }
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.expression.{ RunnableObject, Parameter }
 import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString }
@@ -16,7 +16,7 @@ import com.krux.hyperion.resource.{ Resource, Ec2Resource }
  * Unload result of the given sql script from redshift to given s3Path.
  */
 case class RedshiftUnloadActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   script: HString,
   s3Path: HS3Uri,
@@ -32,7 +32,7 @@ case class RedshiftUnloadActivity private (
 
   type Self = RedshiftUnloadActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
   /**
@@ -140,7 +140,7 @@ object RedshiftUnloadActivity extends RunnableObject {
   def apply(database: RedshiftDatabase, script: HString, s3Path: HS3Uri,
     accessKeyId: Parameter[String], accessKeySecret: Parameter[String])(runsOn: Resource[Ec2Resource]): RedshiftUnloadActivity =
     new RedshiftUnloadActivity(
-      baseFields = ObjectFields(PipelineObjectId(RedshiftUnloadActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(RedshiftUnloadActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       script = script,
       s3Path = s3Path,

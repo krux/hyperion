@@ -3,7 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString, HBoolean, HType, HDateTime}
 import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ObjectFields, S3Uri}
+import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, BaseFields, S3Uri}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.ConstantExpression._
 import com.krux.hyperion.expression.{Format, DateTimeConstantExp, RunnableObject, Parameter}
@@ -15,7 +15,7 @@ import com.krux.hyperion.resource.{Resource, Ec2Resource}
  * Shell command activity that runs a given Jar
  */
 case class SftpDownloadActivity private (
-  baseFields: ObjectFields,
+  baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   sftpActivityFields: SftpActivityFields,
@@ -25,7 +25,7 @@ case class SftpDownloadActivity private (
 
   type Self = SftpDownloadActivity
 
-  def updateBaseFields(fields: ObjectFields) = copy(baseFields = fields)
+  def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
   def updateSftpActivityFields(fields: SftpActivityFields) = copy(sftpActivityFields = fields)
@@ -38,7 +38,7 @@ object SftpDownloadActivity extends RunnableObject {
 
   def apply(host: String)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): SftpDownloadActivity =
     new SftpDownloadActivity(
-      baseFields = ObjectFields(PipelineObjectId(SftpDownloadActivity.getClass)),
+      baseFields = BaseFields(PipelineObjectId(SftpDownloadActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       sftpActivityFields = SftpActivityFields(host),
