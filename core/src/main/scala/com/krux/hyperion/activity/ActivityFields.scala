@@ -5,9 +5,6 @@ import com.krux.hyperion.adt.{ HInt, HDuration }
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{ ResourceObject, Resource }
 
-/**
- * TODO: with this implementation workerGroup is not supported.
- */
 case class ActivityFields[A <: ResourceObject](
   runsOn: Resource[A],
   dependsOn: Seq[PipelineActivity[_]] = Seq.empty,

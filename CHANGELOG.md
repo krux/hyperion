@@ -4,7 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 3.0.0-SNAPSHOT
 ### Changed
-- [#243](https://github.com/krux/hyperion/issues/215) - Revisit and refactor expression and parameter
+- [#280](https://github.com/krux/hyperion/issues/280) - Upgrade to scala 2.10.6
+- [#243](https://github.com/krux/hyperion/issues/243) - Revisit and refactor expression and parameter
   - The actionOnTaskFailure and actionOnResource failure is removed from emr activities, they do not belong there.
   - Database objects are changed to be consistent with other objects, this means that one needs to initialize a database object instead of extending a trait
   - Removed hadoopQueue from `HiveCopyActivity` and `PigActivity` as it is not documented by AWS
