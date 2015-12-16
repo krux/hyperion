@@ -65,7 +65,7 @@ object HiveCopyActivity extends RunnableObject {
     new HiveCopyActivity(
       baseFields = BaseFields(PipelineObjectId(HiveCopyActivity.getClass)),
       activityFields = ActivityFields(runsOn),
-    emrTaskActivityFields = EmrTaskActivityFields(),
+      emrTaskActivityFields = EmrTaskActivityFields(),
       filterSql = None,
       generatedScriptsPath = None,
       input = input,

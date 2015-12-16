@@ -28,19 +28,17 @@ case class GoogleStorageUploadActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def withOutput(out: HString): Self = copy(googleStorageUri = out)
-
 }
 
 object GoogleStorageUploadActivity extends RunnableObject {
 
-  def apply(botoConfigUrl: HS3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): GoogleStorageUploadActivity =
+  def apply(botoConfigUrl: HS3Uri, output: HString)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): GoogleStorageUploadActivity =
     new GoogleStorageUploadActivity(
       baseFields = BaseFields(PipelineObjectId(GoogleStorageUploadActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(GoogleStorageActivity.uploadScript),
       botoConfigUrl = botoConfigUrl,
-      googleStorageUri = ""
+      googleStorageUri = output
     )
 
 }

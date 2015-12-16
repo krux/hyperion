@@ -27,19 +27,17 @@ case class GoogleStorageDownloadActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def withInput(in: HString): Self = copy(googleStorageUri = in)
-
 }
 
 object GoogleStorageDownloadActivity extends RunnableObject {
 
-  def apply(botoConfigUrl: HS3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
+  def apply(botoConfigUrl: HS3Uri, input: HString)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): GoogleStorageDownloadActivity =
     new GoogleStorageDownloadActivity(
       baseFields = BaseFields(PipelineObjectId(GoogleStorageDownloadActivity.getClass)),
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(GoogleStorageActivity.downloadScript),
       botoConfigUrl = botoConfigUrl,
-      googleStorageUri = ""
+      googleStorageUri = input
     )
 
 }
