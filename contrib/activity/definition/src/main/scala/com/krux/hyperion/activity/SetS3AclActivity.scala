@@ -27,7 +27,7 @@ case class SetS3AclActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def withRecursive = this.copy(recursive = true)
+  def withRecursive = copy(recursive = true)
 
   private def arguments: Seq[HType] =
     Seq(

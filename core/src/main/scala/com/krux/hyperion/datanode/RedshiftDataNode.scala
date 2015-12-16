@@ -23,9 +23,9 @@ case class RedshiftDataNode private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataNodeFields(fields: DataNodeFields) = copy(dataNodeFields = fields)
 
-  def withCreateTableSql(createSql: HString): RedshiftDataNode = this.copy(createTableSql = Option(createSql))
-  def withSchema(name: HString): RedshiftDataNode = this.copy(schemaName = Option(name))
-  def withPrimaryKeys(pks: HString*): RedshiftDataNode = this.copy(primaryKeys = primaryKeys ++ pks)
+  def withCreateTableSql(createSql: HString): RedshiftDataNode = copy(createTableSql = Option(createSql))
+  def withSchema(name: HString): RedshiftDataNode = copy(schemaName = Option(name))
+  def withPrimaryKeys(pks: HString*): RedshiftDataNode = copy(primaryKeys = primaryKeys ++ pks)
 
   override def objects = Seq(database) ++ super.objects
 

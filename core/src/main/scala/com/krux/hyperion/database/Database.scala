@@ -20,13 +20,13 @@ trait Database extends NamedPipelineObject {
   )
 
   def `*password` = databaseFields.`*password`
-  def withPassword(pass: HString) = updateDatabaseFields(
-    databaseFields.copy(`*password` = pass)
+  def withPassword(password: HString) = updateDatabaseFields(
+    databaseFields.copy(`*password` = password)
   )
 
   def databaseName = databaseFields.databaseName
-  def withDatabaseName(dbname: HString) = updateDatabaseFields(
-    databaseFields.copy(databaseName = Option(dbname))
+  def withDatabaseName(databaseName: HString) = updateDatabaseFields(
+    databaseFields.copy(databaseName = Option(databaseName))
   )
 
   def serialize: AdpDatabase

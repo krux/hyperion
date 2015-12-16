@@ -26,13 +26,13 @@ case class Ec2Resource private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
 
-  def runAsUser(user: HString) = this.copy(runAsUser = Option(user))
-  def withInstanceType(instanceType: HString) = this.copy(instanceType = instanceType)
-  def withImageId(imageId: HString) = this.copy(imageId = Option(imageId))
-  def withSecurityGroups(groups: HString*) = this.copy(securityGroups = securityGroups ++ groups)
-  def withSecurityGroupIds(groupIds: HString*) = this.copy(securityGroupIds = securityGroupIds ++ groupIds)
-  def withPublicIp() = this.copy(associatePublicIpAddress = HBoolean.True)
-  def withSpotBidPrice(spotBidPrice: HDouble) = this.copy(spotBidPrice = Option(spotBidPrice))
+  def runAsUser(user: HString) = copy(runAsUser = Option(user))
+  def withInstanceType(instanceType: HString) = copy(instanceType = instanceType)
+  def withImageId(imageId: HString) = copy(imageId = Option(imageId))
+  def withSecurityGroups(groups: HString*) = copy(securityGroups = securityGroups ++ groups)
+  def withSecurityGroupIds(groupIds: HString*) = copy(securityGroupIds = securityGroupIds ++ groupIds)
+  def withPublicIp() = copy(associatePublicIpAddress = HBoolean.True)
+  def withSpotBidPrice(spotBidPrice: HDouble) = copy(spotBidPrice = Option(spotBidPrice))
 
   lazy val serialize = AdpEc2Resource(
     id = id,

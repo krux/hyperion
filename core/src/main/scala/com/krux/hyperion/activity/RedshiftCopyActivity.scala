@@ -41,11 +41,11 @@ case class RedshiftCopyActivity private (
       "CSV or TSV format cannot be used with commandOptions"
     )
 
-    this.copy(commandOptions = commandOptions ++ opts)
+    copy(commandOptions = commandOptions ++ opts)
   }
 
-  def withTransformSql(sql: HString) = this.copy(transformSql = Option(sql))
-  def withQueue(queue: HString) = this.copy(queue = Option(queue))
+  def withTransformSql(sql: HString) = copy(transformSql = Option(sql))
+  def withQueue(queue: HString) = copy(queue = Option(queue))
 
   override def objects: Iterable[PipelineObject] = Seq(input, output) ++ super.objects
 

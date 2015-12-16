@@ -30,8 +30,8 @@ case class HiveCopyActivity[A <: EmrCluster] private (
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
-  def withFilterSql(filterSql: HString) = this.copy(filterSql = Option(filterSql))
-  def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
+  def withFilterSql(filterSql: HString) = copy(filterSql = Option(filterSql))
+  def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = copy(generatedScriptsPath = Option(generatedScriptsPath))
 
   override def objects = Seq(input, output) ++ super.objects
 

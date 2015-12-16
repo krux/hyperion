@@ -28,11 +28,11 @@ case class SendSqsMessageActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def withRegion(region: HString) = this.copy(region = Option(region))
-  def withDelaySeconds(delay: HInt) = this.copy(delay = Option(delay))
+  def withRegion(region: HString) = copy(region = Option(region))
+  def withDelaySeconds(delay: HInt) = copy(delay = Option(delay))
   def withAttribute(key: HString, value: HString, dataType: HString = "String") = {
     val attribute = (key, (dataType, value))
-    this.copy(attributes = attributes + attribute)
+    copy(attributes = attributes + attribute)
   }
 
   private def arguments: Seq[HType] = Seq(

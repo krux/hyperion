@@ -25,7 +25,7 @@ case class SparkCluster private (
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
   def updateEmrClusterFields(fields: EmrClusterFields) = copy(emrClusterFields = fields)
 
-  def withSparkVersion(sparkVersion: HString) = this.copy(sparkVersion = sparkVersion)
+  def withSparkVersion(sparkVersion: HString) = copy(sparkVersion = sparkVersion)
 
   override def standardBootstrapAction = 
     (s"s3://support.elasticmapreduce/spark/install-spark,-v,${sparkVersion},-x": HString) +:

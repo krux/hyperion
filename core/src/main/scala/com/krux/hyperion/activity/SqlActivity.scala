@@ -25,8 +25,8 @@ case class SqlActivity private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
-  def withArguments(arg: HString*) = this.copy(scriptArgument = scriptArgument ++ arg)
-  def withQueue(queue: HString) = this.copy(queue = Option(queue))
+  def withArguments(arg: HString*) = copy(scriptArgument = scriptArgument ++ arg)
+  def withQueue(queue: HString) = copy(queue = Option(queue))
 
   override def objects = Seq(database) ++ super.objects
 

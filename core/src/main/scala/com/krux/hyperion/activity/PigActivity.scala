@@ -31,10 +31,10 @@ case class PigActivity[A <: EmrCluster] private (
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
-  def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
-  def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = this.copy(generatedScriptsPath = Option(generatedScriptsPath))
-  def withInput(in: DataNode) = this.copy(input = Option(in), stage = Option(HBoolean.True))
-  def withOutput(out: DataNode) = this.copy(output = Option(out), stage = Option(HBoolean.True))
+  def withScriptVariable(scriptVariable: HString*) = copy(scriptVariables = scriptVariables ++ scriptVariable)
+  def withGeneratedScriptsPath(generatedScriptsPath: HS3Uri) = copy(generatedScriptsPath = Option(generatedScriptsPath))
+  def withInput(in: DataNode) = copy(input = Option(in), stage = Option(HBoolean.True))
+  def withOutput(out: DataNode) = copy(output = Option(out), stage = Option(HBoolean.True))
 
   override def objects = input ++ output ++ super.objects
 

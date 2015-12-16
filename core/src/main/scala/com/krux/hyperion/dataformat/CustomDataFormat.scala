@@ -20,8 +20,8 @@ case class CustomDataFormat private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
-  def withColumnSeparator(columnSeparator: HString) = this.copy(columnSeparator = columnSeparator)
-  def withRecordSeparator(recordSeparator: HString) = this.copy(recordSeparator = recordSeparator)
+  def withColumnSeparator(columnSeparator: HString) = copy(columnSeparator = columnSeparator)
+  def withRecordSeparator(recordSeparator: HString) = copy(recordSeparator = recordSeparator)
 
   lazy val serialize = AdpCustomDataFormat(
     id = id,

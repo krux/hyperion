@@ -29,9 +29,9 @@ case class ShellCommandPrecondition private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updatePreconditionFields(fields: PreconditionFields) = copy(preconditionFields = fields)
 
-  def withScriptArgument(argument: HString*) = this.copy(scriptArgument = scriptArgument ++ argument)
-  def withStdout(stdout: HString) = this.copy(stdout = Option(stdout))
-  def withStderr(stderr: HString) = this.copy(stderr = Option(stderr))
+  def withScriptArgument(argument: HString*) = copy(scriptArgument = scriptArgument ++ argument)
+  def withStdout(stdout: HString) = copy(stdout = Option(stdout))
+  def withStderr(stderr: HString) = copy(stderr = Option(stderr))
 
   lazy val serialize = AdpShellCommandPrecondition(
     id = id,

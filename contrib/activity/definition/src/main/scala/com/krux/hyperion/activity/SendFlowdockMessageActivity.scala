@@ -28,9 +28,9 @@ case class SendFlowdockMessageActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def continuingOnError = this.copy(continueOnError = true)
-  def withUser(user: HString) = this.copy(user = user)
-  def withTags(tag: HString*) = this.copy(tags = this.tags ++ tag)
+  def continuingOnError = copy(continueOnError = true)
+  def withUser(user: HString) = copy(user = user)
+  def withTags(tag: HString*) = copy(tags = this.tags ++ tag)
 
   private def arguments: Seq[HString] = Seq(
     if (continueOnError) Seq.empty[HString] else Seq[HString]("--fail-on-error"),

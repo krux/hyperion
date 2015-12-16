@@ -104,10 +104,9 @@ case class RedshiftUnloadActivity private (
     |${unloadOptions.flatMap(_.repr).mkString(" ")}
   """.stripMargin
 
-  def withUnloadOptions(opts: RedshiftUnloadOption*) =
-    this.copy(unloadOptions = unloadOptions ++ opts)
+  def withUnloadOptions(opts: RedshiftUnloadOption*) = copy(unloadOptions = unloadOptions ++ opts)
 
-  def withQueue(queue: HString) = this.copy(queue = Option(queue))
+  def withQueue(queue: HString) = copy(queue = Option(queue))
 
   override def objects = Seq(database) ++ super.objects
 

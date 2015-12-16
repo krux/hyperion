@@ -11,8 +11,8 @@ case class MapReduceStep private (
   args: Seq[HString]
 ) {
 
-  def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
-  def withArguments(arg: HString*) = this.copy(args = args ++ arg)
+  def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
+  def withArguments(arg: HString*) = copy(args = args ++ arg)
 
   def serialize: String = (jarUri +: mainClass.map(_.toString).toSeq ++: args).mkString(",")
 

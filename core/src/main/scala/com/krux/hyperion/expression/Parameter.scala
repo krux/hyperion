@@ -42,8 +42,8 @@ case class Parameter[T : TypeTag] private (
     v.asInstanceOf[T]
   }
 
-  def withDescription(desc: String): Parameter[T] = this.copy(description = Option(desc))
-  def encrypted: Parameter[T] = this.copy(isEncrypted = true)
+  def withDescription(desc: String): Parameter[T] = copy(description = Option(desc))
+  def encrypted: Parameter[T] = copy(isEncrypted = true)
 
   def isEmpty: Boolean = value.isEmpty
 

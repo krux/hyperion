@@ -29,12 +29,12 @@ case class SendSnsMessageActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def withSubject(subject: HString) = this.copy(subject = Option(subject))
-  def withRegion(region: HString) = this.copy(region = Option(region))
-  def withStructuredMessage = this.copy(structuredMessage = true)
+  def withSubject(subject: HString) = copy(subject = Option(subject))
+  def withRegion(region: HString) = copy(region = Option(region))
+  def withStructuredMessage = copy(structuredMessage = true)
   def withAttribute(key: HString, value: HString, dataType: HString = "String") = {
     val attribute = (key, (dataType, value))
-    this.copy(attributes = attributes + attribute)
+    copy(attributes = attributes + attribute)
   }
 
   private def arguments: Seq[HString] = Seq(

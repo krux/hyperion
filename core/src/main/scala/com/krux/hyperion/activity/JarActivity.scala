@@ -27,7 +27,7 @@ case class JarActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
+  def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
 
   def withOptions(opts: HString*) = super.withArguments(opts: _*)
   def options = shellCommandActivityFields.scriptArguments
@@ -35,7 +35,7 @@ case class JarActivity private (
   /**
    * Arguments passed to the jar
    */
-  override def withArguments(args: HString*) = this.copy(arguments = arguments ++ args)
+  override def withArguments(args: HString*) = copy(arguments = arguments ++ args)
 
   override def scriptArguments =
     (jarUri.serialize: HString) +: options ++: (mainClass.fullName: HString) +: arguments

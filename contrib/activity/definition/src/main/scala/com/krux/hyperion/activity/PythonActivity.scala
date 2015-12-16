@@ -32,11 +32,11 @@ case class PythonActivity private (
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def withScript(pythonScript: HString) = this.copy(pythonScript = Option(pythonScript))
-  def withModule(pythonModule: HString) = this.copy(pythonModule = Option(pythonModule))
-  def withRequirements(pythonRequirements: HString) = this.copy(pythonRequirements = Option(pythonRequirements))
-  def withIndexUrl(indexUrl: HString) = this.copy(pipIndexUrl = Option(indexUrl))
-  def withExtraIndexUrls(indexUrl: HString*) = this.copy(pipExtraIndexUrls = pipExtraIndexUrls ++ indexUrl)
+  def withScript(pythonScript: HString) = copy(pythonScript = Option(pythonScript))
+  def withModule(pythonModule: HString) = copy(pythonModule = Option(pythonModule))
+  def withRequirements(pythonRequirements: HString) = copy(pythonRequirements = Option(pythonRequirements))
+  def withIndexUrl(indexUrl: HString) = copy(pipIndexUrl = Option(indexUrl))
+  def withExtraIndexUrls(indexUrl: HString*) = copy(pipExtraIndexUrls = pipExtraIndexUrls ++ indexUrl)
 
   override def withArguments(args: HString*) = copy(arguments = arguments ++ args)
 

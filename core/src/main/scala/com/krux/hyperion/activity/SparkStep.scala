@@ -17,21 +17,21 @@ case class SparkStep private (
   sparkConfig: Map[HString, HString]
 ) {
 
-  def withMainClass(mainClass: MainClass) = this.copy(mainClass = Option(mainClass))
-  def withArguments(arg: HString*) = this.copy(args = args ++ arg)
-  def withSparkOption(option: HString*) = this.copy(sparkOptions = sparkOptions ++ option)
-  def withSparkConfig(key: HString, value: HString) = this.copy(sparkConfig = sparkConfig + (key -> value))
+  def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
+  def withArguments(arg: HString*) = copy(args = args ++ arg)
+  def withSparkOption(option: HString*) = copy(sparkOptions = sparkOptions ++ option)
+  def withSparkConfig(key: HString, value: HString) = copy(sparkConfig = sparkConfig + (key -> value))
 
-  def withDriverCores(n: HInt) = this.withSparkOption("--driver-cores", n.toString)
-  def withDriverMemory(memory: Memory) = this.withSparkOption("--driver-memory", memory.toString)
+  def withDriverCores(n: HInt) = withSparkOption("--driver-cores", n.toString)
+  def withDriverMemory(memory: Memory) = withSparkOption("--driver-memory", memory.toString)
 
-  def withExecutorCores(n: HInt) = this.withSparkOption("--executor-cores", n.toString)
-  def withExecutorMemory(memory: Memory) = this.withSparkOption("--executor-memory", memory.toString)
-  def withNumExecutors(n: HInt) = this.withSparkOption("--num-executors", n.toString)
-  def withTotalExecutorCores(n: HInt) = this.withSparkOption("--total-executor-cores", n.toString)
+  def withExecutorCores(n: HInt) = withSparkOption("--executor-cores", n.toString)
+  def withExecutorMemory(memory: Memory) = withSparkOption("--executor-memory", memory.toString)
+  def withNumExecutors(n: HInt) = withSparkOption("--num-executors", n.toString)
+  def withTotalExecutorCores(n: HInt) = withSparkOption("--total-executor-cores", n.toString)
 
-  def withFiles(files: HString*) = this.withSparkOption(files.flatMap(file => Seq("--files": HString, file)): _*)
-  def withMaster(master: HString) = this.withSparkOption("--master", master)
+  def withFiles(files: HString*) = withSparkOption(files.flatMap(file => Seq("--files": HString, file)): _*)
+  def withMaster(master: HString) = withSparkOption("--master", master)
 
   def serialize: String = Seq(
     Seq(scriptRunner, jobRunner),

@@ -20,9 +20,9 @@ case class Schedule private (
   scheduleType: ScheduleType = Cron
 ) extends PipelineObject {
 
-  def startAtActivation = this.copy(start = None)
+  def startAtActivation = copy(start = None)
 
-  def startDateTime(dt: DateTime) = this.copy(start = Option(dt))
+  def startDateTime(dt: DateTime) = copy(start = Option(dt))
 
   def startTodayAt(hourOfDay: Int, minuteOfHour: Int, secondOfMinute: Int) =
     startThisDayOfXAt(0, hourOfDay, minuteOfHour, secondOfMinute)((dt, _) => dt)
@@ -37,12 +37,12 @@ case class Schedule private (
       secondOfMinute: Int)(dayOfFunc: (DateTime, Int) => DateTime) = {
     val startDt = dayOfFunc(DateTime.now.withZone(DateTimeZone.UTC), dayOfX)
       .withTime(hourOfDay, minuteOfHour, secondOfMinute, 0)
-    this.copy(start = Option(startDt))
+    copy(start = Option(startDt))
   }
 
-  def every(p: Duration) = this.copy(period = p)
-  def until(dt: DateTime) = this.copy(end = Option(Right(dt)))
-  def stopAfter(occurrences: Int) = this.copy(end = Option(Left(occurrences)))
+  def every(p: Duration) = copy(period = p)
+  def until(dt: DateTime) = copy(end = Option(Right(dt)))
+  def stopAfter(occurrences: Int) = copy(end = Option(Left(occurrences)))
 
   def objects: Iterable[PipelineObject] = None
 

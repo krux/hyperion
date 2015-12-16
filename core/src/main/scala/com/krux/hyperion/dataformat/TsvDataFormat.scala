@@ -18,7 +18,7 @@ case class TsvDataFormat private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateDataFormatFields(fields: DataFormatFields) = copy(dataFormatFields = fields)
 
-  def withEscapeChar(escapeChar: HString) = this.copy(escapeChar = Option(escapeChar))
+  def withEscapeChar(escapeChar: HString) = copy(escapeChar = Option(escapeChar))
 
   lazy val serialize = AdpTsvDataFormat(
     id = id,

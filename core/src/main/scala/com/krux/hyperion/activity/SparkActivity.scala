@@ -25,11 +25,11 @@ case class SparkActivity private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
-  def withSteps(step: SparkStep*) = this.copy(steps = steps ++ step)
-  def withPreStepCommand(command: HString*) = this.copy(preStepCommands = preStepCommands ++ command)
-  def withPostStepCommand(command: HString*) = this.copy(postStepCommands = postStepCommands ++ command)
-  def withInput(input: S3DataNode*) = this.copy(inputs = inputs ++ input)
-  def withOutput(output: S3DataNode*) = this.copy(outputs = outputs ++ output)
+  def withSteps(step: SparkStep*) = copy(steps = steps ++ step)
+  def withPreStepCommand(command: HString*) = copy(preStepCommands = preStepCommands ++ command)
+  def withPostStepCommand(command: HString*) = copy(postStepCommands = postStepCommands ++ command)
+  def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
+  def withOutput(output: S3DataNode*) = copy(outputs = outputs ++ output)
 
   override def objects = inputs ++ inputs ++ super.objects
 

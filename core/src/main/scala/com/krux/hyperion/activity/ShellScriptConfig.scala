@@ -14,7 +14,7 @@ case class ShellScriptConfig(
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
 
-  def withArguments(args: HString*) = this.copy(scriptArguments = scriptArguments ++ args)
+  def withArguments(args: HString*) = copy(scriptArguments = scriptArguments ++ args)
 
   def objects: Iterable[PipelineObject] = None
 

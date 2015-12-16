@@ -15,13 +15,11 @@ case class EmrConfiguration private (
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
 
-  def withClassification(classification: HString) =
-    this.copy(classification = Option(classification))
+  def withClassification(classification: HString) = copy(classification = Option(classification))
 
-  def withProperty(property: Property*) = this.copy(properties = this.properties ++ property)
+  def withProperty(property: Property*) = copy(properties = this.properties ++ property)
 
-  def withConfiguration(configuration: EmrConfiguration*) =
-    this.copy(configurations = this.configurations ++ configuration)
+  def withConfiguration(configuration: EmrConfiguration*) = copy(configurations = this.configurations ++ configuration)
 
   def objects = configurations ++ properties
 

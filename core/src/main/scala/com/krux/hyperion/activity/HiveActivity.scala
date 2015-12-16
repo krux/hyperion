@@ -34,8 +34,8 @@ case class HiveActivity[A <: EmrCluster] private (
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
-  def withScriptVariable(scriptVariable: HString*) = this.copy(scriptVariables = scriptVariables ++ scriptVariable)
-  def withHadoopQueue(queue: HString) = this.copy(hadoopQueue = Option(queue))
+  def withScriptVariable(scriptVariable: HString*) = copy(scriptVariables = scriptVariables ++ scriptVariable)
+  def withHadoopQueue(queue: HString) = copy(hadoopQueue = Option(queue))
 
   override def objects = Seq(input, output) ++ super.objects
 
