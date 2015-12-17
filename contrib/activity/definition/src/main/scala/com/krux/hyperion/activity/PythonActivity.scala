@@ -22,8 +22,7 @@ case class PythonActivity private (
   pythonModule: Option[HString],
   pythonRequirements: Option[HString],
   pipIndexUrl: Option[HString],
-  pipExtraIndexUrls: Seq[HString],
-  arguments: Seq[HString]
+  pipExtraIndexUrls: Seq[HString]
 ) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = PythonActivity
@@ -38,15 +37,13 @@ case class PythonActivity private (
   def withIndexUrl(indexUrl: HString) = copy(pipIndexUrl = Option(indexUrl))
   def withExtraIndexUrls(indexUrl: HString*) = copy(pipExtraIndexUrls = pipExtraIndexUrls ++ indexUrl)
 
-  override def withArguments(args: HString*) = copy(arguments = arguments ++ args)
-
   override def scriptArguments: Seq[HType] = Seq(
     pythonScriptUri.map(Seq(_)),
     pythonScript.map(Seq(_)),
     pythonRequirements.map(Seq[HString]("-r", _)),
     pythonModule.map(Seq[HString]("-m", _)),
     pipIndexUrl.map(Seq[HString]("-i", _))
-  ).flatten.flatten ++ pipExtraIndexUrls.flatMap(Seq[HString]("--extra-index-url", _)) ++ Seq[HString]("--") ++ arguments
+  ).flatten.flatten ++ pipExtraIndexUrls.flatMap(Seq[HString]("--extra-index-url", _)) ++ Seq[HString]("--") ++ shellCommandActivityFields.scriptArguments
 
 }
 
@@ -62,8 +59,7 @@ object PythonActivity extends RunnableObject {
       pythonModule = None,
       pythonRequirements = None,
       pipIndexUrl = None,
-      pipExtraIndexUrls = Seq.empty,
-      arguments = Seq.empty
+      pipExtraIndexUrls = Seq.empty
     )
 
 }

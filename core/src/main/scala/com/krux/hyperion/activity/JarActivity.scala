@@ -16,7 +16,7 @@ case class JarActivity private (
   shellCommandActivityFields: ShellCommandActivityFields,
   jarUri: HS3Uri,
   mainClass: Option[MainClass],
-  arguments: Seq[HString]
+  options: Seq[HString]
 ) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = JarActivity
@@ -29,16 +29,10 @@ case class JarActivity private (
 
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
 
-  def withOptions(opts: HString*) = super.withArguments(opts: _*)
-  def options = shellCommandActivityFields.scriptArguments
-
-  /**
-   * Arguments passed to the jar
-   */
-  override def withArguments(args: HString*) = copy(arguments = arguments ++ args)
+  def withOptions(opts: HString*) = copy(options = options ++ opts)
 
   override def scriptArguments =
-    (jarUri.serialize: HString) +: options ++: (mainClass.fullName: HString) +: arguments
+    (jarUri.serialize: HString) +: options ++: (mainClass.fullName: HString) +: shellCommandActivityFields.scriptArguments
 
 }
 
@@ -51,7 +45,7 @@ object JarActivity extends RunnableObject {
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = jarUri,
       mainClass = None,
-      arguments = Seq.empty
+      options = Seq.empty
     )
 
 }
