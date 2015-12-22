@@ -13,6 +13,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#271](https://github.com/krux/hyperion/issues/271) - Separate CLI with DataPipelineDef
 - [#214](https://github.com/krux/hyperion/issues/214) - Extend CLI to be able to read parameters to be passed from pipeline
 
+## 2.16.4 - 2015-11-23
+### Fixed
+- [#273](https://github.com/krux/hyperion/issues/273) - Add `ACCEPTINVCHARS` and the rest of Data Conversion Parameters to redshift copy options
+
+## 2.16.3 - 2015-11-11
+### Fixed
+- [#269](https://github.com/krux/hyperion/issues/269) - Sftp download auth cancel when using username and password
+- [#267](https://github.com/krux/hyperion/issues/267) - Passing 0 to stopAfter should reset end to None
+
 ## 2.16.2 - 2015-11-09
 ### Fixed
 - [#264](https://github.com/krux/hyperion/issues/264) - CLI schedule override only the explicitly specified part

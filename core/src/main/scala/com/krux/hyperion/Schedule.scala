@@ -40,9 +40,9 @@ case class Schedule private (
     copy(start = Option(startDt))
   }
 
-  def every(p: Duration) = copy(period = p)
-  def until(dt: DateTime) = copy(end = Option(Right(dt)))
-  def stopAfter(occurrences: Int) = copy(end = Option(Left(occurrences)))
+  def every(p: Duration) = this.copy(period = p)
+  def until(dt: DateTime) = this.copy(end = Option(Right(dt)))
+  def stopAfter(occurrences: Int) = this.copy(end = if (occurrences > 0) Option(Left(occurrences)) else None)
 
   def objects: Iterable[PipelineObject] = None
 
