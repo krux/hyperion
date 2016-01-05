@@ -4,14 +4,14 @@ import com.krux.hyperion.adt._
 import com.krux.hyperion.aws.AdpShellCommandActivity
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.ConstantExpression._
-import com.krux.hyperion.expression.{ Format, Parameter }
+import com.krux.hyperion.expression.{ Format, EncryptedParameter }
 import com.krux.hyperion.resource.Ec2Resource
 
 case class SftpActivityFields(
   host: HString,
   port: Option[HInt] = None,
   username: Option[HString] = None,
-  password: Option[Parameter[String]] = None,
+  password: Option[EncryptedParameter[String]] = None,
   identity: Option[HS3Uri] = None,
   pattern: Option[HString] = None,
   sinceDate: Option[HDateTime] = None,
@@ -28,8 +28,6 @@ trait SftpActivity extends BaseShellCommandActivity {
   def updateSftpActivityFields(fields: SftpActivityFields): Self
 
   def sftpPath: Option[HString]
-
-  require(password.forall(_.isEncrypted), "The password must be an encrypted string parameter")
 
   def host = sftpActivityFields.host
 
@@ -54,7 +52,7 @@ trait SftpActivity extends BaseShellCommandActivity {
   )
 
   def password = sftpActivityFields.password
-  def withPassword(password: Parameter[String]) = updateSftpActivityFields(
+  def withPassword(password: EncryptedParameter[String]) = updateSftpActivityFields(
     sftpActivityFields.copy(password = Option(password))
   )
 

@@ -2,14 +2,14 @@ package com.krux.hyperion.common
 
 import com.krux.hyperion.adt.{ HString, HInt }
 import com.krux.hyperion.aws.{ AdpRef, AdpHttpProxy }
-import com.krux.hyperion.expression.Parameter
+import com.krux.hyperion.expression.EncryptedParameter
 
 case class HttpProxy private (
   baseFields: BaseFields,
   hostname: Option[HString],
   port: Option[HInt],
   username: Option[HString],
-  password: Option[Parameter[String]],
+  password: Option[EncryptedParameter[String]],
   windowsDomain: Option[HString],
   windowsWorkGroup: Option[HString]
 ) extends NamedPipelineObject {
@@ -21,7 +21,7 @@ case class HttpProxy private (
   def withHostname(hostname: HString) = copy(hostname = Option(hostname))
   def withPort(port: HInt) = copy(port = Option(port))
   def withUsername(username: HString) = copy(username = Option(username))
-  def withPassword(password: Parameter[String]) = {
+  def withPassword(password: EncryptedParameter[String]) = {
     assert(password.isEncrypted)
     copy(password = Option(password))
   }

@@ -1,11 +1,11 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, BaseFields, S3Uri}
-import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.{RunnableObject, Parameter}
 import com.krux.hyperion.adt.{ HInt, HDuration, HString, HBoolean, HType, HS3Uri }
+import com.krux.hyperion.aws.AdpShellCommandActivity
+import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, BaseFields, S3Uri }
+import com.krux.hyperion.datanode.S3DataNode
+import com.krux.hyperion.expression.{ RunnableObject, EncryptedParameter }
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, Ec2Resource}
@@ -19,7 +19,7 @@ case class SendEmailActivity private (
   host: Option[HString],
   port: Option[HInt],
   username: Option[HString],
-  password: Option[Parameter[String]],
+  password: Option[EncryptedParameter[String]],
   from: Option[HString],
   to: Seq[HString],
   cc: Seq[HString],
@@ -32,8 +32,6 @@ case class SendEmailActivity private (
 
   type Self = SendEmailActivity
 
-  require(password.forall(_.isEncrypted), "The password must be an encrypted string parameter")
-
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
@@ -41,7 +39,7 @@ case class SendEmailActivity private (
   def withHost(host: HString) = copy(host = Option(host))
   def withPort(port: HInt) = copy(port = Option(port))
   def withUsername(username: HString) = copy(username = Option(username))
-  def withPassword(password: Parameter[String]) = copy(password = Option(password))
+  def withPassword(password: EncryptedParameter[String]) = copy(password = Option(password))
   def withFrom(from: HString) = copy(from = Option(from))
   def withTo(to: HString) = copy(to = this.to :+ to)
   def withCc(cc: HString) = copy(cc = this.cc :+ cc)

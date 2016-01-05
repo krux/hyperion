@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 3.0.0-SNAPSHOT
 ### Changed
+- [#295](https://github.com/krux/hyperion/issues/295) - Refactor parameter with adhoc polymorphism with type class instead of reflection TypeTags
+- [#248](https://github.com/krux/hyperion/issues/248) - Refactor parameter to have EncryptedParameter and UnencryptedParameter
 - [#281](https://github.com/krux/hyperion/issues/281) - Support for not failing on un-defined pipeline parameters
 - [#291](https://github.com/krux/hyperion/issues/291) - Clean up the implicits
 - [#285](https://github.com/krux/hyperion/issues/285) - SnsAlarm requires topic arn and added default subject and message

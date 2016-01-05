@@ -4,11 +4,11 @@ import scala.annotation.tailrec
 import scala.collection.mutable.StringBuilder
 
 import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString }
 import com.krux.hyperion.aws.AdpSqlActivity
 import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, BaseFields }
 import com.krux.hyperion.database.RedshiftDatabase
-import com.krux.hyperion.expression.{ RunnableObject, Parameter }
-import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString }
+import com.krux.hyperion.expression.{ RunnableObject, EncryptedParameter }
 import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{ Resource, Ec2Resource }
 
@@ -23,12 +23,9 @@ case class RedshiftUnloadActivity private (
   database: RedshiftDatabase,
   unloadOptions: Seq[RedshiftUnloadOption],
   queue: Option[HString],
-  accessKeyId: Parameter[String],
-  accessKeySecret: Parameter[String]
+  accessKeyId: EncryptedParameter[String],
+  accessKeySecret: EncryptedParameter[String]
 ) extends PipelineActivity[Ec2Resource] {
-
-  require(accessKeyId.isEncrypted, "The access key id must be an encrypted string parameter")
-  require(accessKeySecret.isEncrypted, "The access secret must be an encrypted string parameter")
 
   type Self = RedshiftUnloadActivity
 
@@ -137,7 +134,7 @@ case class RedshiftUnloadActivity private (
 object RedshiftUnloadActivity extends RunnableObject {
 
   def apply(database: RedshiftDatabase, script: HString, s3Path: HS3Uri,
-    accessKeyId: Parameter[String], accessKeySecret: Parameter[String])(runsOn: Resource[Ec2Resource]): RedshiftUnloadActivity =
+    accessKeyId: EncryptedParameter[String], accessKeySecret: EncryptedParameter[String])(runsOn: Resource[Ec2Resource]): RedshiftUnloadActivity =
     new RedshiftUnloadActivity(
       baseFields = BaseFields(PipelineObjectId(RedshiftUnloadActivity.getClass)),
       activityFields = ActivityFields(runsOn),
