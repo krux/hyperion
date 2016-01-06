@@ -8,6 +8,9 @@ import com.krux.hyperion.adt.{ HString, HDouble, HInt, HS3Uri, HDuration, HDateT
 import com.krux.hyperion.aws.AdpParameter
 import com.krux.hyperion.common.S3Uri
 
+/**
+ * Defines and builds Parameter and returns the specific type instead of the paraent type.
+ */
 trait ParameterBuilder[T, +Self <: Parameter[T] with ParameterBuilder[T, Self]] { self: Self =>
 
   def updateParameterFields(fields: ParameterFields): Self
@@ -17,6 +20,12 @@ trait ParameterBuilder[T, +Self <: Parameter[T] with ParameterBuilder[T, Self]] 
     self
   }
 
+  /**
+   * This needs to be implemented as a function (instead of a method) as we need to store it with
+   * the class at the time the implicit parseString for the type is availble (when the parameter
+   * instance is created). Since the calling of this function is mainly used when type is not
+   * available such as in {{{List[Parameter[_]]}}}.
+   */
   def parseString: (String) => T
 
   def withValueFromString(stringValue: String) = withValue(parseString(stringValue))
@@ -28,6 +37,10 @@ trait ParameterBuilder[T, +Self <: Parameter[T] with ParameterBuilder[T, Self]] 
 
 }
 
+/**
+ * The Parameter class which hides the ParameterBuilder class. Note that the parameter abstract
+ * class also belongs to the GenericParameter type class
+ */
 sealed abstract class Parameter[T : GenericParameter] extends ParameterBuilder[T, Parameter[T]] {
 
   val env = implicitly[GenericParameter[T]]
@@ -50,12 +63,12 @@ sealed abstract class Parameter[T : GenericParameter] extends ParameterBuilder[T
 
   def ref: env.Exp = env.ref(this)
 
-  def `type`: String = env.`type`
+  def `type`: ParameterType.Value = env.`type`
 
   def serialize: Option[AdpParameter] = Option(
     AdpParameter(
       id = name,
-      `type` = `type`,
+      `type` = `type`.toString,
       description = description,
       optional = HBoolean.False.serialize,
       allowedValues = None,
@@ -138,6 +151,9 @@ object Parameter {
 
 }
 
+/**
+ * UnencryptedParameter is subtype of Parameter and belongs to the type class GenericParameter
+ */
 case class UnencryptedParameter[T : GenericParameter](parameterFields: ParameterFields)
   extends Parameter[T]
   with ParameterBuilder[T, UnencryptedParameter[T]] {
@@ -150,6 +166,9 @@ case class UnencryptedParameter[T : GenericParameter](parameterFields: Parameter
   def encrypted: EncryptedParameter[T] = new EncryptedParameter[T](parameterFields)
 }
 
+/**
+ * EncryptedParameter is subtype of Parameter and belongs to the type class GenericParameter
+ */
 case class EncryptedParameter[T : GenericParameter](parameterFields: ParameterFields)
   extends Parameter[T]
   with ParameterBuilder[T, EncryptedParameter[T]] {

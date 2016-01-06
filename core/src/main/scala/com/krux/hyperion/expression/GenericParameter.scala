@@ -3,7 +3,14 @@ package com.krux.hyperion.expression
 import org.joda.time.{ DateTime, DateTimeZone }
 
 import com.krux.hyperion.common.S3Uri
+import com.krux.hyperion.expression.ParameterType._
 
+/**
+ * The type class for parameters where all parameter class should belong to.  This trait defines
+ * the standard methods that needs to be implemented to allow specific parameterized type for a
+ * Parameter. To add new Parameter types such as {{{Parameter[YourOwnType]}}}, simply bring an
+ * implicit object that extends {{{GenericParameter[YourOwnType]}}} in scope.
+ */
 trait GenericParameter[T] {
 
   type Exp <: TypedExpression
@@ -12,10 +19,13 @@ trait GenericParameter[T] {
 
   def ref(param: Parameter[T]): Exp
 
-  def `type`: String
+  def `type`: ParameterType
 
 }
 
+/**
+ * This companion class defines the following supported parameter types.
+ */
 object GenericParameter {
 
   implicit object IntGenericParameter extends GenericParameter[Int] {
@@ -29,7 +39,7 @@ object GenericParameter {
       def evaluate() = param.evaluate()
     }
 
-    def `type`: String = "Integer"
+    def `type` = StringType
 
   }
 
@@ -44,7 +54,7 @@ object GenericParameter {
       def evaluate() = param.evaluate()
     }
 
-    def `type`: String = "Double"
+    def `type` = DoubleType
 
   }
 
@@ -60,7 +70,7 @@ object GenericParameter {
       def evaluate() = param.evaluate()
     }
 
-    def `type`: String = "String"
+    def `type` = StringType
 
   }
 
@@ -75,8 +85,7 @@ object GenericParameter {
       def evaluate() = param.evaluate()
     }
 
-    // this is not typo, the aws type of this Boolean is String
-    def `type`: String = "String"
+    def `type` = StringType
 
   }
 
@@ -91,8 +100,7 @@ object GenericParameter {
       def evaluate() = param.evaluate()
     }
 
-    // this is not typo, the aws type of this DateTime is String
-    def `type`: String = "String"
+    def `type` = StringType
 
   }
 
@@ -107,8 +115,7 @@ object GenericParameter {
       def evaluate() = param.evaluate()
     }
 
-    // this is not typo, the aws type of this Duration is String
-    def `type`: String = "String"
+    def `type` = StringType
 
   }
 
@@ -124,7 +131,7 @@ object GenericParameter {
       def evaluate() = param.evaluate()
     }
 
-    def `type`: String = "AWS::S3::ObjectKey"
+    def `type` = S3KeyType
 
   }
 
