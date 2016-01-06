@@ -13,10 +13,22 @@ import com.krux.hyperion.expression.ParameterType._
  */
 trait GenericParameter[T] {
 
+  /**
+   * The expression type of the parameter
+   */
   type Exp <: TypedExpression
 
+  /**
+   * This needs to be implemented as a function (instead of a method) as we need to store it with
+   * the class at the time the implicit parseString for the type is availble (when the parameter
+   * instance is created). Since the calling of this function is mainly used when type is not
+   * available such as in {{{List[Parameter[_]]}}}.
+   */
   def parseString: (String) => T
 
+  /**
+   * Returns the reference expression of the parameter.
+   */
   def ref(param: Parameter[T]): Exp
 
   def `type`: ParameterType
