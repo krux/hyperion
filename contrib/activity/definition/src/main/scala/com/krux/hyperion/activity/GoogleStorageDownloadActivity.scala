@@ -1,13 +1,10 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{ HS3Uri, HString, HBoolean }
-import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{ PipelineObjectId, BaseFields, S3Uri }
-import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.adt.{ HS3Uri, HString }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.resource.{ Ec2Resource, Resource }
 
 /**
  * Google Storage Download activity

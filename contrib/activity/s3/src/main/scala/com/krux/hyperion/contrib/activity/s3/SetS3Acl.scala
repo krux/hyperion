@@ -1,12 +1,10 @@
 package com.krux.hyperion.contrib.activity.s3
 
-import scala.collection.JavaConverters._
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 
 import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.{ ListObjectsRequest, AccessControlList,
-  CannedAccessControlList, Grantee, CanonicalGrantee, EmailAddressGrantee, GroupGrantee, Permission,
-  ObjectListing, S3ObjectSummary}
+import com.amazonaws.services.s3.model.{ CannedAccessControlList, CanonicalGrantee, EmailAddressGrantee, Grantee, GroupGrantee, ObjectListing, Permission }
 import scopt.OptionParser
 
 /**

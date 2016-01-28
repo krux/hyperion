@@ -1,14 +1,10 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{ HInt, HDuration, HString, HBoolean, HType, HS3Uri }
-import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, BaseFields, S3Uri }
-import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.{ RunnableObject, EncryptedParameter }
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.adt.{ HBoolean, HInt, HS3Uri, HString, HType }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, S3Uri }
+import com.krux.hyperion.expression.{ EncryptedParameter, RunnableObject }
+import com.krux.hyperion.resource.{ Ec2Resource, Resource }
 
 case class SendEmailActivity private (
   baseFields: BaseFields,

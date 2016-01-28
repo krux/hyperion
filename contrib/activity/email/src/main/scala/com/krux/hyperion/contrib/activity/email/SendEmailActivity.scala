@@ -1,11 +1,11 @@
 package com.krux.hyperion.contrib.activity.email
 
-import java.io.{File, FilenameFilter}
-import java.nio.file.{Files, Paths}
-import javax.activation.{DataHandler, FileDataSource}
+import java.io.{ File, FilenameFilter }
+import java.nio.file.{ Files, Paths }
+import javax.activation.{ DataHandler, FileDataSource }
 import javax.mail.Message.RecipientType
-import javax.mail.internet.{MimeMultipart, MimeBodyPart, InternetAddress, MimeMessage}
 import javax.mail._
+import javax.mail.internet.{ InternetAddress, MimeBodyPart, MimeMessage, MimeMultipart }
 
 import scopt.OptionParser
 

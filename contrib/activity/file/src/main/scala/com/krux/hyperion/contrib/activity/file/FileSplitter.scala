@@ -1,7 +1,8 @@
 package com.krux.hyperion.contrib.activity.file
 
 import java.io._
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
+
 import org.apache.commons.io.IOUtils
 
 import scala.collection.mutable.ListBuffer

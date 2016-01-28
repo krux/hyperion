@@ -1,12 +1,10 @@
 package com.krux.hyperion.cli
 
-import scopt.Read._
-
-import org.joda.time.DateTimeConstants
-
 import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.Schedule
 import com.krux.hyperion.expression.Duration
+import org.joda.time.DateTimeConstants
+import scopt.Read._
 
 private[hyperion] object Reads {
 

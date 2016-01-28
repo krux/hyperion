@@ -26,7 +26,7 @@ Add hyperion as a dependency in your `build.sbt` or `Build.scala` as appropriate
 ```scala
 libraryDependencies ++= Seq(
   // Other dependencies ...
-  "com.krux" %% "hyperion" % "3.1.0"
+  "com.krux" %% "hyperion" % "3.1.1"
 )
 ```
 

@@ -1,12 +1,11 @@
 package com.krux.hyperion.workflow
 
-import scala.util.Try
 import scala.collection.JavaConverters._
-
-import com.typesafe.config.Config
+import scala.util.Try
 
 import com.amazonaws.services.datapipeline.model.PipelineObject
 import com.krux.hyperion.DataPipelineDef
+import com.typesafe.config.Config
 
 case class WorkflowGraphRenderer(
   pipeline: DataPipelineDef,

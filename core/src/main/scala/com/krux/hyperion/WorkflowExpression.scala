@@ -3,9 +3,8 @@ package com.krux.hyperion
 import scala.language.existentials
 
 import com.krux.hyperion.activity.PipelineActivity
-import com.krux.hyperion.workflow.WorkflowExpressionImplicits
-import com.krux.hyperion.workflow.WorkflowGraph
 import com.krux.hyperion.resource.ResourceObject
+import com.krux.hyperion.workflow.{ WorkflowExpressionImplicits, WorkflowGraph }
 
 sealed abstract class WorkflowExpression {
 

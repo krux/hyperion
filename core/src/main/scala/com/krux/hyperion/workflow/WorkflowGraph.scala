@@ -1,10 +1,10 @@
 package com.krux.hyperion.workflow
 
+import scala.annotation.tailrec
+import scala.language.implicitConversions
+
 import com.krux.hyperion.activity.PipelineActivity
 import com.krux.hyperion.common.PipelineObjectId
-import scala.collection.mutable.Buffer
-import scala.language.implicitConversions
-import scala.annotation.tailrec
 import com.krux.hyperion.resource.ResourceObject
 
 class WorkflowGraph private (

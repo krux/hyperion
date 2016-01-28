@@ -1,10 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.adt._
-import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.{ Format, EncryptedParameter }
-import com.krux.hyperion.resource.Ec2Resource
+import com.krux.hyperion.expression.{ EncryptedParameter, Format }
 
 case class SftpActivityFields(
   host: HString,
@@ -26,6 +23,7 @@ trait SftpActivity extends BaseShellCommandActivity {
   def sftpActivityFields: SftpActivityFields
   def updateSftpActivityFields(fields: SftpActivityFields): Self
 
+  def direction: HString
   def sftpPath: Option[HString]
 
   def host = sftpActivityFields.host
@@ -78,7 +76,7 @@ trait SftpActivity extends BaseShellCommandActivity {
   private val DateTimeFormat = "yyyy-MM-dd\\'T\\'HH:mm:ssZZ"
 
   private def arguments: Seq[HType] = Seq(
-    Option(Seq[HString]("download")),
+    Option(Seq[HString](direction)),
     Option(Seq[HString]("--host", host)),
     port.map(p => Seq[HType]("--port", p)),
     username.map(u => Seq[HString]("--user", u)),

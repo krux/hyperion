@@ -2,13 +2,12 @@ package com.krux.hyperion.cli
 
 import java.io.File
 
-import scopt.OptionParser
-
 import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.BuildInfo
-import com.krux.hyperion.{DataPipelineDef, DataPipelineDefWrapper, Schedule}
+import com.krux.hyperion.cli.Reads._
 import com.krux.hyperion.expression.Duration
-import Reads._
+import com.krux.hyperion.{ DataPipelineDef, DataPipelineDefWrapper }
+import scopt.OptionParser
 
 /**
   * EntryPoint is the main entrypoint for the CLI.

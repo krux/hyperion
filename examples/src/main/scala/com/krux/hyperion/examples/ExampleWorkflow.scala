@@ -1,13 +1,11 @@
 package com.krux.hyperion.examples
 
-import com.typesafe.config.ConfigFactory
-
+import com.krux.hyperion.Implicits._
 import com.krux.hyperion.activity.ShellCommandActivity
 import com.krux.hyperion.expression.Parameter
-import com.krux.hyperion.Implicits._
 import com.krux.hyperion.resource.Ec2Resource
-import com.krux.hyperion.WorkflowExpression
-import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext, HyperionCli}
+import com.krux.hyperion.{ DataPipelineDef, HyperionCli, HyperionContext, Schedule }
+import com.typesafe.config.ConfigFactory
 
 object ExampleWorkflow extends DataPipelineDef with HyperionCli {
 

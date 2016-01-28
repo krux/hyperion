@@ -1,8 +1,8 @@
 package com.krux.hyperion.aws
 
-import org.scalatest.WordSpec
-import org.json4s.JsonDSL._
 import com.github.nscala_time.time.Imports.DateTime
+import org.json4s.JsonDSL._
+import org.scalatest.WordSpec
 
 class AdpScheduleSpec extends WordSpec {
 
