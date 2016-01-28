@@ -2,16 +2,14 @@ package com.krux.hyperion
 
 import scala.language.implicitConversions
 
-import com.amazonaws.services.datapipeline.model.{ParameterObject => AwsParameterObject}
-import com.amazonaws.services.datapipeline.model.{PipelineObject => AwsPipelineObject}
-import org.json4s.JsonDSL._
-import org.json4s.{JValue, JArray}
-
+import com.amazonaws.services.datapipeline.model.{ ParameterObject => AwsParameterObject, PipelineObject => AwsPipelineObject }
 import com.krux.hyperion.activity.MainClass
-import com.krux.hyperion.aws.{AdpParameterSerializer, AdpPipelineSerializer, AdpJsonSerializer}
-import com.krux.hyperion.common.{S3UriHelper, S3Uri, DefaultObject, PipelineObject}
+import com.krux.hyperion.aws.{ AdpJsonSerializer, AdpParameterSerializer, AdpPipelineSerializer }
+import com.krux.hyperion.common.{ DefaultObject, PipelineObject, S3UriHelper }
+import com.krux.hyperion.expression.{ Parameter, ParameterValues }
 import com.krux.hyperion.workflow.WorkflowExpressionImplicits
-import com.krux.hyperion.expression.{Parameter, ParameterValues}
+import org.json4s.JsonDSL._
+import org.json4s.{ JArray, JValue }
 
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait

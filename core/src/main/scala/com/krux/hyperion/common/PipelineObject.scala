@@ -1,7 +1,8 @@
 package com.krux.hyperion.common
 
-import com.krux.hyperion.aws.{ AdpDataPipelineAbstractObject, AdpRef }
 import scala.language.implicitConversions
+
+import com.krux.hyperion.aws.{ AdpDataPipelineAbstractObject, AdpRef }
 
 /**
  * The base trait of krux data pipeline objects.

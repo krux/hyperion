@@ -1,17 +1,13 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString, HBoolean, HType }
-import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, BaseFields, S3Uri }
-import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.{ RunnableObject, Parameter }
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{ Resource, Ec2Resource }
+import com.krux.hyperion.adt.HString
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, S3Uri }
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.resource.{ Ec2Resource, Resource }
 
 /**
- * Shell command activity that runs a given Jar
+ * Activity that uploads from an S3 endpoint to an SFTP endpoint.
  */
 case class SftpUploadActivity private (
   baseFields: BaseFields,
@@ -23,6 +19,8 @@ case class SftpUploadActivity private (
 ) extends SftpActivity with WithS3Input {
 
   type Self = SftpUploadActivity
+
+  def direction: HString = "upload"
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)

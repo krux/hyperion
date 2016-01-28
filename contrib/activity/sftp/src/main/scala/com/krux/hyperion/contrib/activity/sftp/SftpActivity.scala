@@ -1,13 +1,14 @@
 package com.krux.hyperion.contrib.activity.sftp
 
-import java.io._
-import java.nio.file.{Path, Paths}
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
-import org.joda.time.DateTime
+import java.io._
+import java.nio.file.Paths
+
 import com.amazonaws.services.s3.AmazonS3Client
-import com.jcraft.jsch.{JSchException, UserInfo, ChannelSftp, JSch}
+import com.jcraft.jsch.{ ChannelSftp, JSch, JSchException, UserInfo }
+import org.joda.time.DateTime
 import scopt.OptionParser
 
 object SftpActivity {

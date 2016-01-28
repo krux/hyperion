@@ -1,7 +1,7 @@
 package com.krux.hyperion.contrib.activity.file
 
 import java.io.File
-import java.nio.file.{AtomicMoveNotSupportedException, StandardCopyOption, Files, Paths}
+import java.nio.file.{ AtomicMoveNotSupportedException, Files, Paths, StandardCopyOption }
 
 case class FileRepartitioner(options: Options) {
 

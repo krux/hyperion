@@ -1,7 +1,8 @@
 package com.krux.hyperion.contrib.activity.file
 
-import java.io.{FilenameFilter, File}
+import java.io.{ File, FilenameFilter }
 import java.nio.file._
+
 import scopt.OptionParser
 
 object RepartitionFile {

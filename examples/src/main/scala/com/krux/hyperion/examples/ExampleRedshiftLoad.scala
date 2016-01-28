@@ -1,16 +1,13 @@
 package com.krux.hyperion.examples
 
-import com.typesafe.config.ConfigFactory
-
+import com.krux.hyperion.Implicits._
 import com.krux.hyperion.activity.RedshiftCopyActivity
-import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.dataformat.TsvDataFormat
-import com.krux.hyperion.datanode.{S3DataNode, RedshiftDataNode}
-import com.krux.hyperion.Implicits._
+import com.krux.hyperion.datanode.{ RedshiftDataNode, S3DataNode }
 import com.krux.hyperion.resource.Ec2Resource
-import com.krux.hyperion.WorkflowExpression
-import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext, HyperionCli}
+import com.krux.hyperion.{ DataPipelineDef, HyperionCli, HyperionContext, Schedule }
+import com.typesafe.config.ConfigFactory
 
 /**
  * An example redshift loader object

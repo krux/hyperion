@@ -3,12 +3,10 @@ package com.krux.hyperion
 import scala.language.implicitConversions
 
 import com.github.nscala_time.time.Imports._
-import org.json4s.DefaultFormats
-
+import com.krux.hyperion.common.Memory
 import com.krux.hyperion.common.S3Uri.S3StringContext
-import com.krux.hyperion.common.{ Memory, S3Uri, PipelineObjectId }
-import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression._
+import org.json4s.DefaultFormats
 
 /**
  * The implicit conversions used in DataPipeline

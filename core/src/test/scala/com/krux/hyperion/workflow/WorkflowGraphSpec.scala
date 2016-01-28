@@ -1,9 +1,8 @@
 package com.krux.hyperion.workflow
 
-import com.krux.hyperion.activity.ShellCommandActivity
 import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.activity.ShellCommandActivity
 import com.krux.hyperion.resource.Ec2Resource
-import com.krux.hyperion.WorkflowExpression._
 import com.typesafe.config.ConfigFactory
 import org.scalatest.WordSpec
 

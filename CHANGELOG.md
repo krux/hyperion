@@ -2,17 +2,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.1.1 - 2016-01-28
+### Fixed
+- [#328](https://github.com/krux/hyperion/issues/328) - SftpActivity was broken in 3.0 - hard-coded to 'download'
+
 ## 3.1.0 - 2016-01-27
-## Fixed
+### Fixed
 - [#324](https://github.com/krux/hyperion/issues/324) - Workflow should be evaluated at the last minute possible
 
 ## 3.0.7 - 2016-01-26
-## Fixed
+### Fixed
 - [#318](https://github.com/krux/hyperion/issues/318) - SendFlowdockMessageActivity should use the corresponding HType in apply
 - [#320](https://github.com/krux/hyperion/issues/320) - A few shell command based activity is missing input / output
 
 ## 3.0.6 - 2016-01-21
-## Fixed
+### Fixed
 - [#315](https://github.com/krux/hyperion/issues/315) - fixed a bug input and output reference in CopyActivity is not included
 
 ## 3.0.5 - 2016-01-20
@@ -40,7 +44,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#298](https://github.com/krux/hyperion/issues/295) - Make sequence of native type to sequence of HType implicitly available
 
 ## 3.0.0 - 2016-01-08
-
 ### Changed
 - [#295](https://github.com/krux/hyperion/issues/295) - Refactor parameter with adhoc polymorphism with type class instead of reflection TypeTags
 - [#248](https://github.com/krux/hyperion/issues/248) - Refactor parameter to have EncryptedParameter and UnencryptedParameter
@@ -57,7 +60,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - `SparkJobActivity` is renamed to `SparkTaskActivity` to be consistent with the `preActivityTaskConfig` field for similar activity naming from AWS
 - [#271](https://github.com/krux/hyperion/issues/271) - Separate CLI with DataPipelineDef
 
-## Added
+### Added
 - [#214](https://github.com/krux/hyperion/issues/214) - Extend CLI to be able to read parameters to be passed from pipeline
 
 ## 2.16.7 - 2016-01-05

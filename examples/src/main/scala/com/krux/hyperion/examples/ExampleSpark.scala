@@ -2,17 +2,15 @@ package com.krux.hyperion.examples
 
 import scala.language.postfixOps
 
-import com.typesafe.config.ConfigFactory
-
+import com.krux.hyperion.Implicits._
 import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.activity.{SparkTaskActivity, SparkActivity, SparkStep}
+import com.krux.hyperion.activity.{ SparkActivity, SparkStep, SparkTaskActivity }
 import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.expression.{Format, RuntimeNode, Parameter}
-import com.krux.hyperion.Implicits._
+import com.krux.hyperion.expression.{ Format, Parameter, RuntimeNode }
 import com.krux.hyperion.resource.SparkCluster
-import com.krux.hyperion.WorkflowExpression
-import com.krux.hyperion.{Schedule, DataPipelineDef, HyperionContext, HyperionCli}
+import com.krux.hyperion.{ DataPipelineDef, HyperionCli, HyperionContext, Schedule }
+import com.typesafe.config.ConfigFactory
 
 object ExampleSpark extends DataPipelineDef with HyperionCli {
 

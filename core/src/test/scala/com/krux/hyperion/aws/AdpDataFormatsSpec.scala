@@ -1,8 +1,7 @@
 package com.krux.hyperion.aws
 
-import org.scalatest.WordSpec
 import org.json4s.JsonDSL._
-
+import org.scalatest.WordSpec
 
 class AdpDataFormatsSpec extends WordSpec {
   "TsvDataFormat" should {

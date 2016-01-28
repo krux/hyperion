@@ -3,14 +3,12 @@ package com.krux.hyperion.activity
 import scala.annotation.tailrec
 import scala.collection.mutable.StringBuilder
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString }
+import com.krux.hyperion.adt.{ HS3Uri, HString }
 import com.krux.hyperion.aws.AdpSqlActivity
-import com.krux.hyperion.common.{ PipelineObjectId, PipelineObject, BaseFields }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 import com.krux.hyperion.database.RedshiftDatabase
-import com.krux.hyperion.expression.{ RunnableObject, EncryptedParameter }
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{ Resource, Ec2Resource }
+import com.krux.hyperion.expression.{ EncryptedParameter, RunnableObject }
+import com.krux.hyperion.resource.{ Ec2Resource, Resource }
 
 /**
  * Unload result of the given sql script from redshift to given s3Path.

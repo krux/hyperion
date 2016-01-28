@@ -1,13 +1,10 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{HString, HInt, HDuration, HBoolean}
-import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObject, S3Uri, PipelineObjectId, BaseFields}
-import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Ec2Resource, Resource}
+import com.krux.hyperion.adt.{ HBoolean, HString }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, S3Uri }
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.resource.{ Ec2Resource, Resource }
 
 case class SendFlowdockMessageActivity private (
   baseFields: BaseFields,

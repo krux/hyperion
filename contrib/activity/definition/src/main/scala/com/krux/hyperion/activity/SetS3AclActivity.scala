@@ -1,12 +1,9 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{ HInt, HDuration, HS3Uri, HString, HBoolean, HType }
-import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{ PipelineObject, S3Uri, PipelineObjectId, BaseFields }
-import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.precondition.Precondition
+import com.krux.hyperion.adt.{ HBoolean, HS3Uri, HString, HType }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, S3Uri }
+import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource.{ Ec2Resource, Resource }
 
 case class SetS3AclActivity private (

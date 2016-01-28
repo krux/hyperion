@@ -1,16 +1,14 @@
 package com.krux.hyperion
 
-import org.slf4j.LoggerFactory
-
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 
-import com.amazonaws.auth.{DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
-import com.amazonaws.regions.{Regions, Region}
+import com.amazonaws.auth.{ DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider }
+import com.amazonaws.regions.{ Region, Regions }
 import com.amazonaws.services.datapipeline._
 import com.amazonaws.services.datapipeline.model._
-
 import com.krux.hyperion.DataPipelineDef._
+import org.slf4j.LoggerFactory
 
 sealed trait HyperionAwsClient {
   protected lazy val log = LoggerFactory.getLogger(getClass)

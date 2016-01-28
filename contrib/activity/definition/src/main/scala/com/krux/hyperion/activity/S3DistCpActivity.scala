@@ -1,12 +1,10 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
+import com.krux.hyperion.adt.{ HBoolean, HInt, HString }
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{StorageClass, PipelineObject, PipelineObjectId, BaseFields}
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, StorageClass }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{HInt, HDuration, HString, HBoolean}
-import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource._
 
 case class S3DistCpActivityFields(

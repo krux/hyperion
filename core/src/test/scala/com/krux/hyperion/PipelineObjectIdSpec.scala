@@ -1,6 +1,6 @@
 package com.krux.hyperion
 
-import com.krux.hyperion.common.{NameGroupObjectId, RandomizedObjectId}
+import com.krux.hyperion.common.{ NameGroupObjectId, RandomizedObjectId }
 import org.scalatest.WordSpec
 
 class PipelineObjectIdSpec extends WordSpec {

@@ -1,12 +1,9 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.action.SnsAlarm
-import com.krux.hyperion.adt.{HInt, HDuration, HS3Uri, HString, HBoolean}
-import com.krux.hyperion.aws.AdpShellCommandActivity
-import com.krux.hyperion.common.{PipelineObjectId, PipelineObject, BaseFields}
+import com.krux.hyperion.adt.HS3Uri
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.resource.{ Ec2Resource, Resource }
 
 /**
  * Activity to recursively delete files in an S3 path.

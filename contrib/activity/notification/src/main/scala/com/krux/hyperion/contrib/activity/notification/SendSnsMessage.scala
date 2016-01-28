@@ -1,9 +1,10 @@
 package com.krux.hyperion.contrib.activity.notification
 
 import scala.collection.JavaConverters._
-import com.amazonaws.regions.{Region, Regions}
+
+import com.amazonaws.regions.{ Region, Regions }
 import com.amazonaws.services.sns.AmazonSNSClient
-import com.amazonaws.services.sns.model.{MessageAttributeValue, PublishRequest}
+import com.amazonaws.services.sns.model.{ MessageAttributeValue, PublishRequest }
 import scopt.OptionParser
 
 object SendSnsMessage {

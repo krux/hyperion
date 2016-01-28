@@ -1,6 +1,6 @@
 package com.krux.hyperion
 
-import com.krux.hyperion.cli._
+import com.krux.hyperion.cli.EntryPoint
 
 /**
   * HyperionCli is a base trait that brings in CLI functionality to
