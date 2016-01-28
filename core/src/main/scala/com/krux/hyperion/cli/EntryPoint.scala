@@ -42,6 +42,15 @@ case class EntryPoint(pipeline: DataPipelineDef) {
               |     If specified, the pipeline will override the parameters specified in the pipeline
               |     definition.
             """.stripMargin)
+          .unbounded(),
+        opt[(String, String)]("param").valueName("key=value")
+          .action { (x, c) => c.copy(params = c.params + x)}
+          .text(
+            """
+              |    If specified, the pipeline will override the parameter specified in the pipeline
+              |    definition.
+            """.stripMargin
+          )
           .unbounded()
       )
 
@@ -171,6 +180,15 @@ case class EntryPoint(pipeline: DataPipelineDef) {
               |     If specified, the pipeline will override the parameters specified in the pipeline
               |     definition.
             """.stripMargin)
+          .unbounded(),
+        opt[(String, String)]("param").valueName("key=value")
+          .action { (x, c) => c.copy(params = c.params + x)}
+          .text(
+            """
+              |    If specified, the pipeline will override the parameter specified in the pipeline
+              |    definition.
+            """.stripMargin
+          )
           .unbounded()
       )
 
