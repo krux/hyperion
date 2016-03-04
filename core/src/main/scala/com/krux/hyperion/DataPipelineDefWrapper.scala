@@ -1,6 +1,7 @@
 package com.krux.hyperion
 
 import com.krux.hyperion.expression.Parameter
+import com.krux.hyperion.workflow.WorkflowExpression
 
 /**
   * DataPipelineDefWrapper provides a way to wrap other DataPipelineDefs

@@ -2,7 +2,6 @@ package com.krux.hyperion.workflow
 
 import scala.language.implicitConversions
 
-import com.krux.hyperion.{ WorkflowActivityExpression, WorkflowExpression }
 import com.krux.hyperion.activity.PipelineActivity
 import com.krux.hyperion.resource.ResourceObject
 

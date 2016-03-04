@@ -1,9 +1,9 @@
 package com.krux.hyperion.workflow
 
-import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.WorkflowExpression._
 import com.krux.hyperion.activity.ShellCommandActivity
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.resource.Ec2Resource
+import com.krux.hyperion.workflow.WorkflowExpression._
 import com.typesafe.config.ConfigFactory
 import org.scalatest.WordSpec
 
@@ -26,7 +26,7 @@ class WorkflowExpressionSpec extends WordSpec {
 
       val dependencies = (act1 + act2) ~> ((act3 ~> act4) + act5) ~> act6
 
-      val activities = dependencies.toPipelineObjects
+      val activities = dependencies.toActivities
 
       activities.foreach { act =>
         act.id.toString.take(4) match {
@@ -73,7 +73,7 @@ class WorkflowExpressionSpec extends WordSpec {
       val act4 = ShellCommandActivity("run act4")(ec2).idNamed("act4")
 
       val dependencies = act1 ~> (act2 ~> act3) ~> act4
-      val activities = dependencies.toPipelineObjects
+      val activities = dependencies.toActivities
 
       activities.foreach { act =>
         act.id.toString.take(4) match {
@@ -121,7 +121,7 @@ class WorkflowExpressionSpec extends WordSpec {
         (act4 ~> act6) +
         (act5 ~> act6)
 
-      val activities = dependencies.toPipelineObjects
+      val activities = dependencies.toActivities
 
       activities.foreach { act =>
         act.id.toString.take(4) match {
