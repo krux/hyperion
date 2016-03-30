@@ -1,6 +1,6 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.HString
+import com.krux.hyperion.adt.{ HString, HS3Uri }
 import com.krux.hyperion.aws.AdpHadoopActivity
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
@@ -67,6 +67,10 @@ case class HadoopActivity[A <: EmrCluster] private (
 }
 
 object HadoopActivity extends RunnableObject {
+
+  def apply[A <: EmrCluster](jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, Option(mainClass))(runsOn)
+
+  def apply[A <: EmrCluster](jarUri: HS3Uri, mainClass: Option[MainClass])(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri.serialize, mainClass)(runsOn)
 
   def apply[A <: EmrCluster](jarUri: HString, mainClass: MainClass)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, Option(mainClass))(runsOn)
 

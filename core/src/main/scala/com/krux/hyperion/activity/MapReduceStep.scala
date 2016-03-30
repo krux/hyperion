@@ -1,6 +1,6 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.HString
+import com.krux.hyperion.adt.{ HString, HS3Uri }
 
 /**
  * A MapReduce step that runs on MapReduce Cluster
@@ -21,6 +21,8 @@ case class MapReduceStep private (
 }
 
 object MapReduceStep {
+
+  def apply(jarUri: HS3Uri): MapReduceStep = apply(jarUri.serialize)
 
   def apply(jarUri: HString): MapReduceStep = MapReduceStep(
     jarUri = jarUri,
