@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.4 - 2016-03-29
+### Added
+- [#321](https://github.com/krux/hyperion/issues/321) - Add overloaded methods accepting HS3Uri for Activities 
+
 ## 3.2.3 - 2016-03-28
 ### Added
 - [#351](https://github.com/krux/hyperion/issues/351) - DeleteS3PathActivity - add option to check for existence of S3 path

@@ -4,7 +4,7 @@ import com.krux.hyperion.aws._
 import com.krux.hyperion.common.{ Memory, PipelineObjectId, BaseFields }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{ HInt, HString }
+import com.krux.hyperion.adt.{ HInt, HString, HS3Uri }
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.resource.{ SparkCluster, Resource }
 
@@ -87,6 +87,9 @@ case class SparkTaskActivity private (
 }
 
 object SparkTaskActivity extends RunnableObject {
+
+  def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkTaskActivity =
+    apply(jarUri.serialize, mainClass)(runsOn)
 
   def apply(jarUri: HString, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkTaskActivity = new SparkTaskActivity(
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
