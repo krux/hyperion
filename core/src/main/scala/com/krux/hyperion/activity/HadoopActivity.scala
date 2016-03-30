@@ -68,6 +68,8 @@ case class HadoopActivity[A <: EmrCluster] private (
 
 object HadoopActivity extends RunnableObject {
 
+  def apply[A <: EmrCluster](jarUri: HS3Uri)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, None)(runsOn)
+
   def apply[A <: EmrCluster](jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, Option(mainClass))(runsOn)
 
   def apply[A <: EmrCluster](jarUri: HS3Uri, mainClass: Option[MainClass])(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri.serialize, mainClass)(runsOn)
