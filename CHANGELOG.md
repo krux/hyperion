@@ -2,9 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.0 - 2016-04-07
+### Added
+- [#356](https://github.com/krux/hyperion/issues/356) - Need to escape `,` in arguments of Emr and Spark steps
+
 ## 3.2.4 - 2016-03-29
 ### Added
-- [#321](https://github.com/krux/hyperion/issues/321) - Add overloaded methods accepting HS3Uri for Activities 
+- [#321](https://github.com/krux/hyperion/issues/321) - Add overloaded methods accepting HS3Uri for Activities
 
 ## 3.2.3 - 2016-03-28
 ### Added

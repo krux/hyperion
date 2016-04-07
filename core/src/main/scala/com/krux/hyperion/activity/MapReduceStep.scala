@@ -9,12 +9,12 @@ case class MapReduceStep private (
   jarUri: HString,
   mainClass: Option[MainClass],
   args: Seq[HString]
-) {
+) extends EscapeArguments {
 
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
   def withArguments(arg: HString*) = copy(args = args ++ arg)
 
-  def serialize: String = (jarUri +: mainClass.map(_.toString).toSeq ++: args).mkString(",")
+  def serialize: String = (jarUri +: mainClass.map(_.toString).toSeq ++: escapedArguments).mkString(",")
 
   override def toString = serialize
 
