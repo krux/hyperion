@@ -15,7 +15,7 @@ case class SparkStep private (
   jobRunner: HString,
   sparkOptions: Seq[HString],
   sparkConfig: Map[HString, HString]
-) {
+) extends EscapeArguments{
 
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
   def withArguments(arg: HString*) = copy(args = args ++ arg)
@@ -39,7 +39,7 @@ case class SparkStep private (
     sparkConfig.flatMap { case (k, v) => Seq("--conf", s"$k=$v") }.toSeq,
     Seq(jarUri.serialize),
     mainClass.map(_.toString).toSeq,
-    args
+    escapedArguments
   ).flatten.mkString(",")
 
   override def toString: String = serialize
