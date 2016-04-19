@@ -1,4 +1,4 @@
-val hyperionVersion = "3.2.5"
+val hyperionVersion = "3.2.7"
 val scala210Version = "2.10.6"
 val scala211Version = "2.11.7"
 val awsSdkVersion   = "1.10.43"
@@ -22,6 +22,7 @@ val smtpArtifact            = "com.sun.mail"           %  "smtp"                
 val slf4jApiArtifact        = "org.slf4j"              %  "slf4j-api"                 % slf4jVersion
 val slf4jSimpleArtifact     = "org.slf4j"              %  "slf4j-simple"              % slf4jVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
+val scalacheckArtifact      = "org.scalacheck"         %% "scalacheck"                % "1.12.5" % "test"
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -90,6 +91,7 @@ lazy val commonSettings = Seq(
       "https://github.com/krux/hyperion/tree/master/€{FILE_PATH}.scala")
   },
   libraryDependencies += scalatestArtifact,
+  libraryDependencies += scalacheckArtifact,
   test in assembly := {} // skip test during assembly
 )
 

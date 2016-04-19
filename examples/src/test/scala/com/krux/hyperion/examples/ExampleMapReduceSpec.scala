@@ -5,20 +5,20 @@ import org.json4s.JsonDSL._
 import org.json4s._
 import com.krux.hyperion.DataPipelineDef._
 
-class ExampleSparkSpec extends WordSpec {
+class ExampleMapReduceSpec extends WordSpec {
 
-  "ExampleSparkSpec" should {
+  "ExampleMapReduceSpec" should {
 
     "produce correct pipeline JSON" in {
 
-      val pipelineJson: JValue = ExampleSpark
+      val pipelineJson: JValue = ExampleMapReduce
       val objectsField = pipelineJson.children.head.children.sortBy(o => (o \ "name").toString)
 
       // have the correct number of objects
-      assert(objectsField.size === 7)
+      assert(objectsField.size === 6)
 
       // the first object should be Default
-      val defaultObj = objectsField.head
+      val defaultObj = objectsField(1)
       val defaultObjShouldBe = ("id" -> "Default") ~
         ("name" -> "Default") ~
         ("scheduleType" -> "cron") ~
@@ -29,7 +29,7 @@ class ExampleSparkSpec extends WordSpec {
         ("schedule" -> ("ref" -> "PipelineSchedule"))
       assert(defaultObj === defaultObjShouldBe)
 
-      val pipelineSchedule = objectsField(1)
+      val pipelineSchedule = objectsField(2)
       val pipelineScheduleShouldBe =
         ("id" -> "PipelineSchedule") ~
         ("name" -> "PipelineSchedule") ~
@@ -38,16 +38,6 @@ class ExampleSparkSpec extends WordSpec {
         ("occurrences" -> "3") ~
         ("type" -> "Schedule")
       assert(pipelineSchedule === pipelineScheduleShouldBe)
-
-      val dataNode = objectsField(2)
-      val dataNodeId = (dataNode \ "id").values.toString
-      assert(dataNodeId.startsWith("S3Folder_"))
-      val dataNodeShouldBe =
-        ("id" -> dataNodeId) ~
-        ("name" -> dataNodeId) ~
-        ("directoryPath" -> "s3://some-bucket/some-path/") ~
-        ("type" -> "S3DataNode")
-      assert(dataNode == dataNodeShouldBe)
 
       val snsAlarm = objectsField(3)
       val snsAlarmId = (snsAlarm \ "id").values.toString
@@ -62,14 +52,13 @@ class ExampleSparkSpec extends WordSpec {
           ("type" -> "SnsAlarm")
       assert(snsAlarm === snsAlarmShouldBe)
 
-      val sparkCluster = objectsField(4)
-      val sparkClusterId = (sparkCluster \ "id").values.toString
-      assert(sparkClusterId.startsWith("SparkCluster_"))
-      val sparkClusterShouldBe =
-        ("id" -> sparkClusterId) ~
-        ("name" -> sparkClusterId) ~
-        ("bootstrapAction" -> List("s3://support.elasticmapreduce/spark/install-spark,-v,1.1.1.e,-x", "s3://your-bucket/datapipeline/scripts/deploy-hyperion-emr-env.sh,s3://bucket/org_env.sh")) ~
-        ("amiVersion" -> "3.3") ~
+      val mapReduceCluster = objectsField.head
+      val mapReduceClusterId = (mapReduceCluster \ "id").values.toString
+      assert(mapReduceClusterId.startsWith("MapReduceCluster_"))
+      val mapReduceClusterShouldBe =
+        ("id" -> mapReduceClusterId) ~
+        ("name" -> "Cluster with release label") ~
+        ("bootstrapAction" -> List("s3://your-bucket/datapipeline/scripts/deploy-hyperion-emr-env.sh,s3://bucket/org_env.sh")) ~
         ("masterInstanceType" -> "m3.xlarge") ~
         ("coreInstanceType" -> "m3.xlarge") ~
         ("coreInstanceCount" -> "2") ~
@@ -80,38 +69,30 @@ class ExampleSparkSpec extends WordSpec {
         ("type" -> "EmrCluster") ~
         ("region" -> "us-east-1") ~
         ("role" -> "DataPipelineDefaultRole") ~
-        ("resourceRole" -> "DataPipelineDefaultResourceRole")
-      assert(sparkCluster === sparkClusterShouldBe)
+        ("resourceRole" -> "DataPipelineDefaultResourceRole") ~
+        ("releaseLabel" -> "emr-4.4.0")
+      assert(mapReduceCluster === mapReduceClusterShouldBe)
 
-      val filterActivity = objectsField(5)
+      val filterActivity = objectsField(4)
       val filterActivityId = (filterActivity \ "id").values.toString
-      assert(filterActivityId.startsWith("SparkTaskActivity_"))
+      assert(filterActivityId.startsWith("MapReduceActivity_"))
       val filterActivityShouldBe =
         ("id" -> filterActivityId) ~
         ("name" -> "filterActivity") ~
-        ("jarUri" -> "s3://elasticmapreduce/libs/script-runner/script-runner.jar") ~
-        ("runsOn" -> ("ref" -> sparkClusterId)) ~
-        ("argument" -> List("s3://your-bucket/datapipeline/scripts/run-spark-step.sh",
-          "s3://sample-jars/sample-jar-assembly-current.jar",
-          "com.krux.hyperion.FilterJob",
-          "the-target",
-          "#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}")) ~
-        ("input" -> List("ref" -> dataNodeId)) ~
+        ("runsOn" -> ("ref" -> mapReduceClusterId)) ~
+        ("step" -> List("s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob1,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}")) ~
         ("onFail" -> List("ref" -> snsAlarmId)) ~
-        ("type" -> "HadoopActivity")
+        ("type" -> "EmrActivity")
       assert(filterActivity === filterActivityShouldBe)
 
-      val scoreActivity = objectsField(6)
+      val scoreActivity = objectsField(5)
       val scoreActivityId = (scoreActivity \ "id").values.toString
-      assert(scoreActivityId.startsWith("SparkActivity_"))
+      assert(scoreActivityId.startsWith("MapReduceActivity_"))
       val scoreActivityShouldBe =
         ("id" -> scoreActivityId) ~
         ("name" -> "scoreActivity") ~
-        ("runsOn" -> ("ref" -> sparkClusterId)) ~
-        ("step" -> List(
-          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob1,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},denormalized",
-          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob2,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}"
-          )) ~
+        ("runsOn" -> ("ref" -> mapReduceClusterId)) ~
+        ("step" -> List("s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob2,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},denormalized")) ~
         ("dependsOn" -> List("ref" -> filterActivityId)) ~
         ("onSuccess" -> List("ref" -> snsAlarmId)) ~
         ("type" -> "EmrActivity")
@@ -121,3 +102,4 @@ class ExampleSparkSpec extends WordSpec {
   }
 
 }
+

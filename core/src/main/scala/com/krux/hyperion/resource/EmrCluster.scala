@@ -17,7 +17,7 @@ trait EmrCluster extends ResourceObject {
 
   def amiVersion = emrClusterFields.amiVersion
   def withAmiVersion(version: HString): Self = updateEmrClusterFields(
-    emrClusterFields.copy(amiVersion = (Option(version)))
+    emrClusterFields.copy(amiVersion = Option(version), releaseLabel = None)
   )
 
   def supportedProducts = emrClusterFields.supportedProducts
@@ -112,7 +112,7 @@ trait EmrCluster extends ResourceObject {
 
   def releaseLabel = emrClusterFields.releaseLabel
   def withReleaseLabel(label: HString): Self = updateEmrClusterFields(
-    emrClusterFields.copy(releaseLabel = Option(label))
+    emrClusterFields.copy(releaseLabel = Option(label), amiVersion = None)
   )
 
   def applications = emrClusterFields.applications

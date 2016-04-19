@@ -27,8 +27,8 @@ case class EmrConfiguration private (
     id = id,
     name = name,
     classification = classification.map(_.serialize),
-    property = Option(properties.map(_.ref)),
-    configuration = Option(configurations.map(_.ref))
+    property = properties.map(_.ref),
+    configuration = configurations.map(_.ref)
   )
 
   def ref: AdpRef[AdpEmrConfiguration] = AdpRef(serialize)
