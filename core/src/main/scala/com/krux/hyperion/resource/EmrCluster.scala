@@ -112,7 +112,12 @@ trait EmrCluster extends ResourceObject {
 
   def releaseLabel = emrClusterFields.releaseLabel
   def withReleaseLabel(label: HString): Self = updateEmrClusterFields(
-    emrClusterFields.copy(releaseLabel = Option(label), amiVersion = None)
+    emrClusterFields.copy(
+      releaseLabel = Option(label),
+      amiVersion = None,
+      standardBootstrapAction = Seq.empty,
+      bootstrapAction = Seq.empty
+    )
   )
 
   def applications = emrClusterFields.applications
@@ -142,6 +147,11 @@ trait EmrCluster extends ResourceObject {
       logger.warn("Server side expression cannot be evaluated. Unchecked comparison.")
       true
     })
+
+    assert(if (releaseLabel.nonEmpty) {
+      logger.warn("Native applications are no longer configured by bootstrap actions but by configurations in EMR release label 4.X")
+      true
+    } else { true })
 
     new AdpEmrCluster(
       id = id,
