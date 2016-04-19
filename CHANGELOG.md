@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.8 - 2016-04-19
+### Added
+- [#365](https://github.com/krux/hyperion/issues/365) - Change standard bootstrap action to use aws cli instead of hadoop
+
 ## 3.2.7 - 2016-04-16
 ### Added
 - [#362](https://github.com/krux/hyperion/issues/362) - Do not emit empty arrays for EmrConfiguration properties
