@@ -120,12 +120,12 @@ trait EmrCluster extends ResourceObject {
     emrClusterFields.copy(applications = emrClusterFields.applications ++ apps)
   )
 
-  def configurations = emrClusterFields.configurations
+  def configuration = emrClusterFields.configuration
   def withConfiguration(conf: EmrConfiguration*): Self = updateEmrClusterFields(
-    emrClusterFields.copy(configurations = emrClusterFields.configurations ++ conf)
+    emrClusterFields.copy(configuration = emrClusterFields.configuration ++ conf)
   )
 
-  override def objects = configurations ++ super.objects
+  override def objects = configuration ++ super.objects
 
   override def ref: AdpRef[AdpEmrCluster] = AdpRef(serialize)
 
@@ -178,7 +178,7 @@ trait EmrCluster extends ResourceObject {
       httpProxy = httpProxy.map(_.ref),
       releaseLabel = releaseLabel.map(_.serialize),
       applications = applications.map(_.serialize),
-      configurations = configurations.map(_.serialize)
+      configuration = configuration.map(_.ref)
     )
   }
 

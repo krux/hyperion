@@ -78,7 +78,7 @@ class AdpResourcesSpec extends WordSpec {
         httpProxy = None,
         releaseLabel = None,
         applications = None,
-        configurations = None
+        configuration = None
       )
 
       val objShouldBe = ("id" -> "theId") ~
