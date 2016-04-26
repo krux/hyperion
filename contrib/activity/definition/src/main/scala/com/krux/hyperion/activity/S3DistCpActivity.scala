@@ -1,8 +1,8 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{ HBoolean, HInt, HString }
+import com.krux.hyperion.adt.{HBoolean, HInt, HString}
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, StorageClass }
+import com.krux.hyperion.common.{BaseFields, PipelineObjectId, StorageClass}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource._
@@ -173,7 +173,17 @@ case class S3DistCpActivity[A <: EmrCluster] private (
     sourcePrefixesFile.map(s => Seq[HString]("--srcPrefixesFile", s))
   ).flatten.flatten
 
-  private def steps: Seq[MapReduceStep] = Seq(MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar").withArguments(allArguments: _*))
+  private def steps: Seq[MapReduceStep] = {
+    if (runsOn.asManagedResource.get.releaseLabel.nonEmpty)
+      Seq(
+        MapReduceStep("command-runner.jar")
+          .withArguments(
+            (Seq[HString](HString(Left("s3-dist-cp"))) ++ allArguments): _*
+          )
+    )
+    else
+      Seq(MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar").withArguments(allArguments: _*))
+  }
 
   lazy val serialize = AdpEmrActivity(
     id = id,

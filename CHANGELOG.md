@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.11 - 2016-04-26
+### Changed
+- [#381](https://github.com/krux/hyperion/issues/381) - S3DistCpActivity fails when using emr-release label 4.X
+
 ## 3.2.10 - 2016-04-22
 ### Changed
 - [#376](https://github.com/krux/hyperion/issues/376) - Adds Multiple EmrConfiguration Support
