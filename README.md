@@ -1,4 +1,6 @@
 # Hyperion
+
+[![Join the chat at https://gitter.im/krux/hyperion](https://badges.gitter.im/krux/hyperion.svg)](https://gitter.im/krux/hyperion?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://secure.travis-ci.org/krux/hyperion.png)](http://travis-ci.org/krux/hyperion)
 
 > In Starcraft, the Hyperion is a Behemoth-class battlecruiser. During the
