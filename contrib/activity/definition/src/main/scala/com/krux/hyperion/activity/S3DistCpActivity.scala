@@ -1,8 +1,8 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{HBoolean, HInt, HString}
+import com.krux.hyperion.adt.{ HBoolean, HInt, HString }
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{BaseFields, PipelineObjectId, StorageClass}
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, StorageClass }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource._
