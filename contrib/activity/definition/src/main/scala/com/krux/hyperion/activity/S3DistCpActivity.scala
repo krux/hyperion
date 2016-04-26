@@ -173,17 +173,14 @@ case class S3DistCpActivity[A <: EmrCluster] private (
     sourcePrefixesFile.map(s => Seq[HString]("--srcPrefixesFile", s))
   ).flatten.flatten
 
-  private def steps: Seq[MapReduceStep] = {
-    if (runsOn.asManagedResource.get.releaseLabel.nonEmpty)
-      Seq(
-        MapReduceStep("command-runner.jar")
-          .withArguments(
-            (Seq[HString](HString(Left("s3-dist-cp"))) ++ allArguments): _*
-          )
-    )
+  private def steps: Seq[MapReduceStep] = Seq(
+    if (runsOn.asManagedResource.flatMap(_.releaseLabel).nonEmpty)
+      MapReduceStep("command-runner.jar")
+        .withArguments((("s3-dist-cp": HString) +: allArguments): _*)
     else
-      Seq(MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar").withArguments(allArguments: _*))
-  }
+      MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar")
+        .withArguments(allArguments: _*)
+  )
 
   lazy val serialize = AdpEmrActivity(
     id = id,
