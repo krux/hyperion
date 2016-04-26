@@ -121,8 +121,8 @@ trait EmrCluster extends ResourceObject {
   )
 
   def configuration = emrClusterFields.configuration
-  def withConfiguration(conf: EmrConfiguration): Self = updateEmrClusterFields(
-    emrClusterFields.copy(configuration = Option(conf))
+  def withConfiguration(conf: EmrConfiguration*): Self = updateEmrClusterFields(
+    emrClusterFields.copy(configuration = emrClusterFields.configuration ++ conf)
   )
 
   override def objects = configuration ++ super.objects

@@ -13,6 +13,11 @@ ENV_FILE="/home/hadoop/hyperion_env.sh"
 rm -f ${ENV_FILE}
 
 echo "Downloading env file from ${S3_ENV_FILE}"
-aws s3 cp ${S3_ENV_FILE} ${ENV_FILE}
+if [ -x "$(command -v aws)" ];
+then
+    aws s3 cp ${S3_ENV_FILE} ${ENV_FILE}
+else
+    hadoop fs -get ${S3_ENV_FILE} ${ENV_FILE}
+fi
 
 echo "Done!"

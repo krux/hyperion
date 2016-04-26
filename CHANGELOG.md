@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.10 - 2016-04-22
+### Changed
+- [#376](https://github.com/krux/hyperion/issues/376) - Adds Multiple EmrConfiguration Support
+
+## 3.2.9 - 2016-04-20
+### Added
+- [#370](https://github.com/krux/hyperion/issues/370) - The standard bootstrap script now fails on older version of AMI (< 3.x)
+
 ## 3.2.8 - 2016-04-19
 ### Added
 - [#365](https://github.com/krux/hyperion/issues/365) - Change standard bootstrap action to use aws cli instead of hadoop

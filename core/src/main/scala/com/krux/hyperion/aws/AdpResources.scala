@@ -139,7 +139,7 @@ class AdpEmrCluster(
   val httpProxy: Option[AdpRef[AdpHttpProxy]],
   val releaseLabel: Option[String],
   val applications: Option[Seq[String]],
-  val configuration: Option[AdpRef[AdpEmrConfiguration]]
+  val configuration: Option[Seq[AdpRef[AdpEmrConfiguration]]]
 ) extends AdpResource {
 
   val `type` = "EmrCluster"

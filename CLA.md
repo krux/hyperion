@@ -19,7 +19,7 @@ your records.
 
 You accept and agree to the following terms and conditions for (i) UNLESS OTHERWISE
 GOVERNED BY A WRITTEN LICENSE AGREEMENT, ALL CONTRIBUTIONS THAT YOU MAY HAVE
-PREVIOUSLY SUBMITTED TO PUPPET LABS and (ii) Your present and future Contributions
+PREVIOUSLY SUBMITTED TO KRUX and (ii) Your present and future Contributions
 submitted to Krux. Except for the license granted herein to Krux
 and recipients of software distributed by Krux, You reserve all right,
 title, and interest in and to Your Contributions.
