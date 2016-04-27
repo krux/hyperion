@@ -4,7 +4,7 @@ import org.json4s._
 import com.amazonaws.services.datapipeline.model.{Field => AwsField,
   PipelineObject => AwsPipelineObject, ParameterObject => AwsParameterObject,
   ParameterAttribute => AwsParameterAttribute}
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 object AdpPipelineSerializer {
 
@@ -26,7 +26,7 @@ object AdpPipelineSerializer {
       case other => throw new Exception(s"$other has unexpected type")
     }
 
-    new AwsPipelineObject().withId(id).withName(name).withFields(fields)
+    new AwsPipelineObject().withId(id).withName(name).withFields(fields.asJava)
   }
 
   def apply[A <: AdpObject](obj: A)(implicit mf: Manifest[A]) = {
@@ -60,7 +60,7 @@ object AdpParameterSerializer {
       case other => throw new Exception(s"$other has unexpected type")
     }
 
-    new AwsParameterObject().withId(id).withAttributes(attributes)
+    new AwsParameterObject().withId(id).withAttributes(attributes.asJava)
   }
 
   def apply[A <: AdpObject](obj: A)(implicit mf: Manifest[A]) = {

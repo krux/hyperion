@@ -2,12 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 3.2.11 - 2016-04-26
+## 3.2.12 - 2016-04-27
 ### Changed
+- [#373](https://github.com/krux/hyperion/issues/373) - CLI and the aws client should retry with some delay on throttling exception
+### Refactored
+- [#386](https://github.com/krux/hyperion/issues/386) - Use JavaConverters instead of JavaConversions
+
+## 3.2.11 - 2016-04-26
+### Fixed
 - [#381](https://github.com/krux/hyperion/issues/381) - S3DistCpActivity fails when using emr-release label 4.X
 
 ## 3.2.10 - 2016-04-22
-### Changed
+### Added
 - [#376](https://github.com/krux/hyperion/issues/376) - Adds Multiple EmrConfiguration Support
 
 ## 3.2.9 - 2016-04-20
