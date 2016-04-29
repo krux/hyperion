@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/krux/hyperion.png?label=ready&title=Ready)](https://waffle.io/krux/hyperion)
 # Hyperion
 
 [![Gitter](https://badges.gitter.im/krux/hyperion.svg)](https://gitter.im/krux/hyperion)
