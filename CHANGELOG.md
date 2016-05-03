@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.13 - 2016-05-04
+## Changed
+- [#390](https://github.com/krux/hyperion/issues/390) - Show more detail on validation errors and warnings
+ 
 ## 3.2.12 - 2016-04-27
 ### Changed
 - [#373](https://github.com/krux/hyperion/issues/373) - CLI and the aws client should retry with some delay on throttling exception

@@ -160,8 +160,12 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
           )
         )
 
-        putDefinitionResult.getValidationErrors.asScala.flatMap(_.getErrors.asScala).foreach(log.error)
-        putDefinitionResult.getValidationWarnings.asScala.flatMap(_.getWarnings.asScala).foreach(log.warn)
+        putDefinitionResult.getValidationErrors.asScala
+          .flatMap(err => err.getErrors.asScala.map(detail => s"${err.getId}: $detail"))
+          .foreach(log.error)
+        putDefinitionResult.getValidationWarnings.asScala
+          .flatMap(err => err.getWarnings.asScala.map(detail => s"${err.getId}: $detail"))
+          .foreach(log.warn)
 
         if (putDefinitionResult.getErrored) {
           log.error("Failed to create pipeline")
