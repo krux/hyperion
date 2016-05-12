@@ -15,7 +15,7 @@ class ExampleS3DistCpWorkflowSpec extends WordSpec {
       val objectsField = pipelineJson.children.head.children.sortBy(o => (o \ "name").toString)
 
       // have the correct number of objects
-      assert(objectsField.size === 6)
+      assert(objectsField.size === 4)
 
       // the first object should be Default
       val defaultObj = objectsField(1)
@@ -39,7 +39,7 @@ class ExampleS3DistCpWorkflowSpec extends WordSpec {
         ("type" -> "Schedule")
       assert(pipelineSchedule === pipelineScheduleShouldBe)
 
-      val mapReduceCluster = objectsField.head
+      val mapReduceCluster = objectsField(0)
       val mapReduceClusterId = (mapReduceCluster \ "id").values.toString
       assert(mapReduceClusterId.startsWith("MapReduceCluster_"))
       val mapReduceClusterShouldBe =
@@ -60,14 +60,14 @@ class ExampleS3DistCpWorkflowSpec extends WordSpec {
         ("releaseLabel" -> "emr-4.4.0")
       assert(mapReduceCluster === mapReduceClusterShouldBe)
 
-      val s3DistCpActivity = objectsField(5)
+      val s3DistCpActivity = objectsField(3)
       val s3DistCpActivityyId = (s3DistCpActivity \ "id").values.toString
       assert(s3DistCpActivityyId.startsWith("S3DistCpActivity_"))
       val filterActivityShouldBe =
         ("id" -> s3DistCpActivityyId) ~
         ("name" -> "s3DistCpActivity") ~
         ("runsOn" -> ("ref" -> mapReduceClusterId)) ~
-        ("step" -> List("command-runner.jar,s3-dist-cp,--src,s3://the-source,--dest,s3://the-target,--outputCodec,gz")) ~
+        ("step" -> List("command-runner.jar,s3-dist-cp,--src,s3://the-source,--dest,hdfs:///the-target,--outputCodec,gz")) ~
         ("type" -> "EmrActivity")
       assert(s3DistCpActivity === filterActivityShouldBe)
 

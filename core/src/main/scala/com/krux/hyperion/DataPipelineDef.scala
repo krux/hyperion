@@ -5,7 +5,7 @@ import scala.language.implicitConversions
 import com.amazonaws.services.datapipeline.model.{ ParameterObject => AwsParameterObject, PipelineObject => AwsPipelineObject }
 import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.aws.{ AdpJsonSerializer, AdpParameterSerializer, AdpPipelineSerializer }
-import com.krux.hyperion.common.{ DefaultObject, PipelineObject, S3UriHelper }
+import com.krux.hyperion.common.{ DefaultObject, PipelineObject, S3UriHelper, HdfsUriHelper }
 import com.krux.hyperion.expression.{ Parameter, ParameterValues }
 import com.krux.hyperion.workflow.WorkflowExpressionImplicits
 import org.json4s.JsonDSL._
@@ -14,7 +14,7 @@ import org.json4s.{ JArray, JValue }
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
  */
-trait DataPipelineDef extends S3UriHelper with WorkflowExpressionImplicits {
+trait DataPipelineDef extends S3UriHelper with HdfsUriHelper with WorkflowExpressionImplicits {
 
   private lazy val context = new HyperionContext()
 
