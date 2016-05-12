@@ -11,6 +11,7 @@ import com.amazonaws.services.datapipeline.model._
 import com.krux.hyperion.DataPipelineDef._
 import org.slf4j.LoggerFactory
 
+
 sealed trait HyperionAwsClient {
 
   val maxRetry = 3
@@ -179,9 +180,10 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
     }
   }
 
-  def createPipeline(force: Boolean, activate: Boolean): Boolean = createPipeline(force).exists { pipelineId =>
-    if (activate) HyperionAwsClientForPipelineId(client, pipelineId).activatePipeline() else true
-  }
+  def createPipeline(force: Boolean, activate: Boolean): Boolean =
+    createPipeline(force).exists { pipelineId =>
+      if (activate) HyperionAwsClientForPipelineId(client, pipelineId).activatePipeline() else true
+    }
 
   def activatePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _)).exists(_.activatePipeline())
 

@@ -246,9 +246,7 @@ case class EntryPoint(pipeline: DataPipelineDef) {
       .withName(cli.customName.getOrElse(pipeline.pipelineName))
       .withSchedule(cli.schedule.getOrElse(pipeline.schedule))
 
-    for { (id, value) <- cli.params } {
-      wrappedPipeline.setParameterValue(id, value)
-    }
+    for { (id, value) <- cli.params } wrappedPipeline.setParameterValue(id, value)
 
     if (cli.action(cli, wrappedPipeline)) 0 else 3
   }.getOrElse(3)

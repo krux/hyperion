@@ -1,0 +1,5 @@
+package com.krux
+
+package object hyperion {
+  type WorkflowKey = Option[String]
+}

@@ -1,5 +1,7 @@
 package com.krux.hyperion
 
+import com.amazonaws.services.datapipeline.model.{ ParameterObject => AwsParameterObject,
+  PipelineObject => AwsPipelineObject }
 import org.json4s.JsonDSL._
 import org.json4s.{ JArray, JValue }
 
@@ -11,6 +13,8 @@ import com.krux.hyperion.workflow.WorkflowExpression
 
 trait AbstractDataPipelineDef {
 
+  val emptyKey: WorkflowKey = None
+
   def pipelineName: String = MainClass(this).toString
 
   private lazy val context = new HyperionContext()
@@ -21,7 +25,7 @@ trait AbstractDataPipelineDef {
 
   def schedule: Schedule
 
-  def workflows: Iterable[WorkflowExpression]
+  def workflows: Map[WorkflowKey, WorkflowExpression]
 
   def defaultObject: DefaultObject = DefaultObject(schedule)
 
@@ -38,15 +42,22 @@ trait AbstractDataPipelineDef {
     else foundParam.get.withValueFromString(value)
   }
 
-  def toJsons: Iterable[JValue] =
-    workflows.map { workflow =>
-      ("objects" -> JArray(
-        AdpJsonSerializer(defaultObject.serialize) ::
-        AdpJsonSerializer(schedule.serialize) ::
-        Nil)) ~
-      ("parameters" -> JArray(
-        parameters.flatMap(_.serialize).map(o => AdpJsonSerializer(o)).toList))
-      ???
-    }
+  def toJsons: Map[WorkflowKey, JValue] = workflows.mapValues { workflow =>
+    ("objects" -> JArray(
+      AdpJsonSerializer(defaultObject.serialize) ::
+      AdpJsonSerializer(schedule.serialize) ::
+      workflow.toPipelineObjects.map(_.serialize).toList.sortBy(_.id).map(o => AdpJsonSerializer(o)))) ~
+    ("parameters" -> JArray(
+      parameters.flatMap(_.serialize).map(o => AdpJsonSerializer(o)).toList))
+  }
+
+  def toAwsPipelineObjects: Map[WorkflowKey, Seq[AwsPipelineObject]] = workflows.mapValues { workflow =>
+    AdpPipelineSerializer(defaultObject.serialize) ::
+    AdpPipelineSerializer(schedule.serialize) ::
+    workflow.toPipelineObjects.map(o => AdpPipelineSerializer(o.serialize)).toList
+  }
+
+  def toAwsParameters: Seq[AwsParameterObject] =
+    parameters.flatMap(_.serialize).map(o => AdpParameterSerializer(o)).toList
 
 }
