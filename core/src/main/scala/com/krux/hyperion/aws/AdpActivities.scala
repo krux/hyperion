@@ -104,6 +104,10 @@ trait AdpActivity extends AdpDataPipelineObject {
    */
   def failureAndRerunMode: Option[String]
 
+  /**
+   *The maximum number of concurrent active instances of a component. Re-runs do not count toward the number of active instances.
+   */
+  def maxActiveInstances: Option[String]
 }
 
 /**
@@ -132,7 +136,8 @@ case class AdpCopyActivity (
   lateAfterTimeout: Option[String],
   maximumRetries: Option[String],
   retryDelay: Option[String],
-  failureAndRerunMode: Option[String]
+  failureAndRerunMode: Option[String],
+  maxActiveInstances: Option[String]
 ) extends AdpActivity {
 
   val `type` = "CopyActivity"
@@ -177,7 +182,8 @@ case class AdpRedshiftCopyActivity (
   lateAfterTimeout: Option[String],
   maximumRetries: Option[String],
   retryDelay: Option[String],
-  failureAndRerunMode: Option[String]
+  failureAndRerunMode: Option[String],
+  maxActiveInstances: Option[String]
 ) extends AdpActivity {
 
   val `type` = "RedshiftCopyActivity"
@@ -196,8 +202,6 @@ case class AdpRedshiftCopyActivity (
  *   up to 255, add multiple preStepCommand fields.
  * @param postStepCommand Shell scripts to be run after all steps are finished. To specify multiple
  *   scripts, up to 255, add multiple postStepCommand fields.
- * @param actionOnResourceFailure Action for the EmrCluster to take when it fails.  String: retryall (retry all inputs) or retrynone (retry nothing)
- * @param actionOnTaskFailure Action for the activity/task to take when its associated EmrCluster fails.  String: continue (do not terminate the cluster) or terminate
  * @param runsOn The Amazon EMR cluster to run this cluster.
  * @param step One or more steps for the cluster to run. To specify multiple steps, up to 255, add
  *   multiple step fields. Use comma-separated arguments after the JAR name; for example,
@@ -222,7 +226,8 @@ case class AdpEmrActivity (
   lateAfterTimeout: Option[String],
   maximumRetries: Option[String],
   retryDelay: Option[String],
-  failureAndRerunMode: Option[String]
+  failureAndRerunMode: Option[String],
+  maxActiveInstances: Option[String]
 ) extends AdpActivity {
 
   val `type` = "EmrActivity"
@@ -251,7 +256,8 @@ case class AdpHadoopActivity (
   lateAfterTimeout: Option[String],
   maximumRetries: Option[String],
   retryDelay: Option[String],
-  failureAndRerunMode: Option[String]
+  failureAndRerunMode: Option[String],
+  maxActiveInstances: Option[String]
   // XXX - no evidence this is supported actionOnResourceFailure: Option[String],
   // XXX - no evidence this is supported actionOnTaskFailure: Option[String]
 ) extends AdpActivity {
@@ -302,7 +308,8 @@ class AdpHiveActivity (
   val lateAfterTimeout: Option[String],
   val maximumRetries: Option[String],
   val retryDelay: Option[String],
-  val failureAndRerunMode: Option[String]
+  val failureAndRerunMode: Option[String],
+  val maxActiveInstances: Option[String]
 ) extends AdpActivity {
 
   val `type` = "HiveActivity"
@@ -338,7 +345,8 @@ case class AdpHiveCopyActivity (
   lateAfterTimeout: Option[String],
   maximumRetries: Option[String],
   retryDelay: Option[String],
-  failureAndRerunMode: Option[String]
+  failureAndRerunMode: Option[String],
+  maxActiveInstances: Option[String]
 ) extends AdpActivity {
 
   val `type` = "HiveCopyActivity"
@@ -383,7 +391,8 @@ class AdpPigActivity (
   val lateAfterTimeout: Option[String],
   val maximumRetries: Option[String],
   val retryDelay: Option[String],
-  val failureAndRerunMode: Option[String]
+  val failureAndRerunMode: Option[String],
+  val maxActiveInstances: Option[String]
 ) extends AdpActivity {
 
   val `type` = "PigActivity"
@@ -423,7 +432,8 @@ case class AdpSqlActivity (
   lateAfterTimeout: Option[String],
   maximumRetries: Option[String],
   retryDelay: Option[String],
-  failureAndRerunMode: Option[String]
+  failureAndRerunMode: Option[String],
+  maxActiveInstances: Option[String]
 ) extends AdpActivity {
 
   val `type` = "SqlActivity"
@@ -465,7 +475,8 @@ case class AdpShellCommandActivity (
   lateAfterTimeout: Option[String],
   maximumRetries: Option[String],
   retryDelay: Option[String],
-  failureAndRerunMode: Option[String]
+  failureAndRerunMode: Option[String],
+  maxActiveInstances: Option[String]
 ) extends AdpActivity {
 
   val `type` = "ShellCommandActivity"
