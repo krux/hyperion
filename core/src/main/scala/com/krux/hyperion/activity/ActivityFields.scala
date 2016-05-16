@@ -16,5 +16,6 @@ case class ActivityFields[A <: ResourceObject](
   attemptTimeout: Option[HDuration] = None,
   lateAfterTimeout: Option[HDuration] = None,
   retryDelay: Option[HDuration] = None,
-  failureAndRerunMode: Option[FailureAndRerunMode] = None
+  failureAndRerunMode: Option[FailureAndRerunMode] = None,
+  maxActiveInstances: Option[HInt] = None
 )
