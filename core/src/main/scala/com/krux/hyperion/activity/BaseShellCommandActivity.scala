@@ -36,7 +36,7 @@ trait BaseShellCommandActivity extends PipelineActivity[Ec2Resource] {
 
   override def objects = input ++ output ++ super.objects
 
-  def serialize = AdpShellCommandActivity(
+  def serialize = new AdpShellCommandActivity(
     id = id,
     name = name,
     command = script.content.map(_.serialize),
@@ -58,7 +58,8 @@ trait BaseShellCommandActivity extends PipelineActivity[Ec2Resource] {
     lateAfterTimeout = lateAfterTimeout.map(_.serialize),
     maximumRetries = maximumRetries.map(_.serialize),
     retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
+    maxActiveInstances = maxActiveInstances.map(_.serialize)
   )
 
 }

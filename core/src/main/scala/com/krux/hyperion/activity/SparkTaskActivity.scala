@@ -59,7 +59,7 @@ case class SparkTaskActivity private (
 
   private def sparkSettings: Seq[HString] = sparkOptions ++ sparkConfig.flatMap { case (k, v) => Seq[HString]("--conf", s"$k=$v") }
 
-  lazy val serialize = AdpHadoopActivity(
+  lazy val serialize = new AdpHadoopActivity(
     id = id,
     name = name,
     jarUri = scriptRunner.serialize,
@@ -81,7 +81,8 @@ case class SparkTaskActivity private (
     lateAfterTimeout = lateAfterTimeout.map(_.serialize),
     maximumRetries = maximumRetries.map(_.serialize),
     retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
+    maxActiveInstances = maxActiveInstances.map(_.serialize)
   )
 
 }

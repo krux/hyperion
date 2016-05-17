@@ -67,6 +67,11 @@ trait PipelineActivity[A <: ResourceObject] extends NamedPipelineObject {
     activityFields.copy(failureAndRerunMode = Option(mode))
   )
 
+  def maxActiveInstances = activityFields.maxActiveInstances
+  def withMaxActiveInstances(activeInstances: HInt): Self = updateActivityFields(
+    activityFields.copy(maxActiveInstances = Option(activeInstances))
+  )
+
   def objects: Iterable[PipelineObject] = runsOn.toSeq ++ dependsOn ++
     activityFields.onFailAlarms ++
     activityFields.onSuccessAlarms ++
