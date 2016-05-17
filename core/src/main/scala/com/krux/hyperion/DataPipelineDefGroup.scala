@@ -11,22 +11,20 @@ import com.krux.hyperion.workflow.WorkflowExpression
 trait DataPipelineDefGroup[A] extends AbstractDataPipelineDef {
 
   /**
-   * Configs is a collection of workflow parameters A, such that they can be treated as single
-   * worklfow that can be grouped together
-   */
-  def configs: Iterable[A]
-
-  /**
    * Function to determine the how workflow should be grouped together
    */
-  def configGroups(xs: Iterable[A]): Map[WorkflowKey, Iterable[A]]
+  def configGroups: Map[WorkflowKey, Iterable[A]]
+
+  override def pipelineNames = configGroups.keySet
+    .map(pipelineName + _.map(NameKeySeparator + _).getOrElse(""))
 
   /**
    * Defines the details of the workflow based on an iterable of configuration A
    */
   def groupWorkflow(group: Iterable[A]): WorkflowExpression
 
-  final def workflows: Map[WorkflowKey, WorkflowExpression] = configGroups(configs)
-    .map { case (key, xs) => (key, groupWorkflow(xs)) }
+  final def workflows: Map[WorkflowKey, WorkflowExpression] = configGroups.map { case (key, xs) =>
+    (key, groupWorkflow(xs))
+  }
 
 }

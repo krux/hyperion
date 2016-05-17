@@ -13,9 +13,13 @@ import com.krux.hyperion.workflow.WorkflowExpression
 
 trait AbstractDataPipelineDef {
 
+  val NameKeySeparator = "#"
+
   val emptyKey: WorkflowKey = None
 
   def pipelineName: String = MainClass(this).toString
+
+  def pipelineNames: Set[String] = Set(pipelineName)
 
   private lazy val context = new HyperionContext()
 
