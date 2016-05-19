@@ -45,7 +45,73 @@ case class AwsClientForDef(
    * Create and upload the pipeline definitions, if error occurs a full roll back is issued.
    */
   private def uploadPipelineObjects(): Option[AwsClientForId] = {
-    ???
+
+    val parameterObjects = pipelineDef.toAwsParameters
+
+    def createAndUploadObjects(name: String, objects: Seq[PipelineObject]): Option[String] = {
+
+      val pipelineId = throttleRetry(
+        client.createPipeline(
+          new CreatePipelineRequest()
+            .withUniqueId(name)
+            .withName(name)
+            .withTags(
+              pipelineDef.tags.toSeq
+                .map { case (k, v) => new Tag().withKey(k).withValue(v.getOrElse("")) }
+                .asJava
+            )
+        )
+        .getPipelineId
+      )
+
+      log.info(s"Created pipeline $pipelineId ($name)")
+      log.info(s"Uploading pipline definition to $pipelineId")
+
+      val putDefinitionResult = throttleRetry(
+        client.putPipelineDefinition(
+          new PutPipelineDefinitionRequest()
+            .withPipelineId(pipelineId)
+            .withPipelineObjects(objects.asJava)
+            .withParameterObjects(parameterObjects.asJava)
+        )
+      )
+
+      putDefinitionResult.getValidationErrors.asScala
+        .flatMap(err => err.getErrors.asScala.map(detail => s"${err.getId}: $detail"))
+        .foreach(log.error)
+      putDefinitionResult.getValidationWarnings.asScala
+        .flatMap(err => err.getWarnings.asScala.map(detail => s"${err.getId}: $detail"))
+        .foreach(log.warn)
+
+      if (putDefinitionResult.getErrored) {
+        log.error("Failed to create pipeline")
+        log.error("Deleting the just created pipeline")
+        AwsClientForId(client, Set(pipelineId)).deletePipelines()
+        None
+      } else if (putDefinitionResult.getValidationErrors.isEmpty
+        && putDefinitionResult.getValidationWarnings.isEmpty) {
+        log.info("Successfully created pipeline")
+        Option(pipelineId)
+      } else {
+        log.warn("Successful with warnings")
+        Option(pipelineId)
+      }
+    }
+
+    val keyObjectsMap = pipelineDef.toAwsPipelineObjects
+
+    val afterUpload = keyObjectsMap.flatMap { case (key, objects) =>
+      createAndUploadObjects(pipelineDef.pipelineNameForKey(key), objects)
+    }
+
+    val retClient = AwsClientForId(client, afterUpload.toSet)
+    if (afterUpload.size != keyObjectsMap.size) {
+      retClient.deletePipelines()
+      None
+    } else {
+      Option(retClient)
+    }
+
   }
 
   private def getPipelineIdNames(): Map[String, String] = {
