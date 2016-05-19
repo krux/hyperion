@@ -169,8 +169,10 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
           log.error("Deleting the just created pipeline")
           HyperionAwsClientForPipelineId(client, pipelineId).deletePipeline()
           None
-        } else if (putDefinitionResult.getValidationErrors.isEmpty
-          && putDefinitionResult.getValidationWarnings.isEmpty) {
+        } else if (
+            putDefinitionResult.getValidationErrors.isEmpty &&
+            putDefinitionResult.getValidationWarnings.isEmpty
+          ) {
           log.info("Successfully created pipeline")
           Option(pipelineId)
         } else {

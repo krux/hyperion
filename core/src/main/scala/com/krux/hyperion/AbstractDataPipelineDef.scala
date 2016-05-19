@@ -21,6 +21,9 @@ trait AbstractDataPipelineDef {
 
   def pipelineNames: Set[String] = Set(pipelineName)
 
+  final def pipelineNameForKey(key: WorkflowKey) =
+    pipelineName + key.map(NameKeySeparator + _).getOrElse("")
+
   private lazy val context = new HyperionContext()
 
   implicit def hc: HyperionContext = context

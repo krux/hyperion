@@ -15,8 +15,7 @@ trait DataPipelineDefGroup[A] extends AbstractDataPipelineDef {
    */
   def configGroups: Map[WorkflowKey, Iterable[A]]
 
-  override def pipelineNames = configGroups.keySet
-    .map(pipelineName + _.map(NameKeySeparator + _).getOrElse(""))
+  override def pipelineNames = configGroups.keySet.map(pipelineNameForKey)
 
   /**
    * Defines the details of the workflow based on an iterable of configuration A

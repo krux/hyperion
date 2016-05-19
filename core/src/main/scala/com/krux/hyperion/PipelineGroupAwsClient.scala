@@ -6,7 +6,7 @@ import scala.collection.JavaConverters._
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.services.datapipeline.DataPipelineClient
 import com.amazonaws.services.datapipeline.model.{ PipelineObject, ListPipelinesRequest,
-  ParameterObject, CreatePipelineRequest, Tag }
+  ParameterObject, CreatePipelineRequest, Tag, PutPipelineDefinitionRequest }
 import org.slf4j.LoggerFactory
 
 
@@ -42,7 +42,50 @@ case class PipelineGroupAwsClientForDef(
   private def createEmptyPipelines(force: Boolean): Option[PipelineGroupAwsClientForDef] = {
     val existingPipelines = getPipelineIdNames()
 
-    if (existingPipelines.nonEmpty)
+    if (existingPipelines.nonEmpty) {
+      log.warn("Pipeline group already exists")
+
+      if (force) {
+        log.info("Delete the existing pipeline")
+        PipelineGroupAwsClientForIds(awsClient, existingPipelines.keySet).deletePipelines()
+        Thread.sleep(10000) // wait until the data pipeline is really deleted
+        createEmptyPipelines(force)
+      } else {
+        log.error("Use --force to force pipeline creation")
+        None
+      }
+
+    } else {
+
+      val createdPipelines = pipelineObjects
+        .foldLeft(Set.empty[String]) {
+          case (ids, (wfKey, objects)) =>
+            val name = pipelineDef.pipelineNameForKey(wfKey)
+            val pipelineId = throttleRetry(
+              awsClient.createPipeline(
+                new CreatePipelineRequest()
+                  .withUniqueId(name)
+                  .withName(name)
+                  .withTags(
+                    pipelineDef.tags.toSeq
+                      .map { case (k, v) => new Tag().withKey(k).withValue(v.getOrElse("")) }
+                      .asJava
+                  )
+              )).getPipelineId
+
+            val putDefinitionResult = throttleRetry(
+              awsClient.putPipelineDefinition(
+                new PutPipelineDefinitionRequest()
+                  .withPipelineId(pipelineId)
+                  .withPipelineObjects(objects.asJava)
+                  .withParameterObjects(parameterObjects.asJava)
+              )
+            )
+
+            ids + pipelineId
+          }
+    }
+
     ???
   }
 
