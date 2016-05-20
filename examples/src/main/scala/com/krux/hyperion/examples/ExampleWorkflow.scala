@@ -21,6 +21,7 @@ object ExampleWorkflow extends DataPipelineDef with HyperionCli {
   override def parameters = Seq(price)
 
   val ec2 = Ec2Resource()
+    .withSecurityGroups("your-security-group")
     .withSpotBidPrice(price) // Could also put 2.3 directly here
 
   // First activity

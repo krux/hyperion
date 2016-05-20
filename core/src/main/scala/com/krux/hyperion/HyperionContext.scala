@@ -35,6 +35,7 @@ class HyperionContext(config: Config) {
   lazy val ec2ResourceRole = Try(config.getString("hyperion.aws.ec2.resource.role")).toOption.getOrElse(resourceRole)
 
   lazy val ec2SecurityGroup = config.getString("hyperion.aws.ec2.securitygroup")
+  lazy val ec2SecurityGroupId = config.getString("hyperion.aws.ec2.securitygroupid")
   lazy val ec2InstanceType = config.getString("hyperion.aws.ec2.instance.type")
   lazy val ec2ImageId = config.getString(s"hyperion.aws.ec2.image.$ec2Region")
   lazy val ec2TerminateAfter = Try(config.getString("hyperion.aws.ec2.terminate")).toOption.map(Duration(_))

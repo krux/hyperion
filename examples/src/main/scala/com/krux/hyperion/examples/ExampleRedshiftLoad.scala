@@ -24,7 +24,7 @@ object ExampleRedshiftLoad extends DataPipelineDef with HyperionCli {
     .startAtActivation
     .every(1.hour)
 
-  val ec2Instance = Ec2Resource()
+  val ec2Instance = Ec2Resource().withSecurityGroups("your-security-group")
 
   val s3Format = TsvDataFormat()
 
