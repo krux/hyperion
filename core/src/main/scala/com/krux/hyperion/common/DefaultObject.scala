@@ -23,7 +23,7 @@ case class DefaultObject(schedule: Schedule)(implicit val hc: HyperionContext)
         // TODO - workerGroup
         // TODO - preActivityTaskConfig
         // TODO - postActivityTaskConfig
-      ) ++ hc.logUri.map(value => value -> Left(value))
+      ) ++ hc.logUri.map("pipelineLogUri" -> Left(_))
   }
 
   def ref: AdpRef[AdpDataPipelineDefaultObject] = AdpRef(serialize)
