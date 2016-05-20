@@ -7,6 +7,7 @@ import com.krux.hyperion.activity.Script.string2Script
 import com.krux.hyperion.activity.ShellCommandActivity
 import com.krux.hyperion.resource.WorkerGroup
 import org.scalatest.FlatSpec
+import org.scalatest.Matchers._
 
 class WorkflowSpec extends FlatSpec {
   it should "not require logUri" in {
@@ -15,6 +16,6 @@ class WorkflowSpec extends FlatSpec {
       override def workflow = ShellCommandActivity("hello world")(WorkerGroup("foo"))
     }
 
-    dataPipelineDef2Json(NoConfigWorkflow)
+    noException should be thrownBy dataPipelineDef2Json(NoConfigWorkflow)
   }
 }
