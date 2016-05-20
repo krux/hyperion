@@ -2,9 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.1 - 2016-05-20
+##Added
+- [#388](https://github.com/krux/hyperion/issues/388) - Make hyperion.log.uri optional
+
 ## 3.3.0 - 2016-05-17
 ##Added
-- [#397](https://github.com/krux/hyperion/issues/397) - Ability to set maxActiveINstances optional field for activities
+- [#397](https://github.com/krux/hyperion/issues/397) - Ability to set maxActiveInstances optional field for activities
 
 ## 3.2.14 - 2016-05-12
 ### Fixed
