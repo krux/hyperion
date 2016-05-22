@@ -87,7 +87,7 @@ object Parameter {
     new UnencryptedParameter(ParameterFields(id = id))
 
   def apply[T : GenericParameter](id: String, value: T)(implicit pv: ParameterValues): UnencryptedParameter[T] =
-    new UnencryptedParameter(ParameterFields(id = id)).withValue(value)
+    (new UnencryptedParameter[T](ParameterFields(id = id)) with Evaluatable[T]).withValue(value)
 
   def unencrypted[T : GenericParameter](id: String)(implicit pv: ParameterValues): UnencryptedParameter[T] =
     apply(id)
@@ -99,11 +99,11 @@ object Parameter {
     new EncryptedParameter(ParameterFields(id = id))
 
   def encrypted[T : GenericParameter](id: String, value: T)(implicit pv: ParameterValues): EncryptedParameter[T] =
-    new EncryptedParameter(ParameterFields(id = id)).withValue(value)
+    (new EncryptedParameter[T](ParameterFields(id = id)) with Evaluatable[T]).withValue(value)
 
   implicit def stringParameter2HString(p: Parameter[String]): HString = HString(
     Right(
-      new StringExp with Evaluatable[String] {
+      new StringExp {
         def content = p.name
         def evaluate() = p.evaluate()
       }
@@ -112,7 +112,7 @@ object Parameter {
 
   implicit def intParameter2HInt(p: Parameter[Int]): HInt = HInt(
     Right(
-      new IntExp with Evaluatable[Int] {
+      new IntExp {
         def content = p.name
         def evaluate() = p.evaluate()
       }
@@ -121,7 +121,7 @@ object Parameter {
 
   implicit def doubleParameter2HDouble(p: Parameter[Double]): HDouble = HDouble(
     Right(
-      new DoubleExp with Evaluatable[Double] {
+      new DoubleExp {
         def content = p.name
         def evaluate() = p.evaluate()
       }
@@ -130,7 +130,7 @@ object Parameter {
 
   implicit def dateTimeParameter2HDateTime(p: Parameter[DateTime]): HDateTime = HDateTime(
     Right(
-      new DateTimeExp with Evaluatable[DateTime] {
+      new DateTimeExp {
         def content = p.name
         def evaluate() = p.evaluate()
       }
@@ -139,7 +139,7 @@ object Parameter {
 
   implicit def durationParameter2HDuration(p: Parameter[Duration]): HDuration = HDuration(
     Right(
-      new DurationExp with Evaluatable[Duration] {
+      new DurationExp {
         def content = p.name
         def evaluate() = p.evaluate()
       }
@@ -148,7 +148,7 @@ object Parameter {
 
   implicit def s3UriParameter2HS3Uri(p: Parameter[S3Uri]): HS3Uri = HS3Uri(
     Right(
-      new S3UriExp with Evaluatable[S3Uri] {
+      new S3UriExp {
         def content = p.name
         def evaluate() = p.evaluate()
       }
