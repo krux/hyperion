@@ -13,7 +13,7 @@ class HyperionContext(config: Config) {
   def this() = this(ConfigFactory.load)
 
   lazy val scriptUri = config.getString("hyperion.script.uri")
-  lazy val logUri = config.getString("hyperion.log.uri")
+  lazy val logUri = Try(config.getString("hyperion.log.uri")).toOption
 
   //
   // Default values
