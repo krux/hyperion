@@ -69,8 +69,8 @@ object Ec2Resource {
     imageId = Option(hc.ec2ImageId: HString),
     runAsUser = None,
     associatePublicIpAddress = HBoolean.False,
-    securityGroups = Seq.empty,
-    securityGroupIds = Seq.empty,
+    securityGroups = if (hc.ec2SecurityGroup.isEmpty) Seq.empty else Seq(hc.ec2SecurityGroup.get),
+    securityGroupIds = if (hc.ec2SecurityGroupId.isEmpty) Seq.empty else Seq(hc.ec2SecurityGroupId.get),
     spotBidPrice = None
   )
 
