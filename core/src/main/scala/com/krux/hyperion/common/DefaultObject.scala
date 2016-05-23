@@ -1,6 +1,6 @@
 package com.krux.hyperion.common
 
-import com.krux.hyperion.aws.{ AdpDataPipelineDefaultObject, AdpDataPipelineObject, AdpRef }
+import com.krux.hyperion.aws.{AdpDataPipelineDefaultObject, AdpDataPipelineObject, AdpRef}
 import com.krux.hyperion.Schedule
 import com.krux.hyperion.HyperionContext
 
@@ -17,14 +17,13 @@ case class DefaultObject(schedule: Schedule)(implicit val hc: HyperionContext)
       Map[String, Either[String, AdpRef[AdpDataPipelineObject]]](
         "scheduleType" -> Left(schedule.scheduleType.serialize),
         "failureAndRerunMode" -> Left(hc.failureRerunMode),
-        "pipelineLogUri" -> Left(hc.logUri),
         "role" -> Left(hc.role),
         "resourceRole" -> Left(hc.resourceRole),
         "schedule" -> Right(schedule.ref)
         // TODO - workerGroup
         // TODO - preActivityTaskConfig
         // TODO - postActivityTaskConfig
-      )
+      ) ++ hc.logUri.map("pipelineLogUri" -> Left(_))
   }
 
   def ref: AdpRef[AdpDataPipelineDefaultObject] = AdpRef(serialize)
