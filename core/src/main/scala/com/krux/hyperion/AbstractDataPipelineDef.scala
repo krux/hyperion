@@ -13,7 +13,7 @@ import com.krux.hyperion.workflow.WorkflowExpression
 
 trait AbstractDataPipelineDef {
 
-  val NameKeySeparator = "#"
+  def NameKeySeparator = AbstractDataPipelineDef.DefaultNameKeySeparator
 
   val emptyKey: WorkflowKey = None
 
@@ -66,5 +66,11 @@ trait AbstractDataPipelineDef {
 
   def toAwsParameters: Seq[AwsParameterObject] =
     parameters.flatMap(_.serialize).map(o => AdpParameterSerializer(o)).toList
+
+}
+
+object AbstractDataPipelineDef {
+
+  final val DefaultNameKeySeparator = "#"
 
 }

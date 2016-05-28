@@ -1,7 +1,7 @@
 package com.krux.hyperion.io
 
 import com.amazonaws.services.datapipeline.DataPipelineClient
-import com.amazonaws.services.datapipeline.model.DeletePipelineRequest
+import com.amazonaws.services.datapipeline.model.{ DeletePipelineRequest, ActivatePipelineRequest }
 
 
 case class AwsClientForId(
@@ -12,6 +12,11 @@ case class AwsClientForId(
   def deletePipelines(): Unit = pipelineIds.foreach { id =>
     log.info(s"Deleting pipeline $id")
     throttleRetry(client.deletePipeline(new DeletePipelineRequest().withPipelineId(id)))
+  }
+
+  def activatePipelines(): Unit = pipelineIds.foreach { id =>
+    log.info(s"Activating pipeline $id")
+    throttleRetry(client.activatePipeline(new ActivatePipelineRequest().withPipelineId(id)))
   }
 
 }
