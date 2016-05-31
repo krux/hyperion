@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##Added
 - [#401](https://github.com/krux/hyperion/issues/401) - Handle .compare(_) on parameters without default values
 
+## 3.3.2 - 2016-05-23
+##Added
+- [#398](https://github.com/krux/hyperion/issues/397) - Add support for securityGroupIds in Ec2Resource
+
 ## 3.3.1 - 2016-05-20
 ##Added
 - [#388](https://github.com/krux/hyperion/issues/388) - Make hyperion.log.uri optional
