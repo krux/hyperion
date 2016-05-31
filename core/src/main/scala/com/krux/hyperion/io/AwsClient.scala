@@ -27,5 +27,4 @@ trait AwsClient {
       func
   }
 
-
 }

@@ -15,6 +15,8 @@ case class AwsClientForName(
     nameKeySeparator: String = AbstractDataPipelineDef.DefaultNameKeySeparator
   ) extends AwsClient {
 
+  lazy val pipelineIdNames: Map[String, String] = getPipelineIdNames()
+
   /**
    * TODO: Note this is copied from AwsClientForDef with the consistency name check removed
    */
@@ -63,5 +65,8 @@ case class AwsClientForName(
 
   }
 
+  def forId(): Option[AwsClientForId] =
+    if (pipelineIdNames.isEmpty) None
+    else Option(AwsClientForId(client, pipelineIdNames.keySet))
 
 }

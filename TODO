@@ -1,6 +1,4 @@
-- Implement client for name
-  - getPipelineIdNames is duplicated in forName and forDef where forName is lack of consistent
-    checking with pipelineDef
+- Integrate the new client with the CLI
 - Extract a better throttle retry function that is less verbose
 - Implement AWS transaction library and suppose onFail (rollback function) and use the function on
   create and activate pipelines
