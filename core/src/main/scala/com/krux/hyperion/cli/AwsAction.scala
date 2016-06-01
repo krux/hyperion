@@ -1,6 +1,6 @@
 package com.krux.hyperion.cli
 
-import com.krux.hyperion.{ DataPipelineDef, HyperionAwsClient }
+import com.krux.hyperion.DataPipelineDef
 import com.krux.hyperion.io.{ AwsClientForDef, AwsClient }
 
 private[hyperion] trait AwsAction extends Action {

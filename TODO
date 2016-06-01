@@ -1,5 +1,4 @@
-- Deprecate the old aws hyperion client
 - Extract a better throttle retry function that is less verbose
-- Implement AWS transaction library and suppose onFail (rollback function) and use the function on
+- Implement AWS transaction library and support onFail (rollback function) and use the function on
   create and activate pipelines
 - Implement a Monadic AWS Client
