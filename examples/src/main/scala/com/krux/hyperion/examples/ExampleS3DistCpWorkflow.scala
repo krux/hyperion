@@ -12,7 +12,7 @@ import com.krux.hyperion.resource.MapReduceCluster
 object ExampleS3DistCpWorkflow extends DataPipelineDef with HyperionCli {
 
   val source = "the-source"
-  val target = "the-target"
+  val target = hdfs / "" / "the-target"
   val jar = s3 / "sample-jars" / "sample-jar-assembly-current.jar"
 
   override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
@@ -44,7 +44,7 @@ object ExampleS3DistCpWorkflow extends DataPipelineDef with HyperionCli {
       s3 / source
     )
     .withDestination(
-      s3 / target
+      target
     )
     .withOutputCodec(
       OutputCodec.Gz

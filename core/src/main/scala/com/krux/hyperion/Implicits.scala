@@ -5,6 +5,7 @@ import scala.language.implicitConversions
 import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.common.Memory
 import com.krux.hyperion.common.S3Uri.S3StringContext
+import com.krux.hyperion.common.HdfsUri.HdfsStringContext
 import com.krux.hyperion.expression._
 import org.json4s.DefaultFormats
 
@@ -35,6 +36,8 @@ object Implicits {
   }
 
   implicit def stringContext2S3UriHelper(sc: StringContext): S3StringContext = S3StringContext(sc)
+
+  implicit def stringContext2SHdfsUriHelper(sc: StringContext): HdfsStringContext = HdfsStringContext(sc)
 
   implicit class Int2Memory(n: Int) {
     def kilobytes = Memory(n, "K")

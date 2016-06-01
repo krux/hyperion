@@ -52,7 +52,8 @@ case class SparkActivity private (
     lateAfterTimeout = lateAfterTimeout.map(_.serialize),
     maximumRetries = maximumRetries.map(_.serialize),
     retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
+    maxActiveInstances = maxActiveInstances.map(_.serialize)
   )
 }
 

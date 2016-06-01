@@ -8,7 +8,7 @@ import org.json4s.JsonDSL._
 import org.json4s.{ JArray, JValue }
 
 import com.krux.hyperion.aws.{ AdpJsonSerializer, AdpParameterSerializer, AdpPipelineSerializer }
-import com.krux.hyperion.common.{ PipelineObject, S3UriHelper }
+import com.krux.hyperion.common.{ PipelineObject, S3UriHelper, HdfsUriHelper }
 import com.krux.hyperion.workflow.{ WorkflowExpressionImplicits, WorkflowExpression }
 
 /**
@@ -17,6 +17,7 @@ import com.krux.hyperion.workflow.{ WorkflowExpressionImplicits, WorkflowExpress
 trait DataPipelineDef
   extends AbstractDataPipelineDef
   with S3UriHelper
+  with HdfsUriHelper
   with WorkflowExpressionImplicits {
 
   /**
