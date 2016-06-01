@@ -1,4 +1,4 @@
-- Integrate the new client with the CLI
+- Deprecate the old aws hyperion client
 - Extract a better throttle retry function that is less verbose
 - Implement AWS transaction library and suppose onFail (rollback function) and use the function on
   create and activate pipelines

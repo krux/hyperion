@@ -1,10 +1,14 @@
 package com.krux.hyperion.cli
 
-import com.krux.hyperion.HyperionAwsClient
+import com.krux.hyperion.io.AwsClientForDef
 
 private[hyperion] case object CreateAction extends AwsAction {
 
-  def apply(options: Options, client: HyperionAwsClient): Boolean =
-    client.createPipeline(options.force, options.activate)
+  def apply(options: Options, client: AwsClientForDef): Boolean = {
+    if (options.activate)
+      client.createPipelines(options.force).flatMap(_.activatePipelines())
+    else
+      client.createPipelines(options.force)
+  }.isDefined
 
 }

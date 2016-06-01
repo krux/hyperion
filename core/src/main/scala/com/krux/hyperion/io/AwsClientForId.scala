@@ -9,14 +9,20 @@ case class AwsClientForId(
     pipelineIds: Set[String]
   ) extends AwsClient {
 
-  def deletePipelines(): Unit = pipelineIds.foreach { id =>
-    log.info(s"Deleting pipeline $id")
-    throttleRetry(client.deletePipeline(new DeletePipelineRequest().withPipelineId(id)))
+  def deletePipelines(): Option[Unit] = {
+    pipelineIds.foreach { id =>
+      log.info(s"Deleting pipeline $id")
+      throttleRetry(client.deletePipeline(new DeletePipelineRequest().withPipelineId(id)))
+    }
+    Option(Unit)
   }
 
-  def activatePipelines(): Unit = pipelineIds.foreach { id =>
-    log.info(s"Activating pipeline $id")
-    throttleRetry(client.activatePipeline(new ActivatePipelineRequest().withPipelineId(id)))
+  def activatePipelines(): Option[AwsClientForId] = {
+    pipelineIds.foreach { id =>
+      log.info(s"Activating pipeline $id")
+      throttleRetry(client.activatePipeline(new ActivatePipelineRequest().withPipelineId(id)))
+    }
+    Option(this)
   }
 
 }

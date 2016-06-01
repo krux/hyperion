@@ -18,6 +18,10 @@ case class AwsClientForDef(
     prepareForCreation(force).flatMap(_.uploadPipelineObjects())
   }
 
+  def forName(): Option[AwsClientForName] = Option(
+    AwsClientForName(client, pipelineDef.pipelineName, pipelineDef.NameKeySeparator)
+  )
+
   /**
    * Check and prepare for the creation of pipleines
    */
