@@ -35,14 +35,17 @@ trait DataPipelineDefGroup
 
   def workflows: Map[WorkflowKey, WorkflowExpression]
 
-  def split(): Map[WorkflowKey, DataPipelineDef] = workflows.mapValues { workflow =>
-    DataPipelineDefWrapper(
-      hc,
-      pipelineName,
-      schedule,
-      () => workflow,
-      tags,
-      parameters
+  def split(): Map[WorkflowKey, DataPipelineDef] = workflows.map { case (key, workflow) =>
+    (
+      key,
+      DataPipelineDefWrapper(
+        hc,
+        DataPipelineDefGroup.pipelineNameForKey(this, key),
+        schedule,
+        () => workflow,
+        tags,
+        parameters
+      )
     )
   }
 

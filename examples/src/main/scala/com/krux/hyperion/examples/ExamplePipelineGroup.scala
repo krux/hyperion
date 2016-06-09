@@ -17,8 +17,8 @@ object ExamplePipelineGroup extends DataPipelineDefGroup with HyperionCli {
 
   def configGroups: Map[WorkflowKey, Iterable[Int]] = Map(
     (Option("1"), (0 until 5)),
-    (Option("2"), (5 until 10)),
-    (Option("3"), (10 until 15))
+    (Option("2"), (5 until 6)),
+    (Option("3"), (6 until 10))
   )
 
   def workflows: Map[WorkflowKey, WorkflowExpression] = configGroups.mapValues { intValues =>
