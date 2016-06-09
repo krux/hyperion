@@ -15,6 +15,7 @@ case class WorkflowGraphRenderer(
   includeDataNodes: Boolean,
   includeDatabases: Boolean
 ) {
+
   private lazy val pipelineObjects: Seq[PipelineObject] = pipeline
 
   private lazy val idToTypeMap: Map[String, String] = pipelineObjects.flatMap { obj =>

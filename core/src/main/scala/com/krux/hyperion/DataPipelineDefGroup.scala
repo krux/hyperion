@@ -1,29 +1,77 @@
 package com.krux.hyperion
 
-import com.krux.hyperion.workflow.WorkflowExpression
+import com.amazonaws.services.datapipeline.model.{ ParameterObject => AwsParameterObject,
+  PipelineObject => AwsPipelineObject }
+
+import com.krux.hyperion.activity.MainClass
+import com.krux.hyperion.aws.{ AdpParameterSerializer, AdpPipelineSerializer }
+import com.krux.hyperion.common.{ DefaultObject, S3UriHelper, HdfsUriHelper }
+import com.krux.hyperion.expression.{ ParameterValues, Parameter }
+import com.krux.hyperion.workflow.{ WorkflowExpression, WorkflowExpressionImplicits }
 
 
-/**
- * Workflows to be deployed to independent data pipelines in AWS. This is to mainly a workaround
- * for the limited number of objects and number of fields restriction by AWS. Also this make sure
- * tasks are distributed to multiple physical pipelines for management reasons.
- */
-trait DataPipelineDefGroup[A] extends AbstractDataPipelineDef {
+trait DataPipelineDefGroup
+  extends S3UriHelper
+  with HdfsUriHelper
+  with WorkflowExpressionImplicits {
 
-  /**
-   * Function to determine the how workflow should be grouped together
-   */
-  def configGroups: Map[WorkflowKey, Iterable[A]]
+  def nameKeySeparator = DataPipelineDefGroup.DefaultNameKeySeparator
 
-  override def pipelineNames = configGroups.keySet.map(pipelineNameForKey)
+  private lazy val context = new HyperionContext()
 
-  /**
-   * Defines the details of the workflow based on an iterable of configuration A
-   */
-  def groupWorkflow(group: Iterable[A]): WorkflowExpression
+  implicit def hc: HyperionContext = context
 
-  final def workflows: Map[WorkflowKey, WorkflowExpression] = configGroups.map { case (key, xs) =>
-    (key, groupWorkflow(xs))
+  implicit val pv: ParameterValues = new ParameterValues()
+
+  def pipelineName: String = MainClass(this).toString
+
+  def schedule: Schedule
+
+  def defaultObject: DefaultObject = DefaultObject(schedule)
+
+  def parameters: Iterable[Parameter[_]] = Seq.empty
+
+  def tags: Map[String, Option[String]] = Map.empty
+
+  def workflows: Map[WorkflowKey, WorkflowExpression]
+
+  def split(): Map[WorkflowKey, DataPipelineDef] = workflows.mapValues { workflow =>
+    DataPipelineDefWrapper(
+      hc,
+      pipelineName,
+      schedule,
+      () => workflow,
+      tags,
+      parameters
+    )
   }
+
+  /**
+   * @param ignoreNonExist ignores the parameter with id unknown to the definition
+   */
+  def setParameterValue(id: String, value: String, ignoreNonExist: Boolean = true): Unit = {
+    val foundParam = parameters.find(_.id == id)
+    if (ignoreNonExist) foundParam.foreach(_.withValueFromString(value))
+    else foundParam.get.withValueFromString(value)
+  }
+
+  def toAwsParameters: Seq[AwsParameterObject] =
+    parameters.flatMap(_.serialize).map(o => AdpParameterSerializer(o)).toList
+
+  def toAwsPipelineObjects: Map[WorkflowKey, Seq[AwsPipelineObject]] =
+    workflows.mapValues( workflow =>
+      AdpPipelineSerializer(defaultObject.serialize) ::
+      AdpPipelineSerializer(schedule.serialize) ::
+      workflow.toPipelineObjects.map(o => AdpPipelineSerializer(o.serialize)).toList
+    )
+
+}
+
+object DataPipelineDefGroup {
+
+  final val DefaultNameKeySeparator = "#"
+
+  final def pipelineNameForKey(pipelineDef: DataPipelineDefGroup, key: WorkflowKey) =
+    pipelineDef.pipelineName + key.map(pipelineDef.nameKeySeparator + _).getOrElse("")
 
 }

@@ -6,13 +6,13 @@ import scala.collection.JavaConverters._
 import com.amazonaws.services.datapipeline.DataPipelineClient
 import com.amazonaws.services.datapipeline.model.ListPipelinesRequest
 
-import com.krux.hyperion.AbstractDataPipelineDef
+import com.krux.hyperion.DataPipelineDefGroup
 
 
 case class AwsClientForName(
     client: DataPipelineClient,
     pipelineName: String,
-    nameKeySeparator: String = AbstractDataPipelineDef.DefaultNameKeySeparator
+    nameKeySeparator: String = DataPipelineDefGroup.DefaultNameKeySeparator
   ) extends AwsClient {
 
   lazy val pipelineIdNames: Map[String, String] = getPipelineIdNames()
@@ -33,7 +33,7 @@ case class AwsClientForName(
         request: ListPipelinesRequest = new ListPipelinesRequest()
       ): Map[String, String] = {
 
-      val response = throttleRetry(client.listPipelines(request))
+      val response = client.listPipelines(request).retry()
       val theseIdNames = response.getPipelineIdList
         .asScala
         .collect { case idName if inGroup(idName.getName) => (idName.getId, idName.getName) }

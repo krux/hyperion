@@ -1,7 +1,8 @@
 package com.krux.hyperion.io
 
 import com.amazonaws.services.datapipeline.DataPipelineClient
-import com.amazonaws.services.datapipeline.model.{ DeletePipelineRequest, ActivatePipelineRequest }
+import com.amazonaws.services.datapipeline.model.{ DeactivatePipelineRequest,
+  DeletePipelineRequest, ActivatePipelineRequest }
 
 
 case class AwsClientForId(
@@ -12,7 +13,7 @@ case class AwsClientForId(
   def deletePipelines(): Option[Unit] = {
     pipelineIds.foreach { id =>
       log.info(s"Deleting pipeline $id")
-      throttleRetry(client.deletePipeline(new DeletePipelineRequest().withPipelineId(id)))
+      client.deletePipeline(new DeletePipelineRequest().withPipelineId(id)).retry()
     }
     Option(Unit)
   }
@@ -20,7 +21,20 @@ case class AwsClientForId(
   def activatePipelines(): Option[AwsClientForId] = {
     pipelineIds.foreach { id =>
       log.info(s"Activating pipeline $id")
-      throttleRetry(client.activatePipeline(new ActivatePipelineRequest().withPipelineId(id)))
+      client.activatePipeline(new ActivatePipelineRequest().withPipelineId(id)).retry()
+    }
+    Option(this)
+  }
+
+  def deactivatePipelines(): Option[AwsClientForId] = {
+    pipelineIds.foreach { id =>
+      log.info(s"Activating pipeline $id")
+
+      client
+        .deactivatePipeline(
+          new DeactivatePipelineRequest().withPipelineId(id).withCancelActive(true)
+        )
+        .retry()
     }
     Option(this)
   }

@@ -4,37 +4,36 @@ import com.krux.hyperion.expression.Parameter
 import com.krux.hyperion.workflow.WorkflowExpression
 
 
-/**
-  * DataPipelineDefWrapper provides a way to wrap other DataPipelineDefs
-  * in order to override aspects.
-  */
-case class DataPipelineDefWrapper private[hyperion] (
+case class DataPipelineDefGroupWrapper private (
     override val hc: HyperionContext,
     override val pipelineName: String,
+    override val nameKeySeparator: String,
     schedule: Schedule,
-    workflowFunc: () => WorkflowExpression,  // for delayed workflow execution
+    workflowsFunc: () => Map[WorkflowKey, WorkflowExpression],  // for delayed workfow execution
     override val tags: Map[String, Option[String]],
     override val parameters: Iterable[Parameter[_]]
-  ) extends DataPipelineDef {
+  ) extends DataPipelineDefGroup {
 
   def withName(name: String) = copy(pipelineName = name)
   def withSchedule(schedule: Schedule) = copy(schedule = schedule)
   def withTags(tags: Map[String, Option[String]]) = copy(tags = this.tags ++ tags)
   def withParameters(parameters: Iterable[Parameter[_]]) = copy(parameters = parameters)
 
-  def workflow = workflowFunc()
+  def workflows = workflowsFunc()
 
 }
 
-object DataPipelineDefWrapper {
+object DataPipelineDefGroupWrapper {
 
-  def apply(inner: DataPipelineDef): DataPipelineDefWrapper = DataPipelineDefWrapper(
-    inner.hc,
-    inner.pipelineName,
-    inner.schedule,
-    () => inner.workflow,
-    inner.tags,
-    inner.parameters
-  )
+  def apply(inner: DataPipelineDefGroup): DataPipelineDefGroupWrapper =
+    new DataPipelineDefGroupWrapper(
+      inner.hc,
+      inner.pipelineName,
+      inner.nameKeySeparator,
+      inner.schedule,
+      () => inner.workflows,
+      inner.tags,
+      inner.parameters
+    )
 
 }

@@ -6,13 +6,13 @@ import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.BuildInfo
 import com.krux.hyperion.cli.Reads._
 import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.{ DataPipelineDef, DataPipelineDefWrapper }
+import com.krux.hyperion.{ DataPipelineDefGroup, DataPipelineDefGroupWrapper }
 import scopt.OptionParser
 
 /**
   * EntryPoint is the main entrypoint for the CLI.
   */
-case class EntryPoint(pipeline: DataPipelineDef) {
+case class EntryPoint(pipeline: DataPipelineDefGroup) {
 
   private val parser = new OptionParser[Options](s"hyperion") {
     head("hyperion", s"${BuildInfo.version} (${BuildInfo.scalaVersion})")
@@ -241,7 +241,7 @@ case class EntryPoint(pipeline: DataPipelineDef) {
   }
 
   def run(args: Array[String]): Int = parser.parse(args, Options()).map { cli =>
-    val wrappedPipeline = DataPipelineDefWrapper(pipeline)
+    val wrappedPipeline = DataPipelineDefGroupWrapper(pipeline)
       .withTags(cli.tags)
       .withName(cli.customName.getOrElse(pipeline.pipelineName))
       .withSchedule(cli.schedule.getOrElse(pipeline.schedule))

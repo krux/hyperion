@@ -8,26 +8,20 @@ import org.json4s.JsonDSL._
 import org.json4s.{ JArray, JValue }
 
 import com.krux.hyperion.aws.{ AdpJsonSerializer, AdpParameterSerializer, AdpPipelineSerializer }
-import com.krux.hyperion.common.{ PipelineObject, S3UriHelper, HdfsUriHelper }
-import com.krux.hyperion.workflow.{ WorkflowExpressionImplicits, WorkflowExpression }
+import com.krux.hyperion.workflow.WorkflowExpression
+
 
 /**
  * Base trait of all data pipeline definitions. All data pipelines needs to implement this trait
  */
-trait DataPipelineDef
-  extends AbstractDataPipelineDef
-  with S3UriHelper
-  with HdfsUriHelper
-  with WorkflowExpressionImplicits {
+trait DataPipelineDef extends DataPipelineDefGroup {
 
   /**
    * Workflow to be defined
    */
   def workflow: WorkflowExpression
 
-  final def workflows = Map(emptyKey -> workflow)
-
-  def objects: Iterable[PipelineObject] = workflow.toPipelineObjects
+  final def workflows = Map(EmptyKey -> workflow)
 
 }
 
@@ -37,15 +31,13 @@ object DataPipelineDef {
     ("objects" -> JArray(
       AdpJsonSerializer(pd.defaultObject.serialize) ::
       AdpJsonSerializer(pd.schedule.serialize) ::
-      pd.objects.map(_.serialize).toList.sortBy(_.id).map(o => AdpJsonSerializer(o)))) ~
+      pd.workflow.toPipelineObjects.map(_.serialize).toList.sortBy(_.id).map(o => AdpJsonSerializer(o)))) ~
     ("parameters" -> JArray(
       pd.parameters.flatMap(_.serialize).map(o => AdpJsonSerializer(o)).toList))
 
   implicit def dataPipelineDef2Aws(pd: DataPipelineDef): Seq[AwsPipelineObject] =
     AdpPipelineSerializer(pd.defaultObject.serialize) ::
     AdpPipelineSerializer(pd.schedule.serialize) ::
-    pd.objects.map(o => AdpPipelineSerializer(o.serialize)).toList
+    pd.workflow.toPipelineObjects.map(o => AdpPipelineSerializer(o.serialize)).toList
 
-  implicit def dataPipelineDef2AwsParameter(pd: DataPipelineDef): Seq[AwsParameterObject] =
-    pd.parameters.flatMap(_.serialize).map(o => AdpParameterSerializer(o)).toList
 }
