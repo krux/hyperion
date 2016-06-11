@@ -33,14 +33,17 @@ case class AwsClientForDef(
 
     val pipelineMasterName = pipelineDef.pipelineName
     val pipelineNames = pipelineDef.workflows.keys
+      .map(DataPipelineDefGroup.pipelineNameForKey(pipelineDef, _))
 
     val existingPipelines =
       AwsClientForName(client, pipelineMasterName, pipelineDef.nameKeySeparator).pipelineIdNames
 
-    if (existingPipelines.values.toSet != pipelineNames) log.warn("inconsistent data pipline names")
-
     if (existingPipelines.nonEmpty) {
       log.warn("Pipeline group already exists")
+
+      if (existingPipelines.values.toSet != pipelineNames)
+        log.warn(s"Inconsistent data pipline names: AWS had (${existingPipelines.values.toSet.mkString(", ")}), the pipeline defined (${pipelineNames.mkString(", ")})")
+
       if (force) {
         log.info("Delete the exisiting pipline")
         AwsClientForId(client, existingPipelines.keySet).deletePipelines()
