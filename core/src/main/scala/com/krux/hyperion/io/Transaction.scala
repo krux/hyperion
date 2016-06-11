@@ -1,7 +1,7 @@
 package com.krux.hyperion.io
 
 
-trait Transaction[S, F] {
+trait Transaction[F, S] {
 
   def action(): S
 

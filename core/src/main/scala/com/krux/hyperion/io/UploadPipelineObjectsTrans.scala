@@ -11,7 +11,7 @@ import com.krux.hyperion.DataPipelineDefGroup
 
 
 case class UploadPipelineObjectsTrans(client: DataPipelineClient, pipelineDef: DataPipelineDefGroup)
-  extends Transaction[AwsClientForId, Option[Unit]] with Retry {
+  extends Transaction[Option[Unit], AwsClientForId] with Retry {
 
   val log = LoggerFactory.getLogger(getClass)
 
