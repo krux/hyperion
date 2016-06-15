@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Added
 - [#344](https://github.com/krux/hyperion/issues/344) - Add support for defining multiple pipelines with shared schedules within one definition with DataPipelineDefGroup
-    - `com.krux.hyperion.HyperionAwsClient` is rewritten and replaced by `com.krux.hyperion.AwsClient`
+    - `com.krux.hyperion.HyperionAwsClient` is rewritten and replaced by `com.krux.hyperion.io.AwsClient`
     - `com.krux.hyperion.WorkflowExpression` is moved to `com.krux.hyperion.workflow.WorkflowExpression`
 
 ## 3.3.2 - 2016-05-23
