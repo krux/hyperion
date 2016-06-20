@@ -1,4 +1,4 @@
-package com.krux.hyperion.io
+package com.krux.hyperion.client
 
 import scala.collection.JavaConverters._
 

@@ -1,4 +1,4 @@
-package com.krux.hyperion.io
+package com.krux.hyperion.client
 
 import com.amazonaws.AmazonServiceException
 import org.slf4j.Logger

@@ -1,4 +1,4 @@
-package com.krux.hyperion.io
+package com.krux.hyperion.client
 
 import com.amazonaws.auth.{ DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider }
 import com.amazonaws.regions.{ Region, Regions }

@@ -1,4 +1,4 @@
-package com.krux.hyperion.io
+package com.krux.hyperion.client
 
 
 trait Transaction[F, S] {

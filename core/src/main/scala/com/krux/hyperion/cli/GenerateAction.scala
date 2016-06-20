@@ -11,7 +11,7 @@ private[hyperion] case object GenerateAction extends Action {
 
   def apply(options: Options, defGroup: DataPipelineDefGroup): Boolean = {
 
-    defGroup.split().foreach { case (key, pipelineDef) =>
+    defGroup.ungroup().foreach { case (key, pipelineDef) =>
       val outputStream = options.output
         .map(o => new PrintStream(o + key.map("#" + _).getOrElse("")))
         .getOrElse(System.out)

@@ -35,7 +35,7 @@ trait DataPipelineDefGroup
 
   def workflows: Map[WorkflowKey, WorkflowExpression]
 
-  def split(): Map[WorkflowKey, DataPipelineDef] = workflows.map { case (key, workflow) =>
+  def ungroup(): Map[WorkflowKey, DataPipelineDef] = workflows.map { case (key, workflow) =>
     (
       key,
       DataPipelineDefWrapper(

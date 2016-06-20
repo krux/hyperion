@@ -1,6 +1,6 @@
 package com.krux.hyperion.cli
 
-import com.krux.hyperion.io.AwsClientForDef
+import com.krux.hyperion.client.AwsClientForDef
 
 private[hyperion] case object CreateAction extends AwsAction {
 

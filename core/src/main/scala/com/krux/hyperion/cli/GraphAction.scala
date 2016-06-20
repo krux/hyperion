@@ -9,7 +9,7 @@ private[hyperion] case object GraphAction extends Action {
 
   def apply(options: Options, defGroup: DataPipelineDefGroup): Boolean = {
 
-    defGroup.split().foreach { case (key, pipelineDef) =>
+    defGroup.ungroup().foreach { case (key, pipelineDef) =>
       val renderer = WorkflowGraphRenderer(pipelineDef, options.removeLastNameSegment,
         options.label, options.includeResources, options.includeDataNodes, options.includeDatabases)
       options.output

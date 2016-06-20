@@ -1,4 +1,4 @@
-package com.krux.hyperion.io
+package com.krux.hyperion.client
 
 import com.amazonaws.services.datapipeline.DataPipelineClient
 import com.amazonaws.services.datapipeline.model.{ DeactivatePipelineRequest,

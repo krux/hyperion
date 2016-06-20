@@ -1,4 +1,4 @@
-package com.krux.hyperion.io
+package com.krux.hyperion.client
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
