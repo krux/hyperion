@@ -17,9 +17,6 @@ case class AwsClientForName(
 
   lazy val pipelineIdNames: Map[String, String] = getPipelineIdNames()
 
-  /**
-   * TODO: Note this is copied from AwsClientForDef with the consistency name check removed
-   */
   private def getPipelineIdNames(): Map[String, String] = {
 
     def inGroup(actualName: String): Boolean = (
