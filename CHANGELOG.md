@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.4.0 - 2016-06-20
+##Added
+- [#410](https://github.com/krux/hyperion/issues/410) - support all redshift unload options for RedshiftUnloadActivity
+
 ## 3.3.3 - 2016-05-22
 ##Added
 - [#401](https://github.com/krux/hyperion/issues/401) - Handle .compare(_) on parameters without default values
