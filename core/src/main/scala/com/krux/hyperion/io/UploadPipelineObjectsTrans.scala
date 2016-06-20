@@ -36,7 +36,7 @@ case class UploadPipelineObjectsTrans(client: DataPipelineClient, pipelineDef: D
       .getPipelineId
 
     log.info(s"Created pipeline $pipelineId ($name)")
-    log.info(s"Uploading pipline definition to $pipelineId")
+    log.info(s"Uploading pipeline definition to $pipelineId")
 
     val putDefinitionResult = client
       .putPipelineDefinition(

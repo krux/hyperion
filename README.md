@@ -57,7 +57,7 @@ $ sbt assembly
 Then, run hyperion with the class name (specify the external jar location if it's not in the
 classpath):
 ```shell
-$ ./hyperion [-jar your-jar-implementing-pipelines.jar] your.piplines.ThePipeline generate > ThePipeline.json
+$ ./hyperion [-jar your-jar-implementing-pipelines.jar] your.pipelines.ThePipeline generate > ThePipeline.json
 ```
 
 Then you can go to the [AWS Data Pipeline Management Console](https://console.aws.amazon.com/datapipeline/),

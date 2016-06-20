@@ -9,13 +9,13 @@ import com.krux.hyperion.workflow.WorkflowExpression
   * in order to override aspects.
   */
 case class DataPipelineDefWrapper private[hyperion] (
-    override val hc: HyperionContext,
-    override val pipelineName: String,
-    schedule: Schedule,
-    workflowFunc: () => WorkflowExpression,  // for delayed workflow execution
-    override val tags: Map[String, Option[String]],
-    override val parameters: Iterable[Parameter[_]]
-  ) extends DataPipelineDef {
+  override val hc: HyperionContext,
+  override val pipelineName: String,
+  schedule: Schedule,
+  workflowFunc: () => WorkflowExpression,  // for delayed workflow execution
+  override val tags: Map[String, Option[String]],
+  override val parameters: Iterable[Parameter[_]]
+) extends DataPipelineDef {
 
   def withName(name: String) = copy(pipelineName = name)
   def withSchedule(schedule: Schedule) = copy(schedule = schedule)

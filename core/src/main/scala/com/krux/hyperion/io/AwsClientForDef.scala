@@ -10,11 +10,11 @@ import com.krux.hyperion.DataPipelineDefGroup
 
 
 case class AwsClientForDef(
-    client: DataPipelineClient, pipelineDef: DataPipelineDefGroup
-  ) extends AwsClient {
+  client: DataPipelineClient, pipelineDef: DataPipelineDefGroup
+) extends AwsClient {
 
   def createPipelines(force: Boolean): Option[AwsClientForId] = {
-    log.info(s"Creating pipline ${pipelineDef.pipelineName}")
+    log.info(s"Creating pipeline ${pipelineDef.pipelineName}")
     prepareForCreation(force).flatMap(_.uploadPipelineObjects())
   }
 
@@ -26,7 +26,7 @@ case class AwsClientForDef(
    * Check and prepare for the creation of pipleines
    *
    * @return Some of the this AwsClientForDef if there are no existing pipelines (or use force
-   * after the exisitng pipeline has been deleted), and None if existing piplines exist and force
+   * after the exisitng pipeline has been deleted), and None if existing pipelines exist and force
    * is not used.
    */
   private def prepareForCreation(force: Boolean): Option[AwsClientForDef] = {
@@ -42,10 +42,10 @@ case class AwsClientForDef(
       log.warn("Pipeline group already exists")
 
       if (existingPipelines.values.toSet != pipelineNames)
-        log.warn(s"Inconsistent data pipline names: AWS had (${existingPipelines.values.toSet.mkString(", ")}), the pipeline defined (${pipelineNames.mkString(", ")})")
+        log.warn(s"Inconsistent data pipeline names: AWS had (${existingPipelines.values.toSet.mkString(", ")}), the pipeline defined (${pipelineNames.mkString(", ")})")
 
       if (force) {
-        log.info("Delete the exisiting pipline")
+        log.info("Delete the exisiting pipeline")
         AwsClientForId(client, existingPipelines.keySet).deletePipelines()
         prepareForCreation(force)
       } else {

@@ -10,10 +10,10 @@ import com.krux.hyperion.DataPipelineDefGroup
 
 
 case class AwsClientForName(
-    client: DataPipelineClient,
-    pipelineName: String,
-    nameKeySeparator: String = DataPipelineDefGroup.DefaultNameKeySeparator
-  ) extends AwsClient {
+  client: DataPipelineClient,
+  pipelineName: String,
+  nameKeySeparator: String = DataPipelineDefGroup.DefaultNameKeySeparator
+) extends AwsClient {
 
   lazy val pipelineIdNames: Map[String, String] = getPipelineIdNames()
 
