@@ -10,7 +10,7 @@ class ExamplePipelineGroupSpec extends WordSpec {
 
   "ExamplePiplineGroup" should {
 
-    val pipelines = ExamplePipelineGroup.split()
+    val pipelines = ExamplePipelineGroup.ungroup()
 
     "Split into correct number of pipelines" in {
 
