@@ -2,24 +2,28 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.4.1 - 2016-06-21
+## Fixed
+- [#404](https://github.com/krux/hyperion/issues/404) - PythonActivity script now uses the correct virtualenv path
+
 ## 3.4.0 - 2016-06-20
-##Added
+### Added
 - [#410](https://github.com/krux/hyperion/issues/410) - support all redshift unload options for RedshiftUnloadActivity
 
 ## 3.3.3 - 2016-05-22
-##Added
+### Added
 - [#401](https://github.com/krux/hyperion/issues/401) - Handle .compare(_) on parameters without default values
 
 ## 3.3.2 - 2016-05-23
-##Added
+### Added
 - [#398](https://github.com/krux/hyperion/issues/397) - Add support for securityGroupIds in Ec2Resource
 
 ## 3.3.1 - 2016-05-20
-##Added
+## Added
 - [#388](https://github.com/krux/hyperion/issues/388) - Make hyperion.log.uri optional
 
 ## 3.3.0 - 2016-05-17
-##Added
+### Added
 - [#397](https://github.com/krux/hyperion/issues/397) - Ability to set maxActiveInstances optional field for activities
 
 ## 3.2.14 - 2016-05-12

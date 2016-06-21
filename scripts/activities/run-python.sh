@@ -110,7 +110,7 @@ if [ -f ${REQUIREMENTS} ]; then
 
   virtualenv -v .ENV
 
-  source bin/activate
+  source .ENV/bin/activate
 
   echo "Installing requirements"
   pip install -v ${INDEX_URL} ${EXTRA_INDEX_URLS} -r ${REQUIREMENTS}
