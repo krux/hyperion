@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#344](https://github.com/krux/hyperion/issues/344) - Add support for defining multiple pipelines with shared schedules within one definition with DataPipelineDefGroup
     - `com.krux.hyperion.HyperionAwsClient` is rewritten and replaced by `com.krux.hyperion.client.AwsClient`
     - `com.krux.hyperion.WorkflowExpression` is moved to `com.krux.hyperion.workflow.WorkflowExpression`
+- [#403](https://github.com/krux/hyperion/issues/403) - Updated the default ec2 instance AMI to Amazon Linux AMI 2016.03.2 released on 2016-06-09
 
 ## 3.4.1 - 2016-06-21
 ## Fixed
