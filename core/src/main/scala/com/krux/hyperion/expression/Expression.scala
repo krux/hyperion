@@ -178,3 +178,5 @@ trait DateTimeExp extends TypedExpression {
 trait DurationExp extends TypedExpression
 
 trait S3UriExp extends TypedExpression
+
+trait HdfsUriExp extends TypedExpression

@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.4.2 - 2016-06-28
+## Fixed
+- [#416](https://github.com/krux/hyperion/issues/416) - SparkStep and SparkTaskActivity needs to be able to pass a HdfsUri to withArguments()
+
 ## 3.4.1 - 2016-06-21
 ## Fixed
 - [#404](https://github.com/krux/hyperion/issues/404) - PythonActivity script now uses the correct virtualenv path

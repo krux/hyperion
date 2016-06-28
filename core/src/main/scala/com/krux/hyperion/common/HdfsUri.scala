@@ -11,6 +11,7 @@ case class HdfsUri(ref: String) {
 
   def / : HdfsUri = /("")
 
+  override def toString = ref
 }
 
 trait HdfsUriHelper {
