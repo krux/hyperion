@@ -4,10 +4,8 @@ import scala.language.implicitConversions
 
 import org.joda.time.{DateTimeZone, DateTime}
 
-import com.krux.hyperion.expression.{DateTimeExp, IntExp, StringExp, DoubleExp,
-  TypedExpression, IntConstantExp, DurationExp, Duration, S3UriExp, BooleanExp,
-  DateTimeConstantExp, Evaluatable, LongExp}
-import com.krux.hyperion.common.{S3Uri, OptionalOrdered}
+import com.krux.hyperion.expression._
+import com.krux.hyperion.common.{HdfsUri, S3Uri, OptionalOrdered}
 
 sealed abstract class HType {
 
@@ -46,6 +44,9 @@ object HType {
 
   implicit def s3Uri2HS3Uri(value: S3Uri): HS3Uri = HS3Uri(Left(value))
   implicit def s3UriExp2HS3Uri(value: S3UriExp): HS3Uri = HS3Uri(Right(value))
+
+  implicit def hdfsUri2HHdfsUri(value: HdfsUri): HHdfsUri = HHdfsUri(Left(value))
+  implicit def hdfsUriExp2HHdfsUri(value: HdfsUriExp): HHdfsUri = HHdfsUri(Right(value))
 
   implicit def long2HLong(value: Long): HLong = HLong(Left(value))
   implicit def longExp2HLong(value: LongExp): HLong = HLong(Right(value))
@@ -153,3 +154,5 @@ object HDateTime {
 case class HDuration(value: Either[Duration, DurationExp]) extends HType
 
 case class HS3Uri(value: Either[S3Uri, S3UriExp]) extends HType
+
+case class HHdfsUri(value: Either[HdfsUri, HdfsUriExp]) extends HType
