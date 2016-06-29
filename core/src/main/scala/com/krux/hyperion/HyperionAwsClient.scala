@@ -28,8 +28,9 @@ sealed trait HyperionAwsClient {
         // use startsWith becase the doc says the error code is called "Throttling" but sometimes
         // we see "ThrottlingException" instead
         case e: AmazonServiceException if e.getErrorCode().startsWith("Throttling") && e.getStatusCode == 400 =>
-          log.warn(s"caught exception: ${e.getMessage}\n Retry after 5 seconds...")
-          Thread.sleep((Random.nextInt(Math.pow(2, (n + 1)).toInt) + 5) * 1000)
+          val retryDelay = Random.nextInt(Math.pow(2, (n + 1)).toInt) + 5
+          log.warn(s"caught exception: ${e.getMessage}\n Retry after $retryDelay seconds...")
+          Thread.sleep(retryDelay * 1000)
           throttleRetry(func, n + 1)
       }
     else

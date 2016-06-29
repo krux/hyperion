@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.5.1 - 2016-06-29
+### Fixed
+- [#420](https://github.com/krux/hyperion/issues/420) - Fix the incorrect retry message
+
 ## 3.5.0 - 2016-06-29
 ### Changed
 - [#418](https://github.com/krux/hyperion/issues/418) - Max retry should be configurable and use exponential backoff and jitter instead of fixed interval
