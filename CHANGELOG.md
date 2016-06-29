@@ -2,12 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.5.0 - 2016-06-29
+### Changed
+- [#418](https://github.com/krux/hyperion/issues/418) - Max retry should be configurable and use exponential backoff and jitter instead of fixed interval
+
 ## 3.4.2 - 2016-06-28
-## Fixed
+### Fixed
 - [#416](https://github.com/krux/hyperion/issues/416) - SparkStep and SparkTaskActivity needs to be able to pass a HdfsUri to withArguments()
 
 ## 3.4.1 - 2016-06-21
-## Fixed
+### Fixed
 - [#404](https://github.com/krux/hyperion/issues/404) - PythonActivity script now uses the correct virtualenv path
 
 ## 3.4.0 - 2016-06-20

@@ -2,18 +2,21 @@ package com.krux.hyperion
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import scala.util.Random
 
 import com.amazonaws.auth.{ DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider }
 import com.amazonaws.regions.{ Region, Regions }
-import com.amazonaws.{ AmazonWebServiceRequest, AmazonServiceException }
 import com.amazonaws.services.datapipeline._
 import com.amazonaws.services.datapipeline.model._
-import com.krux.hyperion.DataPipelineDef._
+import com.amazonaws.{ AmazonWebServiceRequest, AmazonServiceException }
 import org.slf4j.LoggerFactory
+
+import com.krux.hyperion.DataPipelineDef._
+
 
 sealed trait HyperionAwsClient {
 
-  val maxRetry = 3
+  def maxRetry: Int
 
   protected lazy val log = LoggerFactory.getLogger(getClass)
 
@@ -26,7 +29,7 @@ sealed trait HyperionAwsClient {
         // we see "ThrottlingException" instead
         case e: AmazonServiceException if e.getErrorCode().startsWith("Throttling") && e.getStatusCode == 400 =>
           log.warn(s"caught exception: ${e.getMessage}\n Retry after 5 seconds...")
-          Thread.sleep(5000)
+          Thread.sleep((Random.nextInt(Math.pow(2, (n + 1)).toInt) + 5) * 1000)
           throttleRetry(func, n + 1)
       }
     else
@@ -38,9 +41,10 @@ sealed trait HyperionAwsClient {
   def createPipeline(force: Boolean, activate: Boolean): Boolean
   def activatePipeline(): Boolean
   def deletePipeline(): Boolean
+
 }
 
-case class HyperionAwsClientForPipelineId(client: DataPipelineClient, pipelineId: String) extends HyperionAwsClient {
+case class HyperionAwsClientForPipelineId(client: DataPipelineClient, pipelineId: String, maxRetry: Int) extends HyperionAwsClient {
 
   def getPipelineId: Option[String] = Option(pipelineId)
 
@@ -62,7 +66,7 @@ case class HyperionAwsClientForPipelineId(client: DataPipelineClient, pipelineId
 
 }
 
-case class HyperionAwsClientForName(client: DataPipelineClient, pipelineName: String) extends HyperionAwsClient {
+case class HyperionAwsClientForName(client: DataPipelineClient, pipelineName: String, maxRetry: Int) extends HyperionAwsClient {
 
   def getPipelineId: Option[String] = {
     @tailrec
@@ -101,16 +105,18 @@ case class HyperionAwsClientForName(client: DataPipelineClient, pipelineName: St
 
   def createPipeline(force: Boolean, activate: Boolean): Boolean = false
 
-  def activatePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _)).exists(_.activatePipeline())
+  def activatePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _, maxRetry)).exists(_.activatePipeline())
 
-  def deletePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _)).exists(_.deletePipeline())
+  def deletePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _, maxRetry)).exists(_.deletePipeline())
 
 }
 
 case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineDef: DataPipelineDef) extends HyperionAwsClient {
 
+  lazy val maxRetry = pipelineDef.hc.maxRetry
+
   def getPipelineId: Option[String] =
-    HyperionAwsClientForName(client, pipelineDef.pipelineName).getPipelineId
+    HyperionAwsClientForName(client, pipelineDef.pipelineName, maxRetry).getPipelineId
 
   def createPipeline(force: Boolean): Option[String] = {
     log.info(s"Creating pipeline ${pipelineDef.pipelineName}")
@@ -125,7 +131,7 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
         log.warn("Pipeline already exists")
         if (force) {
           log.info("Delete the existing pipeline")
-          HyperionAwsClientForPipelineId(client, pipelineId).deletePipeline()
+          HyperionAwsClientForPipelineId(client, pipelineId, maxRetry).deletePipeline()
           Thread.sleep(10000) // wait until the data pipeline is really deleted
           createPipeline(force)
         } else {
@@ -170,7 +176,7 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
         if (putDefinitionResult.getErrored) {
           log.error("Failed to create pipeline")
           log.error("Deleting the just created pipeline")
-          HyperionAwsClientForPipelineId(client, pipelineId).deletePipeline()
+          HyperionAwsClientForPipelineId(client, pipelineId, maxRetry).deletePipeline()
           None
         } else if (putDefinitionResult.getValidationErrors.isEmpty
           && putDefinitionResult.getValidationWarnings.isEmpty) {
@@ -184,12 +190,12 @@ case class HyperionAwsClientForPipelineDef(client: DataPipelineClient, pipelineD
   }
 
   def createPipeline(force: Boolean, activate: Boolean): Boolean = createPipeline(force).exists { pipelineId =>
-    if (activate) HyperionAwsClientForPipelineId(client, pipelineId).activatePipeline() else true
+    if (activate) HyperionAwsClientForPipelineId(client, pipelineId, maxRetry).activatePipeline() else true
   }
 
-  def activatePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _)).exists(_.activatePipeline())
+  def activatePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _, maxRetry)).exists(_.activatePipeline())
 
-  def deletePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _)).exists(_.deletePipeline())
+  def deletePipeline(): Boolean = getPipelineId.map(HyperionAwsClientForPipelineId(client, _, maxRetry)).exists(_.deletePipeline())
 }
 
 object HyperionAwsClient {
@@ -201,8 +207,8 @@ object HyperionAwsClient {
     new DataPipelineClient(stsProvider.getOrElse(defaultProvider)).withRegion(region)
   }
 
-  def apply(pipelineId: String, regionId: Option[String], roleArn: Option[String]): HyperionAwsClient =
-    new HyperionAwsClientForPipelineId(getClient(regionId, roleArn), pipelineId)
+  def apply(pipelineId: String, regionId: Option[String], roleArn: Option[String], maxRetry: Int): HyperionAwsClient =
+    new HyperionAwsClientForPipelineId(getClient(regionId, roleArn), pipelineId, maxRetry)
 
   def apply(pipelineDef: DataPipelineDef, regionId: Option[String], roleArn: Option[String]): HyperionAwsClient =
     new HyperionAwsClientForPipelineDef(getClient(regionId, roleArn), pipelineDef)

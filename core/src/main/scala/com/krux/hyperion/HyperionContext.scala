@@ -67,4 +67,10 @@ class HyperionContext(config: Config) {
   // Graphviz styles
   //
   lazy val graphStyles = config.getConfig("hyperion.graphviz.styles")
+
+  //
+  // Aws client configuration
+  //
+  lazy val maxRetry = config.getInt("hyperion.aws.client.max_retry")
+
 }
