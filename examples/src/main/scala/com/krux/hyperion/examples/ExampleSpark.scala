@@ -69,9 +69,25 @@ object ExampleSpark extends DataPipelineDef with HyperionCli {
     .withMainClass("com.krux.hyperion.ScoreJob2")
     .withArguments(target, Format(SparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd"))
 
+  val scoreStep3 = SparkStep(jar)
+    .withMainClass("com.krux.hyperion.ScoreJob3")
+    .withArguments(
+      target,
+      Format(SparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd"),
+      "value1,value2"
+    )
+
+  val scoreStep4 = SparkStep(jar)
+    .withMainClass("com.krux.hyperion.ScoreJob4")
+    .withArguments(
+      target,
+      Format(SparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd"),
+      "value1,value2," + Format(SparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd")
+    )
+
   val scoreActivity = SparkActivity(sparkCluster)
     .named("scoreActivity")
-    .withSteps(scoreStep1, scoreStep2)
+    .withSteps(scoreStep1, scoreStep2, scoreStep3, scoreStep4)
     .onSuccess(mailAction)
 
   override def workflow = filterActivity ~> scoreActivity

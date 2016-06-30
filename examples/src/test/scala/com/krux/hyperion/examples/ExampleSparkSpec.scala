@@ -107,11 +107,13 @@ class ExampleSparkSpec extends WordSpec {
       val scoreActivityShouldBe =
         ("id" -> scoreActivityId) ~
         ("name" -> "scoreActivity") ~
-        ("runsOn" -> ("ref" -> sparkClusterId)) ~
         ("step" -> List(
           "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob1,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},denormalized",
-          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob2,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}"
+          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob2,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}",
+          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob3,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},value1\\\\,value2",
+          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob4,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},value1\\\\,value2\\\\,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}"
           )) ~
+        ("runsOn" -> ("ref" -> sparkClusterId)) ~
         ("dependsOn" -> List("ref" -> filterActivityId)) ~
         ("onSuccess" -> List("ref" -> snsAlarmId)) ~
         ("type" -> "EmrActivity")

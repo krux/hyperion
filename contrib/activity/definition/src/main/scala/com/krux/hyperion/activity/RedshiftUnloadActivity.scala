@@ -5,7 +5,7 @@ import scala.collection.mutable.StringBuilder
 
 import com.krux.hyperion.adt.{ HS3Uri, HString }
 import com.krux.hyperion.aws.AdpSqlActivity
-import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, Escapable }
 import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.expression.{ EncryptedParameter, RunnableObject }
 import com.krux.hyperion.resource.{ Ec2Resource, Resource }
@@ -23,76 +23,15 @@ case class RedshiftUnloadActivity private (
   queue: Option[HString],
   accessKeyId: EncryptedParameter[String],
   accessKeySecret: EncryptedParameter[String]
-) extends PipelineActivity[Ec2Resource] {
+) extends PipelineActivity[Ec2Resource] with Escapable {
 
   type Self = RedshiftUnloadActivity
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
 
-  /**
-   * Given the start of exp, seek the end of expression returning the expression block and the rest
-   * of the string. Note that expression is not a nested structure and the only legitimate '{' or
-   * '}' within a expression is within quotes (i.e. '"' or "'")
-   *
-   * @note this does not handle the case that expression have escaped quotes (i.e. "\"" or '\'')
-   */
-  @tailrec
-  private def seekEndOfExpr(
-      exp: String,
-      quote: Option[Char] = None,
-      expPart: StringBuilder = StringBuilder.newBuilder
-    ): (String, String) = {
-
-    if (exp.isEmpty) {
-      throw new RuntimeException("expression started but not ended")
-    } else {
-      val curChar = exp.head
-      val next = exp.tail
-
-      quote match {
-        case Some(quoteChar) =>  // if is in quote
-          seekEndOfExpr(next, quote.filter(_ != curChar), expPart += curChar)
-        case _ =>
-          curChar match {
-            case '}' => ((expPart += curChar).result, next)
-            case '\'' | '"' => seekEndOfExpr(next, Option(curChar), expPart += curChar)
-            case _ => seekEndOfExpr(next, None, expPart += curChar)
-          }
-      }
-    }
-  }
-
-  private def escapeChar(c: Char): String = if (c == '\'') "\\\\'" else c.toString
-
-  @tailrec
-  private def prepareScript(
-      exp: String,
-      hashSpotted: Boolean = false,
-      result: StringBuilder = StringBuilder.newBuilder
-    ): String = {
-
-    if (exp.isEmpty) {
-      result.toString
-    } else {
-      val curChar = exp.head
-      val expTail = exp.tail
-
-      if (!hashSpotted) {  // outside a expression block
-        prepareScript(expTail, curChar == '#', result ++= escapeChar(curChar))
-      } else {  // the previous char is '#'
-        if (curChar == '{') {  // start of an expression
-          val (blockBody, rest) = seekEndOfExpr(expTail)
-          prepareScript(rest, hashSpotted = false, result += curChar ++= blockBody)
-        } else {  // not start of an expression
-          prepareScript(expTail, hashSpotted = false, result ++= escapeChar(curChar))
-        }
-      }
-    }
-  }
-
   def unloadScript = s"""
-    |UNLOAD ('${prepareScript(script.serialize)}')
+    |UNLOAD ('${escape(script.serialize, '\'')}')
     |TO '$s3Path'
     |WITH CREDENTIALS AS
     |'aws_access_key_id=${accessKeyId.ref};aws_secret_access_key=${accessKeySecret.ref}'

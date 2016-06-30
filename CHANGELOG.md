@@ -4,11 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 4.0.0-SNAPSHOT
 
-## Added
+### Added
 - [#344](https://github.com/krux/hyperion/issues/344) - Add support for defining multiple pipelines with shared schedules within one definition with DataPipelineDefGroup
     - `com.krux.hyperion.HyperionAwsClient` is rewritten and replaced by `com.krux.hyperion.client.AwsClient`
     - `com.krux.hyperion.WorkflowExpression` is moved to `com.krux.hyperion.workflow.WorkflowExpression`
 - [#403](https://github.com/krux/hyperion/issues/403) - Updated the default ec2 instance AMI to Amazon Linux AMI 2016.03.2 released on 2016-06-09
+
+### Fixed
+- [#356](https://github.com/krux/hyperion/issues/403) - Escape `,` in arguments of Emr and Spark steps
 
 ## 3.5.1 - 2016-06-29
 ### Fixed

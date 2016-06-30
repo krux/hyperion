@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.adt.{ HS3Uri, HString, HInt }
-import com.krux.hyperion.common.Memory
+import com.krux.hyperion.common.{ Memory, Escapable }
 import com.krux.hyperion.HyperionContext
 
 /**
@@ -15,7 +15,7 @@ case class SparkStep private (
   jobRunner: HString,
   sparkOptions: Seq[HString],
   sparkConfig: Map[HString, HString]
-) {
+) extends Escapable {
 
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
   def withArguments(arg: HString*) = copy(args = args ++ arg)
@@ -40,7 +40,7 @@ case class SparkStep private (
     Seq(jarUri.serialize),
     mainClass.map(_.toString).toSeq,
     args
-  ).flatten.mkString(",")
+  ).flatten.map(x => escape(x.toString, ',')).mkString(",")
 
   override def toString: String = serialize
 }
