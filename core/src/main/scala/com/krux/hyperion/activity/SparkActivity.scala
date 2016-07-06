@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{SparkCommandRunner, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.HString
@@ -21,7 +21,7 @@ case class SparkActivity private (
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-)(implicit hc: HyperionContext) extends EmrActivity[SparkCluster] {
+) extends EmrActivity[SparkCluster] {
 
   type Self = SparkActivity
 
@@ -29,8 +29,13 @@ case class SparkActivity private (
   def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
   def withSteps(step: SparkStep*) = {
-    val transformed_step = step.map(_.withJobRunner(jobRunner)).map(_.withScriptRunner(scriptRunner))
-    copy(steps = steps ++ transformed_step)
+    val new_steps = step.map(item =>
+      item.copy(
+        scriptRunner = Some(scriptRunner),
+        jobRunner = Some(jobRunner)
+      )
+    )
+    copy(steps = steps ++ new_steps)
   }
   def withPreStepCommand(command: HString*) = copy(preStepCommands = preStepCommands ++ command)
   def withPostStepCommand(command: HString*) = copy(postStepCommands = postStepCommands ++ command)
@@ -63,28 +68,12 @@ case class SparkActivity private (
   )
 }
 
-object SparkActivity extends RunnableObject {
-
-  def jobRunner(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): HString = {
-    if(runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
-      "spark-submit"
-    } else {
-      s"${hc.scriptUri}run-spark-step.sh"
-    }
-  }
-
-  def scriptRunner(runsOn: Resource[SparkCluster]): HString = {
-    if(runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
-      "command-runner.jar"
-    } else {
-      "s3://elasticmapreduce/libs/script-runner/script-runner.jar"
-    }
-  }
+object SparkActivity extends RunnableObject with SparkCommandRunner {
 
   def apply(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkActivity = new SparkActivity(
     baseFields = BaseFields(PipelineObjectId(SparkActivity.getClass)),
     activityFields = ActivityFields(runsOn),
-    jobRunner = jobRunner(runsOn)(hc),
+    jobRunner = jobRunner(runsOn),
     scriptRunner = scriptRunner(runsOn),
     steps = Seq.empty,
     inputs = Seq.empty,

@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.5.2 - 2016-07-06
+### Fixed
+- [#380](https://github.com/krux/hyperion/issues/380) - Support EMR release label 4.x
 
 ## 3.5.1 - 2016-06-29
 ### Fixed

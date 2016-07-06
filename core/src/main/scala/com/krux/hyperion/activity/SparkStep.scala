@@ -4,6 +4,8 @@ import com.krux.hyperion.adt.{ HS3Uri, HString, HInt }
 import com.krux.hyperion.common.Memory
 import com.krux.hyperion.HyperionContext
 
+import scala.tools.nsc.ScriptRunner
+
 /**
  * A Spark step that runs on Spark Cluster
  */
@@ -11,15 +13,13 @@ case class SparkStep private (
   jarUri: HS3Uri,
   mainClass: Option[MainClass],
   args: Seq[HString],
-  var scriptRunner: HString,
-  var jobRunner: HString,
+  scriptRunner: Option[HString],
+  jobRunner: Option[HString],
   sparkOptions: Seq[HString],
   sparkConfig: Map[HString, HString]
 ) {
 
 
-  def withJobRunner(runner: HString) = copy(jobRunner = runner)
-  def withScriptRunner(runner: HString) = copy(scriptRunner = runner)
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
   def withArguments(arg: HString*) = copy(args = args ++ arg)
   def withSparkOption(option: HString*) = copy(sparkOptions = sparkOptions ++ option)
@@ -37,7 +37,7 @@ case class SparkStep private (
   def withMaster(master: HString) = withSparkOption("--master", master)
 
   def serialize: String = Seq(
-    Seq(scriptRunner, jobRunner),
+    Seq(scriptRunner.getOrElse(""), jobRunner.getOrElse("")),
     sparkOptions,
     sparkConfig.flatMap { case (k, v) => Seq("--conf", s"$k=$v") }.toSeq,
     Seq(jarUri.serialize),
@@ -50,12 +50,18 @@ case class SparkStep private (
 
 object SparkStep {
 
-  def apply(jarUri: HS3Uri)(implicit hc: HyperionContext): SparkStep = SparkStep(
+  def apply(jarUri: HS3Uri)(implicit hc: HyperionContext): SparkStep = apply(
+    jarUri = jarUri,
+    scriptRunner = None,
+    jobRunner = None
+  )
+
+  def apply(jarUri: HS3Uri, jobRunner: Option[HString], scriptRunner: Option[HString])(implicit hc: HyperionContext): SparkStep = SparkStep(
     jarUri = jarUri,
     mainClass = None,
     args = Seq.empty,
-    scriptRunner = "",
-    jobRunner = "",
+    scriptRunner = None,
+    jobRunner = None,
     sparkOptions = Seq.empty,
     sparkConfig = Map.empty
   )

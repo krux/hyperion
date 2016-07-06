@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.aws._
-import com.krux.hyperion.common.{ Memory, PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{SparkCommandRunner, Memory, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.{ HInt, HString, HS3Uri }
@@ -19,6 +19,8 @@ case class SparkTaskActivity private (
   baseFields: BaseFields,
   activityFields: ActivityFields[SparkCluster],
   emrTaskActivityFields: EmrTaskActivityFields,
+  jobRunner: HString,
+  scriptRunner: HString,
   jarUri: HString,
   mainClass: MainClass,
   arguments: Seq[HString],
@@ -27,7 +29,7 @@ case class SparkTaskActivity private (
   outputs: Seq[S3DataNode],
   sparkOptions: Seq[HString],
   sparkConfig: Map[HString, HString]
-)(implicit hc: HyperionContext) extends EmrTaskActivity[SparkCluster] {
+) extends EmrTaskActivity[SparkCluster] {
 
   type Self = SparkTaskActivity
 
@@ -52,22 +54,6 @@ case class SparkTaskActivity private (
 
   def withFiles(files: HString*) = withSparkOption(files.flatMap(file => Seq("--files": HString, file)): _*)
   def withMaster(master: HString) = withSparkOption("--master", master)
-
-  def jobRunner: HString = {
-    if(runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
-      "spark-submit"
-    } else {
-      s"${hc.scriptUri}run-spark-step.sh"
-    }
-  }
-
-  def scriptRunner: HString = {
-    if(runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
-      "command-runner.jar"
-    } else {
-      "s3://elasticmapreduce/libs/script-runner/script-runner.jar"
-    }
-  }
 
   override def objects = inputs ++ outputs ++ super.objects
 
@@ -101,7 +87,7 @@ case class SparkTaskActivity private (
 
 }
 
-object SparkTaskActivity extends RunnableObject {
+object SparkTaskActivity extends RunnableObject with SparkCommandRunner {
 
   def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkTaskActivity =
     apply(jarUri.serialize, mainClass)(runsOn)
@@ -110,6 +96,8 @@ object SparkTaskActivity extends RunnableObject {
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
+    jobRunner = jobRunner(runsOn),
+    scriptRunner = scriptRunner(runsOn),
     jarUri = jarUri,
     mainClass = mainClass,
     arguments = Seq.empty,

@@ -13,16 +13,16 @@ case class SparkCluster private (
   baseFields: BaseFields,
   resourceFields: ResourceFields,
   emrClusterFields: EmrClusterFields,
-  sparkVersion: HString
+  sparkVersion: HString,
+  defaultApplications: Seq[HString],
+  defaultBootstrapActions: Seq[HString],
+  isReleaseLabel4xx: Boolean
+
 ) extends EmrCluster {
 
   type Self = SparkCluster
 
   val logger = LoggerFactory.getLogger(SparkCluster.getClass)
-
-  var isReleaseLabel4xx = false
-  var defaultApplications: Seq[HString] = Seq.empty[HString]
-  var defaultBootstrapActions: Seq[HString] = Seq(s"s3://support.elasticmapreduce/spark/install-spark,-v,${sparkVersion},-x": HString)
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
@@ -32,13 +32,16 @@ case class SparkCluster private (
 
   override def withReleaseLabel(label: HString): Self = {
     super.withReleaseLabel(label)
-    if (label.toString.startsWith("emr-4.")) {
-      this.withApplications("Spark": HString)
-      this.defaultBootstrapActions = Seq.empty[HString]
-      this.defaultApplications = Seq("Spark": HString)
-      this.isReleaseLabel4xx = true
+    if ((label.toString.length >= 6) && (label.toString.substring(4, 5).toInt >= 4)) {
+      //Assuming emr-x.y.z, and return x as a number.
+      this.copy(
+        defaultApplications = Seq("Spark": HString),
+        defaultBootstrapActions = Seq.empty[HString],
+        isReleaseLabel4xx = true
+      )
+    } else {
+      this
     }
-    this
   }
 
   override def applications =
@@ -55,7 +58,10 @@ object SparkCluster {
     baseFields = BaseFields(PipelineObjectId(SparkCluster.getClass)),
     resourceFields = EmrCluster.defaultResourceFields(hc),
     emrClusterFields = EmrCluster.defaultEmrClusterFields(hc),
-    sparkVersion = hc.emrSparkVersion.get
+    sparkVersion = hc.emrSparkVersion.get,
+    defaultApplications = Seq.empty[HString],
+    defaultBootstrapActions = Seq(s"s3://support.elasticmapreduce/spark/install-spark,-v,${hc.emrSparkVersion.get},-x": HString),
+    isReleaseLabel4xx = false
   )
 
 }

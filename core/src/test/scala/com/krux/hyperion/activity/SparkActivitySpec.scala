@@ -22,11 +22,11 @@ class SparkActivitySpec extends FlatSpec {
   }
 
   it should "be backwards compatible" in {
-    val cluster = SparkCluster().withReleaseLabel("emr-3.4.0")
+    val cluster = SparkCluster()
     val testStep = SparkStep(S3Uri("s3://something.jar")).withMainClass(MainClass)
     val activity = SparkActivity(cluster).withSteps(testStep)
     activity.steps.length shouldBe 1
     activity.steps.count(_.scriptRunner.toString.contains("s3://elasticmapreduce/libs/script-runner/script-runner.jar")) shouldEqual 1
-    activity.steps.count(_.jobRunner.toString.endsWith("run-spark-step.sh")) shouldEqual 1
+    activity.steps.count(_.jobRunner.toString.contains("run-spark-step.sh")) shouldEqual 1
   }
 }
