@@ -1,5 +1,6 @@
 package com.krux.hyperion.activity
 
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpEmrActivity
 import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.datanode.S3DataNode
@@ -13,19 +14,24 @@ import com.krux.hyperion.resource.{ Resource, SparkCluster }
 case class SparkActivity private (
   baseFields: BaseFields,
   activityFields: ActivityFields[SparkCluster],
+  jobRunner: HString,
+  scriptRunner: HString,
   steps: Seq[SparkStep],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-) extends EmrActivity[SparkCluster] {
+)(implicit hc: HyperionContext) extends EmrActivity[SparkCluster] {
 
   type Self = SparkActivity
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
-  def withSteps(step: SparkStep*) = copy(steps = steps ++ step)
+  def withSteps(step: SparkStep*) = {
+    val transformed_step = step.map(_.withJobRunner(jobRunner)).map(_.withScriptRunner(scriptRunner))
+    copy(steps = steps ++ transformed_step)
+  }
   def withPreStepCommand(command: HString*) = copy(preStepCommands = preStepCommands ++ command)
   def withPostStepCommand(command: HString*) = copy(postStepCommands = postStepCommands ++ command)
   def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
@@ -59,9 +65,27 @@ case class SparkActivity private (
 
 object SparkActivity extends RunnableObject {
 
-  def apply(runsOn: Resource[SparkCluster]): SparkActivity = new SparkActivity(
+  def jobRunner(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): HString = {
+    if(runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
+      "spark-submit"
+    } else {
+      s"${hc.scriptUri}run-spark-step.sh"
+    }
+  }
+
+  def scriptRunner(runsOn: Resource[SparkCluster]): HString = {
+    if(runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
+      "command-runner.jar"
+    } else {
+      "s3://elasticmapreduce/libs/script-runner/script-runner.jar"
+    }
+  }
+
+  def apply(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkActivity = new SparkActivity(
     baseFields = BaseFields(PipelineObjectId(SparkActivity.getClass)),
     activityFields = ActivityFields(runsOn),
+    jobRunner = jobRunner(runsOn)(hc),
+    scriptRunner = scriptRunner(runsOn),
     steps = Seq.empty,
     inputs = Seq.empty,
     outputs = Seq.empty,

@@ -11,12 +11,15 @@ case class SparkStep private (
   jarUri: HS3Uri,
   mainClass: Option[MainClass],
   args: Seq[HString],
-  scriptRunner: HString,
-  jobRunner: HString,
+  var scriptRunner: HString,
+  var jobRunner: HString,
   sparkOptions: Seq[HString],
   sparkConfig: Map[HString, HString]
 ) {
 
+
+  def withJobRunner(runner: HString) = copy(jobRunner = runner)
+  def withScriptRunner(runner: HString) = copy(scriptRunner = runner)
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
   def withArguments(arg: HString*) = copy(args = args ++ arg)
   def withSparkOption(option: HString*) = copy(sparkOptions = sparkOptions ++ option)
@@ -51,8 +54,8 @@ object SparkStep {
     jarUri = jarUri,
     mainClass = None,
     args = Seq.empty,
-    scriptRunner = "s3://elasticmapreduce/libs/script-runner/script-runner.jar",
-    jobRunner = s"${hc.scriptUri}run-spark-step.sh",
+    scriptRunner = "",
+    jobRunner = "",
     sparkOptions = Seq.empty,
     sparkConfig = Map.empty
   )

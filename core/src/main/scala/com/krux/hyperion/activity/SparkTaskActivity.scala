@@ -19,8 +19,6 @@ case class SparkTaskActivity private (
   baseFields: BaseFields,
   activityFields: ActivityFields[SparkCluster],
   emrTaskActivityFields: EmrTaskActivityFields,
-  scriptRunner: HString,
-  jobRunner: HString,
   jarUri: HString,
   mainClass: MainClass,
   arguments: Seq[HString],
@@ -29,7 +27,7 @@ case class SparkTaskActivity private (
   outputs: Seq[S3DataNode],
   sparkOptions: Seq[HString],
   sparkConfig: Map[HString, HString]
-) extends EmrTaskActivity[SparkCluster] {
+)(implicit hc: HyperionContext) extends EmrTaskActivity[SparkCluster] {
 
   type Self = SparkTaskActivity
 
@@ -54,6 +52,22 @@ case class SparkTaskActivity private (
 
   def withFiles(files: HString*) = withSparkOption(files.flatMap(file => Seq("--files": HString, file)): _*)
   def withMaster(master: HString) = withSparkOption("--master", master)
+
+  def jobRunner: HString = {
+    if(runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
+      "spark-submit"
+    } else {
+      s"${hc.scriptUri}run-spark-step.sh"
+    }
+  }
+
+  def scriptRunner: HString = {
+    if(runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
+      "command-runner.jar"
+    } else {
+      "s3://elasticmapreduce/libs/script-runner/script-runner.jar"
+    }
+  }
 
   override def objects = inputs ++ outputs ++ super.objects
 
@@ -96,8 +110,6 @@ object SparkTaskActivity extends RunnableObject {
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
-    scriptRunner = "s3://elasticmapreduce/libs/script-runner/script-runner.jar",
-    jobRunner = s"${hc.scriptUri}run-spark-step.sh",
     jarUri = jarUri,
     mainClass = mainClass,
     arguments = Seq.empty,
