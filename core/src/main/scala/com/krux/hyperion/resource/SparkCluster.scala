@@ -13,7 +13,11 @@ case class SparkCluster private (
   baseFields: BaseFields,
   resourceFields: ResourceFields,
   emrClusterFields: EmrClusterFields,
-  sparkVersion: HString
+  sparkVersion: HString,
+  defaultApplications: Seq[HString],
+  defaultBootstrapActions: Seq[HString],
+  hasReleaseLabel: Boolean
+
 ) extends EmrCluster {
 
   type Self = SparkCluster
@@ -26,9 +30,24 @@ case class SparkCluster private (
 
   def withSparkVersion(sparkVersion: HString) = copy(sparkVersion = sparkVersion)
 
+  override def withReleaseLabel(label: HString): Self = {
+    val newCopy = super.withReleaseLabel(label)
+    if (newCopy.releaseLabel.nonEmpty) {
+      newCopy.copy(
+        defaultApplications = Seq("Spark": HString),
+        defaultBootstrapActions = Seq.empty[HString],
+          hasReleaseLabel = true
+      )
+    } else {
+      this
+    }
+  }
+
+  override def applications =
+    this.defaultApplications ++ super.applications
+
   override def standardBootstrapAction = 
-    (s"s3://support.elasticmapreduce/spark/install-spark,-v,${sparkVersion},-x": HString) +:
-    super.standardBootstrapAction
+    this.defaultBootstrapActions ++ super.standardBootstrapAction
 
 }
 
@@ -38,7 +57,10 @@ object SparkCluster {
     baseFields = BaseFields(PipelineObjectId(SparkCluster.getClass)),
     resourceFields = EmrCluster.defaultResourceFields(hc),
     emrClusterFields = EmrCluster.defaultEmrClusterFields(hc),
-    sparkVersion = hc.emrSparkVersion.get
+    sparkVersion = hc.emrSparkVersion.get,
+    defaultApplications = Seq.empty[HString],
+    defaultBootstrapActions = Seq(s"s3://support.elasticmapreduce/spark/install-spark,-v,${hc.emrSparkVersion.get},-x": HString),
+      hasReleaseLabel = false
   )
 
 }

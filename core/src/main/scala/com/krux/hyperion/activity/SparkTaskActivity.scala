@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.aws._
-import com.krux.hyperion.common.{ Memory, PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{SparkCommandRunner, Memory, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.{ HInt, HString, HS3Uri }
@@ -87,7 +87,7 @@ case class SparkTaskActivity private (
 
 }
 
-object SparkTaskActivity extends RunnableObject {
+object SparkTaskActivity extends RunnableObject with SparkCommandRunner {
 
   def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkTaskActivity =
     apply(jarUri.serialize, mainClass)(runsOn)
@@ -96,8 +96,8 @@ object SparkTaskActivity extends RunnableObject {
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
-    scriptRunner = "s3://elasticmapreduce/libs/script-runner/script-runner.jar",
-    jobRunner = s"${hc.scriptUri}run-spark-step.sh",
+    jobRunner = jobRunner(runsOn),
+    scriptRunner = scriptRunner(runsOn),
     jarUri = jarUri,
     mainClass = mainClass,
     arguments = Seq.empty,

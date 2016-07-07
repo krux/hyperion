@@ -1,7 +1,8 @@
 package com.krux.hyperion.activity
 
+import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{SparkCommandRunner, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.HString
@@ -13,6 +14,8 @@ import com.krux.hyperion.resource.{ Resource, SparkCluster }
 case class SparkActivity private (
   baseFields: BaseFields,
   activityFields: ActivityFields[SparkCluster],
+  jobRunner: HString,
+  scriptRunner: HString,
   steps: Seq[SparkStep],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
@@ -25,7 +28,15 @@ case class SparkActivity private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
-  def withSteps(step: SparkStep*) = copy(steps = steps ++ step)
+  def withSteps(step: SparkStep*) = {
+    val newSteps = step.map(item =>
+      item.copy(
+        scriptRunner = item.scriptRunner.orElse(Option(scriptRunner)),
+        jobRunner = item.jobRunner.orElse(Option(jobRunner))
+      )
+    )
+    copy(steps = steps ++ newSteps)
+  }
   def withPreStepCommand(command: HString*) = copy(preStepCommands = preStepCommands ++ command)
   def withPostStepCommand(command: HString*) = copy(postStepCommands = postStepCommands ++ command)
   def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
@@ -57,11 +68,13 @@ case class SparkActivity private (
   )
 }
 
-object SparkActivity extends RunnableObject {
+object SparkActivity extends RunnableObject with SparkCommandRunner {
 
-  def apply(runsOn: Resource[SparkCluster]): SparkActivity = new SparkActivity(
+  def apply(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkActivity = new SparkActivity(
     baseFields = BaseFields(PipelineObjectId(SparkActivity.getClass)),
     activityFields = ActivityFields(runsOn),
+    jobRunner = jobRunner(runsOn),
+    scriptRunner = scriptRunner(runsOn),
     steps = Seq.empty,
     inputs = Seq.empty,
     outputs = Seq.empty,
