@@ -29,13 +29,13 @@ case class SparkActivity private (
   def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
   def withSteps(step: SparkStep*) = {
-    val new_steps = step.map(item =>
+    val newSteps = step.map(item =>
       item.copy(
-        scriptRunner = Some(scriptRunner),
-        jobRunner = Some(jobRunner)
+        scriptRunner = item.scriptRunner.orElse(Option(scriptRunner)),
+        jobRunner = item.jobRunner.orElse(Option(jobRunner))
       )
     )
-    copy(steps = steps ++ new_steps)
+    copy(steps = steps ++ newSteps)
   }
   def withPreStepCommand(command: HString*) = copy(preStepCommands = preStepCommands ++ command)
   def withPostStepCommand(command: HString*) = copy(postStepCommands = postStepCommands ++ command)

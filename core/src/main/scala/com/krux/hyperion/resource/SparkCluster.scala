@@ -16,7 +16,7 @@ case class SparkCluster private (
   sparkVersion: HString,
   defaultApplications: Seq[HString],
   defaultBootstrapActions: Seq[HString],
-  isReleaseLabel4xx: Boolean
+  hasReleaseLabel: Boolean
 
 ) extends EmrCluster {
 
@@ -31,13 +31,12 @@ case class SparkCluster private (
   def withSparkVersion(sparkVersion: HString) = copy(sparkVersion = sparkVersion)
 
   override def withReleaseLabel(label: HString): Self = {
-    super.withReleaseLabel(label)
-    if ((label.toString.length >= 6) && (label.toString.substring(4, 5).toInt >= 4)) {
-      //Assuming emr-x.y.z, and return x as a number.
-      this.copy(
+    val newCopy = super.withReleaseLabel(label)
+    if (newCopy.releaseLabel.nonEmpty) {
+      newCopy.copy(
         defaultApplications = Seq("Spark": HString),
         defaultBootstrapActions = Seq.empty[HString],
-        isReleaseLabel4xx = true
+          hasReleaseLabel = true
       )
     } else {
       this
@@ -61,7 +60,7 @@ object SparkCluster {
     sparkVersion = hc.emrSparkVersion.get,
     defaultApplications = Seq.empty[HString],
     defaultBootstrapActions = Seq(s"s3://support.elasticmapreduce/spark/install-spark,-v,${hc.emrSparkVersion.get},-x": HString),
-    isReleaseLabel4xx = false
+      hasReleaseLabel = false
   )
 
 }

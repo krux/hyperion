@@ -50,18 +50,12 @@ case class SparkStep private (
 
 object SparkStep {
 
-  def apply(jarUri: HS3Uri)(implicit hc: HyperionContext): SparkStep = apply(
-    jarUri = jarUri,
-    scriptRunner = None,
-    jobRunner = None
-  )
-
-  def apply(jarUri: HS3Uri, jobRunner: Option[HString], scriptRunner: Option[HString])(implicit hc: HyperionContext): SparkStep = SparkStep(
+  def apply(jarUri: HS3Uri, jobRunner: Option[HString] = None, scriptRunner: Option[HString] = None)(implicit hc: HyperionContext): SparkStep = SparkStep(
     jarUri = jarUri,
     mainClass = None,
     args = Seq.empty,
-    scriptRunner = None,
-    jobRunner = None,
+    scriptRunner = scriptRunner,
+    jobRunner = jobRunner,
     sparkOptions = Seq.empty,
     sparkConfig = Map.empty
   )

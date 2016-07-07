@@ -7,7 +7,7 @@ import com.krux.hyperion.resource.{SparkCluster, Resource}
 trait SparkCommandRunner {
 
   def jobRunner(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): HString = {
-    if (runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
+    if (runsOn.asManagedResource.exists(_.hasReleaseLabel)) {
       "spark-submit"
     } else {
       s"${hc.scriptUri}run-spark-step.sh"
@@ -15,7 +15,7 @@ trait SparkCommandRunner {
   }
 
   def scriptRunner(runsOn: Resource[SparkCluster]): HString = {
-    if (runsOn.asManagedResource.exists(_.isReleaseLabel4xx)) {
+    if (runsOn.asManagedResource.exists(_.hasReleaseLabel)) {
       "command-runner.jar"
     } else {
       "s3://elasticmapreduce/libs/script-runner/script-runner.jar"
