@@ -35,7 +35,7 @@ object PgpDecryptActivity
   extends RunnableObject {
   def apply(key: HS3Uri)
            (runsOn: Resource[Ec2Resource])
-           (implicit hc: HyperionContext) = PgpDecryptActivity(
+           (implicit hc: HyperionContext): PgpActivity = PgpDecryptActivity(
     baseFields = BaseFields(PipelineObjectId(PgpDecryptActivity.getClass)), activityFields = ActivityFields(runsOn),
     shellCommandActivityFields = ShellCommandActivityFields(PgpActivity.decryptScript), key = key)
 }
