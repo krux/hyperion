@@ -15,11 +15,12 @@ import com.krux.hyperion.resource.{Ec2Resource, Resource}
   * @param shellCommandActivityFields the shell command setup fields
   * @param key the file containing the private decryption key
   */
-case class PgpDecryptActivity private(baseFields: BaseFields,
-                                      activityFields: ActivityFields[Ec2Resource],
-                                      shellCommandActivityFields: ShellCommandActivityFields,
-                                      key: HS3Uri)
-  extends PgpActivity with WithS3Input with WithS3Output {
+case class PgpDecryptActivity private(
+  baseFields: BaseFields,
+  activityFields: ActivityFields[Ec2Resource],
+  shellCommandActivityFields: ShellCommandActivityFields,
+  key: HS3Uri
+) extends PgpActivity with WithS3Input with WithS3Output {
   type Self = PgpDecryptActivity
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
@@ -33,9 +34,8 @@ case class PgpDecryptActivity private(baseFields: BaseFields,
 
 object PgpDecryptActivity
   extends RunnableObject {
-  def apply(key: HS3Uri)
-           (runsOn: Resource[Ec2Resource])
-           (implicit hc: HyperionContext): PgpActivity = PgpDecryptActivity(
+  def apply(key: HS3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): PgpActivity = PgpDecryptActivity(
     baseFields = BaseFields(PipelineObjectId(PgpDecryptActivity.getClass)), activityFields = ActivityFields(runsOn),
-    shellCommandActivityFields = ShellCommandActivityFields(PgpActivity.decryptScript), key = key)
+    shellCommandActivityFields = ShellCommandActivityFields(PgpActivity.decryptScript), key = key
+  )
 }
