@@ -65,11 +65,10 @@ IFS=$'\n\t'
 # create a temporary working directory
 if [ -x /usr/local/bin/gmktemp ]; then
   # for testing on MacOS
-  MKTEMP=/usr/local/bin/gmktemp
+  WORKING_DIR="$(gmktemp -d)"
 else
-  MKTEMP=mktemp
+  WORKING_DIR="$(mktemp -d)"
 fi
-WORKING_DIR=$($MKTEMP -d)
 add_on_exit rm -rf \"${WORKING_DIR}\"
 
 # the file(s) to decrypt
