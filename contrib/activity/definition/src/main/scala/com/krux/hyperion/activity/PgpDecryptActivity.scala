@@ -34,8 +34,8 @@ case class PgpDecryptActivity private(
   def markOnSuccess = copy(markSuccessfulJobs = true)
 
   override def scriptArguments = Seq(
-    if (markSuccessfulJobs) Some("--markSuccessfulJobs") else None,
-    Some(key.serialize)
+    if (markSuccessfulJobs) Option("--markSuccessfulJobs") else None,
+    Option(key.serialize)
   ).flatten
 }
 
