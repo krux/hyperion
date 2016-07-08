@@ -8,17 +8,24 @@ Decrypts each file in INPUT1_STAGING_DIR (${INPUT1_STAGING_DIR})
 into OUTPUT1_STAGING_DIR (${OUTPUT1_STAGING_DIR})
 using the private key given in the file KEY while removing any ".gpg" extension
 from each filename.
+    --mark-successful-jobs  creates a _SUCCESS file in OUTPUT1_STAGING_DIR
+                            if the decryption is successful
+Example: ${NAME} --mark-successful-jobs s3://path/to/private/key
 EOF
   exit 3
 }
 
 # process options
 MARK_SUCCESSFUL_JOBS=0
-while [[ $# > 1 ]]; do
+while [ $# -gt 0 ]; do
   case "$1" in
     --mark-successful-jobs)
       MARK_SUCCESSFUL_JOBS=1
       shift
+      ;;
+    -*)
+      echo "ERROR: unrecognized option: $1"
+      usage
       ;;
     *)
       break
@@ -26,8 +33,13 @@ while [[ $# > 1 ]]; do
   esac
 done
 
-if [ $# -ne 1 ]; then
-  echo "ERROR: wrong number of arguments"
+if [ $# -lt 1 ]; then
+  echo "ERROR: too few arguments"
+  usage
+fi
+
+if [ $# -gt 1 ]; then
+  echo "ERROR: too many arguments"
   usage
 fi
 
@@ -65,6 +77,10 @@ function get_file() {
   case "$1" in
     s3:*)
       aws s3 cp "$1" "${LOCAL}"
+      ;;
+    -*)
+      echo "Unrecognized option: $1"
+      usage
       ;;
     *)
       cp "$1" "${LOCAL}"
