@@ -33,7 +33,10 @@ case class PgpDecryptActivity private(
 
   def markOnSuccess = copy(markSuccessfulJobs = true)
 
-  override def scriptArguments = Seq(markSuccessfulJobs.serialize, key.serialize: HString)
+  override def scriptArguments = Seq(
+    if (markSuccessfulJobs) Some("--markSuccessfulJobs") else None,
+    Some(key.serialize)
+  ).flatten
 }
 
 object PgpDecryptActivity

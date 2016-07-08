@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.adt.{HBoolean, HS3Uri, HString}
+import com.krux.hyperion.adt.{HBoolean, HS3Uri}
 import com.krux.hyperion.common.{BaseFields, PipelineObjectId}
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
@@ -33,7 +33,10 @@ case class PgpEncryptActivity private(
 
   def markOnSuccess = copy(markSuccessfulJobs = true)
 
-  override def scriptArguments = Seq(markSuccessfulJobs.serialize, key.serialize: HString)
+  override def scriptArguments = Seq(
+    if (markSuccessfulJobs) Some("--markSuccessfulJobs") else None,
+    Some(key.serialize)
+  ).flatten
 }
 
 object PgpEncryptActivity extends RunnableObject {
