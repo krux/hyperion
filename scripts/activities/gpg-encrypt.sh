@@ -3,7 +3,7 @@
 usage() {
   NAME=$(basename $0)
   cat <<EOF
-Usage: ${NAME} KEY
+Usage: ${NAME} [--mark-successful-jobs] KEY
 Encrypts each file in INPUT1_STAGING_DIR (${INPUT1_STAGING_DIR})
 into OUTPUT1_STAGING_DIR (${OUTPUT1_STAGING_DIR})
 using the public key given in the file KEY while appending ".gpg" to each
@@ -11,6 +11,20 @@ filename.
 EOF
   exit 3
 }
+
+# process options
+MARK_SUCCESSFUL_JOBS=0
+while [[ $# > 1 ]]; do
+  case "$1" in
+    --mark-successful-jobs)
+      MARK_SUCCESSFUL_JOBS=1
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
 if [ $# -ne 1 ]; then
   echo "ERROR: wrong number of arguments"
@@ -96,3 +110,8 @@ for FILE in "${FILES[@]}" ; do
   ENCRYPTED="${OUTPUT1_STAGING_DIR}"/"$(basename "${FILE}")".gpg
   gpg --batch --yes --always-trust --encrypt --recipient "${RECIPIENT}" --output "${ENCRYPTED}" "${FILE}"
 done
+
+# mark success
+if [ ${MARK_SUCCESSFUL_JOBS} -eq 1 ]; then
+  touch "${OUTPUT1_STAGING_DIR}"/_SUCCESS
+fi

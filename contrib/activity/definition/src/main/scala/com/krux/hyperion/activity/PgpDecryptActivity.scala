@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.adt.{HS3Uri, HString}
+import com.krux.hyperion.adt.{HBoolean, HS3Uri, HString}
 import com.krux.hyperion.common.{BaseFields, PipelineObjectId}
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
@@ -14,12 +14,14 @@ import com.krux.hyperion.resource.{Ec2Resource, Resource}
   * @param activityFields the activity setup fields
   * @param shellCommandActivityFields the shell command setup fields
   * @param key the file containing the private decryption key
+  * @param markSuccessfulJobs add a _SUCCESS file to the output location on success
   */
 case class PgpDecryptActivity private(
   baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
-  key: HS3Uri
+  key: HS3Uri,
+  markSuccessfulJobs: HBoolean
 ) extends PgpActivity with WithS3Input with WithS3Output {
   type Self = PgpDecryptActivity
 
@@ -29,13 +31,19 @@ case class PgpDecryptActivity private(
 
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  override def scriptArguments = Seq(key.serialize: HString)
+  def markOnSuccess = copy(markSuccessfulJobs = true)
+
+  override def scriptArguments = Seq(markSuccessfulJobs.serialize, key.serialize: HString)
 }
 
 object PgpDecryptActivity
   extends RunnableObject {
-  def apply(key: HS3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): PgpActivity = PgpDecryptActivity(
-    baseFields = BaseFields(PipelineObjectId(PgpDecryptActivity.getClass)), activityFields = ActivityFields(runsOn),
-    shellCommandActivityFields = ShellCommandActivityFields(PgpActivity.decryptScript), key = key
-  )
+  def apply(key: HS3Uri)(runsOn: Resource[Ec2Resource])(implicit hc: HyperionContext): PgpActivity =
+    new PgpDecryptActivity(
+      baseFields = BaseFields(PipelineObjectId(PgpDecryptActivity.getClass)),
+      activityFields = ActivityFields(runsOn),
+      shellCommandActivityFields = ShellCommandActivityFields(PgpActivity.decryptScript),
+      key = key,
+      markSuccessfulJobs = HBoolean.False
+    )
 }
