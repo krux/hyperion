@@ -72,7 +72,7 @@ fi
 add_on_exit rm -rf \"${WORKING_DIR}\"
 
 # the file(s) to decrypt
-FILES=($(find "${INPUT1_STAGING_DIR}" -type f))
+FILES=($(find "${INPUT1_STAGING_DIR}" -name ".*" -prune -o -type f -not -empty -not -name "_*" -print))
 if [ "${#FILES[@]}" -eq 0 ]; then
   echo "ERROR: INPUT1_STAGING_DIR must contain at least one file to decrypt"
   exit 3
