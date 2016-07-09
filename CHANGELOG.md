@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.6.0 - 2016-07-09
+### Fixed
+- [#380](https://github.com/krux/hyperion/issues/380) - Support EMR release label 4.x
+
 ## 3.5.2 - 2016-07-08
 ### Added
 - [#374](https://github.com/krux/hyperion/issues/374) - PgpEncryptActivity to encrypt files using GNU implementation of OpenPGP
