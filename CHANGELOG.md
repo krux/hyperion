@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.5.2 - 2016-07-08
+### Added
+- [#374](https://github.com/krux/hyperion/issues/374) - PgpEncryptActivity to encrypt files using GNU implementation of OpenPGP
+- [#375](https://github.com/krux/hyperion/issues/375) - PgpDecryptActivity to decrypt OpenPGP-encrypted files
+
 ## 3.5.1 - 2016-06-29
 ### Fixed
 - [#420](https://github.com/krux/hyperion/issues/420) - Fix the incorrect retry message
