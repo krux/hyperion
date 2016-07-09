@@ -17,4 +17,8 @@ trait WorkflowExpressionImplicits {
   implicit def activity2WorkflowExpression(activity: PipelineActivity[_ <: ResourceObject]): WorkflowExpression =
     WorkflowActivityExpression(activity)
 
+  implicit class activityWorkflowExpressionOps(activity: PipelineActivity[_ <: ResourceObject]) {
+    def toWorkflowExpression: WorkflowExpression = activity
+  }
+
 }

@@ -50,5 +50,5 @@ object ExampleS3DistCpWorkflow extends DataPipelineDef with HyperionCli {
       OutputCodec.Gz
     )
 
-  override def workflow = s3DistCPActivity
+  override def workflow = s3DistCPActivity.toWorkflowExpression
 }
