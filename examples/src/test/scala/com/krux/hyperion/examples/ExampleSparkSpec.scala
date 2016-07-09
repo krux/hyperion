@@ -68,8 +68,8 @@ class ExampleSparkSpec extends WordSpec {
       val sparkClusterShouldBe =
         ("id" -> sparkClusterId) ~
         ("name" -> sparkClusterId) ~
-        ("bootstrapAction" -> List("s3://support.elasticmapreduce/spark/install-spark,-v,1.1.1.e,-x", "s3://your-bucket/datapipeline/scripts/deploy-hyperion-emr-env.sh,s3://bucket/org_env.sh")) ~
-        ("amiVersion" -> "3.3") ~
+        ("bootstrapAction" -> List[String]()) ~
+        ("amiVersion" -> "4.3") ~
         ("masterInstanceType" -> "m3.xlarge") ~
         ("coreInstanceType" -> "m3.xlarge") ~
         ("coreInstanceCount" -> "2") ~
@@ -80,7 +80,8 @@ class ExampleSparkSpec extends WordSpec {
         ("type" -> "EmrCluster") ~
         ("region" -> "us-east-1") ~
         ("role" -> "DataPipelineDefaultRole") ~
-        ("resourceRole" -> "DataPipelineDefaultResourceRole")
+        ("resourceRole" -> "DataPipelineDefaultResourceRole") ~
+        ("applications" -> List("spark"))
       assert(sparkCluster === sparkClusterShouldBe)
 
       val filterActivity = objectsField(5)
