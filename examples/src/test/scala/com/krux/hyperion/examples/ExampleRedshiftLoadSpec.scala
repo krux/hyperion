@@ -4,8 +4,6 @@ import org.scalatest.WordSpec
 import org.json4s.jackson.JsonMethods._
 import org.json4s.JsonDSL._
 import org.json4s._
-import com.krux.hyperion.DataPipelineDef._
-
 
 class ExampleRedshiftLoadSpec extends WordSpec {
 
@@ -13,7 +11,7 @@ class ExampleRedshiftLoadSpec extends WordSpec {
 
     "produce correct pipeline JSON" in {
 
-      val pipelineJson: JValue = ExampleRedshiftLoad
+      val pipelineJson = ExampleRedshiftLoad.toJson
       val objectsField = pipelineJson.children(0).children.sortBy(o => (o \ "name").toString)
 
       // have the correct number of objects
@@ -38,7 +36,7 @@ class ExampleRedshiftLoadSpec extends WordSpec {
         ("id" -> ec2Id) ~
         ("name" -> ec2Id) ~
         ("terminateAfter" -> "8 hours") ~
-        ("imageId" -> "ami-b0682cd8") ~
+        ("imageId" -> "ami-0188776c") ~
         ("instanceType" -> "m1.small") ~
         ("region" -> "us-east-1") ~
         ("securityGroups" -> Seq("your-security-group")) ~

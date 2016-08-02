@@ -9,7 +9,6 @@ import com.krux.hyperion.database.RedshiftDatabase
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.resource.Ec2Resource
-import com.krux.hyperion.WorkflowExpression._
 import com.krux.hyperion.expression.{Parameter, ParameterValues}
 
 class RedshiftUnloadActivitySpec extends WordSpec {

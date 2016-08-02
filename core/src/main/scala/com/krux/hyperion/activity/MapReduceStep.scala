@@ -1,6 +1,7 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{ HString, HS3Uri }
+import com.krux.hyperion.adt.{HString, HS3Uri}
+import com.krux.hyperion.common.Escapable
 
 /**
  * A MapReduce step that runs on MapReduce Cluster
@@ -14,7 +15,9 @@ case class MapReduceStep private (
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
   def withArguments(arg: HString*) = copy(args = args ++ arg)
 
-  def serialize: String = (jarUri +: mainClass.map(_.toString).toSeq ++: args).mkString(",")
+  def serialize: String = (jarUri +: mainClass.map(_.toString).toSeq ++: args)
+    .map(x => Escapable.escape(x.toString, ','))
+    .mkString(",")
 
   override def toString = serialize
 

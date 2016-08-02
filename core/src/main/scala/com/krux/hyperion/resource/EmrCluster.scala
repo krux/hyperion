@@ -25,7 +25,11 @@ trait EmrCluster extends ResourceObject {
     emrClusterFields.copy(supportedProducts = Option(products))
   )
 
-  def standardBootstrapAction: Seq[HString] = emrClusterFields.standardBootstrapAction
+  def standardBootstrapAction: Seq[HString] = if (releaseLabel.nonEmpty)
+    Seq.empty[HString]
+  else
+    emrClusterFields.standardBootstrapAction
+
   def withStandardBootstrapAction(actions: HString*): Self = updateEmrClusterFields(
     emrClusterFields.copy(standardBootstrapAction = emrClusterFields.standardBootstrapAction ++ actions)
   )

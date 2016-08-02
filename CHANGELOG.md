@@ -2,8 +2,110 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 3.2.10 - 2016-04-22
+## 4.0.3 - 2016-07-14
+### Fixed
+- [#439](https://github.com/krux/hyperion/issues/439) - Schedule.ondemand results in pipeline creation failure
+
+## 4.0.2 - 2016-07-14
+### Fixed
+- [#436](https://github.com/krux/hyperion/issues/436) - PgpActivity should expose withInput, withOutput and markSuccessful
+
+## 4.0.1 - 2016-07-14
+### Added
+- [#434](https://github.com/krux/hyperion/issues/434) - Allow S3DistCpActivity to receive Parameters.
+
+## 4.0.0 - 2016-07-12
+
+Please refer to the [wiki](https://github.com/krux/hyperion/wiki/Hyperion-v4.0) page for details of migrating from v3 to v4.
+
+### Added
+- [#344](https://github.com/krux/hyperion/issues/344) - Add support for defining multiple pipelines with shared schedules within one definition with DataPipelineDefGroup
+    - `com.krux.hyperion.HyperionAwsClient` is rewritten and replaced by `com.krux.hyperion.client.AwsClient`
+    - `com.krux.hyperion.WorkflowExpression` is moved to `com.krux.hyperion.workflow.WorkflowExpression`
+- [#403](https://github.com/krux/hyperion/issues/403) - Updated the default ec2 instance AMI to Amazon Linux AMI 2016.03.2 released on 2016-06-09
+
+### Fixed
+- [#356](https://github.com/krux/hyperion/issues/403) - Escape `,` in arguments of Emr and Spark steps
+
+## 3.7.1 - 2016-07-11
+### Added
+- [#430](https://github.com/krux/hyperion/issues/430) - Add a `--no-check` flag to not check for existence of pipeline before creating
+
+## 3.7.0 - 2016-07-10
+### Added
+- [#393](https://github.com/krux/hyperion/issues/393) - Ability to add custom properties to pipeline objects
+- [#379](https://github.com/krux/hyperion/issues/379) - Cannot override DefaultObject
+
+## 3.6.1 - 2016-07-09
+### Added
+- [#333](https://github.com/krux/hyperion/issues/333) - Allow explicitly converting an Activity to a WorkflowExpression
+
+## 3.6.0 - 2016-07-09
+### Fixed
+- [#380](https://github.com/krux/hyperion/issues/380) - Support EMR release label 4.x
+
+## 3.5.2 - 2016-07-08
+### Added
+- [#374](https://github.com/krux/hyperion/issues/374) - PgpEncryptActivity to encrypt files using GNU implementation of OpenPGP
+- [#375](https://github.com/krux/hyperion/issues/375) - PgpDecryptActivity to decrypt OpenPGP-encrypted files
+
+## 3.5.1 - 2016-06-29
+### Fixed
+- [#420](https://github.com/krux/hyperion/issues/420) - Fix the incorrect retry message
+
+## 3.5.0 - 2016-06-29
 ### Changed
+- [#418](https://github.com/krux/hyperion/issues/418) - Max retry should be configurable and use exponential backoff and jitter instead of fixed interval
+
+## 3.4.2 - 2016-06-28
+### Fixed
+- [#416](https://github.com/krux/hyperion/issues/416) - SparkStep and SparkTaskActivity needs to be able to pass a HdfsUri to withArguments()
+
+## 3.4.1 - 2016-06-21
+### Fixed
+- [#404](https://github.com/krux/hyperion/issues/404) - PythonActivity script now uses the correct virtualenv path
+
+## 3.4.0 - 2016-06-20
+### Added
+- [#410](https://github.com/krux/hyperion/issues/410) - support all redshift unload options for RedshiftUnloadActivity
+
+## 3.3.3 - 2016-05-22
+### Added
+- [#401](https://github.com/krux/hyperion/issues/401) - Handle `.compare(_)` on parameters without default values
+
+## 3.3.2 - 2016-05-23
+### Added
+- [#398](https://github.com/krux/hyperion/issues/397) - Add support for securityGroupIds in Ec2Resource
+
+## 3.3.1 - 2016-05-20
+## Added
+- [#388](https://github.com/krux/hyperion/issues/388) - Make hyperion.log.uri optional
+
+## 3.3.0 - 2016-05-17
+### Added
+- [#397](https://github.com/krux/hyperion/issues/397) - Ability to set maxActiveInstances optional field for activities
+
+## 3.2.14 - 2016-05-12
+### Fixed
+- [#394](https://github.com/krux/hyperion/issues/394) - Allow using both s3 and hdfs URIs in S3DistCpActivity
+
+## 3.2.13 - 2016-05-04
+## Changed
+- [#390](https://github.com/krux/hyperion/issues/390) - Show more detail on validation errors and warnings
+
+## 3.2.12 - 2016-04-27
+### Changed
+- [#373](https://github.com/krux/hyperion/issues/373) - CLI and the aws client should retry with some delay on throttling exception
+
+### Refactored
+- [#386](https://github.com/krux/hyperion/issues/386) - Use JavaConverters instead of JavaConversions
+
+## 3.2.11 - 2016-04-26
+### Fixed
+- [#381](https://github.com/krux/hyperion/issues/381) - S3DistCpActivity fails when using emr-release label 4.X
+
+## 3.2.10 - 2016-04-22
+### Added
 - [#376](https://github.com/krux/hyperion/issues/376) - Adds Multiple EmrConfiguration Support
 
 ## 3.2.9 - 2016-04-20

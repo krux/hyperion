@@ -22,7 +22,8 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None
+        failureAndRerunMode = None,
+        maxActiveInstances = None
       )
       val objShouldBe = ("id" -> "GenericCopyActivity") ~
         ("input" -> ("ref" -> "MyS3DataNode")) ~
@@ -55,7 +56,8 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None
+        failureAndRerunMode = None,
+        maxActiveInstances = None
       )
       val objShouldBe = ("id" -> "S3ToRedshiftCopyActivity") ~
         ("input" -> ("ref" -> "MyS3DataNode")) ~
@@ -92,7 +94,8 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None
+        failureAndRerunMode = None,
+        maxActiveInstances = None
       )
       val objShouldBe = ("id" -> "MyEmrActivity") ~
         ("input" ->  Seq(("ref" -> "MyS3Input"))) ~
@@ -133,7 +136,8 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None
+        failureAndRerunMode = None,
+        maxActiveInstances = None
       )
       val objShouldBe = ("id" -> "HiveActivity") ~
         ("hiveScript" -> "SELECT * FROM TABLE") ~
@@ -168,7 +172,8 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None
+        failureAndRerunMode = None,
+        maxActiveInstances = None
       )
       val objShouldBe = ("id" -> "HiveCopyActivity") ~
         ("filterSql" -> "SELECT * FROM TABLE") ~
@@ -205,7 +210,8 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None
+        failureAndRerunMode = None,
+        maxActiveInstances = None
       )
       val objShouldBe = ("id" -> "PigActivity") ~
         ("script" -> "SELECT * FROM TABLE") ~
@@ -239,7 +245,8 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None
+        failureAndRerunMode = None,
+        maxActiveInstances = None
       )
       val objShouldBe = ("id" -> "SqlActivity") ~
         ("database" -> ("ref" -> "MyDatabase")) ~
@@ -253,7 +260,7 @@ class AdpActivitiesSpec extends WordSpec {
 
   "AdpShellCommandActivity" should {
     "converts to json" in {
-      val testObj = AdpShellCommandActivity(
+      val testObj = new AdpShellCommandActivity(
         id = "ShellCommandActivity",
         name = None,
         command = Option("rm -rf /"),
@@ -275,7 +282,8 @@ class AdpActivitiesSpec extends WordSpec {
         lateAfterTimeout = None,
         maximumRetries = None,
         retryDelay = None,
-        failureAndRerunMode = None
+        failureAndRerunMode = None,
+        maxActiveInstances = None
       )
       val objShouldBe = ("id" -> "ShellCommandActivity") ~
         ("command" -> "rm -rf /") ~

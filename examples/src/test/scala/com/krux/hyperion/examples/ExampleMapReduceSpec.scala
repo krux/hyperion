@@ -3,7 +3,6 @@ package com.krux.hyperion.examples
 import org.scalatest.WordSpec
 import org.json4s.JsonDSL._
 import org.json4s._
-import com.krux.hyperion.DataPipelineDef._
 
 class ExampleMapReduceSpec extends WordSpec {
 
@@ -11,7 +10,7 @@ class ExampleMapReduceSpec extends WordSpec {
 
     "produce correct pipeline JSON" in {
 
-      val pipelineJson: JValue = ExampleMapReduce
+      val pipelineJson = ExampleMapReduce.toJson
       val objectsField = pipelineJson.children.head.children.sortBy(o => (o \ "name").toString)
 
       // have the correct number of objects
@@ -58,7 +57,7 @@ class ExampleMapReduceSpec extends WordSpec {
       val mapReduceClusterShouldBe =
         ("id" -> mapReduceClusterId) ~
         ("name" -> "Cluster with release label") ~
-        ("bootstrapAction" -> List("s3://your-bucket/datapipeline/scripts/deploy-hyperion-emr-env.sh,s3://bucket/org_env.sh")) ~
+        ("bootstrapAction" -> Seq.empty[String]) ~
         ("masterInstanceType" -> "m3.xlarge") ~
         ("coreInstanceType" -> "m3.xlarge") ~
         ("coreInstanceCount" -> "2") ~

@@ -1,15 +1,15 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{ HBoolean, HInt, HString }
+import com.krux.hyperion.adt._
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, StorageClass }
+import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, StorageClass, S3Uri, HdfsUri }
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource._
 
 case class S3DistCpActivityFields(
-  source: Option[S3DataNode],
-  dest: Option[S3DataNode],
+  source: Option[HString],
+  dest: Option[HString],
   sourcePattern: Option[HString],
   groupBy: Option[HString],
   targetSize: Option[HInt],
@@ -46,13 +46,37 @@ case class S3DistCpActivity[A <: EmrCluster] private (
   def updateS3DistCpActivityFields(fields: S3DistCpActivityFields) = copy(s3DistCpActivityFields = fields)
 
   def source = s3DistCpActivityFields.source
+  def withSource(source: HdfsUri) = updateS3DistCpActivityFields(
+    s3DistCpActivityFields.copy(source = Option(source.ref: HString))
+  )
+  def withSource(source: S3Uri) = updateS3DistCpActivityFields(
+    s3DistCpActivityFields.copy(source = Option(source.ref: HString))
+  )
   def withSource(source: S3DataNode) = updateS3DistCpActivityFields(
-    s3DistCpActivityFields.copy(source = Option(source))
+    s3DistCpActivityFields.copy(source = Option(source.toString: HString))
+  )
+  def withSource(source: HHdfsUri) = updateS3DistCpActivityFields(
+    s3DistCpActivityFields.copy(source = Option(source.serialize: HString))
+  )
+  def withSource(source: HS3Uri) = updateS3DistCpActivityFields(
+    s3DistCpActivityFields.copy(source = Option(source.serialize: HString))
   )
 
   def dest = s3DistCpActivityFields.dest
+  def withDestination(dest: HdfsUri) = updateS3DistCpActivityFields(
+    s3DistCpActivityFields.copy(dest = Option(dest.ref: HString))
+  )
+  def withDestination(dest: S3Uri) = updateS3DistCpActivityFields(
+    s3DistCpActivityFields.copy(dest = Option(dest.ref: HString))
+  )
   def withDestination(dest: S3DataNode) = updateS3DistCpActivityFields(
-    s3DistCpActivityFields.copy(dest = Option(dest))
+    s3DistCpActivityFields.copy(dest = Option(dest.toString: HString))
+  )
+  def withDestination(dest: HHdfsUri) = updateS3DistCpActivityFields(
+    s3DistCpActivityFields.copy(dest = Option(dest.serialize: HString))
+  )
+  def withDestination(dest: HS3Uri) = updateS3DistCpActivityFields(
+    s3DistCpActivityFields.copy(dest = Option(dest.serialize: HString))
   )
 
   def sourcePattern = s3DistCpActivityFields.sourcePattern
@@ -147,12 +171,10 @@ case class S3DistCpActivity[A <: EmrCluster] private (
 
   def withArgument(argument: HString*) = copy(arguments = arguments ++ argument)
 
-  override def objects = source ++ dest ++ super.objects
-
   private def allArguments: Seq[HString] = Seq(
     Option(arguments),
-    source.map(s => Seq[HString]("--src", s.toString)),
-    dest.map(s => Seq[HString]("--dest", s.toString)),
+    source.map(s => Seq[HString]("--src", s.serialize)),
+    dest.map(s => Seq[HString]("--dest", s.serialize)),
     sourcePattern.map(s => Seq[HString]("--srcPattern", s.toString)),
     groupBy.map(s => Seq[HString]("--groupBy", s.toString)),
     targetSize.map(s => Seq[HString]("--targetSize", s.toString)),
@@ -173,7 +195,14 @@ case class S3DistCpActivity[A <: EmrCluster] private (
     sourcePrefixesFile.map(s => Seq[HString]("--srcPrefixesFile", s))
   ).flatten.flatten
 
-  private def steps: Seq[MapReduceStep] = Seq(MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar").withArguments(allArguments: _*))
+  private def steps: Seq[MapReduceStep] = Seq(
+    if (runsOn.asManagedResource.flatMap(_.releaseLabel).nonEmpty)
+      MapReduceStep("command-runner.jar")
+        .withArguments((("s3-dist-cp": HString) +: allArguments): _*)
+    else
+      MapReduceStep("/home/hadoop/lib/emr-s3distcp-1.0.jar")
+        .withArguments(allArguments: _*)
+  )
 
   lazy val serialize = AdpEmrActivity(
     id = id,
@@ -194,7 +223,8 @@ case class S3DistCpActivity[A <: EmrCluster] private (
     lateAfterTimeout = lateAfterTimeout.map(_.serialize),
     maximumRetries = maximumRetries.map(_.serialize),
     retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
+    maxActiveInstances = maxActiveInstances.map(_.serialize)
   )
 
 }

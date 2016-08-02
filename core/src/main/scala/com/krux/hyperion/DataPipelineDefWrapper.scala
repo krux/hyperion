@@ -1,16 +1,18 @@
 package com.krux.hyperion
 
 import com.krux.hyperion.expression.Parameter
+import com.krux.hyperion.workflow.WorkflowExpression
+
 
 /**
   * DataPipelineDefWrapper provides a way to wrap other DataPipelineDefs
   * in order to override aspects.
   */
-private[hyperion] case class DataPipelineDefWrapper(
+case class DataPipelineDefWrapper private[hyperion] (
   override val hc: HyperionContext,
   override val pipelineName: String,
   schedule: Schedule,
-  workflowFunc: () => WorkflowExpression,
+  workflowFunc: () => WorkflowExpression,  // for delayed workflow execution
   override val tags: Map[String, Option[String]],
   override val parameters: Iterable[Parameter[_]]
 ) extends DataPipelineDef {
@@ -25,6 +27,7 @@ private[hyperion] case class DataPipelineDefWrapper(
 }
 
 object DataPipelineDefWrapper {
+
   def apply(inner: DataPipelineDef): DataPipelineDefWrapper = DataPipelineDefWrapper(
     inner.hc,
     inner.pipelineName,
@@ -33,4 +36,5 @@ object DataPipelineDefWrapper {
     inner.tags,
     inner.parameters
   )
+
 }

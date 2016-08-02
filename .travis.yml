@@ -23,6 +23,12 @@ notifications:
   - seth.yates@krux.com
   - kxie@krux.com
   - ysalomon@krux.com
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/b03547551c9f369a6d51
+    on_success: change
+    on_failure: always
+    on_start: never
 
 before_install:
 - |

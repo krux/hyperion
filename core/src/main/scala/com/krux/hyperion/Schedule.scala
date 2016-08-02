@@ -1,31 +1,57 @@
 package com.krux.hyperion
 
-import com.github.nscala_time.time.Imports.{ DateTime, DateTimeZone }
+import com.github.nscala_time.time.Imports.{DateTime, DateTimeZone}
 import com.krux.hyperion.Implicits._
-import com.krux.hyperion.aws.{ AdpRef, AdpSchedule }
-import com.krux.hyperion.common.{ PipelineObject, PipelineObjectId, ScheduleObjectId }
+import com.krux.hyperion.aws.{AdpOnDemandSchedule, AdpRecurringSchedule, AdpRef}
+import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ScheduleObjectId}
 import com.krux.hyperion.expression.Duration
+
+/**
+ * Schedule defines how a pipeline is run.
+ */
+trait Schedule extends PipelineObject {
+  def scheduleType: ScheduleType
+}
+
+/**
+ * Schedule that runs on-demand.
+ */
+class OnDemandSchedule extends Schedule {
+
+  val id: PipelineObjectId = ScheduleObjectId
+  val scheduleType: ScheduleType = OnDemand
+
+  def objects: Iterable[PipelineObject] = None
+
+  lazy val serialize: AdpOnDemandSchedule = new AdpOnDemandSchedule(
+    id = id,
+    name = id.toOption
+  )
+
+  def ref: AdpRef[AdpOnDemandSchedule] = AdpRef(serialize)
+
+}
 
 /**
  * Schedule that runs at defined period.
  *
  * @note If start time given is a past time, data pipeline will perform back fill from the start.
  */
-case class Schedule private (
+case class RecurringSchedule private[hyperion] (
   id: PipelineObjectId = ScheduleObjectId,
   // if None, will use first activation datetime
   start: Option[DateTime] = None,
   period: Duration = 1.day,
   end: Option[Either[Int, DateTime]] = None,
   scheduleType: ScheduleType = Cron
-) extends PipelineObject {
+) extends Schedule {
 
   def startAtActivation = copy(start = None)
 
   def startDateTime(dt: DateTime) = copy(start = Option(dt))
 
   def startThisHourAt(minuteOfHour: Int, secondOfMinute: Int) = {
-    val currentHour = DateTime.now.withZone(DateTimeZone.UTC).getHourOfDay()
+    val currentHour = DateTime.now.withZone(DateTimeZone.UTC).getHourOfDay
     startTodayAt(currentHour, minuteOfHour, secondOfMinute)
   }
 
@@ -51,9 +77,9 @@ case class Schedule private (
 
   def objects: Iterable[PipelineObject] = None
 
-  lazy val serialize: AdpSchedule = start match {
+  lazy val serialize: AdpRecurringSchedule = start match {
     case Some(dt) =>
-      AdpSchedule(
+      AdpRecurringSchedule(
         id = id,
         name = id.toOption,
         period = period.toString,
@@ -70,7 +96,7 @@ case class Schedule private (
       )
 
     case None =>
-      AdpSchedule(
+      AdpRecurringSchedule(
         id = id,
         name = id.toOption,
         period = period.toString,
@@ -87,14 +113,16 @@ case class Schedule private (
       )
   }
 
-  def ref: AdpRef[AdpSchedule] = AdpRef(serialize)
+  def ref: AdpRef[AdpRecurringSchedule] = AdpRef(serialize)
 
 }
 
 object Schedule {
-  def cron = Schedule(scheduleType = Cron)
+  def ondemand: OnDemandSchedule = new OnDemandSchedule()
 
-  def timeSeries = Schedule(scheduleType = TimeSeries)
+  def cron: RecurringSchedule = RecurringSchedule(scheduleType = Cron)
 
-  def onceAtActivation = Schedule(end = Option(Left(1)), scheduleType = Cron)
+  def timeSeries: RecurringSchedule = RecurringSchedule(scheduleType = TimeSeries)
+
+  def onceAtActivation: RecurringSchedule = RecurringSchedule(end = Option(Left(1)), scheduleType = Cron)
 }

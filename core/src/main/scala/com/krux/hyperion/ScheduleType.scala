@@ -12,3 +12,7 @@ case object Cron extends ScheduleType {
 case object TimeSeries extends ScheduleType {
   val serialize: String = "timeseries"
 }
+
+case object OnDemand extends ScheduleType {
+  val serialize: String = "ondemand"
+}

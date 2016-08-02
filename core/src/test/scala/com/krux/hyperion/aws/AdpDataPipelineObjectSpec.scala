@@ -13,7 +13,7 @@ class AdpDataPipelineObjectSpec extends WordSpec {
 
   class TestObjectWithName extends AdpDataPipelineObject {
     val id: String = "TestId"
-    val name: Option[String] = Some("TestName")
+    val name: Option[String] = Option("TestName")
     val `type`: String = "TestObject"
   }
 

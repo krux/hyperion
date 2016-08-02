@@ -20,5 +20,6 @@ case class Options(
   includeResources: Boolean = false,
   includeDataNodes: Boolean = false,
   includeDatabases: Boolean = false,
-  params: Map[String, String] = Map.empty
+  params: Map[String, String] = Map.empty,
+  checkExistence: Boolean = true
 )

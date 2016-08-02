@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.aws._
-import com.krux.hyperion.common.{ Memory, PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{SparkCommandRunner, Memory, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.{ HInt, HString, HS3Uri }
@@ -59,7 +59,7 @@ case class SparkTaskActivity private (
 
   private def sparkSettings: Seq[HString] = sparkOptions ++ sparkConfig.flatMap { case (k, v) => Seq[HString]("--conf", s"$k=$v") }
 
-  lazy val serialize = AdpHadoopActivity(
+  lazy val serialize = new AdpHadoopActivity(
     id = id,
     name = name,
     jarUri = scriptRunner.serialize,
@@ -81,12 +81,13 @@ case class SparkTaskActivity private (
     lateAfterTimeout = lateAfterTimeout.map(_.serialize),
     maximumRetries = maximumRetries.map(_.serialize),
     retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
+    maxActiveInstances = maxActiveInstances.map(_.serialize)
   )
 
 }
 
-object SparkTaskActivity extends RunnableObject {
+object SparkTaskActivity extends RunnableObject with SparkCommandRunner {
 
   def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkTaskActivity =
     apply(jarUri.serialize, mainClass)(runsOn)
@@ -95,8 +96,8 @@ object SparkTaskActivity extends RunnableObject {
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
-    scriptRunner = "s3://elasticmapreduce/libs/script-runner/script-runner.jar",
-    jobRunner = s"${hc.scriptUri}run-spark-step.sh",
+    jobRunner = jobRunner(runsOn),
+    scriptRunner = scriptRunner(runsOn),
     jarUri = jarUri,
     mainClass = mainClass,
     arguments = Seq.empty,

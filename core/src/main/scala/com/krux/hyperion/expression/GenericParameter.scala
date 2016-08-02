@@ -2,7 +2,7 @@ package com.krux.hyperion.expression
 
 import org.joda.time.{ DateTime, DateTimeZone }
 
-import com.krux.hyperion.common.S3Uri
+import com.krux.hyperion.common.{HdfsUri, S3Uri}
 import com.krux.hyperion.expression.ParameterType._
 
 /**
@@ -144,6 +144,22 @@ object GenericParameter {
     }
 
     def `type` = S3KeyType
+
+  }
+
+
+  implicit object HdfsUriGenericParameter extends GenericParameter[HdfsUri] {
+
+    type Exp = HdfsUriExp
+
+    val parseString = (stringValue: String) => HdfsUri(stringValue)
+
+    def ref(param: Parameter[HdfsUri]): Exp = new Exp with Evaluatable[HdfsUri] {
+      def content = param.name
+      def evaluate() = param.evaluate()
+    }
+
+    def `type` = StringType
 
   }
 

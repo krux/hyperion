@@ -1,14 +1,14 @@
-package com.krux.hyperion
+package com.krux.hyperion.workflow
 
 import scala.language.existentials
 
 import com.krux.hyperion.activity.PipelineActivity
+import com.krux.hyperion.common.PipelineObject
 import com.krux.hyperion.resource.ResourceObject
-import com.krux.hyperion.workflow.{ WorkflowExpressionImplicits, WorkflowGraph }
 
 sealed abstract class WorkflowExpression {
 
-  def toPipelineObjects: Iterable[PipelineActivity[_]] = {
+  def toActivities: Iterable[PipelineActivity[_]] = {
 
     def toWorkflowGraph(exp: WorkflowExpression): WorkflowGraph = {
       exp match {
@@ -24,6 +24,19 @@ sealed abstract class WorkflowExpression {
     }
 
     toWorkflowGraph(this).toActivities
+
+  }
+
+  def toPipelineObjects: Iterable[PipelineObject] = {
+
+    def flattenPipelineObjects(r: Map[String, PipelineObject], po: PipelineObject): Map[String, PipelineObject] =
+      if (r.contains(po.id.toString)) r
+      else r ++ Map(po.id.toString -> po) ++ po.objects.foldLeft(r)(flattenPipelineObjects)
+
+    toActivities
+      .foldLeft(Map.empty[String, PipelineObject])(flattenPipelineObjects)
+      .values
+
   }
 
   def andThen(right: WorkflowExpression): WorkflowExpression = right match {

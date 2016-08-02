@@ -39,7 +39,7 @@ case class HadoopActivity[A <: EmrCluster] private (
 
   override def objects = inputs ++ outputs ++ super.objects
 
-  lazy val serialize = AdpHadoopActivity(
+  lazy val serialize = new AdpHadoopActivity(
     id = id,
     name = name,
     jarUri = jarUri.serialize,
@@ -61,7 +61,8 @@ case class HadoopActivity[A <: EmrCluster] private (
     lateAfterTimeout = lateAfterTimeout.map(_.serialize),
     maximumRetries = maximumRetries.map(_.serialize),
     retryDelay = retryDelay.map(_.serialize),
-    failureAndRerunMode = failureAndRerunMode.map(_.serialize)
+    failureAndRerunMode = failureAndRerunMode.map(_.serialize),
+    maxActiveInstances = maxActiveInstances.map(_.serialize)
   )
 
 }

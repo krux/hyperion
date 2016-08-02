@@ -14,9 +14,9 @@ class AdpDataNodesSpec extends WordSpec {
         name = None,
         directoryPath = Option("s3://blah/blah"),
         filePath = None,
-        dataFormat = Some(AdpRef(tsvFormat)),
+        dataFormat = Option(AdpRef(tsvFormat)),
         manifestFilePath = None,
-        compression = Some("gzip"),
+        compression = Option("gzip"),
         s3EncryptionType = None,
         precondition = None,
         onSuccess = None,
@@ -38,9 +38,9 @@ class AdpDataNodesSpec extends WordSpec {
         name = None,
         directoryPath = None,
         filePath = Option("s3://blah/blah/dir/"),
-        dataFormat = Some(AdpRef(tsvFormat)),
+        dataFormat = Option(AdpRef(tsvFormat)),
         manifestFilePath = None,
-        compression = Some("gzip"),
+        compression = Option("gzip"),
         s3EncryptionType = None,
         precondition = None,
         onSuccess = None,
@@ -51,8 +51,8 @@ class AdpDataNodesSpec extends WordSpec {
         ("dataFormat" -> ("ref" -> "tsv")) ~
         ("filePath" -> "s3://blah/blah/dir/") ~
         ("type" -> "S3DataNode")
-      assert(AdpJsonSerializer(testObj) === objShouldBe)
 
+      assert(AdpJsonSerializer(testObj) === objShouldBe)
     }
   }
 
@@ -63,7 +63,7 @@ class AdpDataNodesSpec extends WordSpec {
         name = None,
         createTableSql = None,
         database = AdpRef.withRefObjId[AdpRedshiftDatabase]("myRedshift"),
-        schemaName = Some("public"),
+        schemaName = Option("public"),
         tableName = "myTable",
         primaryKeys = None,
         precondition = None,

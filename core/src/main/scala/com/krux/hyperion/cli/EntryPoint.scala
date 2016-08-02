@@ -3,16 +3,21 @@ package com.krux.hyperion.cli
 import java.io.File
 
 import com.github.nscala_time.time.Imports._
-import com.krux.hyperion.BuildInfo
+import com.krux.hyperion._
 import com.krux.hyperion.cli.Reads._
 import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.{ DataPipelineDef, DataPipelineDefWrapper }
 import scopt.OptionParser
 
 /**
   * EntryPoint is the main entrypoint for the CLI.
   */
-case class EntryPoint(pipeline: DataPipelineDef) {
+case class EntryPoint(pipeline: DataPipelineDefGroup) {
+
+  def getRecurringSchedule(c: Options, pipeline: DataPipelineDefGroup): RecurringSchedule =
+    c.schedule.getOrElse(pipeline.schedule) match {
+      case s: RecurringSchedule => s
+      case _ => Schedule.cron
+    }
 
   private val parser = new OptionParser[Options](s"hyperion") {
     head("hyperion", s"${BuildInfo.version} (${BuildInfo.scalaVersion})")
@@ -99,6 +104,11 @@ case class EntryPoint(pipeline: DataPipelineDef) {
           |  Creates a DataPipeline by using the AWS SDK.
         """.stripMargin)
       .children(
+        opt[Unit]("no-check").action { (_, c) => c.copy(checkExistence = false) }
+          .text(
+            """
+              |     If specified, the existence of the pipeline will not be checked before creating.
+            """.stripMargin),
         opt[Unit]("force").action { (_, c) => c.copy(force = true) }
           .text(
             """
@@ -139,7 +149,7 @@ case class EntryPoint(pipeline: DataPipelineDef) {
             """.stripMargin),
         opt[DateTime]("start").valueName("DATE")
           .action { (x, c) =>
-            c.copy(schedule = Option(c.schedule.getOrElse(pipeline.schedule).startDateTime(x)))
+            c.copy(schedule = Option(getRecurringSchedule(c, pipeline).startDateTime(x)))
           }
           .text(
             """
@@ -150,7 +160,7 @@ case class EntryPoint(pipeline: DataPipelineDef) {
             """.stripMargin),
         opt[Duration]("every").valueName("PERIOD")
           .action { (x, c) =>
-            c.copy(schedule = Option(c.schedule.getOrElse(pipeline.schedule).every(x)))
+            c.copy(schedule = Option(getRecurringSchedule(c, pipeline).every(x)))
           }
           .text(
             """
@@ -158,7 +168,7 @@ case class EntryPoint(pipeline: DataPipelineDef) {
             """.stripMargin),
         opt[DateTime]("until").valueName("DATE")
           .action { (x, c) =>
-            c.copy(schedule = Option(c.schedule.getOrElse(pipeline.schedule).until(x)))
+            c.copy(schedule = Option(getRecurringSchedule(c, pipeline).until(x)))
           }
           .text(
             """
@@ -166,7 +176,7 @@ case class EntryPoint(pipeline: DataPipelineDef) {
             """.stripMargin),
         opt[Int]("times").valueName("N")
           .action { (x, c) =>
-            c.copy(schedule = Option(c.schedule.getOrElse(pipeline.schedule).stopAfter(x)))
+            c.copy(schedule = Option(getRecurringSchedule(c, pipeline).stopAfter(x)))
           }
           .text(
             """
@@ -241,14 +251,12 @@ case class EntryPoint(pipeline: DataPipelineDef) {
   }
 
   def run(args: Array[String]): Int = parser.parse(args, Options()).map { cli =>
-    val wrappedPipeline = DataPipelineDefWrapper(pipeline)
+    val wrappedPipeline = DataPipelineDefGroupWrapper(pipeline)
       .withTags(cli.tags)
       .withName(cli.customName.getOrElse(pipeline.pipelineName))
       .withSchedule(cli.schedule.getOrElse(pipeline.schedule))
 
-    for { (id, value) <- cli.params } {
-      wrappedPipeline.setParameterValue(id, value)
-    }
+    for { (id, value) <- cli.params } wrappedPipeline.setParameterValue(id, value)
 
     if (cli.action(cli, wrappedPipeline)) 0 else 3
   }.getOrElse(3)
