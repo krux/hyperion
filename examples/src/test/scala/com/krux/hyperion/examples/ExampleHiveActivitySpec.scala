@@ -19,6 +19,7 @@ class ExampleHiveActivitySpec extends WordSpec {
           ("name" -> dataFormatId) ~
           ("column" -> List("id STRING", "a STRING")) ~
           ("columnSeparator" -> "^") ~
+          ("recordSeparator" -> "\n") ~
           ("type" -> "Custom")
       assert(dataFormat === dataFormatShouldBe)
 
