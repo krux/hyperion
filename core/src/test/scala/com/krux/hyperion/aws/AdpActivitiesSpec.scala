@@ -141,8 +141,8 @@ class AdpActivitiesSpec extends WordSpec {
       )
       val objShouldBe = ("id" -> "HiveActivity") ~
         ("hiveScript" -> "SELECT * FROM TABLE") ~
-        ("input" -> ("ref" -> "MyS3DataNode")) ~
-        ("output" -> ("ref" -> "MyOtherS3DataNode")) ~
+        ("input" -> Seq("ref" -> "MyS3DataNode")) ~
+        ("output" -> Seq("ref" -> "MyOtherS3DataNode")) ~
         ("stage" -> "true") ~
         ("runsOn" -> ("ref" -> "MyEc2Resource")) ~
         ("type" -> "HiveActivity")

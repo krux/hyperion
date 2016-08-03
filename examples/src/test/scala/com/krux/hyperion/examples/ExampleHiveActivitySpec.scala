@@ -11,7 +11,7 @@ class ExampleHiveActivitySpec extends WordSpec {
       val objectsField = pipelineJson.children.head.children.sortBy(o => (o \ "name").toString)
       assert(objectsField.size == 8)
 
-      val dataFormat = objectsField.head
+      val dataFormat = objectsField(1)
       val dataFormatId = (dataFormat \ "id").values.toString
       assert(dataFormatId.startsWith("CsvDataFormat_"))
       val dataFormatShouldBe =
@@ -20,9 +20,9 @@ class ExampleHiveActivitySpec extends WordSpec {
           ("column" -> List("id STRING", "a STRING")) ~
           ("columnSeparator" -> "^") ~
           ("type" -> "Custom")
-      assert(dataFormat == dataFormatShouldBe)
+      assert(dataFormat === dataFormatShouldBe)
 
-      val defaultObj = objectsField(1)
+      val defaultObj = objectsField(2)
       val defaultObjShouldBe = ("id" -> "Default") ~
         ("name" -> "Default") ~
         ("scheduleType" -> "cron") ~
@@ -33,7 +33,7 @@ class ExampleHiveActivitySpec extends WordSpec {
         ("schedule" -> ("ref" -> "PipelineSchedule"))
       assert(defaultObj === defaultObjShouldBe)
 
-      val mapReduceCluster = objectsField(3)
+      val mapReduceCluster = objectsField.head
       val mapReduceClusterId = (mapReduceCluster \ "id").values.toString
       assert(mapReduceClusterId.startsWith("MapReduceCluster_"))
       val mapReduceClusterShouldBe =
@@ -73,7 +73,7 @@ class ExampleHiveActivitySpec extends WordSpec {
           ("dataFormat" -> ("ref" -> dataFormatId)) ~
           ("directoryPath" -> "s3://source/input1") ~
           ("type" -> "S3DataNode")
-      assert(input1 == input1ShouldBe)
+      assert(input1 === input1ShouldBe)
 
       val input2 = objectsField(6)
       val input2Id = (input2 \ "id").values.toString
@@ -84,7 +84,7 @@ class ExampleHiveActivitySpec extends WordSpec {
           ("dataFormat" -> ("ref" -> dataFormatId)) ~
           ("directoryPath" -> "s3://source/input2") ~
           ("type" -> "S3DataNode")
-      assert(input2 == input2ShouldBe)
+      assert(input2 === input2ShouldBe)
 
       val output = objectsField(7)
       val outputId = (output \ "id").values.toString
@@ -95,9 +95,9 @@ class ExampleHiveActivitySpec extends WordSpec {
           ("dataFormat" -> ("ref" -> dataFormatId)) ~
           ("directoryPath" -> "s3://dest") ~
           ("type" -> "S3DataNode")
-      assert(output == outputShouldBe)
+      assert(output === outputShouldBe)
 
-      val hiveActivity = objectsField(2)
+      val hiveActivity = objectsField(3)
       val hiveActivityId = (hiveActivity \ "id").values.toString
       assert(hiveActivityId.startsWith("HiveActivity_"))
       val hiveActivityShouldBe =
