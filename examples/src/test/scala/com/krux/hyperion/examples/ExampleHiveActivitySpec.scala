@@ -105,6 +105,7 @@ class ExampleHiveActivitySpec extends WordSpec {
         ("id" -> hiveActivityId) ~
           ("name" -> hiveActivityId) ~
           ("hiveScript" -> s"INSERT OVERWRITE TABLE $${output1} SELECT x.a FROM $${input1} x JOIN $${input2} y ON x.id = y.id;") ~
+          ("stage" -> "true") ~
           ("input" -> Seq("ref" -> input1Id, "ref" -> input2Id)) ~
           ("output" -> Seq("ref" -> outputId)) ~
           ("runsOn" -> ("ref" -> mapReduceClusterId)) ~
