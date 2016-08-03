@@ -9,21 +9,9 @@ class ExampleHiveActivitySpec extends WordSpec {
     "produce correct pipeline JSON" in {
       val pipelineJson = ExampleHiveActivity.toJson
       val objectsField = pipelineJson.children.head.children.sortBy(o => (o \ "name").toString)
-      assert(objectsField.size == 8)
+      assert(objectsField.size == 5)
 
-      val dataFormat = objectsField(1)
-      val dataFormatId = (dataFormat \ "id").values.toString
-      assert(dataFormatId.startsWith("CsvDataFormat_"))
-      val dataFormatShouldBe =
-        ("id" -> dataFormatId) ~
-          ("name" -> dataFormatId) ~
-          ("column" -> List("id STRING", "a STRING")) ~
-          ("columnSeparator" -> "^") ~
-          ("recordSeparator" -> "\n") ~
-          ("type" -> "Custom")
-      assert(dataFormat === dataFormatShouldBe)
-
-      val defaultObj = objectsField(2)
+      val defaultObj = objectsField(1)
       val defaultObjShouldBe = ("id" -> "Default") ~
         ("name" -> "Default") ~
         ("scheduleType" -> "cron") ~
@@ -55,7 +43,7 @@ class ExampleHiveActivitySpec extends WordSpec {
           ("releaseLabel" -> "emr-4.4.0")
       assert(mapReduceCluster === mapReduceClusterShouldBe)
 
-      val pipelineSchedule = objectsField(4)
+      val pipelineSchedule = objectsField(3)
       val pipelineScheduleShouldBe =
         ("id" -> "PipelineSchedule") ~
           ("name" -> "PipelineSchedule") ~
@@ -65,40 +53,17 @@ class ExampleHiveActivitySpec extends WordSpec {
           ("type" -> "Schedule")
       assert(pipelineSchedule === pipelineScheduleShouldBe)
 
-      val input1 = objectsField(5)
-      val input1Id = (input1 \ "id").values.toString
-      assert(input1Id.startsWith("S3Folder_"))
-      val input1ShouldBe =
-        ("id" -> input1Id) ~
-          ("name" -> input1Id) ~
-          ("dataFormat" -> ("ref" -> dataFormatId)) ~
-          ("directoryPath" -> "s3://source/input1") ~
+      val dataNode = objectsField(4)
+      val dataNodeId = (dataNode \ "id").values.toString
+      assert(dataNodeId.startsWith("S3Folder_"))
+      val dataNodeShouldBe =
+        ("id" -> dataNodeId) ~
+          ("name" -> dataNodeId) ~
+          ("directoryPath" -> "#{my_S3Location}") ~
           ("type" -> "S3DataNode")
-      assert(input1 === input1ShouldBe)
+      assert(dataNode === dataNodeShouldBe)
 
-      val input2 = objectsField(6)
-      val input2Id = (input2 \ "id").values.toString
-      assert(input2Id.startsWith("S3Folder_"))
-      val input2ShouldBe =
-        ("id" -> input2Id) ~
-          ("name" -> input2Id) ~
-          ("dataFormat" -> ("ref" -> dataFormatId)) ~
-          ("directoryPath" -> "s3://source/input2") ~
-          ("type" -> "S3DataNode")
-      assert(input2 === input2ShouldBe)
-
-      val output = objectsField(7)
-      val outputId = (output \ "id").values.toString
-      assert(outputId.startsWith("S3Folder_"))
-      val outputShouldBe =
-        ("id" -> outputId) ~
-          ("name" -> outputId) ~
-          ("dataFormat" -> ("ref" -> dataFormatId)) ~
-          ("directoryPath" -> "s3://dest") ~
-          ("type" -> "S3DataNode")
-      assert(output === outputShouldBe)
-
-      val hiveActivity = objectsField(3)
+      val hiveActivity = objectsField(2)
       val hiveActivityId = (hiveActivity \ "id").values.toString
       assert(hiveActivityId.startsWith("HiveActivity_"))
       val hiveActivityShouldBe =
@@ -106,8 +71,8 @@ class ExampleHiveActivitySpec extends WordSpec {
           ("name" -> hiveActivityId) ~
           ("hiveScript" -> s"INSERT OVERWRITE TABLE $${output1} SELECT x.a FROM $${input1} x JOIN $${input2} y ON x.id = y.id;") ~
           ("stage" -> "true") ~
-          ("input" -> Seq("ref" -> input1Id, "ref" -> input2Id)) ~
-          ("output" -> Seq("ref" -> outputId)) ~
+          ("input" -> Seq("ref" -> dataNodeId, "ref" -> dataNodeId)) ~
+          ("output" -> Seq("ref" -> dataNodeId)) ~
           ("runsOn" -> ("ref" -> mapReduceClusterId)) ~
           ("type" -> "HiveActivity")
       assert(hiveActivity === hiveActivityShouldBe)

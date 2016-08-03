@@ -3,7 +3,7 @@ package com.krux.hyperion.examples
 import com.krux.hyperion.{DataPipelineDef, HyperionCli, HyperionContext, Schedule}
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.activity.HiveActivity
-import com.krux.hyperion.dataformat.CustomDataFormat
+import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.datanode.S3Folder
 import com.krux.hyperion.expression.Parameter
 import com.krux.hyperion.resource.MapReduceCluster
@@ -20,11 +20,12 @@ object ExampleHiveActivity extends DataPipelineDef with HyperionCli {
 
   override lazy val tags = Map("example" -> None, "ownerGroup" -> Some("hive"))
 
-  override def parameters: Iterable[Parameter[_]] = Seq(instanceType, instanceCount, instanceBid)
+  override def parameters: Iterable[Parameter[_]] = Seq(location, instanceType, instanceCount)
 
   val instanceType = Parameter[String]("InstanceType").withValue("c3.8xlarge")
   val instanceCount = Parameter("InstanceCount", 8)
-  val instanceBid = Parameter("InstanceBid", 3.40)
+  val location = Parameter[S3Uri]("S3Location").withValue(s3"source")
+  val dataNode = S3Folder(location)
 
   val emrCluster = MapReduceCluster()
     .withTaskInstanceCount(instanceCount)
@@ -32,23 +33,7 @@ object ExampleHiveActivity extends DataPipelineDef with HyperionCli {
     .withReleaseLabel("emr-4.4.0")
     .named("Cluster with release label")
 
-  val dataFormat = CustomDataFormat()
-    .withColumns(
-      "id STRING",
-      "a STRING"
-    )
-    .withColumnSeparator("^")
-
-  val input1 = S3Folder(s3 / "source" / "input1")
-    .withDataFormat(dataFormat)
-
-  val input2 = S3Folder(s3 / "source" / "input2")
-    .withDataFormat(dataFormat)
-
-  val output = S3Folder(s3 / "dest")
-    .withDataFormat(dataFormat)
-
-  val hive = HiveActivity(List(input1, input2), List(output), hiveScript =
+  val hive = HiveActivity(List(dataNode, dataNode), List(dataNode), hiveScript =
     s"""INSERT OVERWRITE TABLE $${output1} SELECT x.a FROM $${input1} x JOIN $${input2} y ON x.id = y.id;"""
     )(emrCluster)
 
