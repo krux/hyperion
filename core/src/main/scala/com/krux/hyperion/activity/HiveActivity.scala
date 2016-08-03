@@ -81,4 +81,7 @@ object HiveActivity extends RunnableObject {
       hadoopQueue = None
     )
 
+  def apply[A <: EmrCluster](input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
+    apply(Seq(input), Seq(output), hiveScript)(runsOn)
+
 }
