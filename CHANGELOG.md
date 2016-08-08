@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.3.0 - 2016-08-08
+### Fixed
+- [#450](https://github.com/krux/hyperion/issues/450) - Update the default AMI to use instance store AMIs instead of EBS backed
+
 ## 4.2.0 - 2016-08-05
 ### Added
 - [#289](https://github.com/krux/hyperion/issues/289) - Allow JarActivity to have environment variables and additional classpath JARs
