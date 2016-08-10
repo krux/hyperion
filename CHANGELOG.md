@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.3.1 - 2016-08-10
+### Fixed
+- [#448](https://github.com/krux/hyperion/issues/448) - Fix a bug that SparkActivity does not work with EMR release label
+
 ## 4.3.0 - 2016-08-08
 ### Fixed
 - [#450](https://github.com/krux/hyperion/issues/450) - Update the default AMI to use instance store AMIs instead of EBS backed
