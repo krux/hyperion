@@ -15,7 +15,7 @@ trait EmrCluster extends ResourceObject {
   def emrClusterFields: EmrClusterFields
   def updateEmrClusterFields(fields: EmrClusterFields): Self
 
-  def amiVersion = emrClusterFields.amiVersion
+  def amiVersion = if (releaseLabel.nonEmpty) None else emrClusterFields.amiVersion
   def withAmiVersion(version: HString): Self = updateEmrClusterFields(
     emrClusterFields.copy(amiVersion = Option(version), releaseLabel = None)
   )

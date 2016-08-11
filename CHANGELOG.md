@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.3.2 - 2016-08-11
+### Fixed
+- [#452](https://github.com/krux/hyperion/issues/452) - EMR cluster when using configuration to specify release label, the ami field is not overriden
+
 ## 4.3.1 - 2016-08-10
 ### Fixed
 - [#448](https://github.com/krux/hyperion/issues/448) - Fix a bug that SparkActivity does not work with EMR release label
