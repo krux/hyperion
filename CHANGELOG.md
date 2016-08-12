@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.0 - 2016-08-12
+### Added
+- [#457](https://github.com/krux/hyperion/issues/457) - Add support for "APPEND" insert mode to redshift copy activity
+
 ## 4.3.3 - 2016-08-11
 ### Fixed
 - [#455](https://github.com/krux/hyperion/issues/455) - Use emrManaged*SecurityGroupId instead of *SecurityGroupId

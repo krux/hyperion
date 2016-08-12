@@ -81,6 +81,7 @@ object RedshiftCopyActivity extends Enumeration with RunnableObject {
   val KeepExisting = Value("KEEP_EXISTING")
   val OverwriteExisting = Value("OVERWRITE_EXISTING")
   val Truncate = Value("TRUNCATE")
+  val Append = Value("APPEND")
 
   def apply(input: S3DataNode, output: RedshiftDataNode, insertMode: InsertMode)(runsOn: Resource[Ec2Resource]): RedshiftCopyActivity =
     new RedshiftCopyActivity(
