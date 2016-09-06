@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.2 - 2016-09-16
+### Added
+- [#463](https://github.com/krux/hyperion/issues/463) - Add the number of objects logging back
+
 ## 4.4.1 - 2016-08-30
 ### Fixed
 - [#461](https://github.com/krux/hyperion/issues/461) - Fixed GPG encrypt and decrypt on first run

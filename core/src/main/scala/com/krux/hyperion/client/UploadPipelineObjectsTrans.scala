@@ -76,6 +76,7 @@ case class UploadPipelineObjectsTrans(
     client,
     keyObjectsMap
       .flatMap { case (key, objects) =>
+        log.info(s"Creating pipeline and uploading ${objects.size} objects")
         createAndUploadObjects(pipelineDef.nameForKey(key), objects)
       }
       .toSet,
