@@ -3,8 +3,10 @@ package com.krux.hyperion.client
 import scala.collection.JavaConverters._
 
 import com.amazonaws.services.datapipeline.DataPipelineClient
-import com.amazonaws.services.datapipeline.model.{ PipelineObject, ListPipelinesRequest,
-  ParameterObject, CreatePipelineRequest, Tag, PutPipelineDefinitionRequest }
+import com.amazonaws.services.datapipeline.model.{
+  PipelineObject, ListPipelinesRequest, ParameterObject, CreatePipelineRequest, Tag,
+  PutPipelineDefinitionRequest, InvalidRequestException
+}
 import org.slf4j.LoggerFactory
 
 import com.krux.hyperion.DataPipelineDefGroup
@@ -22,7 +24,7 @@ case class UploadPipelineObjectsTrans(
 
   val keyObjectsMap = pipelineDef.toAwsPipelineObjects
 
-  private def createAndUploadObjects(name: String, objects: Seq[PipelineObject]): Option[String] = {
+  private def createAndUploadObjects(name: String, objects: Seq[PipelineObject]): Option[String] = try {
 
     val pipelineId = client
       .createPipeline(
@@ -70,15 +72,22 @@ case class UploadPipelineObjectsTrans(
       log.warn("Successful with warnings")
       Option(pipelineId)
     }
+  } catch {
+    case e: InvalidRequestException =>
+      log.error(s"InvalidRequestException (${e.getErrorCode}): ${e.getErrorMessage}")
+      None
   }
 
   def action() = AwsClientForId(
     client,
     keyObjectsMap
-      .flatMap { case (key, objects) =>
+      .toStream  // there is no need to keep perform createAndUploadObojects if one failed
+      .map { case (key, objects) =>
         log.info(s"Creating pipeline and uploading ${objects.size} objects")
         createAndUploadObjects(pipelineDef.nameForKey(key), objects)
       }
+      .takeWhile(_.nonEmpty)
+      .flatten
       .toSet,
     maxRetry
   )
