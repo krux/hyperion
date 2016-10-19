@@ -2,9 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.5.1 - 2016-10-19
+- [#467](https://github.com/krux/hyperion/issues/467) - Handle InvalidRequestException properly during pipeline creation
+
 ## 4.5.0 - 2016-10-16
 ### Fixed
-- [#467](https://github.com/krux/hyperion/issues/467) - Handle InvalidRequestException properly during pipeline creation
 - [#468](https://github.com/krux/hyperion/issues/468) - Update to Scala 2.11.8
 
 ## 4.4.2 - 2016-09-16
