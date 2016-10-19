@@ -19,10 +19,13 @@ case class AwsS3CpActivity private(
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def useProfile(profile: HString) = updateShellCommandActivityFields(
+  def useProfile(
+      profile: HString,
+      credentialsS3Uri: HS3Uri,
+      configS3Uri: HS3Uri) = updateShellCommandActivityFields(
     shellCommandActivityFields.copy(script =
-      s"""`aws s3 cp s3://krux-profiles/credentials ~/.aws/credentials`;
-          `aws s3 cp s3://krux-profiles/config ~/.aws/config`;
+      s"""`aws s3 cp $credentialsS3Uri ~/.aws/credentials`;
+          `aws s3 cp $configS3Uri ~/.aws/config`;
           `aws s3 cp --recursive --profile $profile $sourceS3Path $destinationS3Path`;
         """
     )
@@ -32,9 +35,9 @@ case class AwsS3CpActivity private(
 object AwsS3CpActivity extends RunnableObject {
 
   def apply(
-             sourceS3Path: HS3Uri,
-             destinationS3Path: HS3Uri
-           )(runsOn: Resource[Ec2Resource]): AwsS3CpActivity =
+      sourceS3Path: HS3Uri,
+      destinationS3Path: HS3Uri
+    )(runsOn: Resource[Ec2Resource]): AwsS3CpActivity =
 
     new AwsS3CpActivity(
       baseFields = BaseFields(PipelineObjectId(AwsS3CpActivity.getClass)),
