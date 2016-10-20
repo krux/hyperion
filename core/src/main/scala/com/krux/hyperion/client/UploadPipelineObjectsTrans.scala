@@ -24,7 +24,7 @@ case class UploadPipelineObjectsTrans(
 
   val keyObjectsMap = pipelineDef.toAwsPipelineObjects
 
-  private def createAndUploadObjects(name: String, objects: Seq[PipelineObject]): Option[String] = try {
+  private def createAndUploadObjects(name: String, objects: Seq[PipelineObject]): Option[String] = {
 
     val pipelineId = client
       .createPipeline(
@@ -43,39 +43,46 @@ case class UploadPipelineObjectsTrans(
     log.info(s"Created pipeline $pipelineId ($name)")
     log.info(s"Uploading pipeline definition to $pipelineId")
 
-    val putDefinitionResult = client
-      .putPipelineDefinition(
-        new PutPipelineDefinitionRequest()
-          .withPipelineId(pipelineId)
-          .withPipelineObjects(objects.asJava)
-          .withParameterObjects(parameterObjects.asJava)
-      )
-      .retry()
+    try {
 
-    putDefinitionResult.getValidationErrors.asScala
-      .flatMap(err => err.getErrors.asScala.map(detail => s"${err.getId}: $detail"))
-      .foreach(log.error)
-    putDefinitionResult.getValidationWarnings.asScala
-      .flatMap(err => err.getWarnings.asScala.map(detail => s"${err.getId}: $detail"))
-      .foreach(log.warn)
+      val putDefinitionResult = client
+        .putPipelineDefinition(
+          new PutPipelineDefinitionRequest()
+            .withPipelineId(pipelineId)
+            .withPipelineObjects(objects.asJava)
+            .withParameterObjects(parameterObjects.asJava)
+        )
+        .retry()
 
-    if (putDefinitionResult.getErrored) {
-      log.error("Failed to create pipeline")
-      log.error("Deleting the just created pipeline")
-      AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
-      None
-    } else if (putDefinitionResult.getValidationErrors.isEmpty
-      && putDefinitionResult.getValidationWarnings.isEmpty) {
-      log.info("Successfully created pipeline")
-      Option(pipelineId)
-    } else {
-      log.warn("Successful with warnings")
-      Option(pipelineId)
+      putDefinitionResult.getValidationErrors.asScala
+        .flatMap(err => err.getErrors.asScala.map(detail => s"${err.getId}: $detail"))
+        .foreach(log.error)
+      putDefinitionResult.getValidationWarnings.asScala
+        .flatMap(err => err.getWarnings.asScala.map(detail => s"${err.getId}: $detail"))
+        .foreach(log.warn)
+
+      if (putDefinitionResult.getErrored) {
+        log.error(s"Failed to upload pipeline definition to pipeline $pipelineId")
+        log.error(s"Deleting the just created pipeline $pipelineId")
+        AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
+        None
+      } else if (putDefinitionResult.getValidationErrors.isEmpty
+        && putDefinitionResult.getValidationWarnings.isEmpty) {
+        log.info("Successfully created pipeline")
+        Option(pipelineId)
+      } else {
+        log.warn("Successful with warnings")
+        Option(pipelineId)
+      }
+
+    } catch {
+      case e: InvalidRequestException =>
+        log.error(s"InvalidRequestException (${e.getErrorCode}): ${e.getErrorMessage}")
+        log.error("Deleting the just created pipeline")
+        AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
+        None
     }
-  } catch {
-    case e: InvalidRequestException =>
-      log.error(s"InvalidRequestException (${e.getErrorCode}): ${e.getErrorMessage}")
-      None
+
   }
 
   def action() = AwsClientForId(
