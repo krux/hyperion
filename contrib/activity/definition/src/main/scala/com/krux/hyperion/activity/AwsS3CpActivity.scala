@@ -11,8 +11,15 @@ case class AwsS3CpActivity private(
   shellCommandActivityFields: ShellCommandActivityFields,
   sourceS3Path: HS3Uri,
   destinationS3Path: HS3Uri,
-  recursive: HBoolean,
-  profile: Option[HString]
+  isRecursive: HBoolean,
+  isOverwrite: HBoolean,
+  cannedAcl: Option[HString],
+  profile: Option[HString],
+  grant: Option[HString],
+  exclude: Option[HString],
+  include: Option[HString],
+  sourceRegion: Option[HString],
+  destinationRegion: Option[HString]
 ) extends BaseShellCommandActivity with WithS3Input {
 
   type Self = AwsS3CpActivity
@@ -21,29 +28,51 @@ case class AwsS3CpActivity private(
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
-  def makeRecursive() = copy(recursive = HBoolean.True).build()
-  def withProfile(profile: HString) = copy(profile = Option(profile)).build()
-
-  private var s3CpCommand: String = "aws s3 cp"
-
-  private def build() = {
-    if (recursive) {
-      s3CpCommand = "%s %s" format (s3CpCommand, "--recursive")
-    }
-    if (!profile.isEmpty) {
-      s3CpCommand = "%s %s" format (s3CpCommand, s"--profile ${profile.getOrElse("default")}")
-    }
-    updateShellCommandActivityFields(
-      shellCommandActivityFields.copy(script =
-        s"""
-          if [ -n "$${INPUT1_STAGING_DIR}" ]; then
-            cp -R $${INPUT1_STAGING_DIR} ~/.aws
-          fi
-          $s3CpCommand $sourceS3Path $destinationS3Path;
-        """
+  def withRecursive() = copy(isRecursive = HBoolean.True)
+  def withOverwrite() = copy(isOverwrite = HBoolean.True)
+  def withProfile(profile: HString) = copy(profile = Option(profile))
+  def withAcl(cannedAcl: HString) = copy(cannedAcl = Option(cannedAcl))
+  def withExclude(pattern: HString) = copy(exclude = Option(pattern))
+  def withInclude(pattern: HString) = copy(include = Option(pattern))
+  def withSourceRegion(sourceRegion: HString) = copy(sourceRegion = Option(sourceRegion))
+  def withDestinationRegion(destinationRegion: HString) = copy(destinationRegion = Option(destinationRegion))
+  def withGrant(permission: HString, granteeTypeAndId: Seq[(String, String)]) = {
+    copy(
+      grant = Option(
+        Seq(
+          permission,
+          granteeTypeAndId.map { tuple => tuple.productIterator.mkString("=") }.mkString(",")
+        ).mkString("="):HString
       )
     )
   }
+
+  val s3CpCommand  = Seq(
+    Seq("aws", "s3", "cp"),
+    if (isRecursive) Seq("--recursive") else Seq.empty[String],
+    if (!profile.isEmpty) Seq("--profile", profile.getOrElse("default")) else Seq.empty[String],
+    if (!cannedAcl.isEmpty) Seq("--acl", cannedAcl.getOrElse("bucket-owner-full-control")) else Seq.empty[String],
+    if (!grant.isEmpty) Seq("--grants", grant.getOrElse("")) else Seq.empty[String],
+    if (!exclude.isEmpty) Seq("--exclude", exclude.getOrElse("")) else Seq.empty[String],
+    if (!include.isEmpty) Seq("--include", include.getOrElse("")) else Seq.empty[String],
+    if (!sourceRegion.isEmpty) Seq("--source-region", sourceRegion.getOrElse("")) else Seq.empty[String],
+    if (!destinationRegion.isEmpty) Seq("--region", destinationRegion.getOrElse("")) else Seq.empty[String],
+    Seq(sourceS3Path, destinationS3Path)
+  ).flatten.mkString(" ")
+
+  val removeScript = if (isOverwrite) s"aws s3 rm --recursive $destinationS3Path;" else ""
+
+  override def script =
+    ShellCommandActivityFields(
+      s"""
+          if [ -n "$${INPUT1_STAGING_DIR}" ]; then
+            cp -R $${INPUT1_STAGING_DIR} ~/.aws;
+          fi
+          $removeScript
+          $s3CpCommand;
+      """
+    ).script
+
 }
 
 object AwsS3CpActivity extends RunnableObject {
@@ -59,7 +88,14 @@ object AwsS3CpActivity extends RunnableObject {
       shellCommandActivityFields = ShellCommandActivityFields(s"aws s3 cp $sourceS3Path $destinationS3Path"),
       sourceS3Path = sourceS3Path,
       destinationS3Path = destinationS3Path,
-      recursive = HBoolean.False,
-      profile = None
+      isRecursive = HBoolean.False,
+      isOverwrite = HBoolean.False,
+      cannedAcl = None,
+      profile = None,
+      grant = None,
+      exclude = None,
+      include = None,
+      sourceRegion = None,
+      destinationRegion = None
     )
 }
