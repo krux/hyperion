@@ -62,8 +62,8 @@ case class UploadPipelineObjectsTrans(
         .foreach(log.warn)
 
       if (putDefinitionResult.getErrored) {
-        log.error("Failed to create pipeline")
-        log.error("Deleting the just created pipeline")
+        log.error(s"Failed to upload pipeline definition to pipeline $pipelineId")
+        log.error(s"Deleting the just created pipeline $pipelineId")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
         None
       } else if (putDefinitionResult.getValidationErrors.isEmpty
