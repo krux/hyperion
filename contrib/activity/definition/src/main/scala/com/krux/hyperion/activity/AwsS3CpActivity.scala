@@ -23,40 +23,37 @@ case class AwsS3CpActivity private(
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
   def withOverwrite() = copy(isOverwrite = HBoolean.True)
-  def withRecursive() = addToAdditionArguments(Seq[HString]("--recursive"))
-  def withProfile(profile: HString) =  addToAdditionArguments(Seq[HString]("--profile", profile))
-  def withAcl(cannedAcl: HString) = addToAdditionArguments(Seq[HString]("--acl",cannedAcl))
-  def withExclude(pattern: HString) = addToAdditionArguments(Seq[HString]("--exclude", pattern))
-  def withInclude(pattern: HString) = addToAdditionArguments(Seq[HString]("--include", pattern))
-  def withSourceRegion(sourceRegion: HString) = addToAdditionArguments(Seq[HString]("--source-region", sourceRegion))
-  def withDestinationRegion(destinationRegion: HString) = addToAdditionArguments(Seq[HString]("--region", destinationRegion))
-  def withGrant(permission: HString, granteeTypeAndId: Seq[(String, String)]) = {
-    addToAdditionArguments(
-      Seq[HString]("--grants",
-        Seq(permission, granteeTypeAndId.map { tuple => tuple.productIterator.mkString("=") }.mkString(",")).mkString("=")
-      )
-    )
-  }
+  def withRecursive() = addToAdditionalArguments("--recursive")
+  def withProfile(profile: HString) = addToAdditionalArguments("--profile", profile)
+  def withAcl(cannedAcl: HString) = addToAdditionalArguments("--acl",cannedAcl)
+  def withExclude(pattern: HString) = addToAdditionalArguments("--exclude", pattern)
+  def withInclude(pattern: HString) = addToAdditionalArguments("--include", pattern)
+  def withSourceRegion(sourceRegion: HString) = addToAdditionalArguments("--source-region", sourceRegion)
+  def withDestinationRegion(destinationRegion: HString) = addToAdditionalArguments("--region", destinationRegion)
+  def withGrant(permission: HString, granteeTypeAndId: Seq[(String, String)]) = addToAdditionalArguments("--grants",
+    granteeTypeAndId.map { case (grantType, id) => s"$grantType=$id" }.mkString(s"$permission=", ",", "")
+  )
   def withAdditionalArguments(arguments: Seq[HString]) = copy(additionalArguments = this.additionalArguments ++ arguments)
 
-  private def addToAdditionArguments(argument: Seq[HString]) = {
+  private def addToAdditionalArguments(argument: HString*) = {
     copy(additionalArguments = this.additionalArguments ++ argument)
   }
 
   private val removeScript = if (isOverwrite) s"aws s3 rm --recursive $destinationS3Path;" else ""
 
-  private val s3CpScript = "aws s3 cp %s %s %s;" format (additionalArguments.mkString(" "), sourceS3Path, destinationS3Path)
+  private val s3CpScript = s"aws s3 cp ${additionalArguments.mkString(" ")} $sourceS3Path $destinationS3Path;"
 
-  override def script = {
-    s"""
-          if [ -n "$${INPUT1_STAGING_DIR}" ]; then
-            cat $${INPUT1_STAGING_DIR}/credentials >> ~/.aws/credentials;
-            cat $${INPUT1_STAGING_DIR}/config >> ~/.aws/config;
-          fi
-          $removeScript
-          $s3CpScript
-    """
-  }
+  override def script = s"""
+                          if [ -n "$${INPUT1_STAGING_DIR}" ]; then
+                            if [ ! -d ~/.aws ]; then
+                              mkdir -p ~/.aws
+                            fi
+                            cat $${INPUT1_STAGING_DIR}/credentials >> ~/.aws/credentials;
+                            cat $${INPUT1_STAGING_DIR}/config >> ~/.aws/config;
+                          fi
+                          $removeScript
+                          $s3CpScript
+                        """
 }
 
 object AwsS3CpActivity extends RunnableObject {
