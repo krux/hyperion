@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 4.5.2 - 2016-10-20
 ### Added
-- [#471] (https://github.com/krux/hyperion/pull/471) - Add support for `AWS S3 cp` CLI arguments in AwsS3CpActivity
+- [#471](https://github.com/krux/hyperion/pull/471) - Add support for `AWS S3 cp` CLI arguments in AwsS3CpActivity
 
 ## 4.5.1 - 2016-10-19
 - [#467](https://github.com/krux/hyperion/issues/467) - Handle InvalidRequestException properly during pipeline creation

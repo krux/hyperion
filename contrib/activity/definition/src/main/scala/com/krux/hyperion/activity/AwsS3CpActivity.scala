@@ -23,21 +23,20 @@ case class AwsS3CpActivity private(
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
 
   def withOverwrite() = copy(isOverwrite = HBoolean.True)
-  def withRecursive() = addToAdditionalArguments("--recursive")
-  def withProfile(profile: HString) = addToAdditionalArguments("--profile", profile)
-  def withAcl(cannedAcl: HString) = addToAdditionalArguments("--acl",cannedAcl)
-  def withExclude(pattern: HString) = addToAdditionalArguments("--exclude", pattern)
-  def withInclude(pattern: HString) = addToAdditionalArguments("--include", pattern)
-  def withSourceRegion(sourceRegion: HString) = addToAdditionalArguments("--source-region", sourceRegion)
-  def withDestinationRegion(destinationRegion: HString) = addToAdditionalArguments("--region", destinationRegion)
-  def withGrant(permission: HString, granteeTypeAndId: Seq[(String, String)]) = addToAdditionalArguments("--grants",
-    granteeTypeAndId.map { case (grantType, id) => s"$grantType=$id" }.mkString(s"$permission=", ",", "")
+  def withRecursive() = withAdditionalArguments(Seq("--recursive"))
+  def withProfile(profile: HString) = withAdditionalArguments(Seq("--profile", profile))
+  def withAcl(cannedAcl: HString) = withAdditionalArguments(Seq("--acl", cannedAcl))
+  def withExclude(pattern: HString) = withAdditionalArguments(Seq("--exclude", pattern))
+  def withInclude(pattern: HString) = withAdditionalArguments(Seq("--include", pattern))
+  def withSourceRegion(sourceRegion: HString) = withAdditionalArguments(Seq("--source-region", sourceRegion))
+  def withDestinationRegion(destinationRegion: HString) = withAdditionalArguments(Seq("--region", destinationRegion))
+  def withGrant(permission: HString, granteeTypeAndId: Seq[(String, String)]) = withAdditionalArguments(
+    Seq(
+      "--grants",
+      granteeTypeAndId.map { case (grantType, id) => s"$grantType=$id" }.mkString(s"$permission=", ",", "")
+    )
   )
   def withAdditionalArguments(arguments: Seq[HString]) = copy(additionalArguments = this.additionalArguments ++ arguments)
-
-  private def addToAdditionalArguments(argument: HString*) = {
-    copy(additionalArguments = this.additionalArguments ++ argument)
-  }
 
   private val removeScript = if (isOverwrite) s"aws s3 rm --recursive $destinationS3Path;" else ""
 
@@ -45,9 +44,7 @@ case class AwsS3CpActivity private(
 
   override def script = s"""
                           if [ -n "$${INPUT1_STAGING_DIR}" ]; then
-                            if [ ! -d ~/.aws ]; then
-                              mkdir -p ~/.aws
-                            fi
+                            mkdir -p ~/.aws
                             cat $${INPUT1_STAGING_DIR}/credentials >> ~/.aws/credentials;
                             cat $${INPUT1_STAGING_DIR}/config >> ~/.aws/config;
                           fi
