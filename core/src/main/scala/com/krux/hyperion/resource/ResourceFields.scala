@@ -1,6 +1,6 @@
 package com.krux.hyperion.resource
 
-import com.krux.hyperion.adt.{ HString, HBoolean, HDuration }
+import com.krux.hyperion.adt.{HString, HBoolean, HDuration, HInt}
 import com.krux.hyperion.common.HttpProxy
 
 case class ResourceFields(
@@ -15,5 +15,6 @@ case class ResourceFields(
   terminateAfter: Option[HDuration] = None,
   actionOnResourceFailure: Option[ActionOnResourceFailure] = None,
   actionOnTaskFailure: Option[ActionOnTaskFailure] = None,
-  httpProxy: Option[HttpProxy] = None
+  httpProxy: Option[HttpProxy] = None,
+  maximumRetries: Option[HInt] = None
 )

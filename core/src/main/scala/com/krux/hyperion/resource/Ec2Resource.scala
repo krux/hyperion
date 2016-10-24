@@ -54,7 +54,8 @@ case class Ec2Resource private (
     terminateAfter = terminateAfter.map(_.serialize),
     actionOnResourceFailure = actionOnResourceFailure.map(_.serialize),
     actionOnTaskFailure = actionOnTaskFailure.map(_.serialize),
-    httpProxy = httpProxy.map(_.ref)
+    httpProxy = httpProxy.map(_.ref),
+    maximumRetries = maximumRetries.map(_.serialize)
   )
 
   def ref: AdpRef[AdpEc2Resource] = AdpRef(serialize)

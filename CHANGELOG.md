@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 4.6.0 - 2016-10-23
+### Added
+- [#459](https://github.com/krux/hyperion/pull/459) - Add support of setting maximumRetries for resources
+
 ## 4.5.2 - 2016-10-20
 ### Added
 - [#471](https://github.com/krux/hyperion/pull/471) - Add support for `AWS S3 cp` CLI arguments in AwsS3CpActivity

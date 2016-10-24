@@ -29,7 +29,8 @@ class AdpResourcesSpec extends WordSpec {
         terminateAfter = Option("4 hours"),
         actionOnResourceFailure = None,
         actionOnTaskFailure = None,
-        httpProxy = None
+        httpProxy = None,
+        maximumRetries = None
       )
 
       val objShouldBe = ("id" -> "theId") ~
@@ -78,7 +79,8 @@ class AdpResourcesSpec extends WordSpec {
         httpProxy = None,
         releaseLabel = None,
         applications = None,
-        configuration = None
+        configuration = None,
+        maximumRetries = Option("1")
       )
 
       val objShouldBe = ("id" -> "theId") ~
@@ -90,7 +92,8 @@ class AdpResourcesSpec extends WordSpec {
         ("taskInstanceType" -> "m3.xlarge") ~
         ("taskInstanceCount" -> "4") ~
         ("terminateAfter" -> "8 hours") ~
-        ("type" -> "EmrCluster")
+        ("type" -> "EmrCluster") ~
+        ("maximumRetries" -> "1")
 
       assert(AdpJsonSerializer(testObj) === objShouldBe)
     }

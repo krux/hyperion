@@ -182,7 +182,8 @@ trait EmrCluster extends ResourceObject {
       httpProxy = httpProxy.map(_.ref),
       releaseLabel = releaseLabel.map(_.serialize),
       applications = applications.map(_.serialize),
-      configuration = configuration.map(_.ref)
+      configuration = configuration.map(_.ref),
+      maximumRetries = maximumRetries.map(_.serialize)
     )
   }
 

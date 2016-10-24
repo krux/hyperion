@@ -21,6 +21,7 @@ trait AdpResource extends AdpDataPipelineObject {
    * as the pipeline. You can run the instance in the same region as a dependent data set.
    */
   def region: Option[String]
+
 }
 
 
@@ -50,6 +51,7 @@ trait AdpResource extends AdpDataPipelineObject {
  * @param useOnDemandOnLastAttempt On the last attempt to request a resource, this option will make a request for On-Demand Instances rather than Spot. This ensures that if all previous attempts have failed that the last attempt is not interrupted in the middle by changes in the spot market. Default value is True.
  * @param actionOnResourceFailure	Action to take when the resource fails.
  * @param actionOnTaskFailure	Action to take when the task associated with this resource fails.
+ * @param maximumRetries Maximum number attempt retries on failure.
  */
 case class AdpEc2Resource(
   id: String,
@@ -72,7 +74,8 @@ case class AdpEc2Resource(
   terminateAfter: Option[String],
   actionOnResourceFailure: Option[String],
   actionOnTaskFailure: Option[String],
-  httpProxy: Option[AdpRef[AdpHttpProxy]]
+  httpProxy: Option[AdpRef[AdpHttpProxy]],
+  maximumRetries: Option[String]
 ) extends AdpResource {
 
   val `type` = "Ec2Resource"
@@ -103,6 +106,7 @@ case class AdpEc2Resource(
  * @param supportedProducts A parameter that installs third-party software on an Amazon EMR cluster, for
  *                          example installing a third-party distribution of Hadoop.
  * @param subnetId The ID of the subnet to launch the instance into.
+ * @param maximumRetries Maximum number attempt retries on failure.
  */
 class AdpEmrCluster(
   val id: String,
@@ -139,7 +143,8 @@ class AdpEmrCluster(
   val httpProxy: Option[AdpRef[AdpHttpProxy]],
   val releaseLabel: Option[String],
   val applications: Option[Seq[String]],
-  val configuration: Option[Seq[AdpRef[AdpEmrConfiguration]]]
+  val configuration: Option[Seq[AdpRef[AdpEmrConfiguration]]],
+  val maximumRetries: Option[String]
 ) extends AdpResource {
 
   val `type` = "EmrCluster"
