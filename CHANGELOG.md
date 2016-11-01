@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.8.0 - 2016-12-11
+### Added
+- [#353](https://github.com/krux/hyperion/issues/353) - Enable .reduceLeft(_ ~> _) on a list of pipeline activities
+
 ## 4.7.0 - 2016-12-07
 ### Fixed
 - [#477](https://github.com/krux/hyperion/issues/477) - Make `initTimeout` as a optional global configuration
