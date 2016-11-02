@@ -76,14 +76,14 @@ function get_file() {
   LOCAL="$2"/"$(basename "$1")"
   case "$1" in
     s3:*)
-      aws s3 cp "$1" "${LOCAL}"
+      aws s3 cp "$1" "${LOCAL}" > /dev/null 2>&1
       ;;
     -*)
       echo "Unrecognized option: $1"
       usage
       ;;
     *)
-      cp "$1" "${LOCAL}"
+      cp "$1" "${LOCAL}" > /dev/null 2>&1
       ;;
   esac
   echo "${LOCAL}"

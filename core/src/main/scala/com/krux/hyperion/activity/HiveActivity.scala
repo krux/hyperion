@@ -23,8 +23,8 @@ case class HiveActivity[A <: EmrCluster] private (
   emrTaskActivityFields: EmrTaskActivityFields,
   hiveScript: Script,
   scriptVariables: Seq[HString],
-  input: DataNode,
-  output: DataNode,
+  input: Seq[DataNode],
+  output: Seq[DataNode],
   hadoopQueue: Option[HString]
 ) extends EmrTaskActivity[A] {
 
@@ -37,7 +37,7 @@ case class HiveActivity[A <: EmrCluster] private (
   def withScriptVariable(scriptVariable: HString*) = copy(scriptVariables = scriptVariables ++ scriptVariable)
   def withHadoopQueue(queue: HString) = copy(hadoopQueue = Option(queue))
 
-  override def objects = Seq(input, output) ++ super.objects
+  override def objects = input ++ output ++ super.objects
 
   lazy val serialize = new AdpHiveActivity(
     id = id,
@@ -46,8 +46,8 @@ case class HiveActivity[A <: EmrCluster] private (
     scriptUri = hiveScript.uri.map(_.serialize),
     scriptVariable = seqToOption(scriptVariables)(_.serialize),
     stage = Option(HBoolean.True.serialize),
-    input = Option(input.ref),
-    output = Option(output.ref),
+    input = seqToOption(input)(_.ref),
+    output = seqToOption(output)(_.ref),
     hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
@@ -69,7 +69,7 @@ case class HiveActivity[A <: EmrCluster] private (
 
 object HiveActivity extends RunnableObject {
 
-  def apply[A <: EmrCluster](input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
+  def apply[A <: EmrCluster](input: Seq[DataNode], output: Seq[DataNode], hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
     new HiveActivity(
       baseFields = BaseFields(PipelineObjectId(HiveActivity.getClass)),
       activityFields = ActivityFields(runsOn),
@@ -80,5 +80,8 @@ object HiveActivity extends RunnableObject {
       output = output,
       hadoopQueue = None
     )
+
+  def apply[A <: EmrCluster](input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
+    apply(Seq(input), Seq(output), hiveScript)(runsOn)
 
 }

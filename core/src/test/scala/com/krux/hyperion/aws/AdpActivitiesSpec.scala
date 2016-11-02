@@ -121,8 +121,8 @@ class AdpActivitiesSpec extends WordSpec {
         scriptVariable = None,
         hadoopQueue = None,
         stage = Option("true"),
-        input = Option(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode")),
-        output = Option(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode")),
+        input = Option(Seq(AdpRef.withRefObjId[AdpDataNode]("MyS3DataNode"))),
+        output = Option(Seq(AdpRef.withRefObjId[AdpDataNode]("MyOtherS3DataNode"))),
         preActivityTaskConfig = None,
         postActivityTaskConfig = None,
         workerGroup = None,
@@ -141,8 +141,8 @@ class AdpActivitiesSpec extends WordSpec {
       )
       val objShouldBe = ("id" -> "HiveActivity") ~
         ("hiveScript" -> "SELECT * FROM TABLE") ~
-        ("input" -> ("ref" -> "MyS3DataNode")) ~
-        ("output" -> ("ref" -> "MyOtherS3DataNode")) ~
+        ("input" -> Seq("ref" -> "MyS3DataNode")) ~
+        ("output" -> Seq("ref" -> "MyOtherS3DataNode")) ~
         ("stage" -> "true") ~
         ("runsOn" -> ("ref" -> "MyEc2Resource")) ~
         ("type" -> "HiveActivity")

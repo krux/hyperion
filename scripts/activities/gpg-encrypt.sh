@@ -76,10 +76,10 @@ function get_file() {
   LOCAL="$2"/"$(basename "$1")"
   case "$1" in
     s3:*)
-      aws s3 cp "$1" "${LOCAL}"
+      aws s3 cp "$1" "${LOCAL}" > /dev/null 2>&1
       ;;
     *)
-      cp "$1" "${LOCAL}"
+      cp "$1" "${LOCAL}" > /dev/null 2>&1
       ;;
   esac
   echo "${LOCAL}"
@@ -112,7 +112,7 @@ if [ ! -s "${KEY}" ]; then
 fi
 
 # import the key and remember the name
-RECIPIENT="$(gpg --batch --yes --import "${KEY}" 2>&1 | fgrep 'gpg: key' | cut -d \" -f 2)"
+RECIPIENT="$(gpg --batch --yes --import "${KEY}" 2>&1 | fgrep 'gpg: key' | egrep 'imported|changed' | cut -d \" -f 2)"
 
 # cleanup by deleting the key on exit
 add_on_exit gpg --batch --yes --delete-key \"${RECIPIENT}\"

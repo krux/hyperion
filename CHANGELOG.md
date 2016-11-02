@@ -2,6 +2,58 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 4.6.0 - 2016-10-23
+### Added
+- [#459](https://github.com/krux/hyperion/pull/459) - Add support of setting maximumRetries for resources
+
+## 4.5.2 - 2016-10-20
+### Added
+- [#471](https://github.com/krux/hyperion/pull/471) - Add support for `AWS S3 cp` CLI arguments in AwsS3CpActivity
+
+## 4.5.1 - 2016-10-19
+- [#467](https://github.com/krux/hyperion/issues/467) - Handle InvalidRequestException properly during pipeline creation
+
+## 4.5.0 - 2016-10-16
+### Fixed
+- [#468](https://github.com/krux/hyperion/issues/468) - Update to Scala 2.11.8
+
+## 4.4.2 - 2016-09-16
+### Added
+- [#463](https://github.com/krux/hyperion/issues/463) - Add the number of objects logging back
+
+## 4.4.1 - 2016-08-30
+### Fixed
+- [#461](https://github.com/krux/hyperion/issues/461) - Fixed GPG encrypt and decrypt on first run
+
+## 4.4.0 - 2016-08-12
+### Added
+- [#457](https://github.com/krux/hyperion/issues/457) - Add support for "APPEND" insert mode to redshift copy activity
+
+## 4.3.3 - 2016-08-11
+### Fixed
+- [#455](https://github.com/krux/hyperion/issues/455) - Use emrManaged*SecurityGroupId instead of *SecurityGroupId
+
+## 4.3.2 - 2016-08-11
+### Fixed
+- [#452](https://github.com/krux/hyperion/issues/452) - EMR cluster when using configuration to specify release label, the ami field is not overriden
+
+## 4.3.1 - 2016-08-10
+### Fixed
+- [#448](https://github.com/krux/hyperion/issues/448) - Fix a bug that SparkActivity does not work with EMR release label
+
+## 4.3.0 - 2016-08-08
+### Fixed
+- [#450](https://github.com/krux/hyperion/issues/450) - Update the default AMI to use instance store AMIs instead of EBS backed
+
+## 4.2.0 - 2016-08-05
+### Added
+- [#289](https://github.com/krux/hyperion/issues/289) - Allow JarActivity to have environment variables and additional classpath JARs
+
+## 4.1.0 - 2016-08-04
+### Changed
+- [#443](https://github.com/krux/hyperion/issues/443) - Allow HiveActivity to accept multiple input and output parameters
+
 ## 4.0.3 - 2016-07-14
 ### Fixed
 - [#439](https://github.com/krux/hyperion/issues/439) - Schedule.ondemand results in pipeline creation failure

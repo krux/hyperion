@@ -1,7 +1,7 @@
 package com.krux.hyperion.resource
 
 import com.krux.hyperion.common.{ PipelineObject, HttpProxy, NamedPipelineObject }
-import com.krux.hyperion.adt.{ HString, HBoolean, HDuration }
+import com.krux.hyperion.adt.{ HString, HBoolean, HDuration, HInt }
 
 /**
  * The base trait of all resource objects.
@@ -71,6 +71,11 @@ trait ResourceObject extends NamedPipelineObject {
   def httpProxy = resourceFields.httpProxy
   def withHttpProxy(proxy: HttpProxy): Self = updateResourceFields(
     resourceFields.copy(httpProxy = Option(proxy))
+  )
+
+  def maximumRetries = resourceFields.maximumRetries
+  def withMaximumRetries(retries: HInt): Self = updateResourceFields(
+    resourceFields.copy(maximumRetries = Option(retries))
   )
 
   def objects: Iterable[PipelineObject] = httpProxy

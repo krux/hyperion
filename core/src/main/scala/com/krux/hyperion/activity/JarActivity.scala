@@ -1,11 +1,11 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{ HS3Uri, HString }
+import com.krux.hyperion.adt.{HS3Uri, HString}
 import com.krux.hyperion.common.S3Uri
-import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{BaseFields, PipelineObjectId}
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.resource.{Resource, Ec2Resource}
+import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
 /**
  * Shell command activity that runs a given Jar
@@ -16,7 +16,9 @@ case class JarActivity private (
   shellCommandActivityFields: ShellCommandActivityFields,
   jarUri: HS3Uri,
   mainClass: Option[MainClass],
-  options: Seq[HString]
+  options: Seq[HString],
+  environmentUri: Option[HS3Uri],
+  classpath: Seq[HS3Uri]
 ) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = JarActivity
@@ -30,9 +32,12 @@ case class JarActivity private (
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
 
   def withOptions(opts: HString*) = copy(options = options ++ opts)
+  def withEnvironmentUri(environmentUri: HS3Uri) = copy(environmentUri = Option(environmentUri))
+  def withClasspath(jar: HS3Uri) = copy(classpath = classpath :+ jar)
 
-  override def scriptArguments =
-    (jarUri.serialize: HString) +: options ++: mainClass.map(_.fullName: HString) ++: shellCommandActivityFields.scriptArguments
+  override def scriptArguments = classpath.flatMap(jar => Seq[HString]("--cp", jar.serialize)) ++
+    environmentUri.toSeq.flatMap(uri => Seq[HString]("--env", uri.serialize)) ++
+    Seq[HString]("--jar", jarUri.serialize) ++ options ++ mainClass.map(_.fullName: HString) ++ shellCommandActivityFields.scriptArguments
 
 }
 
@@ -45,7 +50,9 @@ object JarActivity extends RunnableObject {
       shellCommandActivityFields = ShellCommandActivityFields(S3Uri(s"${hc.scriptUri}activities/run-jar.sh")),
       jarUri = jarUri,
       mainClass = None,
-      options = Seq.empty
+      options = Seq.empty,
+      environmentUri = hc.ec2EnvironmentUri.map(S3Uri(_)),
+      classpath = Seq.empty
     )
 
 }

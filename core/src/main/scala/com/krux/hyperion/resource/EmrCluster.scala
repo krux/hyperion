@@ -169,9 +169,9 @@ trait EmrCluster extends ResourceObject {
       resourceRole = resourceRole.map(_.serialize),
       role = role.map(_.serialize),
       subnetId = subnetId.map(_.serialize),
-      masterSecurityGroupId = masterSecurityGroupId.map(_.serialize),
+      emrManagedMasterSecurityGroupId = masterSecurityGroupId.map(_.serialize),
       additionalMasterSecurityGroupIds = additionalMasterSecurityGroupIds.map(_.serialize),
-      slaveSecurityGroupId = slaveSecurityGroupId.map(_.serialize),
+      emrManagedSlaveSecurityGroupId = slaveSecurityGroupId.map(_.serialize),
       additionalSlaveSecurityGroupIds = additionalSlaveSecurityGroupIds.map(_.serialize),
       useOnDemandOnLastAttempt = useOnDemandOnLastAttempt.map(_.serialize),
       visibleToAllUsers = visibleToAllUsers.map(_.serialize),
@@ -182,7 +182,8 @@ trait EmrCluster extends ResourceObject {
       httpProxy = httpProxy.map(_.ref),
       releaseLabel = releaseLabel.map(_.serialize),
       applications = applications.map(_.serialize),
-      configuration = configuration.map(_.ref)
+      configuration = configuration.map(_.ref),
+      maximumRetries = maximumRetries.map(_.serialize)
     )
   }
 
@@ -191,7 +192,7 @@ trait EmrCluster extends ResourceObject {
 object EmrCluster {
 
   def defaultEmrClusterFields(hc: HyperionContext) = EmrClusterFields(
-    amiVersion = hc.emrAmiVersion,
+    amiVersion = if (hc.emrReleaseLabel.nonEmpty) None else hc.emrAmiVersion,
     standardBootstrapAction = hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env": HString).toList,
     masterInstanceType = Option(hc.emrInstanceType: HString),
     coreInstanceCount = 2,

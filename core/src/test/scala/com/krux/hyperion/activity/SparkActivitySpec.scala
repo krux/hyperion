@@ -18,8 +18,8 @@ class SparkActivitySpec extends FlatSpec {
     val testStep = SparkStep(S3Uri("s3://something.jar")).withMainClass(MainClass)
     val activity = SparkActivity(cluster).withSteps(testStep)
     activity.steps.length shouldBe 1
-    activity.steps.count(_.jobRunner.toString.contains("spark-submit")) shouldEqual 1
-    activity.steps.count(_.scriptRunner.toString.contains("command-runner.jar")) shouldEqual 1
+    activity.steps.count(_.jobRunner.toString.contains("run-spark-step-release-label.sh")) shouldEqual 1
+    activity.steps.count(_.scriptRunner.toString.contains("script-runner.jar")) shouldEqual 1
   }
 
   it should "be backwards compatible" in {
