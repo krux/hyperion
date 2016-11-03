@@ -32,7 +32,7 @@ case class HadoopActivity[A <: EmrCluster] private (
   def updateActivityFields(fields: ActivityFields[A]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
-  def withArguments(arguments: HString*) = copy(arguments = arguments ++ arguments)
+  def withArguments(args: HString*) = copy(arguments = arguments ++ args)
   def withHadoopQueue(queue: HString) = copy(hadoopQueue = Option(queue))
   def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
   def withOutput(output: S3DataNode*) = copy(outputs = outputs ++ output)

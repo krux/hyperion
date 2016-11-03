@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.6.1 - 2016-11-03
+### Fixed
+- [#475](https://github.com/krux/hyperion/issues/475) - Duplicate arguments for Hadoop Activity
 
 ## 4.6.0 - 2016-10-23
 ### Added
