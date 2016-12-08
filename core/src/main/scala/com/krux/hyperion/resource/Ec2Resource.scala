@@ -83,7 +83,7 @@ object Ec2Resource {
     availabilityZone = hc.ec2AvailabilityZone.map(x => x: HString),
     subnetId = hc.ec2SubnetId.map(x => x: HString),
     terminateAfter = hc.ec2TerminateAfter.map(x => x: HDuration),
-    initTimeout = hc.emrInitTimeout.map(x => x: HDuration)
+    initTimeout = hc.ec2InitTimeout.map(x => x: HDuration)
   )
 
 }

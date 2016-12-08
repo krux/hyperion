@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 4.6.2 - 2016-12-07
+## 4.7.0 - 2016-12-07
 ### Fixed
 - [#477](https://github.com/krux/hyperion/issues/477) - Make `initTimeout` as a optional global configuration
 
