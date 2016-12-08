@@ -209,7 +209,8 @@ object EmrCluster {
     resourceRole = Option(hc.emrResourceRole: HString),
     role = Option(hc.emrRole: HString),
     subnetId = hc.emrSubnetId.map(x => x: HString),
-    terminateAfter = hc.emrTerminateAfter.map(x => x: HDuration)
+    terminateAfter = hc.emrTerminateAfter.map(x => x: HDuration),
+    initTimeout = hc.emrInitTimeout.map(x => x: HDuration)
   )
 
 }

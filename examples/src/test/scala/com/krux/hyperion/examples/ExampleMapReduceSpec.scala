@@ -69,7 +69,8 @@ class ExampleMapReduceSpec extends WordSpec {
         ("region" -> "us-east-1") ~
         ("role" -> "DataPipelineDefaultRole") ~
         ("resourceRole" -> "DataPipelineDefaultResourceRole") ~
-        ("releaseLabel" -> "emr-4.4.0")
+        ("releaseLabel" -> "emr-4.4.0") ~
+        ("initTimeout" -> "1 hours")
       assert(mapReduceCluster === mapReduceClusterShouldBe)
 
       val filterActivity = objectsField(4)

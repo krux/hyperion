@@ -57,6 +57,7 @@ class HyperionContext(config: Config) {
   lazy val emrEnvironmentUri = Try(config.getString("hyperion.aws.emr.env.uri")).toOption
   lazy val emrTerminateAfter = Try(config.getString("hyperion.aws.emr.terminate")).toOption.map(Duration(_))
   lazy val emrSparkVersion = Try(config.getString("hyperion.aws.emr.spark.version")).toOption
+  lazy val emrInitTimeout = Try(config.getString("hyperion.aws.emr.inittimeout")).toOption.map(Duration(_))
 
   //
   // SNS default configuration

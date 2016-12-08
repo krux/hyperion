@@ -79,7 +79,8 @@ class ExampleSparkSpec extends WordSpec {
         ("type" -> "EmrCluster") ~
         ("region" -> "us-east-1") ~
         ("role" -> "DataPipelineDefaultRole") ~
-        ("resourceRole" -> "DataPipelineDefaultResourceRole")
+        ("resourceRole" -> "DataPipelineDefaultResourceRole") ~
+        ("initTimeout" -> "5 hours")
       assert(sparkCluster === sparkClusterShouldBe)
 
       val filterActivity = objectsField(5)

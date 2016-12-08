@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.6.2 - 2016-12-07
+### Fixed
+- [#477](https://github.com/krux/hyperion/issues/477) - Make `initTimeout` as a optional global configuration
+
 ## 4.6.1 - 2016-11-03
 ### Fixed
 - [#475](https://github.com/krux/hyperion/issues/475) - Duplicate arguments for Hadoop Activity
