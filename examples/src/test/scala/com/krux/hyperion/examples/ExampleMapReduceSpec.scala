@@ -14,7 +14,7 @@ class ExampleMapReduceSpec extends WordSpec {
       val objectsField = pipelineJson.children.head.children.sortBy(o => (o \ "name").toString)
 
       // have the correct number of objects
-      assert(objectsField.size === 6)
+      assert(objectsField.size === 7)
 
       // the first object should be Default
       val defaultObj = objectsField(1)
@@ -96,6 +96,21 @@ class ExampleMapReduceSpec extends WordSpec {
         ("onSuccess" -> List("ref" -> snsAlarmId)) ~
         ("type" -> "EmrActivity")
       assert(scoreActivity === scoreActivityShouldBe)
+
+      val scoreHadoopActivity = objectsField(6)
+      val scoreHadoopActivityId = (scoreHadoopActivity \ "id").values.toString
+      assert(scoreHadoopActivityId.startsWith("HadoopActivity_"))
+      val scoreHadoopActivityShouldBe =
+        ("id" -> scoreHadoopActivityId) ~
+        ("name" -> "scoreHadoopActivity") ~
+        ("runsOn" -> ("ref" -> mapReduceClusterId)) ~
+        ("jarUri" -> "s3://sample-jars/sample-jar-assembly-current.jar") ~
+        ("mainClass"-> "com.krux.hyperion.ScoreJob2") ~
+        ("argument" -> List("the-target", "#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}", "denormalized")) ~
+        ("dependsOn" -> List("ref" -> scoreActivityId)) ~
+        ("onSuccess" -> List("ref" -> snsAlarmId)) ~
+        ("type" -> "HadoopActivity")
+      assert(scoreHadoopActivity === scoreHadoopActivityShouldBe)
 
     }
   }

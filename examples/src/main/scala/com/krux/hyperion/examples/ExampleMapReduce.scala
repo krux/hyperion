@@ -71,7 +71,20 @@ object ExampleMapReduce extends DataPipelineDef with HyperionCli {
         )
     )
 
-  override def workflow = filterActivity ~> scoreActivity
+  val scoreHadoopActivity = HadoopActivity(
+    jar,
+    "com.krux.hyperion.ScoreJob2"
+  )(emrCluster)
+    .named("scoreHadoopActivity")
+    .onSuccess(mailAction)
+    .withArguments(
+      target,
+      Format(SparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd"),
+      "denormalized"
+    )
+
+
+  override def workflow = filterActivity ~> scoreActivity ~> scoreHadoopActivity
 
 }
 
