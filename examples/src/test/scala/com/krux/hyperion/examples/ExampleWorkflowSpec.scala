@@ -43,7 +43,8 @@ class ExampleWorkflowSpec extends WordSpec {
         ("spotBidPrice" -> "#{my_SpotPrice}") ~
         ("type" -> "Ec2Resource") ~
         ("role" -> "DataPipelineDefaultRole") ~
-        ("resourceRole" -> "DataPipelineDefaultResourceRole")
+        ("resourceRole" -> "DataPipelineDefaultResourceRole") ~
+        ("initTimeout" -> "1 hours")
 
       assert(ec2 === ec2ShouldBe)
 

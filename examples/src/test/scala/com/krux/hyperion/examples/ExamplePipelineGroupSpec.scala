@@ -61,7 +61,8 @@ class ExamplePipelineGroupSpec extends WordSpec {
         ("keyPair" -> "your-aws-key-pair") ~
         ("type" -> "Ec2Resource") ~
         ("role" -> "DataPipelineDefaultRole") ~
-        ("resourceRole" -> "DataPipelineDefaultResourceRole")
+        ("resourceRole" -> "DataPipelineDefaultResourceRole") ~
+        ("initTimeout" -> "1 hours")
       assert(ec2 === ec2ShouldBe)
 
       val pipelineSchedule = objectsField(2)
