@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.9.0 - 2017-01-27
+### Added
+- [#480](https://github.com/krux/hyperion/issues/480) - Add ability to select distinct in SelectTableQuery
+
 ## 4.8.0 - 2016-12-11
 ### Added
 - [#353](https://github.com/krux/hyperion/issues/353) - Enable .reduceLeft(_ ~> _) on a list of pipeline activities
