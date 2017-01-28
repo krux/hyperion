@@ -6,7 +6,7 @@ import com.krux.hyperion.expression.Duration
 import org.joda.time.DateTimeConstants
 import scopt.Read._
 
-private[hyperion] object Reads {
+object Reads {
 
   private lazy val daysOfWeek = Map(
     "monday" -> DateTimeConstants.MONDAY,
