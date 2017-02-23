@@ -1,12 +1,12 @@
 package com.krux.hyperion.client
 
-import com.amazonaws.services.datapipeline.DataPipelineClient
+import com.amazonaws.services.datapipeline.DataPipeline
 import com.amazonaws.services.datapipeline.model.{ DeactivatePipelineRequest,
   DeletePipelineRequest, ActivatePipelineRequest }
 
 
 case class AwsClientForId(
-  client: DataPipelineClient,
+  client: DataPipeline,
   pipelineIds: Set[String],
   maxRetry: Int
 ) extends AwsClient {
