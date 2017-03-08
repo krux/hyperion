@@ -45,7 +45,7 @@ This project is compiled, tested, and published for the following Scala versions
 ### Creating a pipeline
 
 To create a new pipeline, create a Scala class in `com.krux.datapipeline.pipelines`.
-Look at [ExampleSpark](src/main/scala/com/krux/hyperion/examples/ExampleSpark.scala) for an example pipeline.
+Look at [ExampleSpark](examples/src/main/scala/com/krux/hyperion/examples/ExampleSpark.scala) for an example pipeline.
 
 ### Manually uploading
 
