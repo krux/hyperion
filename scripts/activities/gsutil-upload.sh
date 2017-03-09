@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 usage() {
-  echo "usage: gsutil_upload.sh s3://bucket/boto.config gs://gsbucket/path/"
+  echo "usage: gsutil_upload.sh s3://bucket/boto.config gs://gsbucket/path/ true|false"
   echo
   echo "The contents of INPUT1_STAGING_DIR (${INPUT1_STAGING_DIR}) will be uploaded to the GS path."
   exit 3
@@ -54,6 +54,9 @@ BOTO_CONFIG_SOURCE="$1"
 # This is the destination Google Storage location
 OUTPUT_GOOGLE_STORAGE="$2"
 
+# This is the flag to determine whether to use recursive option or not.
+RECURSIVE="${3:-false}"
+
 # Download and extract the tarball.
 # We use --no-check-certificate because Google are naughty with their certificates.
 wget --no-verbose --no-check-certificate ${GSUTIL_URL}
@@ -69,5 +72,10 @@ if [ "${NUM_INPUT_FILES}" -eq "0" ]; then
   exit 3
 fi
 
-./gsutil/gsutil -m cp -r ${INPUT1_STAGING_DIR}/* ${OUTPUT_GOOGLE_STORAGE}
-
+if [[ ${RECURSIVE} == "true" ]]; then
+    # To perform a parallel (multi-threaded/multi-processing) copy use -m option.
+    # To copy an entire directory tree use the -r option.
+    ./gsutil/gsutil -m cp -r ${INPUT1_STAGING_DIR}/* ${OUTPUT_GOOGLE_STORAGE}
+else
+    ./gsutil/gsutil cp ${INPUT1_STAGING_DIR}/* ${OUTPUT_GOOGLE_STORAGE}
+fi

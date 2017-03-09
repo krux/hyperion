@@ -1,10 +1,10 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.adt.{ HS3Uri, HString }
-import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
+import com.krux.hyperion.adt.{HBoolean, HS3Uri, HString}
+import com.krux.hyperion.common.{BaseFields, PipelineObjectId}
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.resource.{ Ec2Resource, Resource }
+import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
 /**
  * Google Storage Upload activity
@@ -14,7 +14,8 @@ case class GoogleStorageUploadActivity private (
   activityFields: ActivityFields[Ec2Resource],
   shellCommandActivityFields: ShellCommandActivityFields,
   botoConfigUrl: HS3Uri,
-  googleStorageUri: HString
+  googleStorageUri: HString,
+  recursive: HBoolean
 ) extends GoogleStorageActivity with WithS3Input {
 
   type Self = GoogleStorageUploadActivity
@@ -22,6 +23,14 @@ case class GoogleStorageUploadActivity private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[Ec2Resource]) = copy(activityFields = fields)
   def updateShellCommandActivityFields(fields: ShellCommandActivityFields) = copy(shellCommandActivityFields = fields)
+
+  def withRecursive = copy(recursive = true)
+
+  override def scriptArguments = Seq(
+    botoConfigUrl.serialize: HString,
+    googleStorageUri,
+    recursive.serialize
+  )
 
 }
 
@@ -33,7 +42,8 @@ object GoogleStorageUploadActivity extends RunnableObject {
       activityFields = ActivityFields(runsOn),
       shellCommandActivityFields = ShellCommandActivityFields(GoogleStorageActivity.uploadScript),
       botoConfigUrl = botoConfigUrl,
-      googleStorageUri = output
+      googleStorageUri = output,
+      recursive = HBoolean.False
     )
 
 }
