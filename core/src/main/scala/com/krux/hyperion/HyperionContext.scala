@@ -40,6 +40,7 @@ class HyperionContext(config: Config) {
   lazy val ec2ImageId = config.getString(s"hyperion.aws.ec2.image.$ec2Region")
   lazy val ec2TerminateAfter = Try(config.getString("hyperion.aws.ec2.terminate")).toOption.map(Duration(_))
   lazy val ec2EnvironmentUri = Try(config.getString("hyperion.aws.ec2.env.uri")).toOption
+  lazy val ec2InitTimeout = Try(config.getString("hyperion.aws.ec2.inittimeout")).toOption.map(Duration(_))
 
   //
   // EMR default configuration
@@ -57,6 +58,7 @@ class HyperionContext(config: Config) {
   lazy val emrEnvironmentUri = Try(config.getString("hyperion.aws.emr.env.uri")).toOption
   lazy val emrTerminateAfter = Try(config.getString("hyperion.aws.emr.terminate")).toOption.map(Duration(_))
   lazy val emrSparkVersion = Try(config.getString("hyperion.aws.emr.spark.version")).toOption
+  lazy val emrInitTimeout = Try(config.getString("hyperion.aws.emr.inittimeout")).toOption.map(Duration(_))
 
   //
   // SNS default configuration

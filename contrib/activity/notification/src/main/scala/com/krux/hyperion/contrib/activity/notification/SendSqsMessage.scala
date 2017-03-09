@@ -2,9 +2,9 @@ package com.krux.hyperion.contrib.activity.notification
 
 import scala.collection.JavaConverters._
 
-import com.amazonaws.regions.{ Region, Regions }
-import com.amazonaws.services.sqs.AmazonSQSClient
-import com.amazonaws.services.sqs.model.{ MessageAttributeValue, SendMessageRequest }
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder
+import com.amazonaws.services.sqs.model.{MessageAttributeValue, SendMessageRequest}
 import scopt.OptionParser
 
 object SendSqsMessage {
@@ -18,8 +18,11 @@ object SendSqsMessage {
 
   def apply(options: Options): Boolean = try {
     // Setup the SQS client
-    val sqs = new AmazonSQSClient()
-    options.region.map(Regions.fromName).map(Region.getRegion).foreach(sqs.setRegion)
+    val sqsBuilder = AmazonSQSClientBuilder.standard()
+    val sqs = options.region
+      .map(regionName => sqsBuilder.withRegion(Regions.fromName(regionName)))
+      .getOrElse(sqsBuilder)
+      .build()
 
     // Create the request from the options specified
     val request = new SendMessageRequest()

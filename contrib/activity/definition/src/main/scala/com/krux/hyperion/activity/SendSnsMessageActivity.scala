@@ -1,10 +1,10 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.adt.{ HBoolean, HString }
-import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, S3Uri }
+import com.krux.hyperion.adt.{HBoolean, HString}
+import com.krux.hyperion.common.{BaseFields, PipelineObjectId, S3Uri}
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.resource.{ Ec2Resource, Resource }
+import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
 case class SendSnsMessageActivity private (
   baseFields: BaseFields,

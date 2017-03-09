@@ -64,4 +64,6 @@ case class WorkflowArrowExpression(left: WorkflowExpression, right: WorkflowExpr
 
 case class WorkflowPlusExpression(left: WorkflowExpression, right: WorkflowExpression) extends WorkflowExpression
 
-object WorkflowExpression extends WorkflowExpressionImplicits
+object WorkflowExpression extends WorkflowExpressionImplicits {
+  def empty: WorkflowExpression = WorkflowNoActivityExpression
+}

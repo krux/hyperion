@@ -45,6 +45,7 @@ object ExampleSpark extends DataPipelineDef with HyperionCli {
   val sparkCluster = SparkCluster()
     .withTaskInstanceCount(instanceCount)
     .withTaskInstanceType(instanceType)
+    .withInitTimeout(5.hours)
 
   // First activity
   val filterActivity = SparkTaskActivity(jar.toString, "com.krux.hyperion.FilterJob")(sparkCluster)

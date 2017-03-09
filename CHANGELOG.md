@@ -2,6 +2,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.10.0 - 2017-02-23
+### Chnanged
+- [#484](https://github.com/krux/hyperion/issues/484) - Update to use AWS SDK to 1.11.93
+
+## 4.9.1 - 2017-01-27
+### Changed
+- [#479](https://github.com/krux/hyperion/issues/479) - Make cli.Reads public
+
+## 4.9.0 - 2017-01-27
+### Added
+- [#480](https://github.com/krux/hyperion/issues/480) - Add ability to select distinct in SelectTableQuery
+
+## 4.8.0 - 2016-12-11
+### Added
+- [#353](https://github.com/krux/hyperion/issues/353) - Enable .reduceLeft(_ ~> _) on a list of pipeline activities
+
+## 4.7.0 - 2016-12-07
+### Fixed
+- [#477](https://github.com/krux/hyperion/issues/477) - Make `initTimeout` as a optional global configuration
+
 ## 4.6.1 - 2016-11-03
 ### Fixed
 - [#475](https://github.com/krux/hyperion/issues/475) - Duplicate arguments for Hadoop Activity

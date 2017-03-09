@@ -2,9 +2,9 @@ package com.krux.hyperion.contrib.activity.notification
 
 import scala.collection.JavaConverters._
 
-import com.amazonaws.regions.{ Region, Regions }
-import com.amazonaws.services.sns.AmazonSNSClient
-import com.amazonaws.services.sns.model.{ MessageAttributeValue, PublishRequest }
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.sns.AmazonSNSClientBuilder
+import com.amazonaws.services.sns.model.{MessageAttributeValue, PublishRequest}
 import scopt.OptionParser
 
 object SendSnsMessage {
@@ -19,8 +19,11 @@ object SendSnsMessage {
 
   def apply(options: Options): Boolean = try {
     // Setup the SNS client
-    val sns: AmazonSNSClient = new AmazonSNSClient()
-    options.region.map(Regions.fromName).map(Region.getRegion).foreach(sns.setRegion)
+    val snsClientBuilder: AmazonSNSClientBuilder = AmazonSNSClientBuilder.standard()
+    val sns = options.region
+      .map(regionName => snsClientBuilder.withRegion(Regions.fromName(regionName)))
+      .getOrElse(snsClientBuilder)
+      .build()
 
     // Create the request from the options specified
     val request = new PublishRequest()
