@@ -69,5 +69,5 @@ if [ "${NUM_INPUT_FILES}" -eq "0" ]; then
   exit 3
 fi
 
-./gsutil/gsutil cp ${INPUT1_STAGING_DIR}/* ${OUTPUT_GOOGLE_STORAGE}
+./gsutil/gsutil -m cp -r ${INPUT1_STAGING_DIR}/* ${OUTPUT_GOOGLE_STORAGE}
 
