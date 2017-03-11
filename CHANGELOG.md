@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.10.2 - 2017-03-10
+### Changed
+- [#489](https://github.com/krux/hyperion/issues/489) - Download Spark jar to `/mnt/hyperion` instead of `~/hyperion`
+
 ## 4.10.1 - 2017-03-09
 ### Changed
 - [#487](https://github.com/krux/hyperion/issues/487) - Update GoogleStorageUploadActivity to allow recursive copy

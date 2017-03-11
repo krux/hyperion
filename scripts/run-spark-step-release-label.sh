@@ -30,7 +30,7 @@ while [[ $# > 0 ]]; do
   esac
 done
 
-EMR_HOME="/home/hadoop"
+EMR_HOME="/mnt"
 ENV_FILE="${EMR_HOME}/hyperion_env.sh"
 
 [ -f ${ENV_FILE} ] && source ${ENV_FILE}
