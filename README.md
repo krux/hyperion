@@ -97,7 +97,7 @@ Krux Hyperion is licensed under [APL 2.0](LICENSE).
 
 ## Note
 
-Due to AWS DataPipeline bug, all schemas involve data pipleine needs be available in the default
+Due to AWS DataPipeline bug, all schema involving data pipelines need to be available in the default
 search_path.
 
 For more details: https://forums.aws.amazon.com/thread.jspa?threadID=166340
