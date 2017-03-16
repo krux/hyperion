@@ -2,7 +2,7 @@ package com.krux.hyperion.client
 
 import scala.collection.JavaConverters._
 
-import com.amazonaws.services.datapipeline.DataPipeline
+import com.amazonaws.services.datapipeline.DataPipelineClient
 import com.amazonaws.services.datapipeline.model.{
   PipelineObject, ListPipelinesRequest, ParameterObject, CreatePipelineRequest, Tag,
   PutPipelineDefinitionRequest, InvalidRequestException
@@ -13,7 +13,7 @@ import com.krux.hyperion.DataPipelineDefGroup
 
 
 case class UploadPipelineObjectsTrans(
-  client: DataPipeline,
+  client: DataPipelineClient,
   pipelineDef: DataPipelineDefGroup,
   maxRetry: Int
 ) extends Transaction[Option[Unit], AwsClientForId] with Retry {

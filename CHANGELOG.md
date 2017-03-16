@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.11.0 - 2017-03-16
+### Changed
+- [#492](https://github.com/krux/hyperion/issues/492) - Downgrade to AWS SDK to 1.10.75
+
 ## 4.10.2 - 2017-03-10
 ### Changed
 - [#489](https://github.com/krux/hyperion/issues/489) - Download Spark jar to `/mnt/hyperion` instead of `~/hyperion`

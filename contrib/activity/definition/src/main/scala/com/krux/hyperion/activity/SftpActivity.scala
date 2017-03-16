@@ -1,7 +1,7 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.adt._
-import com.krux.hyperion.expression.{ EncryptedParameter, Format }
+import com.krux.hyperion.expression.{EncryptedParameter, Format}
 
 case class SftpActivityFields(
   host: HString,

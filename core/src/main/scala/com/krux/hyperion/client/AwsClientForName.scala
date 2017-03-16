@@ -3,14 +3,14 @@ package com.krux.hyperion.client
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
-import com.amazonaws.services.datapipeline.DataPipeline
+import com.amazonaws.services.datapipeline.DataPipelineClient
 import com.amazonaws.services.datapipeline.model.ListPipelinesRequest
 
 import com.krux.hyperion.DataPipelineDefGroup
 
 
 case class AwsClientForName(
-  client: DataPipeline,
+  client: DataPipelineClient,
   pipelineName: String,
   maxRetry: Int,
   nameKeySeparator: String = DataPipelineDefGroup.DefaultNameKeySeparator
