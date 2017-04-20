@@ -36,7 +36,7 @@ class ExampleRedshiftLoadSpec extends WordSpec {
         ("id" -> ec2Id) ~
         ("name" -> ec2Id) ~
         ("terminateAfter" -> "8 hours") ~
-        ("imageId" -> "ami-ed6aa980") ~
+        ("imageId" -> "ami-6869aa05") ~
         ("instanceType" -> "m1.small") ~
         ("region" -> "us-east-1") ~
         ("securityGroups" -> Seq("your-security-group")) ~
