@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 4.11.1 - 2017-05-12
 ### Fixed
-- [#495](https://github.com/krux/hyperion/issues/492) - Fixed the program name for SendSlackMessage
+- [#495](https://github.com/krux/hyperion/issues/495) - Fixed the program name for SendSlackMessage
 
 ## 4.11.0 - 2017-03-16
 ### Changed
