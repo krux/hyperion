@@ -51,7 +51,7 @@ object SendSlackMessage {
   }
 
   def main(args: Array[String]): Unit = {
-    val parser = new OptionParser[Options](s"hyperion-notification-flowdock-activity") {
+    val parser = new OptionParser[Options](s"hyperion-notification-slack-activity") {
       override def showUsageOnError = true
 
       note("Sends a notification message to a Slack incoming webhook.")
