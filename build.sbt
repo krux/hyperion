@@ -23,6 +23,7 @@ val slf4jApiArtifact        = "org.slf4j"              %  "slf4j-api"           
 val slf4jSimpleArtifact     = "org.slf4j"              %  "slf4j-simple"              % slf4jVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
 val scalacheckArtifact      = "org.scalacheck"         %% "scalacheck"                % "1.12.5" % "test"
+val stubbornArtifact        = "com.krux"               %% "stubborn"                  % "1.2.0"
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -143,7 +144,8 @@ lazy val core = (project in file("core")).
       json4sJacksonArtifact,
       scoptArtifact,
       configArtifact,
-      slf4jApiArtifact
+      slf4jApiArtifact,
+      stubbornArtifact
     )
   )
 

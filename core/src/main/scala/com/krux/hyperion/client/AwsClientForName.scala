@@ -12,7 +12,7 @@ import com.krux.hyperion.DataPipelineDefGroup
 case class AwsClientForName(
   client: DataPipelineClient,
   pipelineName: String,
-  maxRetry: Int,
+  override val maxRetry: Int,
   nameKeySeparator: String = DataPipelineDefGroup.DefaultNameKeySeparator
 ) extends AwsClient {
 

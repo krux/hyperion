@@ -8,7 +8,7 @@ import com.amazonaws.services.datapipeline.model.{DeactivatePipelineRequest,
 case class AwsClientForId(
   client: DataPipelineClient,
   pipelineIds: Set[String],
-  maxRetry: Int
+  override val maxRetry: Int
 ) extends AwsClient {
 
   def deletePipelines(): Option[Unit] = {

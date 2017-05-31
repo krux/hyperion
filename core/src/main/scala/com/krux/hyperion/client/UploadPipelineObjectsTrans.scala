@@ -1,28 +1,27 @@
 package com.krux.hyperion.client
 
 import scala.collection.JavaConverters._
-
 import com.amazonaws.services.datapipeline.DataPipelineClient
-import com.amazonaws.services.datapipeline.model.{
-  PipelineObject, ListPipelinesRequest, ParameterObject, CreatePipelineRequest, Tag,
-  PutPipelineDefinitionRequest, InvalidRequestException
-}
+import com.amazonaws.services.datapipeline.model.{CreatePipelineRequest, InvalidRequestException,
+  PipelineObject, PutPipelineDefinitionRequest, Tag}
 import org.slf4j.LoggerFactory
-
 import com.krux.hyperion.DataPipelineDefGroup
+import com.krux.stubborn.Retryable
+import com.krux.stubborn.policy.ExponentialBackoffAndJitter
 
 
 case class UploadPipelineObjectsTrans(
   client: DataPipelineClient,
-  pipelineDef: DataPipelineDefGroup,
-  maxRetry: Int
-) extends Transaction[Option[Unit], AwsClientForId] with Retry {
+  pipelineDef: DataPipelineDefGroup
+) extends Transaction[Option[Unit], AwsClientForId] with Retryable with ExponentialBackoffAndJitter {
 
   val log = LoggerFactory.getLogger(getClass)
 
   val parameterObjects = pipelineDef.toAwsParameters
 
   val keyObjectsMap = pipelineDef.toAwsPipelineObjects
+
+  override lazy val maxRetry = pipelineDef.hc.maxRetry
 
   private def createAndUploadObjects(name: String, objects: Seq[PipelineObject]): Option[String] = {
 

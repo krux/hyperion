@@ -4,11 +4,12 @@ import com.amazonaws.auth.{DefaultAWSCredentialsProviderChain, STSAssumeRoleSess
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.datapipeline.DataPipelineClient
 import org.slf4j.LoggerFactory
-
 import com.krux.hyperion.DataPipelineDefGroup
+import com.krux.stubborn.Retryable
+import com.krux.stubborn.policy.ExponentialBackoffAndJitter
 
 
-trait AwsClient extends Retry {
+trait AwsClient extends Retryable with ExponentialBackoffAndJitter {
 
   lazy val log = LoggerFactory.getLogger(getClass)
 
