@@ -12,7 +12,8 @@ import com.krux.stubborn.policy.ExponentialBackoffAndJitter
 
 case class UploadPipelineObjectsTrans(
   client: DataPipelineClient,
-  pipelineDef: DataPipelineDefGroup
+  pipelineDef: DataPipelineDefGroup,
+  override val maxRetry: Int
 ) extends Transaction[Option[Unit], AwsClientForId] with Retryable with ExponentialBackoffAndJitter {
 
   val log = LoggerFactory.getLogger(getClass)
@@ -20,8 +21,6 @@ case class UploadPipelineObjectsTrans(
   val parameterObjects = pipelineDef.toAwsParameters
 
   val keyObjectsMap = pipelineDef.toAwsPipelineObjects
-
-  override lazy val maxRetry = pipelineDef.hc.maxRetry
 
   private def createAndUploadObjects(name: String, objects: Seq[PipelineObject]): Option[String] = {
 
