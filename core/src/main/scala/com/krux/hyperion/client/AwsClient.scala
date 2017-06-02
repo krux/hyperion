@@ -15,6 +15,10 @@ trait AwsClient extends Retryable with ExponentialBackoffAndJitter {
 
   def client: DataPipelineClient
 
+  override def base: Int = 3000
+
+  override def cap: Int = 24000 // theoretical max retry delay with 3 retries
+
 }
 
 object AwsClient {
