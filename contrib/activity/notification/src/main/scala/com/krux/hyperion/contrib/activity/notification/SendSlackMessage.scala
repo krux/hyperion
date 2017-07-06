@@ -1,20 +1,40 @@
 package com.krux.hyperion.contrib.activity.notification
 
-import java.net.{ HttpURLConnection, URL }
+import java.net.{HttpURLConnection, URL}
 
-import org.json4s.JsonAST.{ JString, JObject }
-import org.json4s.JsonDSL._
-import org.json4s.jackson.JsonMethods._
+import org.json4s.DefaultFormats
+import org.json4s.jackson.Serialization.write
 import scopt.OptionParser
 
 object SendSlackMessage {
+
+  implicit val formats = DefaultFormats
+
+  case class SlackAttachment(
+    title: Option[String] = None,
+    text: String,
+    fallback: String,
+    color: String
+  )
+
+  case class SlackMessage(
+     user: Option[String] = None,
+     iconEmoji: Option[String] = None,
+     channel: Option[String] = None,
+     text: String = "",
+     attachments: List[SlackAttachment] = List.empty
+   )
+
   case class Options(
     failOnError: Boolean = false,
     webhookUrl: String = "",
     user: Option[String] = None,
     message: Seq[String] = Seq.empty,
     iconEmoji: Option[String] = None,
-    channel: Option[String] = None
+    channel: Option[String] = None,
+    useAttachment: Boolean = false,
+    title: Option[String] = None,
+    color: Option[String] = None
   )
 
   def apply(options: Options): Boolean = try {
@@ -27,27 +47,49 @@ object SendSlackMessage {
     // Write the message
     val output = connection.getOutputStream
     try {
-      val message = Seq(
-        "icon_emoji" -> options.iconEmoji,
-        "channel" -> options.channel,
-        "username" -> options.user,
-        "text" -> Option(options.message.mkString("\n"))
-      ).flatMap {
-        case (k, None) => None
-        case (k, Some(v)) => Option(k -> JString(v))
+      // Build new line separated user defined list of messages
+      val text = options.message.mkString("\n")
+      // Build either plain slack message or with attachments
+      val slackMessage = {
+        buildSlackMessage(options, text)
       }
-
-      output.write(compact(render(JObject(message: _*))).getBytes)
+      // Build Json string of slack message and push to slack url
+      val finalMessage = write(slackMessage)
+      output.write(finalMessage.getBytes)
     } finally {
       output.close()
     }
-
     // Check the response code
     connection.getResponseCode == 200 || !options.failOnError
   } catch {
     case e: Throwable =>
       System.err.println(e.toString)
       !options.failOnError
+  }
+
+  private def buildSlackMessage(options: Options, text: String) = {
+    if (options.useAttachment) {
+      val slackAttachment = List(SlackAttachment(
+        title = options.title,
+        text = text,
+        fallback = text,
+        color = options.color.getOrElse("good")
+      ))
+      SlackMessage(
+        user = options.user,
+        iconEmoji = options.iconEmoji,
+        channel = options.channel,
+        attachments = slackAttachment
+      )
+    }
+    else {
+      SlackMessage(
+        user = options.user,
+        iconEmoji = options.iconEmoji,
+        channel = options.channel,
+        text = text
+      )
+    }
   }
 
   def main(args: Array[String]): Unit = {
@@ -66,6 +108,12 @@ object SendSlackMessage {
         .text("Use EMOJI for the icon")
       opt[String]("to").valueName("CHANNEL or USERNAME").optional().action((x, c) => c.copy(channel = Option(x)))
         .text("Sends the message to #CHANNEL or @USERNAME")
+      opt[Unit]("useAttachment").optional().action((_, c) => c.copy(useAttachment = true))
+        .text("Causes the message to be posted as an attachment in Slack")
+      opt[String]("title").valueName("TITLE").optional().action((x, c) => c.copy(title = Option(x)))
+        .text("Sets the attachment title")
+      opt[String]("color").valueName("GOOD or WARNING or DANGER").optional().action((x, c) => c.copy(color = Option(x)))
+        .text("Sends the attachment in chosen color")
       arg[String]("MESSAGE").required().unbounded().action((x, c) => c.copy(message = c.message :+ x))
         .text("Sends the given MESSAGE")
     }
