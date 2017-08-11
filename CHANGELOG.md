@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.13.0 - 2017-08-11
+### Changed
+- [#502] (https://github.com/krux/hyperion/issues/502) - Throw exception when pipeline defines no workflows
+
 ## 4.12.0 - 2017-06-02
 ### Fixed
 - [#497] (https://github.com/krux/hyperion/issues/497) - Replace the Retry Implementation with Stubborn

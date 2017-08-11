@@ -34,7 +34,11 @@ case class AwsClientForDef(
    */
   private def prepareForCreation(force: Boolean, checkExistence: Boolean): Option[AwsClientForDef] = {
 
-    lazy val pipelineNames = pipelineDef.workflows.keys.map(pipelineDef.nameForKey)
+    lazy val pipelineNames = {
+      val result = pipelineDef.workflows.keys.map(pipelineDef.nameForKey)
+      assert(result.nonEmpty, "Pipeline must define at least one workflow")
+      result
+    }
 
     val existingPipelines =
       if (checkExistence)
