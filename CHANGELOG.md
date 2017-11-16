@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.13.1 - 2017-11-15
+### Changed
+- [#510] (https://github.com/krux/hyperion/issues/510) - Add AVRO to RedshiftCopyOption
+
 ## 4.13.0 - 2017-08-11
 ### Changed
 - [#502] (https://github.com/krux/hyperion/issues/502) - Throw exception when pipeline defines no workflows

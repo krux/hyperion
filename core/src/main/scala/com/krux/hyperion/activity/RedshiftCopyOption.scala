@@ -4,7 +4,7 @@ case class RedshiftCopyOption(repr: Seq[String])
 
 object RedshiftCopyOption {
 
-  def quoted[T](x: T): String = s"'$x'"
+  private def quoted[T](x: T): String = s"'$x'"
 
   def csv(quote: String) = RedshiftCopyOption(Seq("CSV", "QUOTE", quoted(quote)))
 
@@ -53,4 +53,9 @@ object RedshiftCopyOption {
   def trimBlanks = RedshiftCopyOption(Seq("TRIMBLANKS"))
 
   def truncateColumns = RedshiftCopyOption(Seq("TRUNCATECOLUMNS"))
+
+  def avro(option: String): RedshiftCopyOption = RedshiftCopyOption(Seq("AVRO", quoted(option)))
+
+  def avro: RedshiftCopyOption = avro("auto")
+
 }
