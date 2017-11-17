@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.13.1 - 2017-11-16
+### Changed
+- [#512] (https://github.com/krux/hyperion/issues/512) - Fix invalid syntax bug for AVRO format in RedshiftCopyOption
+
 ## 4.13.1 - 2017-11-15
 ### Changed
 - [#510] (https://github.com/krux/hyperion/issues/510) - Add AVRO to RedshiftCopyOption

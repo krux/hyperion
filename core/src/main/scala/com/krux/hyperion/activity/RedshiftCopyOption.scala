@@ -54,7 +54,7 @@ object RedshiftCopyOption {
 
   def truncateColumns = RedshiftCopyOption(Seq("TRUNCATECOLUMNS"))
 
-  def avro(option: String): RedshiftCopyOption = RedshiftCopyOption(Seq("AVRO", quoted(option)))
+  def avro(option: String): RedshiftCopyOption = RedshiftCopyOption(Seq("FORMAT", "AVRO", quoted(option)))
 
   def avro: RedshiftCopyOption = avro("auto")
 
