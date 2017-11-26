@@ -1,12 +1,16 @@
 package com.krux.hyperion.client
 
-import com.amazonaws.auth.{DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
+import com.amazonaws.auth.{
+  DefaultAWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider,
+  BasicSessionCredentials, AWSSessionCredentialsProvider
+}
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.datapipeline.DataPipelineClient
 import org.slf4j.LoggerFactory
+
 import com.krux.hyperion.DataPipelineDefGroup
-import com.krux.stubborn.Retryable
 import com.krux.stubborn.policy.ExponentialBackoffAndJitter
+import com.krux.stubborn.Retryable
 
 
 trait AwsClient extends Retryable with ExponentialBackoffAndJitter {
@@ -28,11 +32,32 @@ object AwsClient {
 
     val region: Region =
       Region.getRegion(regionId.map(r => Regions.fromName(r)).getOrElse(Regions.US_EAST_1))
-    val defaultProvider =
-      new DefaultAWSCredentialsProviderChain()
-    val stsProvider =
+
+    lazy val defaultProvider = new DefaultAWSCredentialsProviderChain()
+
+    lazy val stsProvider =
       roleArn.map(new STSAssumeRoleSessionCredentialsProvider(defaultProvider, _, "hyperion"))
-    new DataPipelineClient(stsProvider.getOrElse(defaultProvider)).withRegion(region)
+
+    // In case AWS_SECURITY_TOKEN is set, use the session provider instead
+    lazy val sessionCredentialsProvider =
+      Option(System.getenv("AWS_SECURITY_TOKEN"))
+        .map { token =>
+          val sessionCredentials = new BasicSessionCredentials(
+            defaultProvider.getCredentials().getAWSAccessKeyId(),
+            defaultProvider.getCredentials().getAWSSecretKey(),
+            token
+          )
+          new AWSSessionCredentialsProvider {
+            def getCredentials() = sessionCredentials
+            def refresh() = ()
+          }
+        }
+
+    new DataPipelineClient(
+      sessionCredentialsProvider
+        .orElse(stsProvider)
+        .getOrElse(defaultProvider)
+    ).withRegion(region)
   }
 
   def apply(

@@ -2,7 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 4.13.1 - 2017-11-16
+## 4.14.0 - 2017-11-25
+### Changed
+- [#507] (https://github.com/krux/hyperion/issues/507) - Support STS token when the environment variable is set
+
+## 4.13.2 - 2017-11-16
 ### Changed
 - [#512] (https://github.com/krux/hyperion/issues/512) - Fix invalid syntax bug for AVRO format in RedshiftCopyOption
 
