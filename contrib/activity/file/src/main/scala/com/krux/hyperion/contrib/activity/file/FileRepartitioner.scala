@@ -8,7 +8,7 @@ case class FileRepartitioner(options: Options) {
   def repartition(): Boolean = moveFiles(nameFiles(split(merge())))
 
   private def merge(): File = options.inputs match {
-    case Seq(one) => one
+    case Seq(one) if options.numberOfFiles != Some(1) || options.header.isEmpty => one
 
     case files =>
       val destination: File = File.createTempFile("merge-", if (options.compressed) ".gz" else ".tmp", options.temporaryDirectory.get)
