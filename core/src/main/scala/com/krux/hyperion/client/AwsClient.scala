@@ -4,8 +4,9 @@ import com.amazonaws.auth.{
   AWSSessionCredentialsProvider, BasicSessionCredentials, DefaultAWSCredentialsProviderChain,
   STSAssumeRoleSessionCredentialsProvider
 }
-import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.datapipeline.DataPipelineClient
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.datapipeline.{DataPipelineClientBuilder, DataPipeline}
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import org.slf4j.LoggerFactory
 
 import com.krux.hyperion.DataPipelineDefGroup
@@ -17,7 +18,7 @@ trait AwsClient extends Retryable with ExponentialBackoffAndJitter {
 
   lazy val log = LoggerFactory.getLogger(getClass)
 
-  def client: DataPipelineClient
+  def client: DataPipeline
 
   override def base: Int = 3000
 
@@ -28,36 +29,30 @@ trait AwsClient extends Retryable with ExponentialBackoffAndJitter {
 object AwsClient {
 
   def getClient(regionId: Option[String] = None, roleArn: Option[String] = None)
-    : DataPipelineClient = {
+    : DataPipeline = {
 
-    val region: Region =
-      Region.getRegion(regionId.map(r => Regions.fromName(r)).getOrElse(Regions.US_EAST_1))
+    val region: Regions =
+      regionId.map(r => Regions.fromName(r)).getOrElse(Regions.US_EAST_1)
 
     lazy val defaultProvider = new DefaultAWSCredentialsProviderChain()
 
     lazy val stsProvider =
-      roleArn.map(new STSAssumeRoleSessionCredentialsProvider(defaultProvider, _, "hyperion"))
-
-    // In case AWS_SECURITY_TOKEN is set, use the session provider instead
-    lazy val sessionCredentialsProvider =
-      Option(System.getenv("AWS_SECURITY_TOKEN"))
-        .map { token =>
-          val sessionCredentials = new BasicSessionCredentials(
-            defaultProvider.getCredentials().getAWSAccessKeyId(),
-            defaultProvider.getCredentials().getAWSSecretKey(),
-            token
+      roleArn.map { r =>
+        new STSAssumeRoleSessionCredentialsProvider.Builder(r, "hyperion")
+          .withStsClient(
+            AWSSecurityTokenServiceClientBuilder
+              .standard()
+              .withCredentials(defaultProvider)
+              .build()
           )
-          new AWSSessionCredentialsProvider {
-            def getCredentials() = sessionCredentials
-            def refresh() = ()
-          }
-        }
+          .build()
+      }
 
-    new DataPipelineClient(
-      sessionCredentialsProvider
-        .orElse(stsProvider)
-        .getOrElse(defaultProvider)
-    ).withRegion(region)
+    DataPipelineClientBuilder
+      .standard()
+      .withCredentials(stsProvider.getOrElse(defaultProvider))
+      .withRegion(region)
+      .build()
   }
 
   def apply(

@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 5.0.0-SNAPSHOT
+### Changed
+- [#521](https://github.com/krux/hyperion/issues/521) - Upate AWS SDK dependency to 1.11.238 and deprecate support for AWS_SECURITY_TOKEN
+
 ## 4.14.1 - 2017-11-28
 ### Fixed
 - [#517](https://github.com/krux/hyperion/issues/517) - Fixed header option when 1 input file is used in SplitMergeFilesActivity

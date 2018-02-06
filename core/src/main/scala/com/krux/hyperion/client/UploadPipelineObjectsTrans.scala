@@ -1,7 +1,7 @@
 package com.krux.hyperion.client
 
 import scala.collection.JavaConverters._
-import com.amazonaws.services.datapipeline.DataPipelineClient
+import com.amazonaws.services.datapipeline.DataPipeline
 import com.amazonaws.services.datapipeline.model.{CreatePipelineRequest, InvalidRequestException,
   PipelineObject, PutPipelineDefinitionRequest, Tag}
 import org.slf4j.LoggerFactory
@@ -11,7 +11,7 @@ import com.krux.stubborn.policy.ExponentialBackoffAndJitter
 
 
 case class UploadPipelineObjectsTrans(
-  client: DataPipelineClient,
+  client: DataPipeline,
   pipelineDef: DataPipelineDefGroup,
   override val maxRetry: Int
 ) extends Transaction[Option[Unit], AwsClientForId] with Retryable with ExponentialBackoffAndJitter {
