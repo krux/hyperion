@@ -3,7 +3,7 @@ package com.krux.hyperion.contrib.activity.s3
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
-import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.{
   CannedAccessControlList, CanonicalGrantee, EmailAddressGrantee, Grantee, GroupGrantee,
   ObjectListing, Permission
@@ -74,7 +74,7 @@ object SetS3Acl {
 
   def apply(cli: Cli): Unit = {
 
-    val s3Client = new AmazonS3Client()
+    val s3Client = AmazonS3ClientBuilder.defaultClient()
 
     val acls = cli.acl
     val grants = cli.grants

@@ -6,7 +6,7 @@ import scala.util.{Failure, Success, Try}
 import java.io._
 import java.nio.file.Paths
 
-import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.jcraft.jsch.{ChannelSftp, JSch, JSchException, UserInfo}
 import org.joda.time.DateTime
 import scopt.OptionParser
@@ -81,7 +81,7 @@ object SftpActivity {
           case bucket :: key =>
             print(s"Downloading identity from s3://$bucket/${key.mkString("/")}...")
 
-            Try(new AmazonS3Client().getObject(bucket, key.mkString("/"))) match {
+            Try(AmazonS3ClientBuilder.defaultClient().getObject(bucket, key.mkString("/"))) match {
               case Success(s3Object) =>
                 println("done.")
                 Option(s3Object)
