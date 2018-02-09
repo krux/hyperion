@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.14.2 - 2018-02-09
+### Fixed
+- [#524](https://github.com/krux/hyperion/issues/524) - Updated sbt major version and Scala patch version
+
 ## 4.14.1 - 2017-11-28
 ### Fixed
 - [#517](https://github.com/krux/hyperion/issues/517) - Fixed header option when 1 input file is used in SplitMergeFilesActivity

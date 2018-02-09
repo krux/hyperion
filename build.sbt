@@ -1,6 +1,6 @@
-val hyperionVersion = "4.14.1"
-val scala210Version = "2.10.6"
-val scala211Version = "2.11.8"
+val hyperionVersion = "4.14.2"
+val scala210Version = "2.10.7"
+val scala211Version = "2.11.12"
 val awsSdkVersion   = "1.10.75"
 val mailVersion     = "1.5.4"
 val slf4jVersion    = "1.7.12"
@@ -24,6 +24,8 @@ val slf4jSimpleArtifact     = "org.slf4j"              %  "slf4j-simple"        
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "2.2.4"  % "test"
 val scalacheckArtifact      = "org.scalacheck"         %% "scalacheck"                % "1.12.5" % "test"
 val stubbornArtifact        = "com.krux"               %% "stubborn"                  % "1.2.0"
+
+scalaVersion in ThisBuild := scala211Version
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -66,14 +68,13 @@ lazy val publishSettings = Seq(
 
 lazy val noPublishSettings = Seq(
   publishArtifact := false,
-  publish := (),
-  publishLocal := ()
+  publish := {},
+  publishLocal := {}
 )
 
 lazy val commonSettings = Seq(
   organization := "com.krux",
   version := hyperionVersion,
-  scalaVersion := scala211Version,
   crossScalaVersions := Seq(
     scala210Version,
     scala211Version
@@ -84,34 +85,34 @@ lazy val commonSettings = Seq(
     "-Xlint",
     "-Xfatal-warnings"
   ),
-  scalacOptions in (Compile, doc) <++= baseDirectory.map { (bd: File) =>
-    Seq(
-      "-sourcepath",
-      bd.getAbsolutePath,
-      "-doc-source-url",
-      "https://github.com/krux/hyperion/tree/master/€{FILE_PATH}.scala")
-  },
+  scalacOptions in (Compile, doc) ++= Seq(
+    "-sourcepath", (baseDirectory in ThisBuild).value.toString,
+    "-doc-source-url", s"https://github.com/krux/hyperion/tree/master/€{FILE_PATH}.scala"
+  ),
   libraryDependencies += scalatestArtifact,
   libraryDependencies += scalacheckArtifact,
   test in assembly := {} // skip test during assembly
 )
 
+// for modules that are not intended to be published as libraries but executable jars
 lazy val artifactSettings = commonSettings ++ Seq(
   artifact in (Compile, assembly) := {
     val art = (artifact in (Compile, assembly)).value
-    art.copy(`classifier` = Some("assembly"))
+    art.withClassifier(Some("assembly"))
   },
   addArtifact(artifact in (Compile, assembly), assembly)
 )
 
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
-  settings(unidocSettings: _*).
   settings(publishSettings: _*).
-  settings(site.settings ++ ghpages.settings: _*).
+  enablePlugins(ScalaUnidocPlugin).
+  enablePlugins(SiteScaladocPlugin).
+  enablePlugins(GhpagesPlugin).
   settings(
     name := "hyperion",
-    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+    siteSubdirName in ScalaUnidoc := "latest/api",
+    addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), siteSubdirName in ScalaUnidoc),
     git.remoteRepo := "git@github.com:krux/hyperion.git"
   ).
   dependsOn(
