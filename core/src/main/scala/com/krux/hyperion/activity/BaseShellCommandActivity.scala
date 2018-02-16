@@ -36,7 +36,7 @@ trait BaseShellCommandActivity extends PipelineActivity[Ec2Resource] {
 
   override def objects = input ++ output ++ super.objects
 
-  def serialize = new AdpShellCommandActivity(
+  lazy val serialize = new AdpShellCommandActivity(
     id = id,
     name = name,
     command = script.content.map(_.serialize),

@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.14.3 - 2018-02-09
+### Fixed
+- [#527](https://github.com/krux/hyperion/issues/527) - Updated all serialize calls on pipeline objects to lazy val to fixed an issue that very deep dependencies will have causes slow serialization
+
 ## 4.14.2 - 2018-02-09
 ### Fixed
 - [#524](https://github.com/krux/hyperion/issues/524) - Updated sbt major version and Scala patch version

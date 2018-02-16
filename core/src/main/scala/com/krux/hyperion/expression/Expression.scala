@@ -12,7 +12,7 @@ trait Expression {
 
   def content: String
 
-  def serialize: String = s"#{$content}"
+  lazy val serialize: String = s"#{$content}"
 
   override def toString: String = serialize
 

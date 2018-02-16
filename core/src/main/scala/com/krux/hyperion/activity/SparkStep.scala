@@ -33,7 +33,7 @@ case class SparkStep private (
   def withFiles(files: HString*) = withSparkOption(files.flatMap(file => Seq("--files": HString, file)): _*)
   def withMaster(master: HString) = withSparkOption("--master", master)
 
-  def serialize: String = Seq(
+  lazy val serialize: String = Seq(
     scriptRunner.toSeq,
     jobRunner.toSeq,
     sparkOptions,

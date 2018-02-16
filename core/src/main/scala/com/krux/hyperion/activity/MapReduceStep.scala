@@ -15,7 +15,7 @@ case class MapReduceStep private (
   def withMainClass(mainClass: MainClass) = copy(mainClass = Option(mainClass))
   def withArguments(arg: HString*) = copy(args = args ++ arg)
 
-  def serialize: String = (jarUri +: mainClass.map(_.toString).toSeq ++: args)
+  lazy val serialize: String = (jarUri +: mainClass.map(_.toString).toSeq ++: args)
     .map(x => Escapable.escape(x.toString, ','))
     .mkString(",")
 

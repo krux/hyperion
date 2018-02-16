@@ -65,7 +65,7 @@ sealed abstract class Parameter[T : GenericParameter] extends ParameterBuilder[T
 
   def `type`: ParameterType.Value = env.`type`
 
-  def serialize: Option[AdpParameter] = Option(
+  lazy val serialize: Option[AdpParameter] = Option(
     AdpParameter(
       id = name,
       `type` = `type`.toString,

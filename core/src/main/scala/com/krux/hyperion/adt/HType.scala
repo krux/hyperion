@@ -11,7 +11,7 @@ sealed abstract class HType {
 
   def value: Either[Any, TypedExpression]
 
-  def serialize: String = value match {
+  lazy val serialize: String = value match {
     case Left(v) => v.toString
     case Right(r) => r.serialize
   }
@@ -135,7 +135,7 @@ case class HDateTime(value: Either[DateTime, DateTimeExp]) extends HType {
 
   val datetimeFormat = "yyyy-MM-dd'T'HH:mm:ss"
 
-  override def serialize: String = value match {
+  override lazy val serialize: String = value match {
     case Left(dt) => dt.toDateTime(DateTimeZone.UTC).toString(datetimeFormat)
     case Right(expr) => expr.toString
   }

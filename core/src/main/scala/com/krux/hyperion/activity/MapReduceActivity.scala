@@ -35,7 +35,7 @@ case class MapReduceActivity[A <: EmrCluster] private (
 
   override def objects = inputs ++ outputs ++ super.objects
 
-  def serialize = AdpEmrActivity(
+  lazy val serialize = AdpEmrActivity(
     id = id,
     name = name,
     step = steps.map(_.serialize),
