@@ -2,8 +2,9 @@ package com.krux.hyperion.resource
 
 import org.slf4j.LoggerFactory
 
-import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{PipelineObjectId, BaseFields}
 import com.krux.hyperion.HyperionContext
+
 
 /**
  * Launch a map reduce cluster
@@ -12,7 +13,7 @@ case class MapReduceCluster private (
   baseFields: BaseFields,
   resourceFields: ResourceFields,
   emrClusterFields: EmrClusterFields
-) extends EmrCluster {
+) extends BaseEmrCluster {
 
   type Self = MapReduceCluster
 
@@ -28,8 +29,8 @@ object MapReduceCluster {
 
   def apply()(implicit hc: HyperionContext): MapReduceCluster = new MapReduceCluster(
     baseFields = BaseFields(PipelineObjectId(MapReduceCluster.getClass)),
-    resourceFields = EmrCluster.defaultResourceFields(hc),
-    emrClusterFields = EmrCluster.defaultEmrClusterFields(hc)
+    resourceFields = BaseEmrCluster.defaultResourceFields(hc),
+    emrClusterFields = BaseEmrCluster.defaultEmrClusterFields(hc)
   )
 
 }

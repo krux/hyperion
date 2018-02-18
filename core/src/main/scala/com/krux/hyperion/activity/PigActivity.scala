@@ -5,7 +5,7 @@ import com.krux.hyperion.aws.AdpPigActivity
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.datanode.DataNode
-import com.krux.hyperion.resource.{ Resource, EmrCluster }
+import com.krux.hyperion.resource.{ Resource, BaseEmrCluster }
 
 /**
  * PigActivity provides native support for Pig scripts in AWS Data Pipeline without the requirement
@@ -13,7 +13,7 @@ import com.krux.hyperion.resource.{ Resource, EmrCluster }
  * the stage field is set to true, AWS Data Pipeline stages the input data as a schema in Pig
  * without additional code from the user.
  */
-case class PigActivity[A <: EmrCluster] private (
+case class PigActivity[A <: BaseEmrCluster] private (
   baseFields: BaseFields,
   activityFields: ActivityFields[A],
   emrTaskActivityFields: EmrTaskActivityFields,
@@ -68,7 +68,7 @@ case class PigActivity[A <: EmrCluster] private (
 
 object PigActivity extends RunnableObject {
 
-  def apply[A <: EmrCluster](script: Script)(runsOn: Resource[A]): PigActivity[A] =
+  def apply[A <: BaseEmrCluster](script: Script)(runsOn: Resource[A]): PigActivity[A] =
     new PigActivity(
       baseFields = BaseFields(PipelineObjectId(PigActivity.getClass)),
       activityFields = ActivityFields(runsOn),

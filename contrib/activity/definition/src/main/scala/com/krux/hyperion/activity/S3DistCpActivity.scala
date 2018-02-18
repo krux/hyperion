@@ -30,7 +30,7 @@ case class S3DistCpActivityFields(
   sourcePrefixesFile: Option[HString]
 )
 
-case class S3DistCpActivity[A <: EmrCluster] private (
+case class S3DistCpActivity[A <: BaseEmrCluster] private (
   baseFields: BaseFields,
   activityFields: ActivityFields[A],
   s3DistCpActivityFields: S3DistCpActivityFields,
@@ -255,7 +255,7 @@ object S3DistCpActivity extends RunnableObject {
     }
   }
 
-  def apply[A <: EmrCluster](runsOn: Resource[A]): S3DistCpActivity[A] =
+  def apply[A <: BaseEmrCluster](runsOn: Resource[A]): S3DistCpActivity[A] =
     new S3DistCpActivity(
       baseFields = BaseFields(PipelineObjectId(S3DistCpActivity.getClass)),
       activityFields = ActivityFields(runsOn),

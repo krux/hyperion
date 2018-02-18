@@ -7,14 +7,14 @@ import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.common.BaseFields
 import com.krux.hyperion.precondition.Precondition
-import com.krux.hyperion.resource.{ Resource, EmrCluster }
+import com.krux.hyperion.resource.{ Resource, BaseEmrCluster }
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveCopyActivity makes it easier to copy data between
  * Amazon S3 and DynamoDB. HiveCopyActivity accepts a HiveQL statement to filter input data from
  * Amazon S3 or DynomoDB at the column and row level.
  */
-case class HiveCopyActivity[A <: EmrCluster] private (
+case class HiveCopyActivity[A <: BaseEmrCluster] private (
   baseFields: BaseFields,
   activityFields: ActivityFields[A],
   emrTaskActivityFields: EmrTaskActivityFields,
@@ -62,7 +62,7 @@ case class HiveCopyActivity[A <: EmrCluster] private (
 
 object HiveCopyActivity extends RunnableObject {
 
-  def apply[A <: EmrCluster](input: DataNode, output: DataNode)(runsOn: Resource[A]): HiveCopyActivity[A] =
+  def apply[A <: BaseEmrCluster](input: DataNode, output: DataNode)(runsOn: Resource[A]): HiveCopyActivity[A] =
     new HiveCopyActivity(
       baseFields = BaseFields(PipelineObjectId(HiveCopyActivity.getClass)),
       activityFields = ActivityFields(runsOn),

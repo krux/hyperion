@@ -5,7 +5,7 @@ import com.krux.hyperion.aws.AdpHadoopActivity
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.common.{ BaseFields, PipelineObjectId }
 import com.krux.hyperion.datanode.S3DataNode
-import com.krux.hyperion.resource.{ Resource, EmrCluster }
+import com.krux.hyperion.resource.{ Resource, BaseEmrCluster }
 
 /**
  * Runs a MapReduce job on a cluster. The cluster can be an EMR cluster managed by AWS Data Pipeline
@@ -14,7 +14,7 @@ import com.krux.hyperion.resource.{ Resource, EmrCluster }
  * negotiator in Hadoop 1. If you would like to run work sequentially using the Amazon EMR Step action,
  * you can still use EmrActivity.
  */
-case class HadoopActivity[A <: EmrCluster] private (
+case class HadoopActivity[A <: BaseEmrCluster] private (
   baseFields: BaseFields,
   activityFields: ActivityFields[A],
   emrTaskActivityFields: EmrTaskActivityFields,
@@ -69,15 +69,15 @@ case class HadoopActivity[A <: EmrCluster] private (
 
 object HadoopActivity extends RunnableObject {
 
-  def apply[A <: EmrCluster](jarUri: HS3Uri)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, None)(runsOn)
+  def apply[A <: BaseEmrCluster](jarUri: HS3Uri)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, None)(runsOn)
 
-  def apply[A <: EmrCluster](jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, Option(mainClass))(runsOn)
+  def apply[A <: BaseEmrCluster](jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, Option(mainClass))(runsOn)
 
-  def apply[A <: EmrCluster](jarUri: HS3Uri, mainClass: Option[MainClass])(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri.serialize, mainClass)(runsOn)
+  def apply[A <: BaseEmrCluster](jarUri: HS3Uri, mainClass: Option[MainClass])(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri.serialize, mainClass)(runsOn)
 
-  def apply[A <: EmrCluster](jarUri: HString, mainClass: MainClass)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, Option(mainClass))(runsOn)
+  def apply[A <: BaseEmrCluster](jarUri: HString, mainClass: MainClass)(runsOn: Resource[A]): HadoopActivity[A] = apply(jarUri, Option(mainClass))(runsOn)
 
-  def apply[A <: EmrCluster](jarUri: HString, mainClass: Option[MainClass] = None)(runsOn: Resource[A]): HadoopActivity[A] = new HadoopActivity(
+  def apply[A <: BaseEmrCluster](jarUri: HString, mainClass: Option[MainClass] = None)(runsOn: Resource[A]): HadoopActivity[A] = new HadoopActivity(
     baseFields = BaseFields(PipelineObjectId(HadoopActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),

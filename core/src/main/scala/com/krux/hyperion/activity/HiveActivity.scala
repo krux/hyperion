@@ -6,7 +6,7 @@ import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.common.BaseFields
-import com.krux.hyperion.resource.{ Resource, EmrCluster }
+import com.krux.hyperion.resource.{ Resource, BaseEmrCluster }
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveActivity makes it easier to set up an Amzon EMR
@@ -17,7 +17,7 @@ import com.krux.hyperion.resource.{ Resource, EmrCluster }
  * Hive column names. For MySQL (RDS) inputs, the column names for the SQL query are used to create
  * the Hive column names.
  */
-case class HiveActivity[A <: EmrCluster] private (
+case class HiveActivity[A <: BaseEmrCluster] private (
   baseFields: BaseFields,
   activityFields: ActivityFields[A],
   emrTaskActivityFields: EmrTaskActivityFields,
@@ -69,7 +69,7 @@ case class HiveActivity[A <: EmrCluster] private (
 
 object HiveActivity extends RunnableObject {
 
-  def apply[A <: EmrCluster](input: Seq[DataNode], output: Seq[DataNode], hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
+  def apply[A <: BaseEmrCluster](input: Seq[DataNode], output: Seq[DataNode], hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
     new HiveActivity(
       baseFields = BaseFields(PipelineObjectId(HiveActivity.getClass)),
       activityFields = ActivityFields(runsOn),
@@ -81,7 +81,7 @@ object HiveActivity extends RunnableObject {
       hadoopQueue = None
     )
 
-  def apply[A <: EmrCluster](input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
+  def apply[A <: BaseEmrCluster](input: DataNode, output: DataNode, hiveScript: Script)(runsOn: Resource[A]): HiveActivity[A] =
     apply(Seq(input), Seq(output), hiveScript)(runsOn)
 
 }

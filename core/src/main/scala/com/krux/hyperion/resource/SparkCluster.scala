@@ -14,7 +14,7 @@ case class SparkCluster private (
   resourceFields: ResourceFields,
   emrClusterFields: EmrClusterFields,
   sparkVersion: Option[HString]
-) extends EmrCluster {
+) extends BaseEmrCluster {
 
   type Self = SparkCluster
 
@@ -42,8 +42,8 @@ object SparkCluster {
 
   def apply()(implicit hc: HyperionContext): SparkCluster = new SparkCluster(
     baseFields = BaseFields(PipelineObjectId(SparkCluster.getClass)),
-    resourceFields = EmrCluster.defaultResourceFields(hc),
-    emrClusterFields = EmrCluster.defaultEmrClusterFields(hc),
+    resourceFields = BaseEmrCluster.defaultResourceFields(hc),
+    emrClusterFields = BaseEmrCluster.defaultEmrClusterFields(hc),
     sparkVersion = hc.emrSparkVersion
   )
 
