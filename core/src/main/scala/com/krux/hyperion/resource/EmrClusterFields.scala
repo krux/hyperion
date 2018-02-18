@@ -23,6 +23,6 @@ case class EmrClusterFields(
   slaveSecurityGroupId: Option[HString] = None,
   additionalSlaveSecurityGroupIds: Seq[HString] = Seq.empty,
   visibleToAllUsers: Option[HBoolean] = None,
-  applications: Seq[HString] = Seq.empty,  // use with release label
+  applications: Seq[EmrApplication] = Seq.empty,  // use with release label
   configuration: Seq[EmrConfiguration] = Seq.empty
 )

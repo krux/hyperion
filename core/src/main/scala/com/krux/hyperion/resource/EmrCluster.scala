@@ -120,7 +120,7 @@ trait EmrCluster extends ResourceObject {
   )
 
   def applications = emrClusterFields.applications
-  def withApplications(apps: HString*): Self = updateEmrClusterFields(
+  def withApplications(apps: EmrApplication*): Self = updateEmrClusterFields(
     emrClusterFields.copy(applications = emrClusterFields.applications ++ apps)
   )
 

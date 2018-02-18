@@ -27,7 +27,7 @@ case class SparkCluster private (
   def withSparkVersion(sparkVersion: HString) = copy(sparkVersion = Option(sparkVersion))
 
   override def applications = if (releaseLabel.nonEmpty)
-    ("Spark": HString) +: super.applications
+    EmrApplication.Spark +: super.applications
   else
     super.applications
 
