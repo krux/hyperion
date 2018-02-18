@@ -1,12 +1,12 @@
 package com.krux.hyperion.resource
 
-import com.krux.hyperion.aws.{ AdpEmrConfiguration, AdpRef }
-import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, NamedPipelineObject }
-import com.krux.hyperion.adt.HString
+import com.krux.hyperion.aws.{AdpEmrConfiguration, AdpRef}
+import com.krux.hyperion.common.{BaseFields, PipelineObjectId, NamedPipelineObject}
+
 
 case class EmrConfiguration private (
   baseFields: BaseFields,
-  classification: Option[HString],
+  classification: Option[String],
   properties: Seq[Property],
   configurations: Seq[EmrConfiguration]
 ) extends NamedPipelineObject {
@@ -15,7 +15,7 @@ case class EmrConfiguration private (
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
 
-  def withClassification(classification: HString) = copy(classification = Option(classification))
+  def withClassification(classification: String) = copy(classification = Option(classification))
 
   def withProperty(property: Property*) = copy(properties = this.properties ++ property)
 
@@ -26,7 +26,7 @@ case class EmrConfiguration private (
   lazy val serialize = AdpEmrConfiguration(
     id = id,
     name = name,
-    classification = classification.map(_.serialize),
+    classification = classification,
     property = properties.map(_.ref),
     configuration = configurations.map(_.ref)
   )
@@ -36,11 +36,13 @@ case class EmrConfiguration private (
 
 object EmrConfiguration {
 
-  def apply(property: Property*): EmrConfiguration = EmrConfiguration(
+  def apply(): EmrConfiguration = EmrConfiguration(
     baseFields = BaseFields(PipelineObjectId(EmrConfiguration.getClass)),
     classification = None,
-    properties = property,
+    properties = Seq.empty,
     configurations = Seq.empty
   )
+
+  def apply(classification: String): EmrConfiguration = apply().withClassification(classification)
 
 }
