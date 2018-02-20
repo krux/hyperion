@@ -32,7 +32,19 @@ object LegacyEmrCluster {
   def apply()(implicit hc: HyperionContext): LegacyEmrCluster = new LegacyEmrCluster(
     baseFields = BaseFields(PipelineObjectId(EmrCluster.getClass)),
     resourceFields = BaseEmrCluster.defaultResourceFields(hc),
-    emrClusterFields = BaseEmrCluster.defaultEmrClusterFields(hc)
+    emrClusterFields = LegacyEmrCluster.defaultEmrClusterFields
   )
+
+  def defaultEmrClusterFields(implicit hc: HyperionContext): EmrClusterFields =
+    EmrClusterFields(
+      amiVersion = hc.emrAmiVersion,
+      standardBootstrapAction = hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env": HString).toList,
+      masterInstanceType = Option(hc.emrInstanceType: HString),
+      coreInstanceCount = 2,
+      coreInstanceType = Option(hc.emrInstanceType: HString),
+      taskInstanceCount = 0,
+      taskInstanceType = Option(hc.emrInstanceType: HString),
+      releaseLabel = None  // make sure release label is not set
+    )
 
 }

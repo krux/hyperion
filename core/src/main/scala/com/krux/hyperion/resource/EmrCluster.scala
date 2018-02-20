@@ -43,7 +43,16 @@ object EmrCluster {
   def apply()(implicit hc: HyperionContext): EmrCluster = new EmrCluster(
     baseFields = BaseFields(PipelineObjectId(EmrCluster.getClass)),
     resourceFields = BaseEmrCluster.defaultResourceFields(hc),
-    emrClusterFields = BaseEmrCluster.defaultEmrClusterFields(hc)
+    emrClusterFields = EmrClusterFields(
+      amiVersion = None,  // make sure ami version is not set (legacy only settings)
+      standardBootstrapAction = Nil,  // legacy only settings
+      masterInstanceType = Option(hc.emrInstanceType: HString),
+      coreInstanceCount = 2,
+      coreInstanceType = Option(hc.emrInstanceType: HString),
+      taskInstanceCount = 0,
+      taskInstanceType = Option(hc.emrInstanceType: HString),
+      releaseLabel = hc.emrReleaseLabel
+    )
   )
 
 }

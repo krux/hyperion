@@ -180,17 +180,6 @@ trait BaseEmrCluster extends ResourceObject {
 
 object BaseEmrCluster {
 
-  def defaultEmrClusterFields(hc: HyperionContext) = EmrClusterFields(
-    amiVersion = if (hc.emrReleaseLabel.nonEmpty) None else hc.emrAmiVersion,
-    standardBootstrapAction = hc.emrEnvironmentUri.map(env => s"${hc.scriptUri}deploy-hyperion-emr-env.sh,$env": HString).toList,
-    masterInstanceType = Option(hc.emrInstanceType: HString),
-    coreInstanceCount = 2,
-    coreInstanceType = Option(hc.emrInstanceType: HString),
-    taskInstanceCount = 0,
-    taskInstanceType = Option(hc.emrInstanceType: HString),
-    releaseLabel = hc.emrReleaseLabel
-  )
-
   def defaultResourceFields(hc: HyperionContext) = ResourceFields(
     keyPair = hc.emrKeyPair.map(x => x: HString),
     region = Option(hc.emrRegion: HString),

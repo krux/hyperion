@@ -56,7 +56,7 @@ object ExampleMapReduce extends DataPipelineDef with HyperionCli {
         .withMainClass("com.krux.hyperion.ScoreJob1")
         .withArguments(
           target,
-          Format(SparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd")
+          Format(LegacySparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd")
         )
     )
 
@@ -69,7 +69,7 @@ object ExampleMapReduce extends DataPipelineDef with HyperionCli {
         .withMainClass("com.krux.hyperion.ScoreJob2")
         .withArguments(
           target,
-      Format(SparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd"),
+      Format(LegacySparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd"),
       "denormalized"
         )
     )
@@ -82,7 +82,7 @@ object ExampleMapReduce extends DataPipelineDef with HyperionCli {
     .onSuccess(mailAction)
     .withArguments(
       target,
-      Format(SparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd"),
+      Format(LegacySparkActivity.ScheduledStartTime - 3.days, "yyyy-MM-dd"),
       "denormalized"
     )
 

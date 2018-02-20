@@ -9,16 +9,16 @@ import com.krux.hyperion.HyperionContext
 /**
  * Launch a Spark cluster
  */
-case class SparkCluster private (
+case class LegacySparkCluster private (
   baseFields: BaseFields,
   resourceFields: ResourceFields,
   emrClusterFields: EmrClusterFields,
   sparkVersion: Option[HString]
 ) extends BaseEmrCluster {
 
-  type Self = SparkCluster
+  type Self = LegacySparkCluster
 
-  val logger = LoggerFactory.getLogger(SparkCluster.getClass)
+  val logger = LoggerFactory.getLogger(LegacySparkCluster.getClass)
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
@@ -38,12 +38,12 @@ case class SparkCluster private (
 
 }
 
-object SparkCluster {
+object LegacySparkCluster {
 
-  def apply()(implicit hc: HyperionContext): SparkCluster = new SparkCluster(
-    baseFields = BaseFields(PipelineObjectId(SparkCluster.getClass)),
+  def apply()(implicit hc: HyperionContext): LegacySparkCluster = new LegacySparkCluster(
+    baseFields = BaseFields(PipelineObjectId(LegacySparkCluster.getClass)),
     resourceFields = BaseEmrCluster.defaultResourceFields(hc),
-    emrClusterFields = BaseEmrCluster.defaultEmrClusterFields(hc),
+    emrClusterFields = LegacyEmrCluster.defaultEmrClusterFields(hc),
     sparkVersion = hc.emrSparkVersion
   )
 

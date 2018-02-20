@@ -6,14 +6,15 @@ import com.krux.hyperion.common.{SparkCommandRunner, PipelineObjectId, BaseField
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.HString
-import com.krux.hyperion.resource.{ Resource, SparkCluster }
+import com.krux.hyperion.resource.{Resource, LegacySparkCluster}
+
 
 /**
  * Runs spark steps on given spark cluster with Amazon EMR
  */
-case class SparkActivity private (
+case class LegacySparkActivity private (
   baseFields: BaseFields,
-  activityFields: ActivityFields[SparkCluster],
+  activityFields: ActivityFields[LegacySparkCluster],
   jobRunner: HString,
   scriptRunner: HString,
   steps: Seq[SparkStep],
@@ -21,12 +22,12 @@ case class SparkActivity private (
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-) extends EmrActivity[SparkCluster] {
+) extends EmrActivity[LegacySparkCluster] {
 
-  type Self = SparkActivity
+  type Self = LegacySparkActivity
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
-  def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
+  def updateActivityFields(fields: ActivityFields[LegacySparkCluster]) = copy(activityFields = fields)
 
   def withSteps(step: SparkStep*) = {
     val newSteps = step.map(item =>
@@ -68,10 +69,10 @@ case class SparkActivity private (
   )
 }
 
-object SparkActivity extends RunnableObject with SparkCommandRunner {
+object LegacySparkActivity extends RunnableObject with SparkCommandRunner {
 
-  def apply(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkActivity = new SparkActivity(
-    baseFields = BaseFields(PipelineObjectId(SparkActivity.getClass)),
+  def apply(runsOn: Resource[LegacySparkCluster])(implicit hc: HyperionContext): LegacySparkActivity = new LegacySparkActivity(
+    baseFields = BaseFields(PipelineObjectId(LegacySparkActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     jobRunner = jobRunner(runsOn),
     scriptRunner = scriptRunner(runsOn),

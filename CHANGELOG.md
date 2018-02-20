@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 5.0.0-SNAPSHOT
 ### Changed
 - [#521](https://github.com/krux/hyperion/issues/521) - Upate AWS SDK dependency to 1.11.238 and deprecate support for AWS_SECURITY_TOKEN
+### EmrRefactor
+- Introduce LegacyEmrCluster
+- Renamed MapReduceCluster to EmrCluster
 
 ## 4.14.3 - 2018-02-09
 ### Fixed

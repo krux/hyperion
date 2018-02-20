@@ -55,7 +55,10 @@ class HyperionContext(config: Config) {
   lazy val emrAmiVersion = Try(config.getString("hyperion.aws.emr.ami.version")).toOption
   lazy val emrReleaseLabel = Try(config.getString("hyperion.aws.emr.release_label")).toOption
   lazy val emrInstanceType = config.getString("hyperion.aws.emr.instance.type")
+
+  // Only supported by LegacyEmrCluster
   lazy val emrEnvironmentUri = Try(config.getString("hyperion.aws.emr.env.uri")).toOption
+
   lazy val emrTerminateAfter = Try(config.getString("hyperion.aws.emr.terminate")).toOption.map(Duration(_))
   lazy val emrSparkVersion = Try(config.getString("hyperion.aws.emr.spark.version")).toOption
   lazy val emrInitTimeout = Try(config.getString("hyperion.aws.emr.inittimeout")).toOption.map(Duration(_))

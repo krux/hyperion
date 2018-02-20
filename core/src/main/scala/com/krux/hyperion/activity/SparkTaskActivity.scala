@@ -1,12 +1,13 @@
 package com.krux.hyperion.activity
 
+import com.krux.hyperion.adt.{HInt, HString, HS3Uri}
 import com.krux.hyperion.aws._
 import com.krux.hyperion.common.{SparkCommandRunner, Memory, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.adt.{ HInt, HString, HS3Uri }
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.resource.{ SparkCluster, Resource }
+import com.krux.hyperion.resource.{LegacySparkCluster, Resource}
+
 
 /**
  * Runs a Spark job on a cluster. The cluster can be an EMR cluster managed by AWS Data Pipeline
@@ -17,7 +18,7 @@ import com.krux.hyperion.resource.{ SparkCluster, Resource }
  */
 case class SparkTaskActivity private (
   baseFields: BaseFields,
-  activityFields: ActivityFields[SparkCluster],
+  activityFields: ActivityFields[LegacySparkCluster],
   emrTaskActivityFields: EmrTaskActivityFields,
   scriptRunner: HString,
   jobRunner: HString,
@@ -29,12 +30,12 @@ case class SparkTaskActivity private (
   outputs: Seq[S3DataNode],
   sparkOptions: Seq[HString],
   sparkConfig: Map[HString, HString]
-) extends EmrTaskActivity[SparkCluster] {
+) extends EmrTaskActivity[LegacySparkCluster] {
 
   type Self = SparkTaskActivity
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
-  def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
+  def updateActivityFields(fields: ActivityFields[LegacySparkCluster]) = copy(activityFields = fields)
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields) = copy(emrTaskActivityFields = fields)
 
   def withArguments(args: HString*) = copy(arguments = arguments ++ args)
@@ -89,10 +90,10 @@ case class SparkTaskActivity private (
 
 object SparkTaskActivity extends RunnableObject with SparkCommandRunner {
 
-  def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkTaskActivity =
+  def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[LegacySparkCluster])(implicit hc: HyperionContext): SparkTaskActivity =
     apply(jarUri.serialize, mainClass)(runsOn)
 
-  def apply(jarUri: HString, mainClass: MainClass)(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkTaskActivity = new SparkTaskActivity(
+  def apply(jarUri: HString, mainClass: MainClass)(runsOn: Resource[LegacySparkCluster])(implicit hc: HyperionContext): SparkTaskActivity = new SparkTaskActivity(
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),

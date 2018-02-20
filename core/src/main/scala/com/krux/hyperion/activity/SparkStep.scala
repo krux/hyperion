@@ -4,6 +4,7 @@ import com.krux.hyperion.adt.{ HS3Uri, HString, HInt }
 import com.krux.hyperion.common.{ Memory, Escapable }
 import com.krux.hyperion.HyperionContext
 
+
 /**
  * A Spark step that runs on Spark Cluster
  */
