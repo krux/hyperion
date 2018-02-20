@@ -6,7 +6,7 @@ import com.krux.hyperion.activity.HiveActivity
 import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.datanode.S3Folder
 import com.krux.hyperion.expression.Parameter
-import com.krux.hyperion.resource.MapReduceCluster
+import com.krux.hyperion.resource.EmrCluster
 import com.typesafe.config.ConfigFactory
 
 object ExampleHiveActivity extends DataPipelineDef with HyperionCli {
@@ -27,7 +27,7 @@ object ExampleHiveActivity extends DataPipelineDef with HyperionCli {
   val location = Parameter[S3Uri]("S3Location").withValue(s3"source")
   val dataNode = S3Folder(location)
 
-  val emrCluster = MapReduceCluster()
+  val emrCluster = EmrCluster()
     .withTaskInstanceCount(instanceCount)
     .withTaskInstanceType(instanceType)
     .withReleaseLabel("emr-4.4.0")

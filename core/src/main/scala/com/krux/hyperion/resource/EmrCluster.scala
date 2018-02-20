@@ -7,29 +7,40 @@ import com.krux.hyperion.common.{PipelineObjectId, BaseFields}
 import com.krux.hyperion.HyperionContext
 
 
-case class LegacyEmrCluster private(
+/**
+ * Launch a map reduce cluster
+ */
+case class EmrCluster private (
   baseFields: BaseFields,
   resourceFields: ResourceFields,
   emrClusterFields: EmrClusterFields
 ) extends BaseEmrCluster {
 
-  type Self = LegacyEmrCluster
+  type Self = EmrCluster
 
-  val logger = LoggerFactory.getLogger(LegacyEmrCluster.getClass)
+  val logger = LoggerFactory.getLogger(EmrCluster.getClass)
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
   def updateEmrClusterFields(fields: EmrClusterFields) = copy(emrClusterFields = fields)
 
-  def withAmiVersion(version: HString): Self = updateEmrClusterFields(
-    emrClusterFields.copy(amiVersion = Option(version), releaseLabel = None)
+  def withApplications(apps: EmrApplication*): Self = updateEmrClusterFields(
+    emrClusterFields.copy(applications = emrClusterFields.applications ++ apps)
+  )
+
+  def withReleaseLabel(label: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(releaseLabel = Option(label), amiVersion = None)
+  )
+
+  def withConfiguration(conf: EmrConfiguration*): Self = updateEmrClusterFields(
+    emrClusterFields.copy(configuration = emrClusterFields.configuration ++ conf)
   )
 
 }
 
-object LegacyEmrCluster {
+object EmrCluster {
 
-  def apply()(implicit hc: HyperionContext): LegacyEmrCluster = new LegacyEmrCluster(
+  def apply()(implicit hc: HyperionContext): EmrCluster = new EmrCluster(
     baseFields = BaseFields(PipelineObjectId(EmrCluster.getClass)),
     resourceFields = BaseEmrCluster.defaultResourceFields(hc),
     emrClusterFields = BaseEmrCluster.defaultEmrClusterFields(hc)

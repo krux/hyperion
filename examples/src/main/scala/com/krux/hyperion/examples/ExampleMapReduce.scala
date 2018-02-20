@@ -1,14 +1,17 @@
 package com.krux.hyperion.examples
 
 import scala.language.postfixOps
-import com.krux.hyperion.Implicits._
+
+import com.typesafe.config.ConfigFactory
+
 import com.krux.hyperion.action.SnsAlarm
 import com.krux.hyperion.activity._
 import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.expression.{Format, Parameter, RuntimeNode}
-import com.krux.hyperion.resource.{MapReduceCluster}
+import com.krux.hyperion.Implicits._
+import com.krux.hyperion.resource.EmrCluster
 import com.krux.hyperion.{DataPipelineDef, HyperionContext, Schedule, _}
-import com.typesafe.config.ConfigFactory
+
 
 object ExampleMapReduce extends DataPipelineDef with HyperionCli {
 
@@ -38,7 +41,7 @@ object ExampleMapReduce extends DataPipelineDef with HyperionCli {
     .withRole("DataPipelineDefaultResourceRole")
 
   // Resources
-  val emrCluster = MapReduceCluster()
+  val emrCluster = EmrCluster()
     .withTaskInstanceCount(instanceCount)
     .withTaskInstanceType(instanceType)
     .withReleaseLabel("emr-4.4.0")
