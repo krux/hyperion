@@ -17,7 +17,7 @@ case class LegacySparkActivity private (
   activityFields: ActivityFields[LegacySparkCluster],
   jobRunner: HString,
   scriptRunner: HString,
-  steps: Seq[SparkStep],
+  steps: Seq[LegacySparkStep],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
@@ -29,11 +29,11 @@ case class LegacySparkActivity private (
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[LegacySparkCluster]) = copy(activityFields = fields)
 
-  def withSteps(step: SparkStep*) = {
-    val newSteps = step.map(item =>
-      item.copy(
-        scriptRunner = item.scriptRunner.orElse(Option(scriptRunner)),
-        jobRunner = item.jobRunner.orElse(Option(jobRunner))
+  def withSteps(moreSteps: LegacySparkStep*) = {
+    val newSteps = moreSteps.map(step =>
+      step.copy(
+        scriptRunner = step.scriptRunner.orElse(Option(scriptRunner)),
+        jobRunner = step.jobRunner.orElse(Option(jobRunner))
       )
     )
     copy(steps = steps ++ newSteps)
