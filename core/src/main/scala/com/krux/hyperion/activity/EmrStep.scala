@@ -24,11 +24,11 @@ object EmrStep {
   /**
    * https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-commandrunner.html
    */
-  def commandRunner(command: String) = apply("command-runner.jar")
+  def commandRunner(command: String) = apply(EmrCommandRunner)
     .withArguments(command)
 
   def scriptRunner(script: HS3Uri) =
-    apply(s3 / "elasticmapreduce" / "libs" / "script-runner" / "script-runner.jar")
+    apply(EmrScriptRunner)
       .withArguments(script.toString)
 
 }

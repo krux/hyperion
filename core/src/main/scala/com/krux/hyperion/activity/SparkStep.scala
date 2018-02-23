@@ -56,7 +56,7 @@ object SparkStep {
     args: Seq[HString]
   ) extends SparkStep {
 
-    def jarUri = (s3 / "elasticmapreduce" / "libs" / "script-runner" / "script-runner.jar").toString
+    def jarUri = EmrScriptRunner.toString
     def withMainClass(mc: MainClass) = copy(sparkMainClass = Option(mc))
     def withArguments(newArgs: HString*) = copy(args = args ++ newArgs)
 
@@ -74,7 +74,7 @@ object SparkStep {
     args: Seq[HString]
   ) extends SparkStep {
 
-    def jarUri = "command-runner.jar"
+    def jarUri = EmrCommandRunner
     def withMainClass(mc: MainClass) = copy(sparkMainClass = Option(mc))
     def withArguments(newArgs: HString*) = copy(args = args ++ newArgs)
 

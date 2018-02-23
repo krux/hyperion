@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.adt.{HInt, HString, HS3Uri}
 import com.krux.hyperion.aws._
-import com.krux.hyperion.common.{SparkCommandRunner, Memory, PipelineObjectId, BaseFields}
+import com.krux.hyperion.common.{LegacySparkCommandRunner, Memory, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
@@ -88,7 +88,7 @@ case class SparkTaskActivity private (
 
 }
 
-object SparkTaskActivity extends RunnableObject with SparkCommandRunner {
+object SparkTaskActivity extends RunnableObject with LegacySparkCommandRunner {
 
   def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[LegacySparkCluster])(implicit hc: HyperionContext): SparkTaskActivity =
     apply(jarUri.serialize, mainClass)(runsOn)

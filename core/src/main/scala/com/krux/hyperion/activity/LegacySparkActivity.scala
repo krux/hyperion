@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.aws.AdpEmrActivity
-import com.krux.hyperion.common.{SparkCommandRunner, PipelineObjectId, BaseFields}
+import com.krux.hyperion.common.{LegacySparkCommandRunner, PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.HString
@@ -69,7 +69,7 @@ case class LegacySparkActivity private (
   )
 }
 
-object LegacySparkActivity extends RunnableObject with SparkCommandRunner {
+object LegacySparkActivity extends RunnableObject with LegacySparkCommandRunner {
 
   def apply(runsOn: Resource[LegacySparkCluster])(implicit hc: HyperionContext): LegacySparkActivity = new LegacySparkActivity(
     baseFields = BaseFields(PipelineObjectId(LegacySparkActivity.getClass)),

@@ -4,7 +4,7 @@ import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.adt.HString
 import com.krux.hyperion.resource.{LegacySparkCluster, Resource}
 
-trait SparkCommandRunner {
+trait LegacySparkCommandRunner {
 
   def jobRunner(runsOn: Resource[LegacySparkCluster])(implicit hc: HyperionContext): HString =
     if (runsOn.asManagedResource.exists(_.releaseLabel.nonEmpty)) {
