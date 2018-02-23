@@ -16,3 +16,11 @@ case class HadoopStep private (
   def withArguments(newArgs: HString*) = copy(args = args ++ newArgs)
 
 }
+
+object HadoopStep {
+
+  def apply(jarUri: HS3Uri): HadoopStep = apply(jarUri.serialize)
+
+  def apply(jarUri: HString): HadoopStep = new HadoopStep(jarUri, None, Seq.empty)
+
+}
