@@ -8,7 +8,7 @@ import com.krux.hyperion.HyperionContext
 
 
 /**
- * Launch a map reduce cluster
+ * Launch a EMR cluster later than release label 4.x.x
  */
 case class EmrCluster private (
   baseFields: BaseFields,
