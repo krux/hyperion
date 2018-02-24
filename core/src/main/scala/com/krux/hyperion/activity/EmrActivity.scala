@@ -16,7 +16,7 @@ case class EmrActivity private (
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-) extends PipelineActivity[EmrCluster] {
+) extends BaseEmrActivity[EmrCluster] {
 
   type Self = EmrActivity
 

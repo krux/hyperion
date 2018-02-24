@@ -18,7 +18,7 @@ case class MapReduceActivity[A <: BaseEmrCluster] private (
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-) extends LegacyEmrActivity[A] {
+) extends BaseEmrActivity[A] {
 
   type Self = MapReduceActivity[A]
 

@@ -38,7 +38,7 @@ case class S3DistCpActivity[A <: BaseEmrCluster] private (
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString],
   arguments: Seq[HString]
-) extends LegacyEmrActivity[A] {
+) extends BaseEmrActivity[A] {
 
   type Self = S3DistCpActivity[A]
 

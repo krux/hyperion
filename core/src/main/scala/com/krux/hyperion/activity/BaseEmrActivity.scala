@@ -5,8 +5,8 @@ import com.krux.hyperion.resource.BaseEmrCluster
 /**
  * The base trait for activities that run on an Amazon EMR cluster
  */
-trait LegacyEmrActivity[A <: BaseEmrCluster] extends PipelineActivity[A] {
+trait BaseEmrActivity[A <: BaseEmrCluster] extends PipelineActivity[A] {
 
-  type Self <: LegacyEmrActivity[A]
+  type Self <: BaseEmrActivity[A]
 
 }
