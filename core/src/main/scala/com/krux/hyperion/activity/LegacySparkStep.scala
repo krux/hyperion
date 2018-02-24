@@ -8,6 +8,7 @@ import com.krux.hyperion.HyperionContext
 /**
  * A Spark step that runs on Spark Cluster
  */
+@deprecated("Use SparkStep instead", "5.0.0")
 case class LegacySparkStep private (
   jarUri: HS3Uri,
   mainClass: Option[MainClass],
@@ -47,6 +48,7 @@ case class LegacySparkStep private (
   override def toString: String = serialize
 }
 
+@deprecated("Use SparkStep instead", "5.0.0")
 object LegacySparkStep {
 
   def apply(jarUri: HS3Uri, jobRunner: Option[HString] = None, scriptRunner: Option[HString] = None)(implicit hc: HyperionContext): LegacySparkStep = LegacySparkStep(

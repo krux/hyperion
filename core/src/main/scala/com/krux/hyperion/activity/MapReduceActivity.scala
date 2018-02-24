@@ -10,6 +10,7 @@ import com.krux.hyperion.resource.{ Resource, BaseEmrCluster }
 /**
  * Runs map reduce steps on an Amazon EMR cluster
  */
+@deprecated("Use EmrActivity instead", "5.0.0")
 case class MapReduceActivity[A <: BaseEmrCluster] private (
   baseFields: BaseFields,
   activityFields: ActivityFields[A],
@@ -60,6 +61,7 @@ case class MapReduceActivity[A <: BaseEmrCluster] private (
 
 }
 
+@deprecated("Use EmrActivity instead", "5.0.0")
 object MapReduceActivity extends RunnableObject {
 
   def apply[A <: BaseEmrCluster](runsOn: Resource[A]): MapReduceActivity[A] = new MapReduceActivity(

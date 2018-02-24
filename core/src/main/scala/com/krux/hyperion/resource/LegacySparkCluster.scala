@@ -7,8 +7,9 @@ import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
 import com.krux.hyperion.HyperionContext
 
 /**
- * Launch a Spark cluster
+ * Launch a Spark cluster (pre EMR release label 4.0.0)
  */
+@deprecated("Use EmrCluster with Spark Application instead", "5.0.0")
 case class LegacySparkCluster private (
   baseFields: BaseFields,
   resourceFields: ResourceFields,
@@ -38,6 +39,7 @@ case class LegacySparkCluster private (
 
 }
 
+@deprecated("Use EmrCluster with Spark Application instead", "5.0.0")
 object LegacySparkCluster {
 
   def apply()(implicit hc: HyperionContext): LegacySparkCluster = new LegacySparkCluster(

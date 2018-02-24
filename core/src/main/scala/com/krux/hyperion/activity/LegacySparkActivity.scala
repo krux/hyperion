@@ -12,6 +12,7 @@ import com.krux.hyperion.resource.{Resource, LegacySparkCluster}
 /**
  * Runs spark steps on given spark cluster with Amazon EMR
  */
+@deprecated("Use EmrActivity with SparkStep instead", "5.0.0")
 case class LegacySparkActivity private (
   baseFields: BaseFields,
   activityFields: ActivityFields[LegacySparkCluster],
@@ -69,6 +70,7 @@ case class LegacySparkActivity private (
   )
 }
 
+@deprecated("Use EmrActivity with SparkStep instead", "5.0.0")
 object LegacySparkActivity extends RunnableObject with LegacySparkCommandRunner {
 
   def apply(runsOn: Resource[LegacySparkCluster])(implicit hc: HyperionContext): LegacySparkActivity = new LegacySparkActivity(
