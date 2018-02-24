@@ -2,7 +2,7 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.resource.BaseEmrCluster
 
-trait EmrTaskActivity[A <: BaseEmrCluster] extends EmrActivity[A] {
+trait EmrTaskActivity[A <: BaseEmrCluster] extends LegacyEmrActivity[A] {
 
   type Self <: EmrTaskActivity[A]
 

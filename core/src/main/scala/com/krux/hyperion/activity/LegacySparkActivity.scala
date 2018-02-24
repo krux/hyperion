@@ -22,7 +22,7 @@ case class LegacySparkActivity private (
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-) extends EmrActivity[LegacySparkCluster] {
+) extends LegacyEmrActivity[LegacySparkCluster] {
 
   type Self = LegacySparkActivity
 
