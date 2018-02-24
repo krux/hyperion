@@ -30,7 +30,7 @@ case class SparkTaskActivity private (
   outputs: Seq[S3DataNode],
   sparkOptions: Seq[HString],
   sparkConfig: Map[HString, HString]
-) extends EmrTaskActivity[LegacySparkCluster] {
+) extends LegacyEmrTaskActivity[LegacySparkCluster] {
 
   type Self = SparkTaskActivity
 

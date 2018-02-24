@@ -2,9 +2,9 @@ package com.krux.hyperion.activity
 
 import com.krux.hyperion.resource.BaseEmrCluster
 
-trait EmrTaskActivity[A <: BaseEmrCluster] extends LegacyEmrActivity[A] {
+trait LegacyEmrTaskActivity[A <: BaseEmrCluster] extends LegacyEmrActivity[A] {
 
-  type Self <: EmrTaskActivity[A]
+  type Self <: LegacyEmrTaskActivity[A]
 
   def emrTaskActivityFields: EmrTaskActivityFields
   def updateEmrTaskActivityFields(fields: EmrTaskActivityFields): Self

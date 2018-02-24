@@ -7,6 +7,7 @@ import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource._
 
+
 case class S3DistCpActivityFields(
   source: Option[HString],
   dest: Option[HString],
@@ -37,7 +38,7 @@ case class S3DistCpActivity[A <: BaseEmrCluster] private (
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString],
   arguments: Seq[HString]
-) extends EmrActivity[A] {
+) extends LegacyEmrActivity[A] {
 
   type Self = S3DistCpActivity[A]
 
