@@ -16,7 +16,7 @@ import com.krux.hyperion.resource.{BaseEmrCluster, Resource}
  * negotiator in Hadoop 1. If you would like to run work sequentially using the Amazon EMR Step action,
  * you can still use SparkActivity.
  */
-case class SparkTaskActivity private (
+case class LegacySparkTaskActivity private (
   baseFields: BaseFields,
   activityFields: ActivityFields[BaseEmrCluster],
   emrTaskActivityFields: EmrTaskActivityFields,
@@ -32,7 +32,7 @@ case class SparkTaskActivity private (
   sparkConfig: Map[HString, HString]
 ) extends LegacyEmrTaskActivity[BaseEmrCluster] {
 
-  type Self = SparkTaskActivity
+  type Self = LegacySparkTaskActivity
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateActivityFields(fields: ActivityFields[BaseEmrCluster]) = copy(activityFields = fields)
@@ -88,13 +88,13 @@ case class SparkTaskActivity private (
 
 }
 
-object SparkTaskActivity extends RunnableObject with LegacySparkCommandRunner {
+object LegacySparkTaskActivity extends RunnableObject with LegacySparkCommandRunner {
 
-  def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[BaseEmrCluster])(implicit hc: HyperionContext): SparkTaskActivity =
+  def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[BaseEmrCluster])(implicit hc: HyperionContext): LegacySparkTaskActivity =
     apply(jarUri.serialize, mainClass)(runsOn)
 
-  def apply(jarUri: HString, mainClass: MainClass)(runsOn: Resource[BaseEmrCluster])(implicit hc: HyperionContext): SparkTaskActivity = new SparkTaskActivity(
-    baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
+  def apply(jarUri: HString, mainClass: MainClass)(runsOn: Resource[BaseEmrCluster])(implicit hc: HyperionContext): LegacySparkTaskActivity = new LegacySparkTaskActivity(
+    baseFields = BaseFields(PipelineObjectId(LegacySparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
     jobRunner = jobRunner(runsOn),

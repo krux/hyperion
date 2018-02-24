@@ -60,7 +60,7 @@ case class EmrActivity private (
 object EmrActivity extends RunnableObject {
 
   def apply(runsOn: Resource[EmrCluster]): EmrActivity = new EmrActivity(
-    baseFields = BaseFields(PipelineObjectId(MapReduceActivity.getClass)),
+    baseFields = BaseFields(PipelineObjectId(EmrActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     steps = Seq.empty,
     inputs = Seq.empty,

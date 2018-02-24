@@ -24,11 +24,8 @@ object EmrStep {
   /**
    * https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-commandrunner.html
    */
-  def commandRunner(command: String) = apply(EmrCommandRunner)
-    .withArguments(command)
+  def commandRunner(command: String) = apply(EmrCommandRunner).withArguments(command)
 
-  def scriptRunner(script: HS3Uri) =
-    apply(EmrScriptRunner)
-      .withArguments(script.toString)
+  def scriptRunner(script: HS3Uri) = apply(EmrScriptRunner).withArguments(script.toString)
 
 }

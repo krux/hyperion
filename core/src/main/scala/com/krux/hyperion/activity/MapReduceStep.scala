@@ -6,6 +6,7 @@ import com.krux.hyperion.common.Escapable
 /**
  * A MapReduce step that runs on MapReduce Cluster
  */
+@deprecated("Use HadoopStep instead", "5.0.0")
 case class MapReduceStep private (
   jarUri: HString,
   mainClass: Option[MainClass],
@@ -23,6 +24,7 @@ case class MapReduceStep private (
 
 }
 
+@deprecated("Use HadoopStep instead", "5.0.0")
 object MapReduceStep {
 
   def apply(jarUri: HS3Uri): MapReduceStep = apply(jarUri.serialize)
