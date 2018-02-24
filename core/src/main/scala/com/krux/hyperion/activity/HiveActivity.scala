@@ -26,7 +26,7 @@ case class HiveActivity[A <: BaseEmrCluster] private (
   input: Seq[DataNode],
   output: Seq[DataNode],
   hadoopQueue: Option[HString]
-) extends LegacyEmrTaskActivity[A] {
+) extends EmrTaskActivity[A] {
 
   type Self = HiveActivity[A]
 

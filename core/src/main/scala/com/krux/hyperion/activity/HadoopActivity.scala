@@ -24,7 +24,7 @@ case class HadoopActivity[A <: BaseEmrCluster] private (
   hadoopQueue: Option[HString],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode]
-) extends LegacyEmrTaskActivity[A] {
+) extends EmrTaskActivity[A] {
 
   type Self = HadoopActivity[A]
 

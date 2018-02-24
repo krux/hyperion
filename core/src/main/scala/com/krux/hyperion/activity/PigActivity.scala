@@ -23,7 +23,7 @@ case class PigActivity[A <: BaseEmrCluster] private (
   stage: Option[HBoolean],
   input: Option[DataNode],
   output: Option[DataNode]
-) extends LegacyEmrTaskActivity[A] {
+) extends EmrTaskActivity[A] {
 
   type Self = PigActivity[A]
 

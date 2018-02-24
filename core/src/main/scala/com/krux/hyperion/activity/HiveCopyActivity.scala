@@ -22,7 +22,7 @@ case class HiveCopyActivity[A <: BaseEmrCluster] private (
   generatedScriptsPath: Option[HS3Uri],
   input: DataNode,
   output: DataNode
-) extends LegacyEmrTaskActivity[A] {
+) extends EmrTaskActivity[A] {
 
   type Self = HiveCopyActivity[A]
 
