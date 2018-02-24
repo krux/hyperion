@@ -2,7 +2,7 @@ package com.krux.hyperion.resource
 
 import scala.language.implicitConversions
 
-sealed trait Resource[T] {
+sealed trait Resource[+T] {
   def asWorkerGroup: Option[WorkerGroup]
   def asManagedResource: Option[T]
 

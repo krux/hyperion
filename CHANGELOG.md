@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### EmrRefactor
 - Introduce LegacyEmrCluster
 - Renamed MapReduceCluster to EmrCluster
+- Relaxes spark related activities to be able to run on any EMR cluster, the compiler will not check the validity, and leave this to the developer
+- EmrConfiguration refactor
 
 ## 4.14.3 - 2018-02-09
 ### Fixed
