@@ -6,16 +6,16 @@ import com.krux.hyperion.common.{LegacySparkCommandRunner, PipelineObjectId, Bas
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.adt.HString
-import com.krux.hyperion.resource.{Resource, LegacySparkCluster}
+import com.krux.hyperion.resource.{Resource, SparkCluster}
 
 
 /**
  * Runs spark steps on given spark cluster with Amazon EMR
  */
 @deprecated("Use EmrActivity with SparkStep instead", "5.0.0")
-case class LegacySparkActivity private (
+case class SparkActivity private (
   baseFields: BaseFields,
-  activityFields: ActivityFields[LegacySparkCluster],
+  activityFields: ActivityFields[SparkCluster],
   jobRunner: HString,
   scriptRunner: HString,
   steps: Seq[LegacySparkStep],
@@ -23,12 +23,12 @@ case class LegacySparkActivity private (
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-) extends BaseEmrActivity[LegacySparkCluster] {
+) extends BaseEmrActivity[SparkCluster] {
 
-  type Self = LegacySparkActivity
+  type Self = SparkActivity
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
-  def updateActivityFields(fields: ActivityFields[LegacySparkCluster]) = copy(activityFields = fields)
+  def updateActivityFields(fields: ActivityFields[SparkCluster]) = copy(activityFields = fields)
 
   def withSteps(moreSteps: LegacySparkStep*) = {
     val newSteps = moreSteps.map(step =>
@@ -71,10 +71,10 @@ case class LegacySparkActivity private (
 }
 
 @deprecated("Use EmrActivity with SparkStep instead", "5.0.0")
-object LegacySparkActivity extends RunnableObject with LegacySparkCommandRunner {
+object SparkActivity extends RunnableObject with LegacySparkCommandRunner {
 
-  def apply(runsOn: Resource[LegacySparkCluster])(implicit hc: HyperionContext): LegacySparkActivity = new LegacySparkActivity(
-    baseFields = BaseFields(PipelineObjectId(LegacySparkActivity.getClass)),
+  def apply(runsOn: Resource[SparkCluster])(implicit hc: HyperionContext): SparkActivity = new SparkActivity(
+    baseFields = BaseFields(PipelineObjectId(SparkActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     jobRunner = jobRunner(runsOn),
     scriptRunner = scriptRunner(runsOn),

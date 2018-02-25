@@ -1,11 +1,11 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{ HString, HS3Uri, HBoolean }
+import com.krux.hyperion.adt.{HString, HS3Uri, HBoolean}
 import com.krux.hyperion.aws.AdpPigActivity
-import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{PipelineObjectId, BaseFields}
 import com.krux.hyperion.datanode.DataNode
-import com.krux.hyperion.resource.{ Resource, BaseEmrCluster }
+import com.krux.hyperion.expression.RunnableObject
+import com.krux.hyperion.resource.{Resource, BaseEmrCluster}
 
 /**
  * PigActivity provides native support for Pig scripts in AWS Data Pipeline without the requirement

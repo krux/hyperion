@@ -1,12 +1,12 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{ HString, HBoolean }
+import com.krux.hyperion.adt.{HString, HBoolean}
 import com.krux.hyperion.aws.AdpHiveActivity
+import com.krux.hyperion.common.BaseFields
 import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.common.BaseFields
-import com.krux.hyperion.resource.{ Resource, BaseEmrCluster }
+import com.krux.hyperion.resource.{Resource, BaseEmrCluster}
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveActivity makes it easier to set up an Amzon EMR

@@ -7,6 +7,9 @@ import com.krux.hyperion.common.{PipelineObjectId, BaseFields}
 import com.krux.hyperion.HyperionContext
 
 
+/**
+ * Use AMI versions to launch EMR clusters. Use EmrCluster for release label 4.x.x or later
+ */
 case class LegacyEmrCluster private(
   baseFields: BaseFields,
   resourceFields: ResourceFields,

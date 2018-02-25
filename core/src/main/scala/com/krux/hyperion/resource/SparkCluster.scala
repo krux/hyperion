@@ -3,23 +3,24 @@ package com.krux.hyperion.resource
 import org.slf4j.LoggerFactory
 
 import com.krux.hyperion.adt.HString
-import com.krux.hyperion.common.{ PipelineObjectId, BaseFields }
+import com.krux.hyperion.common.{PipelineObjectId, BaseFields}
 import com.krux.hyperion.HyperionContext
+
 
 /**
  * Launch a Spark cluster (pre EMR release label 4.0.0)
  */
 @deprecated("Use EmrCluster with Spark Application instead", "5.0.0")
-case class LegacySparkCluster private (
+case class SparkCluster private (
   baseFields: BaseFields,
   resourceFields: ResourceFields,
   emrClusterFields: EmrClusterFields,
   sparkVersion: Option[HString]
 ) extends BaseEmrCluster {
 
-  type Self = LegacySparkCluster
+  type Self = SparkCluster
 
-  val logger = LoggerFactory.getLogger(LegacySparkCluster.getClass)
+  val logger = LoggerFactory.getLogger(SparkCluster.getClass)
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
@@ -40,10 +41,10 @@ case class LegacySparkCluster private (
 }
 
 @deprecated("Use EmrCluster with Spark Application instead", "5.0.0")
-object LegacySparkCluster {
+object SparkCluster {
 
-  def apply()(implicit hc: HyperionContext): LegacySparkCluster = new LegacySparkCluster(
-    baseFields = BaseFields(PipelineObjectId(LegacySparkCluster.getClass)),
+  def apply()(implicit hc: HyperionContext): SparkCluster = new SparkCluster(
+    baseFields = BaseFields(PipelineObjectId(SparkCluster.getClass)),
     resourceFields = BaseEmrCluster.defaultResourceFields(hc),
     emrClusterFields = LegacyEmrCluster.defaultEmrClusterFields(hc),
     sparkVersion = hc.emrSparkVersion
