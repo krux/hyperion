@@ -33,8 +33,8 @@ trait SparkStep extends BaseEmrStep {
   def withMaster(master: HString) = withSparkOptions("--master", master)
 
   override lazy val serialize: String = (
-      jarUri +:
-      command +:
+      jarUri.serialize +:
+      command.serialize +:
       sparkOptions ++:
       sparkConfigs.flatMap { case (k, v) => Seq("--conf", s"$k=$v") } ++:
       sparkJarUri.serialize +:
