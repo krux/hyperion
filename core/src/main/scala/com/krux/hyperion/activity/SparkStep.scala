@@ -38,7 +38,7 @@ trait SparkStep extends BaseEmrStep {
       sparkOptions ++:
       sparkConfigs.flatMap { case (k, v) => Seq("--conf", s"$k=$v") } ++:
       sparkJarUri.serialize +:
-      sparkMainClass.map(_.toString) +:
+      sparkMainClass.map(_.toString) ++:
       args
     )
     .map(x => Escapable.escape(x.toString, ',')).mkString(",")

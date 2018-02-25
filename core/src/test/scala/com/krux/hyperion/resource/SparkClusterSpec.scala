@@ -5,16 +5,11 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers._
 
+@deprecated("Use EmrCluster instead", "5.0.0")
 class SparkClusterSpec extends FlatSpec {
   implicit val hc = new HyperionContext(ConfigFactory.load("example"))
 
-  it should "handle release Label 4.x.x" in {
-    val cluster = SparkCluster().withReleaseLabel("emr-4.6.0")
-    cluster.standardBootstrapAction.length shouldBe 0
-    cluster.applications.length shouldBe 1
-  }
-
-  it should "be backwards compatible" in {
+  it should "be handle old spark versions" in {
     val cluster = SparkCluster()
     cluster.standardBootstrapAction.length shouldBe 2
     cluster.applications.length shouldBe 0

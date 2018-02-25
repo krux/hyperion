@@ -28,7 +28,7 @@ class ExampleSparkSpec extends WordSpec {
         ("schedule" -> ("ref" -> "PipelineSchedule"))
       assert(defaultObj === defaultObjShouldBe)
 
-      val pipelineSchedule = objectsField(1)
+      val pipelineSchedule = objectsField(2)
       val pipelineScheduleShouldBe =
         ("id" -> "PipelineSchedule") ~
         ("name" -> "PipelineSchedule") ~
@@ -38,7 +38,7 @@ class ExampleSparkSpec extends WordSpec {
         ("type" -> "Schedule")
       assert(pipelineSchedule === pipelineScheduleShouldBe)
 
-      val dataNode = objectsField(2)
+      val dataNode = objectsField(3)
       val dataNodeId = (dataNode \ "id").values.toString
       assert(dataNodeId.startsWith("S3Folder_"))
       val dataNodeShouldBe =
@@ -48,7 +48,7 @@ class ExampleSparkSpec extends WordSpec {
         ("type" -> "S3DataNode")
       assert(dataNode == dataNodeShouldBe)
 
-      val snsAlarm = objectsField(3)
+      val snsAlarm = objectsField(4)
       val snsAlarmId = (snsAlarm \ "id").values.toString
       assert(snsAlarmId.startsWith("SnsAlarm"))
       val snsAlarmShouldBe =
@@ -61,26 +61,27 @@ class ExampleSparkSpec extends WordSpec {
           ("type" -> "SnsAlarm")
       assert(snsAlarm === snsAlarmShouldBe)
 
-      val sparkCluster = objectsField(4)
+      val sparkCluster = objectsField(1)
       val sparkClusterId = (sparkCluster \ "id").values.toString
-      assert(sparkClusterId.startsWith("SparkCluster_"))
+      assert(sparkClusterId.startsWith("EmrCluster_"))
       val sparkClusterShouldBe =
         ("id" -> sparkClusterId) ~
         ("name" -> sparkClusterId) ~
-        ("bootstrapAction" -> List("s3://support.elasticmapreduce/spark/install-spark,-v,1.1.1.e,-x", "s3://your-bucket/datapipeline/scripts/deploy-hyperion-emr-env.sh,s3://bucket/org_env.sh")) ~
-        ("amiVersion" -> "3.3") ~
+        ("bootstrapAction" -> Seq.empty[String]) ~
+        ("keyPair" -> "your-aws-key-pair") ~
         ("masterInstanceType" -> "m3.xlarge") ~
         ("coreInstanceType" -> "m3.xlarge") ~
         ("coreInstanceCount" -> "2") ~
         ("taskInstanceType" -> "#{my_InstanceType}") ~
         ("taskInstanceCount" -> "#{my_InstanceCount}") ~
-        ("terminateAfter" -> "8 hours") ~
-        ("keyPair" -> "your-aws-key-pair") ~
-        ("type" -> "EmrCluster") ~
         ("region" -> "us-east-1") ~
-        ("role" -> "DataPipelineDefaultRole") ~
         ("resourceRole" -> "DataPipelineDefaultResourceRole") ~
-        ("initTimeout" -> "5 hours")
+        ("role" -> "DataPipelineDefaultRole") ~
+        ("initTimeout" -> "5 hours") ~
+        ("terminateAfter" -> "8 hours") ~
+        ("releaseLabel" -> "emr-5.12.0") ~
+        ("applications" -> Seq("Spark")) ~
+        ("type" -> "EmrCluster")
       assert(sparkCluster === sparkClusterShouldBe)
 
       val filterActivity = objectsField(5)
@@ -90,12 +91,12 @@ class ExampleSparkSpec extends WordSpec {
         ("id" -> filterActivityId) ~
         ("name" -> "filterActivity") ~
         ("jarUri" -> "s3://elasticmapreduce/libs/script-runner/script-runner.jar") ~
-        ("runsOn" -> ("ref" -> sparkClusterId)) ~
-        ("argument" -> List("s3://your-bucket/datapipeline/scripts/run-spark-step.sh",
+        ("argument" -> List("s3://your-bucket/datapipeline/scripts/run-spark-step-release-label.sh",
           "s3://sample-jars/sample-jar-assembly-current.jar",
           "com.krux.hyperion.FilterJob",
           "the-target",
           "#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}")) ~
+        ("runsOn" -> ("ref" -> sparkClusterId)) ~
         ("input" -> List("ref" -> dataNodeId)) ~
         ("onFail" -> List("ref" -> snsAlarmId)) ~
         ("type" -> "HadoopActivity")
@@ -103,15 +104,15 @@ class ExampleSparkSpec extends WordSpec {
 
       val scoreActivity = objectsField(6)
       val scoreActivityId = (scoreActivity \ "id").values.toString
-      assert(scoreActivityId.startsWith("SparkActivity_"))
+      assert(scoreActivityId.startsWith("EmrActivity_"))
       val scoreActivityShouldBe =
         ("id" -> scoreActivityId) ~
         ("name" -> "scoreActivity") ~
         ("step" -> List(
-          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob1,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},denormalized",
-          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob2,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}",
-          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob3,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},value1\\\\,value2",
-          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob4,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},value1\\\\,value2\\\\,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}"
+          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step-release-label.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob1,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},denormalized",
+          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step-release-label.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob2,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}",
+          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step-release-label.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob3,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},value1\\\\,value2",
+          "s3://elasticmapreduce/libs/script-runner/script-runner.jar,s3://your-bucket/datapipeline/scripts/run-spark-step-release-label.sh,s3://sample-jars/sample-jar-assembly-current.jar,com.krux.hyperion.ScoreJob4,the-target,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")},value1\\\\,value2\\\\,#{format(minusDays(@scheduledStartTime,3),\"yyyy-MM-dd\")}"
           )) ~
         ("runsOn" -> ("ref" -> sparkClusterId)) ~
         ("dependsOn" -> List("ref" -> filterActivityId)) ~

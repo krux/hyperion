@@ -40,7 +40,7 @@ class ExampleS3DistCpWorkflowSpec extends WordSpec {
 
       val mapReduceCluster = objectsField(0)
       val mapReduceClusterId = (mapReduceCluster \ "id").values.toString
-      assert(mapReduceClusterId.startsWith("MapReduceCluster_"))
+      assert(mapReduceClusterId.startsWith("EmrCluster_"))
       val mapReduceClusterShouldBe =
         ("id" -> mapReduceClusterId) ~
         ("name" -> "Cluster with release label") ~

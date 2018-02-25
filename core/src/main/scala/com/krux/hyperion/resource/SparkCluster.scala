@@ -26,6 +26,10 @@ case class SparkCluster private (
   def updateResourceFields(fields: ResourceFields) = copy(resourceFields = fields)
   def updateEmrClusterFields(fields: EmrClusterFields) = copy(emrClusterFields = fields)
 
+  def withAmiVersion(version: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(amiVersion = Option(version), releaseLabel = None)
+  )
+
   def withSparkVersion(sparkVersion: HString) = copy(sparkVersion = Option(sparkVersion))
 
   override def applications = if (releaseLabel.nonEmpty)

@@ -24,7 +24,7 @@ class ExampleHiveActivitySpec extends WordSpec {
 
       val mapReduceCluster = objectsField.head
       val mapReduceClusterId = (mapReduceCluster \ "id").values.toString
-      assert(mapReduceClusterId.startsWith("MapReduceCluster_"))
+      assert(mapReduceClusterId.startsWith("EmrCluster_"))
       val mapReduceClusterShouldBe =
         ("id" -> mapReduceClusterId) ~
           ("name" -> "Cluster with release label") ~

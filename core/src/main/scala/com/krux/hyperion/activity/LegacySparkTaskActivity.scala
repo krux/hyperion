@@ -16,6 +16,7 @@ import com.krux.hyperion.resource.{BaseEmrCluster, Resource}
  * negotiator in Hadoop 1. If you would like to run work sequentially using the Amazon EMR Step action,
  * you can still use SparkActivity.
  */
+@deprecated("Use SparkTaskActivity instead", "5.0.0")
 case class LegacySparkTaskActivity private (
   baseFields: BaseFields,
   activityFields: ActivityFields[BaseEmrCluster],
@@ -88,6 +89,7 @@ case class LegacySparkTaskActivity private (
 
 }
 
+@deprecated("Use SparkTaskActivity instead", "5.0.0")
 object LegacySparkTaskActivity extends RunnableObject with LegacySparkCommandRunner {
 
   def apply(jarUri: HS3Uri, mainClass: MainClass)(runsOn: Resource[BaseEmrCluster])(implicit hc: HyperionContext): LegacySparkTaskActivity =
