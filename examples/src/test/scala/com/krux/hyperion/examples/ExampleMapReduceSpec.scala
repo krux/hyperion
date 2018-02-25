@@ -53,7 +53,7 @@ class ExampleMapReduceSpec extends WordSpec {
 
       val mapReduceCluster = objectsField.head
       val mapReduceClusterId = (mapReduceCluster \ "id").values.toString
-      assert(mapReduceClusterId.startsWith("MapReduceCluster_"))
+      assert(mapReduceClusterId.startsWith("EmrCluster_"))
       val mapReduceClusterShouldBe =
         ("id" -> mapReduceClusterId) ~
         ("name" -> "Cluster with release label") ~
@@ -75,7 +75,7 @@ class ExampleMapReduceSpec extends WordSpec {
 
       val filterActivity = objectsField(4)
       val filterActivityId = (filterActivity \ "id").values.toString
-      assert(filterActivityId.startsWith("MapReduceActivity_"))
+      assert(filterActivityId.startsWith("EmrActivity_"))
       val filterActivityShouldBe =
         ("id" -> filterActivityId) ~
         ("name" -> "filterActivity") ~
@@ -87,7 +87,7 @@ class ExampleMapReduceSpec extends WordSpec {
 
       val scoreActivity = objectsField(5)
       val scoreActivityId = (scoreActivity \ "id").values.toString
-      assert(scoreActivityId.startsWith("MapReduceActivity_"))
+      assert(scoreActivityId.startsWith("EmrActivity_"))
       val scoreActivityShouldBe =
         ("id" -> scoreActivityId) ~
         ("name" -> "scoreActivity") ~
