@@ -103,6 +103,19 @@ object SparkStep {
   )
 
   /**
+   * Given a jar in S3, this uses EMR script runner that downloads the jar and then runs the spark
+   * step. This is for pre EMR release label 4.x.x and spark version before 2.0
+   */
+  def legacyScriptRunner(jarUri: HS3Uri)(implicit hc: HyperionContext): ScriptRunnerStep = ScriptRunnerStep(
+    jarUri.serialize,
+    s"${hc.scriptUri}run-spark-step.sh",
+    None,
+    Seq.empty,
+    Map.empty,
+    Seq.empty
+  )
+
+  /**
    * This uses the command-runner.jar in EMR release labeled versions, it requires the jar to be
    * deployed locally in the cluster.
    */

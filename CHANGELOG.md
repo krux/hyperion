@@ -6,10 +6,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - [#521](https://github.com/krux/hyperion/issues/521) - Upate AWS SDK dependency to 1.11.238 and deprecate support for AWS_SECURITY_TOKEN
 ### EmrRefactor
-- Introduce LegacyEmrCluster
-- Renamed MapReduceCluster to EmrCluster
+- Introduce a BaseEmrCluster which is the base trait of EmrCluster and LegacyEmrCluster
+    - LegacyEmrCluster is for pre emr release label 4.x.x
+    - EmrCluster is for post release label 4.x.x
+    - MapReduceCluster has been removed and replaced by the above two different clusters
+- Introduce BaseEmrStep
+    - EmrStep is a generic step that can construct any script runner or command runner based activities
+    - HadoopStep is a step that runs hadoop based jobs where one can optionally specify main class in additional to arguments
+    - SparkStep is rewored to better support command-runner (Use `SparkStep.legacyScriptRunner` to run spark steps on pre emr-4.0.0 EMR clusters)
+- EmrActivity is no longer a trait but a case class it should be used for all EMR based activities including Spark where the formal SparkActivity now is simply EmrActivity with spark steps.
+- SparkActivity is removed
+- SparkTaskActivity has been reworked to closer follow the new SparkStep approach. Use `SparkTaskActivity.legacyScriptRunner` to run spark activities on pre emr-4.0.0 EMR clusters.
+- `SparkCommandRunner` trait is removed
+- `EmrConfiguration` now always require a `classification`, empty `classification` is not marked as deprecated
 - Relaxes spark related activities to be able to run on any EMR cluster, the compiler will not check the validity, and leave this to the developer
-- EmrConfiguration refactor
 
 ## 4.14.3 - 2018-02-09
 ### Fixed

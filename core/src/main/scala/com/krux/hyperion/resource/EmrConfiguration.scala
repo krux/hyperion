@@ -36,6 +36,7 @@ case class EmrConfiguration private (
 
 object EmrConfiguration {
 
+  @deprecated("Use apply(classification: String) instead", "5.0.0")
   def apply(): EmrConfiguration = EmrConfiguration(
     baseFields = BaseFields(PipelineObjectId(EmrConfiguration.getClass)),
     classification = None,
@@ -43,6 +44,11 @@ object EmrConfiguration {
     configurations = Seq.empty
   )
 
-  def apply(classification: String): EmrConfiguration = apply().withClassification(classification)
+  def apply(classification: String): EmrConfiguration = EmrConfiguration(
+    baseFields = BaseFields(PipelineObjectId(EmrConfiguration.getClass)),
+    classification = Option(classification),
+    properties = Seq.empty,
+    configurations = Seq.empty
+  )
 
 }

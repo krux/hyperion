@@ -5,23 +5,23 @@ import com.krux.hyperion.aws.AdpEmrActivity
 import com.krux.hyperion.common.{BaseFields, PipelineObjectId}
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.resource.{EmrCluster, Resource}
+import com.krux.hyperion.resource.{BaseEmrCluster, Resource}
 
 
 case class EmrActivity private (
   baseFields: BaseFields,
-  activityFields: ActivityFields[EmrCluster],
+  activityFields: ActivityFields[BaseEmrCluster],
   steps: Seq[BaseEmrStep],
   inputs: Seq[S3DataNode],
   outputs: Seq[S3DataNode],
   preStepCommands: Seq[HString],
   postStepCommands: Seq[HString]
-) extends BaseEmrActivity[EmrCluster] {
+) extends BaseEmrActivity[BaseEmrCluster] {
 
   type Self = EmrActivity
 
   def updateBaseFields(fields: BaseFields) = copy(baseFields = fields)
-  def updateActivityFields(fields: ActivityFields[EmrCluster]) = copy(activityFields = fields)
+  def updateActivityFields(fields: ActivityFields[BaseEmrCluster]) = copy(activityFields = fields)
 
   def withSteps(newSteps: BaseEmrStep*) = copy(steps = steps ++ newSteps)
   def withInput(input: S3DataNode*) = copy(inputs = inputs ++ input)
@@ -59,7 +59,7 @@ case class EmrActivity private (
 
 object EmrActivity extends RunnableObject {
 
-  def apply(runsOn: Resource[EmrCluster]): EmrActivity = new EmrActivity(
+  def apply(runsOn: Resource[BaseEmrCluster]): EmrActivity = new EmrActivity(
     baseFields = BaseFields(PipelineObjectId(EmrActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     steps = Seq.empty,

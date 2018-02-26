@@ -6,7 +6,7 @@ import com.krux.hyperion.common.{LegacySparkCommandRunner, Memory, PipelineObjec
 import com.krux.hyperion.datanode.S3DataNode
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.resource.{BaseEmrCluster, EmrCluster, Resource}
+import com.krux.hyperion.resource.{BaseEmrCluster, EmrCluster, LegacyEmrCluster, Resource}
 
 
 /**
@@ -94,7 +94,7 @@ case class SparkTaskActivity private (
 
 object SparkTaskActivity extends RunnableObject {
 
-  def scriptRunner(jarUri: HS3Uri)(runsOn: Resource[BaseEmrCluster])(implicit hc: HyperionContext) = new SparkTaskActivity(
+  def scriptRunner(jarUri: HS3Uri)(runsOn: Resource[EmrCluster])(implicit hc: HyperionContext) = new SparkTaskActivity(
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
@@ -110,8 +110,27 @@ object SparkTaskActivity extends RunnableObject {
     sparkConfig = Map.empty
   )
 
-  def apply(jarUri: HS3Uri)(runsOn: Resource[BaseEmrCluster])(implicit hc: HyperionContext) =
+  def apply(jarUri: HS3Uri)(runsOn: Resource[EmrCluster])(implicit hc: HyperionContext) =
     scriptRunner(jarUri)(runsOn)
+
+  /**
+   * Use this one to deploy spark task actvity on pre emr-4.0.0 clusters
+   */
+  def legacyScriptRunner(jarUri: HS3Uri)(runsOn: Resource[LegacyEmrCluster])(implicit hc: HyperionContext) = new SparkTaskActivity(
+    baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
+    activityFields = ActivityFields(runsOn),
+    emrTaskActivityFields = EmrTaskActivityFields(),
+    jarUri = EmrScriptRunner.toString,
+    sparkJarUri = jarUri.serialize,
+    command = s"${hc.scriptUri}run-spark-step.sh",
+    sparkMainClass = None,
+    arguments = Seq.empty,
+    hadoopQueue = None,
+    inputs = Seq.empty,
+    outputs = Seq.empty,
+    sparkOptions = Seq.empty,
+    sparkConfig = Map.empty
+  )
 
   def commandRunner(jarUri: HString)(runsOn: Resource[EmrCluster]) = new SparkTaskActivity(
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
