@@ -47,7 +47,7 @@ trait SparkStep extends BaseEmrStep {
 
 object SparkStep {
 
-  case class ScriptRunnerStep private (
+  case class ScriptRunnerStep(
     sparkJarUri: HString,
     command: HString,
     sparkMainClass: Option[MainClass],
@@ -65,7 +65,7 @@ object SparkStep {
 
   }
 
-  case class CommandRunnerStep private (
+  case class CommandRunnerStep(
     sparkJarUri: HString,
     command: HString,
     sparkMainClass: Option[MainClass],
