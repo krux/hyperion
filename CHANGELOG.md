@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `SparkCommandRunner` trait is removed
 - `EmrConfiguration` now always require a `classification`, empty `classification` is not marked as deprecated
 - Relaxes spark related activities to be able to run on any EMR cluster, the compiler will not check the validity, and leave this to the developer
+- Added default `hyperion.emr.release_label` to emr-5.12.0
 
 ## 4.14.3 - 2018-02-09
 ### Fixed
