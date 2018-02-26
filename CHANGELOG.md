@@ -13,7 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Introduce BaseEmrStep
     - EmrStep is a generic step that can construct any script runner or command runner based activities
     - HadoopStep is a step that runs hadoop based jobs where one can optionally specify main class in additional to arguments
-    - SparkStep is rewored to better support command-runner (Use `SparkStep.legacyScriptRunner` to run spark steps on pre emr-4.0.0 EMR clusters)
+    - SparkStep is reworked to better support command-runner (Use `SparkStep.legacyScriptRunner` to run spark steps on pre emr-4.0.0 EMR clusters)
 - EmrActivity is no longer a trait but a case class it should be used for all EMR based activities including Spark where the formal SparkActivity now is simply EmrActivity with spark steps.
 - SparkActivity is removed
 - SparkTaskActivity has been reworked to closer follow the new SparkStep approach. Use `SparkTaskActivity.legacyScriptRunner` to run spark activities on pre emr-4.0.0 EMR clusters.
