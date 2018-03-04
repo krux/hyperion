@@ -25,7 +25,7 @@ val scalatestArtifact       = "org.scalatest"          %% "scalatest"           
 val scalacheckArtifact      = "org.scalacheck"         %% "scalacheck"                % "1.13.5" % "test"
 val stubbornArtifact        = "com.krux"               %% "stubborn"                  % "1.3.0"
 
-scalaVersion in ThisBuild := scala211Version
+scalaVersion in ThisBuild := scala212Version
 
 lazy val publishSettings = Seq(
   sonatypeProfileName := "com.krux",
@@ -72,7 +72,8 @@ lazy val commonSettings = Seq(
     "-deprecation",
     "-feature",
     "-Xlint",
-    "-Xfatal-warnings"
+    "-Xfatal-warnings",
+    "-language:existentials"
   ),
   scalacOptions in (Compile, doc) ++= Seq(
     "-sourcepath", (baseDirectory in ThisBuild).value.toString,

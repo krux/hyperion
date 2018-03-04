@@ -105,7 +105,6 @@ object Parameter {
     Right(
       new StringExp {
         def content = p.name
-        def evaluate() = p.evaluate()
       }
     )
   )
@@ -114,7 +113,6 @@ object Parameter {
     Right(
       new IntExp {
         def content = p.name
-        def evaluate() = p.evaluate()
       }
     )
   )
@@ -123,7 +121,6 @@ object Parameter {
     Right(
       new DoubleExp {
         def content = p.name
-        def evaluate() = p.evaluate()
       }
     )
   )
@@ -132,7 +129,6 @@ object Parameter {
     Right(
       new DateTimeExp {
         def content = p.name
-        def evaluate() = p.evaluate()
       }
     )
   )
@@ -141,7 +137,6 @@ object Parameter {
     Right(
       new DurationExp {
         def content = p.name
-        def evaluate() = p.evaluate()
       }
     )
   )
@@ -150,7 +145,6 @@ object Parameter {
     Right(
       new S3UriExp {
         def content = p.name
-        def evaluate() = p.evaluate()
       }
     )
   )
@@ -159,7 +153,6 @@ object Parameter {
     Right(
       new HdfsUriExp {
         def content = p.name
-        def evaluate() = p.evaluate()
       }
     )
   )

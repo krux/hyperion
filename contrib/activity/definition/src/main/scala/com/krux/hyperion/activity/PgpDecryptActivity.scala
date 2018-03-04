@@ -1,10 +1,11 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.adt.{HBoolean, HS3Uri, HString}
+import com.krux.hyperion.adt.{HBoolean, HS3Uri}
 import com.krux.hyperion.common.{BaseFields, PipelineObjectId}
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
+
 
 /**
   * The server-side PGP decryption activity decrypts files from the input location to the output location using the

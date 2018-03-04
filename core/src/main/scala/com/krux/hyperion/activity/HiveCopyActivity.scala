@@ -6,8 +6,8 @@ import com.krux.hyperion.common.BaseFields
 import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.datanode.DataNode
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.precondition.Precondition
 import com.krux.hyperion.resource.{Resource, BaseEmrCluster}
+
 
 /**
  * Runs a Hive query on an Amazon EMR cluster. HiveCopyActivity makes it easier to copy data between

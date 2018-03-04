@@ -1,10 +1,6 @@
 package com.krux.hyperion.client
 
-import scala.collection.JavaConverters._
-
 import com.amazonaws.services.datapipeline.DataPipeline
-import com.amazonaws.services.datapipeline.model.{PipelineObject, ListPipelinesRequest,
-  ParameterObject, CreatePipelineRequest, Tag, PutPipelineDefinitionRequest}
 
 import com.krux.hyperion.DataPipelineDefGroup
 

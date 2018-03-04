@@ -1,10 +1,9 @@
 package com.krux.hyperion.workflow
 
-import scala.language.existentials
-
 import com.krux.hyperion.activity.PipelineActivity
 import com.krux.hyperion.common.PipelineObject
 import com.krux.hyperion.resource.ResourceObject
+
 
 sealed abstract class WorkflowExpression {
 

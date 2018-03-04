@@ -1,7 +1,5 @@
 package com.krux.hyperion.expression
 
-import scala.language.implicitConversions
-
 /**
  * Indicates how often a scheduled event should run. It's expressed in the format "N
  * [years|months|weeks|days|hours|minutes]", where N is a positive integer value.

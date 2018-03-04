@@ -28,22 +28,24 @@ class AdpScheduleSpec extends WordSpec {
   }
 
   "AdpStartDateTimeSchedule" should {
-    val testObj = AdpRecurringSchedule(
-      id = "theId",
-      name = Option("SomeName"),
-      period = "1 day",
-      startAt = None,
-      startDateTime = Option(new DateTime("2014-04-02T00:00:00Z")),
-      endDateTime = None,
-      occurrences = None
-    )
-    val objShouldBe = ("id" -> "theId") ~
-      ("name" -> "SomeName") ~
-      ("period" -> "1 day") ~
-      ("startDateTime" -> "2014-04-02T00:00:00") ~
-      ("type" -> "Schedule")
+    "converts to Json" in {
+      val testObj = AdpRecurringSchedule(
+        id = "theId",
+        name = Option("SomeName"),
+        period = "1 day",
+        startAt = None,
+        startDateTime = Option(new DateTime("2014-04-02T00:00:00Z")),
+        endDateTime = None,
+        occurrences = None
+      )
+      val objShouldBe = ("id" -> "theId") ~
+        ("name" -> "SomeName") ~
+        ("period" -> "1 day") ~
+        ("startDateTime" -> "2014-04-02T00:00:00") ~
+        ("type" -> "Schedule")
 
-    assert(AdpJsonSerializer.apply(testObj) === objShouldBe)
+      assert(AdpJsonSerializer.apply(testObj) === objShouldBe)
+    }
   }
 
 }

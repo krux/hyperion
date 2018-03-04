@@ -1,10 +1,11 @@
 package com.krux.hyperion.activity
 
+import com.krux.hyperion.common.S3Uri
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.Implicits._
-import com.krux.hyperion.common.{HdfsUri, S3Uri}
 import com.typesafe.config.ConfigFactory
 import org.scalatest.WordSpec
+
 
 class SparkStepSpec extends WordSpec {
   class SomeClass

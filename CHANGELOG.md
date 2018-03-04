@@ -5,7 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 5.0.0-SNAPSHOT
 ### Changed
 - [#521](https://github.com/krux/hyperion/issues/521) - Upate AWS SDK dependency to 1.11.238 and deprecate support for AWS_SECURITY_TOKEN
-### EmrRefactor
+- [#503](https://github.com/krux/hyperion/issues/503) - Updated dependencies including scopt, json4s, etc.
+- [#515](https://github.com/krux/hyperion/issues/515) - Remove support for Scala 2.10 and Java 7. Add Scala 2.12 and start build with Java 8
+
+### EMR Refactor
 - Introduce a BaseEmrCluster which is the base trait of EmrCluster and LegacyEmrCluster
     - LegacyEmrCluster is for pre emr release label 4.x.x
     - EmrCluster is for post release label 4.x.x

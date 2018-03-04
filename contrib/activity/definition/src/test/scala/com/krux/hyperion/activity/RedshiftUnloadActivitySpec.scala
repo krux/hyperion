@@ -3,13 +3,12 @@ package com.krux.hyperion.activity
 import com.typesafe.config.ConfigFactory
 import org.scalatest.WordSpec
 
-import com.krux.hyperion.common.{PipelineObjectId, S3Uri}
 import com.krux.hyperion.common.S3Uri._
 import com.krux.hyperion.database.RedshiftDatabase
-import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.Implicits._
-import com.krux.hyperion.resource.Ec2Resource
 import com.krux.hyperion.expression.{Parameter, ParameterValues}
+import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.resource.Ec2Resource
+
 
 class RedshiftUnloadActivitySpec extends WordSpec {
 
