@@ -3,9 +3,8 @@ package com.krux.hyperion.contrib.activity.file
 import java.io._
 import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
 
-import org.apache.commons.io.IOUtils
-
 import scala.collection.mutable.ListBuffer
+
 
 class FileSplitter(
   header: Option[String],
@@ -23,7 +22,13 @@ class FileSplitter(
 
     def isEmpty: Boolean = outputStreamWriter.isEmpty
 
-    def close(): Unit = outputStreamWriter.foreach(IOUtils.closeQuietly)
+    def close(): Unit = outputStreamWriter.foreach { o =>
+      try {
+        o.close()
+      } catch {
+        case e: Exception => e.printStackTrace()
+      }
+    }
 
     def write(byte: Int): Unit = {
       numberOfBytes += 1

@@ -5,6 +5,7 @@ import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
 
 import org.apache.commons.io.IOUtils
 
+
 case class FileMerger(destination: File, skipFirstLine: Boolean = false, headers: Option[String] = None) {
   def merge(sources: File*): File = {
     val output: OutputStream = new BufferedOutputStream({
@@ -16,7 +17,11 @@ case class FileMerger(destination: File, skipFirstLine: Boolean = false, headers
       sources.foldLeft(headers -> output)(appendFile)
       destination
     } finally {
-      IOUtils.closeQuietly(output)
+      try {
+        output.close()
+      } catch {
+        case e: Exception => e.printStackTrace()
+      }
     }
   }
 
@@ -58,8 +63,13 @@ case class FileMerger(destination: File, skipFirstLine: Boolean = false, headers
           IOUtils.copy(doSkipFirstLine(input), output)
         }
       } finally {
-        IOUtils.closeQuietly(input)
-        println("done")
+        try {
+          input.close()
+        } catch {
+          case e: Exception => e.printStackTrace()
+        } finally {
+          println("done")
+        }
       }
 
       None -> output
