@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#503](https://github.com/krux/hyperion/issues/503) - Updated dependencies including scopt, json4s, etc.
 - [#515](https://github.com/krux/hyperion/issues/515) - Remove support for Scala 2.10 and Java 7. Add Scala 2.12 and start build with Java 8
 - [#532](https://github.com/krux/hyperion/issues/532) - Update commons-io dependency to 2.6
+- [#465](https://github.com/krux/hyperion/issues/465) - Update default EC2 AMI to HVM-IS 2017.09.1
 
 ### EMR Refactor
 - Introduce a BaseEmrCluster which is the base trait of EmrCluster and LegacyEmrCluster
