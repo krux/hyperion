@@ -32,15 +32,15 @@ trait DefaultObject extends PipelineObject {
   def withProperty(key: String, value: PipelineObject): Self = updateDefaultObjectFields(defaultObjectFields.copy(properties = defaultObjectFields.properties.updated(key, Right(value))))
 
   def objects: Iterable[PipelineObject] = defaultObjectFields.schedule match {
-    case s: OnDemandSchedule => None
+    case OnDemandSchedule => None
 
     case s => Option(s)
   }
 
   lazy val serialize = new AdpDataPipelineDefaultObject {
     val scheduleProps: Map[String, Either[HType, PipelineObject]] = defaultObjectFields.schedule match {
-      case s: OnDemandSchedule => Map(
-        "scheduleType" -> Left(s.scheduleType.serialize)
+      case OnDemandSchedule => Map(
+        "scheduleType" -> Left(OnDemandSchedule.scheduleType.serialize)
       )
 
       case s => Map(

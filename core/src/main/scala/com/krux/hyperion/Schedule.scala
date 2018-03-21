@@ -1,22 +1,23 @@
 package com.krux.hyperion
 
-import com.github.nscala_time.time.Imports.{DateTime, DateTimeZone}
-import com.krux.hyperion.Implicits._
+import com.github.nscala_time.time.Imports.{DateTime, DateTimeZone, Period}
+
 import com.krux.hyperion.aws.{AdpOnDemandSchedule, AdpRecurringSchedule, AdpRef}
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ScheduleObjectId}
 import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.Implicits._
 
 /**
  * Schedule defines how a pipeline is run.
  */
-trait Schedule extends PipelineObject {
+sealed trait Schedule extends PipelineObject {
   def scheduleType: ScheduleType
 }
 
 /**
  * Schedule that runs on-demand.
  */
-class OnDemandSchedule extends Schedule {
+case object OnDemandSchedule extends Schedule {
 
   val id: PipelineObjectId = ScheduleObjectId
   val scheduleType: ScheduleType = OnDemand
@@ -37,7 +38,7 @@ class OnDemandSchedule extends Schedule {
  *
  * @note If start time given is a past time, data pipeline will perform back fill from the start.
  */
-case class RecurringSchedule private[hyperion] (
+final case class RecurringSchedule private[hyperion] (
   id: PipelineObjectId = ScheduleObjectId,
   // if None, will use first activation datetime
   start: Option[DateTime] = None,
@@ -118,11 +119,30 @@ case class RecurringSchedule private[hyperion] (
 }
 
 object Schedule {
-  def ondemand: OnDemandSchedule = new OnDemandSchedule()
+
+  def ondemand: OnDemandSchedule.type = OnDemandSchedule
 
   def cron: RecurringSchedule = RecurringSchedule(scheduleType = Cron)
 
   def timeSeries: RecurringSchedule = RecurringSchedule(scheduleType = TimeSeries)
 
   def onceAtActivation: RecurringSchedule = RecurringSchedule(end = Option(Left(1)), scheduleType = Cron)
+
+  def delay(schedule: Schedule, by: Duration, multiplier: Int): Schedule = {
+    import com.krux.hyperion.common.DurationConverters._
+    delay(schedule, by.asJodaPeriodMultiplied(multiplier))
+  }
+
+  def delay(schedule: Schedule, by: Period): Schedule = schedule match {
+    case s: RecurringSchedule =>
+      s.start match {
+        case None =>
+          s
+        case Some(dt) =>
+          s.copy(start = Option(dt.plus(by)))
+      }
+    case OnDemandSchedule =>
+      OnDemandSchedule
+  }
+
 }

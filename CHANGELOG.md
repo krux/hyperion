@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 5.0.0-SNAPSHOT
+
+## Added
+- [#460](https://github.com/krux/hyperion/issues/460) - Add scheduler delay feature to DataPipelinePipelineDefGroup
+
 ### Changed
 - [#521](https://github.com/krux/hyperion/issues/521) - Upate AWS SDK dependency to 1.11.238 and deprecate support for AWS_SECURITY_TOKEN
 - [#503](https://github.com/krux/hyperion/issues/503) - Updated dependencies including scopt, json4s, etc.

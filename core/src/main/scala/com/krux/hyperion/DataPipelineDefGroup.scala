@@ -1,14 +1,14 @@
 package com.krux.hyperion
 
 import com.amazonaws.services.datapipeline.model.{ParameterObject => AwsParameterObject, PipelineObject => AwsPipelineObject}
-import org.json4s.JValue
 import org.json4s.JsonAST.JArray
 import org.json4s.JsonDSL._
+import org.json4s.JValue
 
 import com.krux.hyperion.activity.MainClass
 import com.krux.hyperion.aws.{AdpJsonSerializer, AdpParameterSerializer, AdpPipelineSerializer}
 import com.krux.hyperion.common.{DefaultObject, HdfsUriHelper, PipelineObject, S3UriHelper}
-import com.krux.hyperion.expression.{Parameter, ParameterValues}
+import com.krux.hyperion.expression.{Parameter, ParameterValues, Duration}
 import com.krux.hyperion.workflow.{WorkflowExpression, WorkflowExpressionImplicits}
 
 
@@ -28,6 +28,11 @@ trait DataPipelineDefGroup
   def pipelineName: String = MainClass(this).toString
 
   def schedule: Schedule
+
+  /**
+   * No delay by default
+   */
+  def scheduleDelay: Option[Duration] = None
 
   def defaultObject: DefaultObject = DefaultObject(schedule)
 
@@ -55,25 +60,41 @@ object DataPipelineDefGroup {
 
   final val DefaultNameKeySeparator = "#"
 
-  implicit class DataPipelineDefGroupOps(dpdg: DataPipelineDefGroup) {
-    def ungroup(): Map[WorkflowKey, DataPipelineDef] = dpdg.workflows.map { case (key, workflow) =>
-      (
-        key,
-        DataPipelineDefWrapper(
-          dpdg.hc,
-          dpdg.nameForKey(key),
-          dpdg.schedule,
-          () => workflow,
-          dpdg.tags,
-          dpdg.parameters
-        )
-      )
+  private def delayedSchedule(dpdg: DataPipelineDefGroup, multiplier: Int): Schedule =
+    dpdg.scheduleDelay match {
+      case None => dpdg.schedule
+      case Some(delay) => Schedule.delay(dpdg.schedule, delay, multiplier)
     }
 
-    def objects: Map[WorkflowKey, Iterable[PipelineObject]] =
-      dpdg.workflows.mapValues(workflow =>
-        dpdg.defaultObject +: dpdg.defaultObject.objects ++: workflow.toPipelineObjects.toList
-      )
+  implicit class DataPipelineDefGroupOps(dpdg: DataPipelineDefGroup) {
+    def ungroup(): Map[WorkflowKey, DataPipelineDef] = dpdg.workflows
+      .toSeq
+      .sortBy(_._1)  // order by key
+      .zipWithIndex
+      .map { case ((key, workflow), idx) =>
+        (
+          key,
+          DataPipelineDefWrapper(
+            dpdg.hc,
+            dpdg.nameForKey(key),
+            delayedSchedule(dpdg, idx),
+            () => workflow,
+            dpdg.tags,
+            dpdg.parameters
+          )
+        )
+      }
+      .toMap
+
+    def objects: Map[WorkflowKey, Iterable[PipelineObject]] = dpdg.workflows
+      .toSeq
+      .sortBy(_._1)
+      .zipWithIndex
+      .map { case ((key, workflow), idx) =>
+        val dObj = dpdg.defaultObject.withSchedule(delayedSchedule(dpdg, idx))
+        key -> (dObj +: dObj.objects ++: workflow.toPipelineObjects.toList)
+      }
+      .toMap
 
     def toAwsParameters: Seq[AwsParameterObject] =
       dpdg.parameters.flatMap(_.serialize).map(o => AdpParameterSerializer(o)).toList
