@@ -19,6 +19,7 @@ bin/
 
 # IntelliJ
 .idea
+*.iml
 
 # Vim stuff
 *.swp
