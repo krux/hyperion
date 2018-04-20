@@ -12,7 +12,7 @@ if [[ "$#" -lt 2 ]]; then
 fi
 
 # Parse the spark options as any option until the first non-option (the jar)
-SPARK_OPTIONS=""
+SPARK_OPTIONS=()
 
 while [[ $# > 0 ]]; do
   key=$1
@@ -20,7 +20,8 @@ while [[ $# > 0 ]]; do
   case ${key} in
     --*)
       shift
-      SPARK_OPTIONS="${SPARK_OPTIONS} ${key} $1"
+      SPARK_OPTIONS+=("${key}")
+      SPARK_OPTIONS+=("$1")
       shift
       ;;
 
@@ -49,4 +50,4 @@ LOCAL_JAR="${LOCAL_JAR_DIR}/${JAR_NAME}"
 # Download JAR file from S3 to local
 hadoop fs -get ${REMOTE_JAR_LOCATION} ${LOCAL_JAR}
 
-exec spark-submit ${SPARK_OPTIONS} --class ${JOB_CLASS} ${LOCAL_JAR} $@
+exec spark-submit "${SPARK_OPTIONS[@]}" --class ${JOB_CLASS} ${LOCAL_JAR} "$@"

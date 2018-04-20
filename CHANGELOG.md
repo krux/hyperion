@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.14.4 - 2018-04-19
+### Fixed
+- [#540](https://github.com/krux/hyperion/issues/540) - Fixed a but that the script that handling spark options does not work well with spaces
+
 ## 4.14.3 - 2018-02-09
 ### Fixed
 - [#527](https://github.com/krux/hyperion/issues/527) - Updated all serialize calls on pipeline objects to lazy val to fix an issue that very deep dependencies will cause slow serialization
