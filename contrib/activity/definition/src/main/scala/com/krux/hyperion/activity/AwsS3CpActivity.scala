@@ -13,7 +13,8 @@ case class AwsS3CpActivity private(
   destinationS3Path: HS3Uri,
   isRecursive: HBoolean,
   isOverwrite: HBoolean,
-  additionalArguments: Seq[HString]
+  additionalArguments: Seq[HString],
+  profile: Option[HString]
 ) extends BaseShellCommandActivity with WithS3Input {
 
   type Self = AwsS3CpActivity
@@ -24,7 +25,7 @@ case class AwsS3CpActivity private(
 
   def withOverwrite() = copy(isOverwrite = HBoolean.True)
   def withRecursive() = withAdditionalArguments("--recursive")
-  def withProfile(profile: HString) = withAdditionalArguments("--profile", profile)
+  def withProfile(profile: HString) = copy(profile = Option(profile))
   def withAcl(cannedAcl: HString) = withAdditionalArguments("--acl", cannedAcl)
   def withExclude(pattern: HString) = withAdditionalArguments("--exclude", pattern)
   def withInclude(pattern: HString) = withAdditionalArguments("--include", pattern)
@@ -35,9 +36,21 @@ case class AwsS3CpActivity private(
   )
   def withAdditionalArguments(arguments: HString*) = copy(additionalArguments = this.additionalArguments ++ arguments)
 
-  private val removeScript = if (isOverwrite) s"aws s3 rm --recursive $destinationS3Path;" else ""
+  private val removeScript = isOverwrite match {
+    case HBoolean.True => profile match {
+      case Some(p) => s"aws s3 rm --recursive --profile $p $destinationS3Path;"
+      case _ => s"aws s3 rm --recursive $destinationS3Path;"
+    }
+    case HBoolean.False => ""
+  }
 
-  private val s3CpScript = s"aws s3 cp ${additionalArguments.mkString(" ")} $sourceS3Path $destinationS3Path;"
+  private val s3CpScript = {
+    profile match {
+      case Some(p) => withAdditionalArguments("--profile", p)
+      case _  => None
+    }
+    s"aws s3 cp ${additionalArguments.mkString(" ")} $sourceS3Path $destinationS3Path;"
+  }
 
   override def script = s"""
     |if [ -n "$${INPUT1_STAGING_DIR}" ]; then
@@ -64,6 +77,7 @@ object AwsS3CpActivity extends RunnableObject {
       destinationS3Path = destinationS3Path,
       isRecursive = HBoolean.False,
       isOverwrite = HBoolean.False,
-      additionalArguments = Seq.empty
+      additionalArguments = Seq.empty,
+      profile = None
     )
 }
