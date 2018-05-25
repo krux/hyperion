@@ -41,7 +41,7 @@ case class AwsS3CpActivity private(
       case Some(p) => s"aws s3 rm --recursive --profile $p $destinationS3Path;"
       case _ => s"aws s3 rm --recursive $destinationS3Path;"
     }
-    case HBoolean.False => ""
+    case _ => ""
   }
 
   private val s3CpScript = {
