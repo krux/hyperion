@@ -39,17 +39,14 @@ case class AwsS3CpActivity private(
   private val removeScript = isOverwrite match {
     case HBoolean.True => profile match {
       case Some(p) => s"aws s3 rm --recursive --profile $p $destinationS3Path;"
-      case _ => s"aws s3 rm --recursive $destinationS3Path;"
+      case None => s"aws s3 rm --recursive $destinationS3Path;"
     }
     case _ => ""
   }
 
-  private val s3CpScript = {
-    profile match {
-      case Some(p) => withAdditionalArguments("--profile", p)
-      case _  => None
-    }
-    s"aws s3 cp ${additionalArguments.mkString(" ")} $sourceS3Path $destinationS3Path;"
+  private val s3CpScript = profile match {
+      case Some(p) => s"aws s3 cp ${additionalArguments.mkString(" ")} --profile $p $sourceS3Path $destinationS3Path;"
+      case None  => s"aws s3 cp ${additionalArguments.mkString(" ")} $sourceS3Path $destinationS3Path;"
   }
 
   override def script = s"""
