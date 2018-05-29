@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.0 - 2018-05-29
+
+## Added
+- [#545](https://github.com/krux/hyperion/issues/545) - Add profile support for the overwrite script in AwsS3CpActivity
+
 ## 5.0.1 - 2018-05-21
 
 ## Fixed
