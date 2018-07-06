@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.2 - 2018-07-06
+
+## Changed
+[#550](https://github.com/krux/hyperion/issues/550) - Update sbt to 1.1.6
+[#449](https://github.com/krux/hyperion/issues/449) - Update AWS SDK dependency to use 1.11.x instead of specific version of 1.11
+
 ## 5.1.1 - 2018-07-03
 
 ## Added

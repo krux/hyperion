@@ -35,9 +35,13 @@ case class JarActivity private (
   def withEnvironmentUri(environmentUri: HS3Uri) = copy(environmentUri = Option(environmentUri))
   def withClasspath(jar: HS3Uri) = copy(classpath = classpath :+ jar)
 
-  override def scriptArguments = classpath.flatMap(jar => Seq[HString]("--cp", jar.serialize)) ++
+  override def scriptArguments =
+    classpath.flatMap(jar => Seq[HString]("--cp", jar.serialize)) ++
     environmentUri.toSeq.flatMap(uri => Seq[HString]("--env", uri.serialize)) ++
-    Seq[HString]("--jar", jarUri.serialize) ++ options ++ mainClass.map(_.fullName: HString) ++ shellCommandActivityFields.scriptArguments
+    Seq[HString]("--jar", jarUri.serialize) ++
+    options ++
+    mainClass.map(_.fullName: HString) ++
+    shellCommandActivityFields.scriptArguments
 
 }
 
