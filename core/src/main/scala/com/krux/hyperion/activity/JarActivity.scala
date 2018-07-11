@@ -10,16 +10,16 @@ import com.krux.hyperion.resource.{Ec2Resource, Resource}
   * Shell command activity that runs a given Jar
   */
 case class JarActivity private (
-   baseFields: BaseFields,
-   activityFields: ActivityFields[Ec2Resource],
-   shellCommandActivityFields: ShellCommandActivityFields,
-   jarUri: HS3Uri,
-   mainClass: Option[MainClass],
-   options: Seq[HString],
-   environmentUri: Option[HS3Uri],
-   classpath: Seq[HS3Uri],
-   preScript: Option[HString]
-  ) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
+ baseFields: BaseFields,
+ activityFields: ActivityFields[Ec2Resource],
+ shellCommandActivityFields: ShellCommandActivityFields,
+ jarUri: HS3Uri,
+ mainClass: Option[MainClass],
+ options: Seq[HString],
+ environmentUri: Option[HS3Uri],
+ classpath: Seq[HS3Uri],
+ preScript: Option[HString]
+) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = JarActivity
 
