@@ -50,7 +50,7 @@ class JarActivitySpec extends WordSpec {
       val ja = JarActivity(S3Uri("s3://something.jar"))(ec2).withMainClass(SomeObject.getClass)
         .withPreScript("ulimit -n 2048")
       assert(ja.preScript.map(_.toString) == Some("ulimit -n 2048"))
-      assert(ja.scriptArguments.map(_.toString) == List("--preScript", "ulimit -n 2048", "--jar", "s3://something.jar", "com.krux.hyperion.activity.JarActivitySpec.SomeObject"))
+      assert(ja.scriptArguments.map(_.toString) == List("--pre_script", "ulimit -n 2048", "--jar", "s3://something.jar", "com.krux.hyperion.activity.JarActivitySpec.SomeObject"))
     }
   }
 }

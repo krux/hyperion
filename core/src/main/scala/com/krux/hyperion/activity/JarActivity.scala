@@ -44,6 +44,7 @@ case class JarActivity private (
     options ++
     mainClass.map(_.fullName: HString) ++
     shellCommandActivityFields.scriptArguments
+
 }
 
 object JarActivity extends RunnableObject {
