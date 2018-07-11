@@ -89,4 +89,3 @@ done
 # Run the jar itself.
 echo "Running jar ${LOCAL_JAR} $@"
 java -cp ${LOCAL_JAR}${CLASSPATH} "$@"
-

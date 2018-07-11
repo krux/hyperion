@@ -37,7 +37,7 @@ case class JarActivity private (
   def withPreScript(preScript: HString) = copy(preScript = Option(preScript))
 
   override def scriptArguments =
-    preScript.toSeq.flatMap(script => Seq[HString]("--preScript", script.serialize)) ++
+    preScript.toSeq.flatMap(script => Seq[HString]("--pre_script", script.serialize)) ++
     classpath.flatMap(jar => Seq[HString]("--cp", jar.serialize)) ++
     environmentUri.toSeq.flatMap(uri => Seq[HString]("--env", uri.serialize)) ++
     Seq[HString]("--jar", jarUri.serialize) ++
