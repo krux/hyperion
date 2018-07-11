@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.3 - WIP
+
+## Added
+- [#552](https://github.com/krux/hyperion/issues/552) - Add custom pre script support to JarActivity
+
 ## 5.1.2 - 2018-07-06
 
 ## Changed
