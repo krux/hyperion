@@ -66,6 +66,15 @@ while [[ $# > 0 ]]; do
       shift
       ;;
 
+    --pre_script)
+      shift
+      COMMAND="$1"
+      shift
+
+      echo "Running Pre Script ${COMMAND}"
+      ${COMMAND}
+      ;;
+
     *)
       REMOTE_JAR="$1"
       LOCAL_JAR=$(basename ${REMOTE_JAR})
@@ -80,3 +89,4 @@ done
 # Run the jar itself.
 echo "Running jar ${LOCAL_JAR} $@"
 java -cp ${LOCAL_JAR}${CLASSPATH} "$@"
+
