@@ -38,12 +38,12 @@ case class JarActivity private (
 
   override def scriptArguments =
     preScript.toSeq.flatMap(script => Seq[HString]("--preScript", script.serialize)) ++
-      classpath.flatMap(jar => Seq[HString]("--cp", jar.serialize)) ++
-      environmentUri.toSeq.flatMap(uri => Seq[HString]("--env", uri.serialize)) ++
-      Seq[HString]("--jar", jarUri.serialize) ++
-      options ++
-      mainClass.map(_.fullName: HString) ++
-      shellCommandActivityFields.scriptArguments
+    classpath.flatMap(jar => Seq[HString]("--cp", jar.serialize)) ++
+    environmentUri.toSeq.flatMap(uri => Seq[HString]("--env", uri.serialize)) ++
+    Seq[HString]("--jar", jarUri.serialize) ++
+    options ++
+    mainClass.map(_.fullName: HString) ++
+    shellCommandActivityFields.scriptArguments
 }
 
 object JarActivity extends RunnableObject {
