@@ -66,6 +66,15 @@ while [[ $# > 0 ]]; do
       shift
       ;;
 
+    --pre_script)
+      shift
+      COMMAND="$1"
+      shift
+
+      echo "Running Pre Script ${COMMAND}"
+      ${COMMAND}
+      ;;
+
     *)
       REMOTE_JAR="$1"
       LOCAL_JAR=$(basename ${REMOTE_JAR})

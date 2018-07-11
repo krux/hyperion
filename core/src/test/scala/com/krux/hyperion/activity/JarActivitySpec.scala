@@ -7,6 +7,7 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.WordSpec
 
 class JarActivitySpec extends WordSpec {
+
   class SomeClass
 
   object SomeObject {
@@ -42,6 +43,14 @@ class JarActivitySpec extends WordSpec {
     "allow mainClass a Class" in {
       val ja = JarActivity(S3Uri("s3://something.jar"))(ec2).withMainClass(SomeObject.getClass)
       assert(ja.mainClass.map(_.toString) == Some("com.krux.hyperion.activity.JarActivitySpec.SomeObject"))
+      assert(ja.scriptArguments.map(_.toString) == List("--jar", "s3://something.jar", "com.krux.hyperion.activity.JarActivitySpec.SomeObject"))
+    }
+
+    "allow preScript of ulimit" in {
+      val ja = JarActivity(S3Uri("s3://something.jar"))(ec2).withMainClass(SomeObject.getClass)
+        .withPreScript("ulimit -n 2048")
+      assert(ja.preScript.map(_.toString) == Some("ulimit -n 2048"))
+      assert(ja.scriptArguments.map(_.toString) == List("--pre_script", "ulimit -n 2048", "--jar", "s3://something.jar", "com.krux.hyperion.activity.JarActivitySpec.SomeObject"))
     }
   }
 }

@@ -1,15 +1,14 @@
 package com.krux.hyperion.activity
 
-import com.krux.hyperion.adt.{HS3Uri, HString}
-import com.krux.hyperion.common.S3Uri
-import com.krux.hyperion.common.{BaseFields, PipelineObjectId}
-import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.HyperionContext
+import com.krux.hyperion.adt.{HS3Uri, HString}
+import com.krux.hyperion.common.{BaseFields, PipelineObjectId, S3Uri}
+import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
 /**
- * Shell command activity that runs a given Jar
- */
+  * Shell command activity that runs a given Jar
+  */
 case class JarActivity private (
   baseFields: BaseFields,
   activityFields: ActivityFields[Ec2Resource],
@@ -18,7 +17,8 @@ case class JarActivity private (
   mainClass: Option[MainClass],
   options: Seq[HString],
   environmentUri: Option[HS3Uri],
-  classpath: Seq[HS3Uri]
+  classpath: Seq[HS3Uri],
+  preScript: Option[HString]
 ) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = JarActivity
@@ -34,8 +34,10 @@ case class JarActivity private (
   def withOptions(opts: HString*) = copy(options = options ++ opts)
   def withEnvironmentUri(environmentUri: HS3Uri) = copy(environmentUri = Option(environmentUri))
   def withClasspath(jar: HS3Uri) = copy(classpath = classpath :+ jar)
+  def withPreScript(preScript: HString) = copy(preScript = Option(preScript))
 
   override def scriptArguments =
+    preScript.toSeq.flatMap(script => Seq[HString]("--pre_script", script.serialize)) ++
     classpath.flatMap(jar => Seq[HString]("--cp", jar.serialize)) ++
     environmentUri.toSeq.flatMap(uri => Seq[HString]("--env", uri.serialize)) ++
     Seq[HString]("--jar", jarUri.serialize) ++
@@ -56,7 +58,8 @@ object JarActivity extends RunnableObject {
       mainClass = None,
       options = Seq.empty,
       environmentUri = hc.ec2EnvironmentUri.map(S3Uri(_)),
-      classpath = Seq.empty
+      classpath = Seq.empty,
+      preScript = None
     )
 
 }
