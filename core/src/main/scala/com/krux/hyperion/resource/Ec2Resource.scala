@@ -70,8 +70,8 @@ object Ec2Resource {
     imageId = Option(hc.ec2ImageId: HString),
     runAsUser = None,
     associatePublicIpAddress = HBoolean.False,
-    securityGroups = hc.ec2SecurityGroup.toSeq,
-    securityGroupIds = hc.ec2SecurityGroupId.toSeq,
+    securityGroups = hc.ec2SubnetId.fold(hc.ec2SecurityGroup)(_ => None).toSeq,
+    securityGroupIds = hc.ec2SubnetId.fold(hc.ec2SecurityGroupId)(_ => None).toSeq,
     spotBidPrice = None
   )
 
