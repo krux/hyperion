@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.3 - 2018-09-04
+
+## Changed
+[#554](https://github.com/krux/hyperion/issues/550) - Handle Parquet and ORC formats in Redshift Copy
+
 ## 5.1.2 - 2018-07-06
 
 ## Changed
