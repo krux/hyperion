@@ -58,4 +58,8 @@ object RedshiftCopyOption {
 
   def avro: RedshiftCopyOption = avro("auto")
 
+  def parquet = RedshiftCopyOption(Seq("FORMAT", "PARQUET"))
+
+  def orc = RedshiftCopyOption(Seq("FORMAT", "ORC"))
+
 }

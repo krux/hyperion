@@ -2,11 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 5.1.3 - 2018-09-05
+## 5.1.4 - 2018-09-05
 
 ## Changed
 - [#546](https://github.com/krux/hyperion/issues/546) - Change Ec2Resource to set security group ids only when security groups are not set
 - [#558](https://github.com/krux/hyperion/issues/558) - Change Ec2Resource to set security groups and ids only when subnet id is not set
+
+## 5.1.3 - 2018-09-04
+
+## Changed
+[#554](https://github.com/krux/hyperion/issues/550) - Handle Parquet and ORC formats in Redshift Copy
 
 ## 5.1.2 - 2018-07-06
 
