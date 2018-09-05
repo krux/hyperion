@@ -11,7 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 5.1.3 - 2018-09-04
 
 ## Changed
-[#554](https://github.com/krux/hyperion/issues/550) - Handle Parquet and ORC formats in Redshift Copy
+- [#554](https://github.com/krux/hyperion/issues/550) - Handle Parquet and ORC formats in Redshift Copy
 
 ## 5.1.2 - 2018-07-06
 
@@ -81,23 +81,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 4.14.0 - 2017-11-25
 ### Changed
-- [#507] (https://github.com/krux/hyperion/issues/507) - Support STS token when the environment variable is set
+- [#507](https://github.com/krux/hyperion/issues/507) - Support STS token when the environment variable is set
 
 ## 4.13.2 - 2017-11-16
 ### Changed
-- [#512] (https://github.com/krux/hyperion/issues/512) - Fix invalid syntax bug for AVRO format in RedshiftCopyOption
+- [#512](https://github.com/krux/hyperion/issues/512) - Fix invalid syntax bug for AVRO format in RedshiftCopyOption
 
 ## 4.13.1 - 2017-11-15
 ### Changed
-- [#510] (https://github.com/krux/hyperion/issues/510) - Add AVRO to RedshiftCopyOption
+- [#510](https://github.com/krux/hyperion/issues/510) - Add AVRO to RedshiftCopyOption
 
 ## 4.13.0 - 2017-08-11
 ### Changed
-- [#502] (https://github.com/krux/hyperion/issues/502) - Throw exception when pipeline defines no workflows
+- [#502](https://github.com/krux/hyperion/issues/502) - Throw exception when pipeline defines no workflows
 
 ## 4.12.0 - 2017-06-02
 ### Fixed
-- [#497] (https://github.com/krux/hyperion/issues/497) - Replace the Retry Implementation with Stubborn
+- [#497](https://github.com/krux/hyperion/issues/497) - Replace the Retry Implementation with Stubborn
 
 ## 4.11.1 - 2017-05-12
 ### Fixed
