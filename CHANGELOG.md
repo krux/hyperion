@@ -2,16 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.3 - 2018-09-05
+
+## Changed
+- [#546](https://github.com/krux/hyperion/issues/546) - Change Ec2Resource to set security group ids only when security groups are not set
+- [#558](https://github.com/krux/hyperion/issues/558) - Change Ec2Resource to set security groups and ids only when subnet id is not set
+
 ## 5.1.2 - 2018-07-06
 
 ## Changed
-[#550](https://github.com/krux/hyperion/issues/550) - Update sbt to 1.1.6
-[#449](https://github.com/krux/hyperion/issues/449) - Update AWS SDK dependency to use 1.11.x instead of specific version of 1.11
+- [#550](https://github.com/krux/hyperion/issues/550) - Update sbt to 1.1.6
+- [#449](https://github.com/krux/hyperion/issues/449) - Update AWS SDK dependency to use 1.11.x instead of specific version of 1.11
 
 ## 5.1.1 - 2018-07-03
 
 ## Added
-[#547](https://github.com/krux/hyperion/issues/547) - Added support for AwsS3CpActivity to fail silently if the copy script fails
+- [#547](https://github.com/krux/hyperion/issues/547) - Added support for AwsS3CpActivity to fail silently if the copy script fails
 
 ## 5.1.0 - 2018-05-29
 
