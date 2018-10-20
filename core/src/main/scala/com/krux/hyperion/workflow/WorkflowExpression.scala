@@ -7,7 +7,7 @@ import com.krux.hyperion.resource.ResourceObject
 
 sealed abstract class WorkflowExpression {
 
-  def toActivities: Iterable[PipelineActivity[_]] = {
+  def toActivities: Iterable[PipelineActivity[_ <: ResourceObject]] = {
 
     def toWorkflowGraph(exp: WorkflowExpression): WorkflowGraph = {
       exp match {

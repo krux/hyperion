@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.5 - 2018-10-22
+
+## Changed
+- [#560](https://github.com/krux/hyperion/issues/560) - Keep consistency of PipelineActivity[_ <: ResourceObject]. Change WorkerGroup to trait.
+
 ## 5.1.4 - 2018-09-05
 
 ## Changed

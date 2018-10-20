@@ -1,3 +1,13 @@
 package com.krux.hyperion.resource
 
-case class WorkerGroup(ref: String)
+trait WorkerGroup {
+  val ref: String
+}
+
+object WorkerGroup {
+
+  def apply(workerGroupRef: String): WorkerGroup = new WorkerGroup {
+    override val ref: String = workerGroupRef
+  }
+
+}

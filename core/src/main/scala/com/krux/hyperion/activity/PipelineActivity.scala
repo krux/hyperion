@@ -18,7 +18,7 @@ trait PipelineActivity[A <: ResourceObject] extends NamedPipelineObject {
   def updateActivityFields(fields: ActivityFields[A]): Self
 
   def dependsOn = activityFields.dependsOn
-  private[hyperion] def dependsOn(activities: PipelineActivity[_]*): Self = updateActivityFields(
+  private[hyperion] def dependsOn(activities: PipelineActivity[_ <: ResourceObject]*): Self = updateActivityFields(
     activityFields.copy(dependsOn = activityFields.dependsOn ++ activities)
   )
 

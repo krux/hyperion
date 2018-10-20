@@ -7,7 +7,7 @@ import com.krux.hyperion.resource.{ ResourceObject, Resource }
 
 case class ActivityFields[A <: ResourceObject](
   runsOn: Resource[A],
-  dependsOn: Seq[PipelineActivity[_]] = Seq.empty,
+  dependsOn: Seq[PipelineActivity[_ <: ResourceObject]] = Seq.empty,
   preconditions: Seq[Precondition] = Seq.empty,
   onFailAlarms: Seq[SnsAlarm] = Seq.empty,
   onSuccessAlarms: Seq[SnsAlarm] = Seq.empty,
