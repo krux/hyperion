@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.6 - 2018-11-09
+
+## Changed
+- [#557](https://github.com/krux/hyperion/issues/557) - Fix Delayed scheduler.
+
 ## 5.1.5 - 2018-10-22
 
 ## Changed
