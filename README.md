@@ -42,6 +42,21 @@ This project is compiled, tested, and published for the following Scala versions
 
 ## Usage
 
+### Setup
+
+#### Pipeline Scripts
+
+Some pipeline steps requireing supporting scripts for execution. These
+scripts need to be uploaded to an S3 bucket where AWS Data Pipeline can
+access them.
+
+Configure an S3 bucket and upload the scripts to that bucket with the
+following command:
+
+    $ ./deploy-scripts.sh s3://your-bucket/scripts
+
+In your pipeline configuration be sure to set `hyperion.script.uri = s3://your-bucket/scripts`
+
 ### Creating a pipeline
 
 To create a new pipeline, create a Scala class in `com.krux.datapipeline.pipelines`.

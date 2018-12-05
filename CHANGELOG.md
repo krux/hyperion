@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.7 - 2018-12-05
+
+## Added
+
+- [#564](https://github.com/krux/hyperion/pull/564) - Add script to deploy hyperion scripts to S3.
+
 ## 5.1.6 - 2018-11-09
 
 ## Changed
