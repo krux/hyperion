@@ -55,7 +55,7 @@ following command:
 
     $ ./deploy-scripts.sh s3://your-bucket/scripts
 
-In your pipeline configuration be sure to set `hyperion.script.uri = s3://your-bucket/scripts`
+In your pipeline configuration be sure to set `hyperion.script.uri = s3://your-bucket/scripts/`
 
 ### Creating a pipeline
 
