@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Added
 
-- [#564](https://github.com/krux/hyperion/pull/564) - Add script to deploy hyperion scripts to S3.
+- [#565](https://github.com/krux/hyperion/issues/565) - Add script to deploy hyperion scripts to S3.
 
 ## 5.1.6 - 2018-11-09
 
