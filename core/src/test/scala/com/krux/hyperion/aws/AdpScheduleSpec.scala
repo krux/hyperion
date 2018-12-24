@@ -1,6 +1,5 @@
 package com.krux.hyperion.aws
 
-import com.github.nscala_time.time.Imports.DateTime
 import org.json4s.JsonDSL._
 import org.scalatest.WordSpec
 
@@ -34,7 +33,7 @@ class AdpScheduleSpec extends WordSpec {
         name = Option("SomeName"),
         period = "1 day",
         startAt = None,
-        startDateTime = Option(new DateTime("2014-04-02T00:00:00Z")),
+        startDateTime = Option("2014-04-02T00:00:00"),
         endDateTime = None,
         occurrences = None
       )

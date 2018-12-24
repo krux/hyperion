@@ -1,8 +1,9 @@
 package com.krux.hyperion.expression
 
-import scala.language.implicitConversions
+import org.joda.time.{DateTime, Period}
 
-import org.joda.time.DateTime
+import scala.language.implicitConversions
+import scala.util.Try
 
 /**
  * Expression. Expressions are delimited by: "#{" and "}" and the contents of the braces are
@@ -139,6 +140,15 @@ trait StringExp extends TypedExpression { self =>
 trait BooleanExp extends TypedExpression with Evaluatable[Boolean]
 
 trait DateTimeExp extends TypedExpression {
+
+  def +(period: Period): DateTimeExp = Seq(
+    Try(Year(period.getYears)),
+    Try(Month(period.getMonths)),
+    Try(Week(period.getWeeks)),
+    Try(Day(period.getDays)),
+    Try(Hour(period.getHours)),
+    Try(Minute(period.getMinutes))
+  ).flatMap(_.toOption).foldLeft(this)(_ + _)
 
   def + (period: Duration): DateTimeExp = period match {
     case Minute(n) => PlusMinutes(this, IntConstantExp(n))

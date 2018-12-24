@@ -1,11 +1,11 @@
 package com.krux.hyperion
 
 import com.github.nscala_time.time.Imports.{DateTime, DateTimeZone, Period}
-
+import com.krux.hyperion.Implicits._
+import com.krux.hyperion.adt.{HDateTime, HDuration, HInt}
 import com.krux.hyperion.aws.{AdpOnDemandSchedule, AdpRecurringSchedule, AdpRef}
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ScheduleObjectId}
 import com.krux.hyperion.expression.Duration
-import com.krux.hyperion.Implicits._
 
 /**
  * Schedule defines how a pipeline is run.
@@ -41,15 +41,16 @@ case object OnDemandSchedule extends Schedule {
 final case class RecurringSchedule private[hyperion] (
   id: PipelineObjectId = ScheduleObjectId,
   // if None, will use first activation datetime
-  start: Option[DateTime] = None,
-  period: Duration = 1.day,
-  end: Option[Either[Int, DateTime]] = None,
+  start: Option[HDateTime] = None,
+  period: HDuration = 1.day,
+  end: Option[Either[HInt, HDateTime]] = None,
   scheduleType: ScheduleType = Cron
 ) extends Schedule {
 
   def startAtActivation = copy(start = None)
 
-  def startDateTime(dt: DateTime) = copy(start = Option(dt))
+  def startDateTime(dt: HDateTime) = copy(start = Option(dt))
+
 
   def startThisHourAt(minuteOfHour: Int, secondOfMinute: Int) = {
     val currentHour = DateTime.now.withZone(DateTimeZone.UTC).getHourOfDay
@@ -69,12 +70,12 @@ final case class RecurringSchedule private[hyperion] (
       secondOfMinute: Int)(dayOfFunc: (DateTime, Int) => DateTime) = {
     val startDt = dayOfFunc(DateTime.now.withZone(DateTimeZone.UTC), dayOfX)
       .withTime(hourOfDay, minuteOfHour, secondOfMinute, 0)
-    copy(start = Option(startDt))
+    copy(start = Option(startDt: HDateTime))
   }
 
-  def every(p: Duration) = this.copy(period = p)
-  def until(dt: DateTime) = this.copy(end = Option(Right(dt)))
-  def stopAfter(occurrences: Int) = this.copy(end = if (occurrences > 0) Option(Left(occurrences)) else None)
+  def every(p: HDuration) = this.copy(period = p)
+  def until(dt: HDateTime) = this.copy(end = Option(Right(dt)))
+  def stopAfter(occurrences: HInt) = this.copy(end = if(occurrences.value.left.forall(_ > 0)) Option(Left(occurrences)) else None)
 
   def objects: Iterable[PipelineObject] = None
 
@@ -83,15 +84,15 @@ final case class RecurringSchedule private[hyperion] (
       AdpRecurringSchedule(
         id = id,
         name = id.toOption,
-        period = period.toString,
+        period = period.serialize,
         startAt = None,
-        startDateTime = Option(dt),
+        startDateTime = Option(dt.serialize),
         endDateTime = end.flatMap {
-          case Right(d) => Option(d)
+          case Right(d) => Option(d.serialize)
           case _ => None
         },
         occurrences = end.flatMap {
-          case Left(occurrences) => Option(occurrences.toString)
+          case Left(occurrences) => Option(occurrences.serialize)
           case _ => None
         }
       )
@@ -100,15 +101,15 @@ final case class RecurringSchedule private[hyperion] (
       AdpRecurringSchedule(
         id = id,
         name = id.toOption,
-        period = period.toString,
+        period = period.serialize,
         startAt = Option("FIRST_ACTIVATION_DATE_TIME"),
         startDateTime = None,
         endDateTime = end.flatMap {
-          case Right(dt) => Option(dt)
+          case Right(dt) => Option(dt.serialize)
           case _ => None
         },
         occurrences = end.flatMap {
-          case Left(occurrences) => Option(occurrences.toString)
+          case Left(occurrences) => Option(occurrences.serialize)
           case _ => None
         }
       )
@@ -139,7 +140,7 @@ object Schedule {
         case None =>
           s
         case Some(dt) =>
-          s.copy(start = Option(dt.plus(by)))
+          s.copy(start = Option(dt.value.fold[HDateTime](_ plus by, _ + by)))
       }
     case OnDemandSchedule =>
       OnDemandSchedule

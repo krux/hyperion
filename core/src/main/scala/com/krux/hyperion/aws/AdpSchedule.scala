@@ -1,7 +1,5 @@
 package com.krux.hyperion.aws
 
-import com.github.nscala_time.time.Imports.DateTime
-
 /**
  * Defines the timing of a scheduled event, such as when an activity runs.
  *
@@ -43,8 +41,8 @@ case class AdpRecurringSchedule(
   name: Option[String],
   period: String,
   startAt: Option[String],
-  startDateTime: Option[DateTime],
-  endDateTime: Option[DateTime],
+  startDateTime: Option[String],
+  endDateTime: Option[String],
   occurrences: Option[String]
 ) extends AdpDataPipelineObject {
 
