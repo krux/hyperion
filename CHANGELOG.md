@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.8 - 2018-12-24
+
+## Added
+- [#566](https://github.com/krux/hyperion/issues/566) - Add withPreStepCommands and withPostStepCommands in S3DistCpActivity
+
 ## 5.1.7 - 2018-12-05
 
 ## Added

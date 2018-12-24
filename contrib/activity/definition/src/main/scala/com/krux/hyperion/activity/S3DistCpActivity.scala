@@ -172,6 +172,10 @@ case class S3DistCpActivity[A <: BaseEmrCluster] private (
 
   def withArgument(argument: HString*) = copy(arguments = arguments ++ argument)
 
+  def withPreStepCommands(commands: HString*) = copy(preStepCommands = preStepCommands ++ commands)
+
+  def withPostStepCommands(commands: HString*) = copy(postStepCommands = postStepCommands ++ commands)
+
   private def allArguments: Seq[HString] = Seq(
     Option(arguments),
     source.map(s => Seq[HString]("--src", s.serialize)),
