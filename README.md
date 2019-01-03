@@ -46,9 +46,8 @@ This project is compiled, tested, and published for the following Scala versions
 
 #### Pipeline Scripts
 
-Some pipeline steps requireing supporting scripts for execution. These
-scripts need to be uploaded to an S3 bucket where AWS Data Pipeline can
-access them.
+Some pipeline steps need supporting scripts for execution. These scripts need
+to be uploaded to an S3 bucket where AWS Data Pipeline can access them.
 
 Configure an S3 bucket and upload the scripts to that bucket with the
 following command:
