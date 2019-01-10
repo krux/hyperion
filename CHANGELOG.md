@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.2.0 - 2019-01-10
+
+## Changed
+- [#568](https://github.com/krux/hyperion/issues/568) - Generalize Schedule and AdpSchedule to support expressions.
+
 ## 5.1.8 - 2018-12-24
 
 ## Added
