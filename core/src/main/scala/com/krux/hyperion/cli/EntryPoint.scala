@@ -216,7 +216,7 @@ case class EntryPoint(pipeline: DataPipelineDefGroup) {
         opt[String]("region").valueName("REGION").action { (x, c) => c.copy(region = Option(x)) }
           .text(
             """
-              |     If specified, the pipeline will be created in REGION (default: us-east-1).
+              |     If specified, the pipeline will be created in REGION.
             """.stripMargin),
         opt[String]("role").valueName("ARN").action { (x, c) => c.copy(roleArn = Option(x)) }
           .text(
@@ -240,7 +240,7 @@ case class EntryPoint(pipeline: DataPipelineDefGroup) {
         opt[String]("region").valueName("REGION").action { (x, c) => c.copy(region = Option(x)) }
           .text(
             """
-              |     If specified, the pipeline will be created in REGION (default: us-east-1).
+              |     If specified, the pipeline will be created in REGION.
             """.stripMargin),
         opt[String]("role").valueName("ARN").action { (x, c) => c.copy(roleArn = Option(x)) }
           .text(

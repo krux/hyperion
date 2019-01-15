@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.3.0 - 2019-01-15
+## Changed
+- [#571](https://github.com/krux/hyperion/issues/571) - HyperionCLI and AwsClient now uses the default configuration for region instead of fallback to us-east-1 as defaults
+
 ## 5.2.0 - 2019-01-10
 
 ## Changed
