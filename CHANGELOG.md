@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.0 - 2019-02-06
+## Added
+- [#576](https://github.com/krux/hyperion/issues/576) - Support configuration of EBS volumes for EMR clusters
+
 ## 5.3.0 - 2019-01-15
 ## Changed
 - [#571](https://github.com/krux/hyperion/issues/571) - HyperionCLI and AwsClient now uses the default configuration for region instead of fallback to us-east-1 as defaults

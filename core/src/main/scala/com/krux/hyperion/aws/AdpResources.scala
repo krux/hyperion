@@ -119,12 +119,15 @@ class AdpEmrCluster(
   val keyPair: Option[String],
   val masterInstanceBidPrice: Option[String],
   val masterInstanceType: Option[String],
+  val masterEbsConfiguration: Option[AdpRef[AdpEmrEbsConfiguration]],
   val coreInstanceBidPrice: Option[String],
   val coreInstanceCount: Option[String],
   val coreInstanceType: Option[String],
+  val coreEbsConfiguration: Option[AdpRef[AdpEmrEbsConfiguration]],
   val taskInstanceBidPrice: Option[String],
   val taskInstanceCount: Option[String],
   val taskInstanceType: Option[String],
+  val taskEbsConfiguration: Option[AdpRef[AdpEmrEbsConfiguration]],
   val region: Option[String],
   val availabilityZone: Option[String],
   val resourceRole: Option[String],
@@ -171,5 +174,39 @@ case class AdpEmrConfiguration(
 ) extends AdpDataPipelineObject {
 
   val `type` = "EmrConfiguration"
+
+}
+
+case class AdpEmrEbsConfiguration(
+  id: String,
+  name: Option[String],
+  ebsOptimized: Option[String],
+  ebsBlockDeviceConfig: Option[AdpRef[AdpEmrEbsBlockDeviceConfig]]
+) extends AdpDataPipelineObject {
+
+  val `type` = "EbsConfiguration"
+
+}
+
+case class AdpEmrEbsBlockDeviceConfig(
+  id: String,
+  name: Option[String],
+  volumesPerInstance: Option[String],
+  volumeSpecification: Option[AdpRef[AdpEmrVolumeSpecification]]
+)extends AdpDataPipelineObject {
+
+  val `type` = "EbsBlockDeviceConfig"
+
+}
+
+case class AdpEmrVolumeSpecification(
+  id: String,
+  name: Option[String],
+  sizeInGB: Option[String],
+  volumeType: Option[String],
+  iops: Option[String]
+)extends AdpDataPipelineObject {
+
+  val `type` = "VolumeSpecification"
 
 }

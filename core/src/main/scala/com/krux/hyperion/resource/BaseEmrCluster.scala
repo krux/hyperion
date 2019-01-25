@@ -47,6 +47,21 @@ trait BaseEmrCluster extends ResourceObject {
     emrClusterFields.copy(hadoopSchedulerType = Option(scheduleType))
   )
 
+  def masterEbsConfiguration = emrClusterFields.masterEbsConfiguration
+  def withMasterEbsConfiguration(ebsConfig: EmrEbsConfiguration): Self = updateEmrClusterFields(
+    emrClusterFields.copy(masterEbsConfiguration = Option(ebsConfig))
+  )
+
+  def coreEbsConfiguration = emrClusterFields.coreEbsConfiguration
+  def withCoreEbsConfiguration(ebsConfig: EmrEbsConfiguration): Self = updateEmrClusterFields(
+    emrClusterFields.copy(coreEbsConfiguration = Option(ebsConfig))
+  )
+
+  def taskEbsConfiguration = emrClusterFields.taskEbsConfiguration
+  def withTaskEbsConfiguration(ebsConfig: EmrEbsConfiguration): Self = updateEmrClusterFields(
+    emrClusterFields.copy(taskEbsConfiguration = Option(ebsConfig))
+  )
+
   def masterInstanceBidPrice = emrClusterFields.masterInstanceBidPrice
   def withMasterInstanceBidPrice(price: HDouble): Self = updateEmrClusterFields(
     emrClusterFields.copy(masterInstanceBidPrice = Option(price))
@@ -118,7 +133,8 @@ trait BaseEmrCluster extends ResourceObject {
 
   def configuration = emrClusterFields.configuration
 
-  override def objects = configuration ++ super.objects
+  override def objects =  masterEbsConfiguration ++ coreEbsConfiguration ++ taskEbsConfiguration ++
+    configuration ++ super.objects
 
   override def ref: AdpRef[AdpEmrCluster] = AdpRef(serialize)
 
@@ -147,12 +163,15 @@ trait BaseEmrCluster extends ResourceObject {
       keyPair = keyPair.map(_.serialize),
       masterInstanceBidPrice = masterInstanceBidPrice.map(_.serialize),
       masterInstanceType = masterInstanceType.map(_.serialize),
+      masterEbsConfiguration = masterEbsConfiguration.map(_.ref),
       coreInstanceBidPrice = coreInstanceBidPrice.map(_.serialize),
       coreInstanceCount = Option(coreInstanceCount.serialize),
       coreInstanceType = coreInstanceType.map(_.serialize),
+      coreEbsConfiguration = coreEbsConfiguration.map(_.ref),
       taskInstanceBidPrice = if (taskInstanceCount.isZero.forall(! _)) taskInstanceBidPrice.map(_.serialize) else None,
       taskInstanceCount = if (taskInstanceCount.isZero.forall(! _)) Option(taskInstanceCount.serialize) else None,
       taskInstanceType = if (taskInstanceCount.isZero.forall(! _)) taskInstanceType.map(_.serialize) else None,
+      taskEbsConfiguration = taskEbsConfiguration.map(_.ref),
       region = region.map(_.serialize),
       availabilityZone = availabilityZone.map(_.serialize),
       resourceRole = resourceRole.map(_.serialize),
