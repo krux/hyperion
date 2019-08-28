@@ -18,7 +18,7 @@ case class AwsClientForDef(
   }
 
   def forName(): Option[AwsClientForName] = Option(
-    AwsClientForName(client, pipelineDef.pipelineName, maxRetry, pipelineDef.nameKeySeparator)
+    AwsClientForName(client, pipelineDef.hc.region, pipelineDef.pipelineName, maxRetry, pipelineDef.nameKeySeparator)
   )
 
   /**
@@ -38,7 +38,7 @@ case class AwsClientForDef(
 
     val existingPipelines =
       if (checkExistence)
-        AwsClientForName(client, pipelineDef.pipelineName, maxRetry, pipelineDef.nameKeySeparator)
+        AwsClientForName(client, pipelineDef.hc.region, pipelineDef.pipelineName, maxRetry, pipelineDef.nameKeySeparator)
           .pipelineIdNames
       else
         Map.empty[String, String]
@@ -51,7 +51,7 @@ case class AwsClientForDef(
 
       if (force) {
         log.info("Delete the existing pipeline")
-        AwsClientForId(client, existingPipelines.keySet, maxRetry).deletePipelines()
+        AwsClientForId(client, pipelineDef.hc.region, existingPipelines.keySet, maxRetry).deletePipelines()
         prepareForCreation(force, checkExistence)
       } else {
         log.error("Use --force to force pipeline creation")

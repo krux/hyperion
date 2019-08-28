@@ -9,6 +9,6 @@ private[hyperion] case object CreateAction extends AwsAction {
       client.createPipelines(options.force, options.checkExistence).flatMap(_.activatePipelines())
     else
       client.createPipelines(options.force, options.checkExistence)
-  }.isDefined
+  }.flatMap(_.printConsoleUrl()).isDefined
 
 }
