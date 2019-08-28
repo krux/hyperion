@@ -12,7 +12,7 @@ scala:
 - 2.12.4
 
 jdk:
-- oraclejdk8
+- openjdk8
 
 sbt_args: -no-colors -J-Xss2m
 
