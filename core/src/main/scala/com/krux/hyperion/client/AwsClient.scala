@@ -25,7 +25,7 @@ trait AwsClient extends Retryable with ExponentialBackoffAndJitter {
 
 object AwsClient {
 
-  def getClient(regionId: Option[String] = None, roleArn: Option[String] = None): DataPipeline = {
+  def getClient(regionId: Option[String] = None, roleArn: Option[String] = None): (DataPipeline, String) = {
 
     val region: Option[Regions] = regionId.map(r => Regions.fromName(r))
 
@@ -47,14 +47,17 @@ object AwsClient {
       .standard()
       .withCredentials(stsProvider.getOrElse(defaultProvider))
 
-    region.map(defaultBuilder.withRegion(_)).getOrElse(defaultBuilder).build()
+    val builder = region.map(defaultBuilder.withRegion(_)).getOrElse(defaultBuilder)
+    (builder.build(), builder.getRegion)
   }
 
   def apply(
       pipelineDef: DataPipelineDefGroup,
       regionId: Option[String],
       roleArn: Option[String]
-    ): AwsClientForDef =
-    new AwsClientForDef(getClient(regionId, roleArn), pipelineDef)
+    ): AwsClientForDef = {
+    val (client, region) = getClient(regionId, roleArn)
+    new AwsClientForDef(client, region, pipelineDef)
+  }
 
 }

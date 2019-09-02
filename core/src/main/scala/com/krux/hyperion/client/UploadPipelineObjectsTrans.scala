@@ -12,6 +12,7 @@ import com.krux.stubborn.policy.ExponentialBackoffAndJitter
 
 case class UploadPipelineObjectsTrans(
   client: DataPipeline,
+  region: String,
   pipelineDef: DataPipelineDefGroup,
   override val maxRetry: Int
 ) extends Transaction[Option[Unit], AwsClientForId] with Retryable with ExponentialBackoffAndJitter {
@@ -62,7 +63,7 @@ case class UploadPipelineObjectsTrans(
       if (putDefinitionResult.getErrored) {
         log.error(s"Failed to upload pipeline definition to pipeline $pipelineId")
         log.error(s"Deleting the just created pipeline $pipelineId")
-        AwsClientForId(client, pipelineDef.hc.region, Set(pipelineId), maxRetry).deletePipelines()
+        AwsClientForId(client, region, Set(pipelineId), maxRetry).deletePipelines()
         None
       } else if (putDefinitionResult.getValidationErrors.isEmpty
         && putDefinitionResult.getValidationWarnings.isEmpty) {
@@ -77,7 +78,7 @@ case class UploadPipelineObjectsTrans(
       case e: InvalidRequestException =>
         log.error(s"InvalidRequestException (${e.getErrorCode}): ${e.getErrorMessage}")
         log.error("Deleting the just created pipeline")
-        AwsClientForId(client, pipelineDef.hc.region, Set(pipelineId), maxRetry).deletePipelines()
+        AwsClientForId(client, region, Set(pipelineId), maxRetry).deletePipelines()
         None
     }
 
@@ -85,7 +86,7 @@ case class UploadPipelineObjectsTrans(
 
   def action() = AwsClientForId(
     client,
-    pipelineDef.hc.region,
+    region,
     keyObjectsMap
       .toStream  // there is no need to keep perform createAndUploadObojects if one failed
       .map { case (key, objects) =>
