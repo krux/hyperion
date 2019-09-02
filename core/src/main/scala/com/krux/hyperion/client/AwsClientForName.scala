@@ -11,6 +11,7 @@ import com.krux.hyperion.DataPipelineDefGroup
 
 case class AwsClientForName(
   client: DataPipeline,
+  region: String,
   pipelineName: String,
   override val maxRetry: Int,
   nameKeySeparator: String = DataPipelineDefGroup.DefaultNameKeySeparator
@@ -65,6 +66,6 @@ case class AwsClientForName(
 
   def forId(): Option[AwsClientForId] =
     if (pipelineIdNames.isEmpty) None
-    else Option(AwsClientForId(client, pipelineIdNames.keySet, maxRetry))
+    else Option(AwsClientForId(client, region, pipelineIdNames.keySet, maxRetry))
 
 }

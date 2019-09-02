@@ -7,6 +7,7 @@ import com.amazonaws.services.datapipeline.model.{DeactivatePipelineRequest,
 
 case class AwsClientForId(
   client: DataPipeline,
+  region: String,
   pipelineIds: Set[String],
   override val maxRetry: Int
 ) extends AwsClient {
@@ -38,6 +39,13 @@ case class AwsClientForId(
         .retry()
     }
     Option(this)
+  }
+
+  def printConsoleUrl(): Option[Unit] = {
+    pipelineIds.foreach { id =>
+      log.info(s"https://console.aws.amazon.com/datapipeline/home?region=$region#ExecutionDetailsPlace:pipelineId=$id&show=latest")
+    }
+    Option(Unit)
   }
 
 }

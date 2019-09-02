@@ -7,6 +7,7 @@ import com.krux.hyperion.DataPipelineDefGroup
 
 case class AwsClientForDef(
   client: DataPipeline,
+  region: String,
   pipelineDef: DataPipelineDefGroup
 ) extends AwsClient {
 
@@ -18,7 +19,7 @@ case class AwsClientForDef(
   }
 
   def forName(): Option[AwsClientForName] = Option(
-    AwsClientForName(client, pipelineDef.pipelineName, maxRetry, pipelineDef.nameKeySeparator)
+    AwsClientForName(client, region, pipelineDef.pipelineName, maxRetry, pipelineDef.nameKeySeparator)
   )
 
   /**
@@ -38,7 +39,7 @@ case class AwsClientForDef(
 
     val existingPipelines =
       if (checkExistence)
-        AwsClientForName(client, pipelineDef.pipelineName, maxRetry, pipelineDef.nameKeySeparator)
+        AwsClientForName(client, region, pipelineDef.pipelineName, maxRetry, pipelineDef.nameKeySeparator)
           .pipelineIdNames
       else
         Map.empty[String, String]
@@ -51,7 +52,7 @@ case class AwsClientForDef(
 
       if (force) {
         log.info("Delete the existing pipeline")
-        AwsClientForId(client, existingPipelines.keySet, maxRetry).deletePipelines()
+        AwsClientForId(client, region, existingPipelines.keySet, maxRetry).deletePipelines()
         prepareForCreation(force, checkExistence)
       } else {
         log.error("Use --force to force pipeline creation")
@@ -67,6 +68,6 @@ case class AwsClientForDef(
    * Create and upload the pipeline definitions, if error occurs a full roll back is issued.
    */
   private def uploadPipelineObjects(): Option[AwsClientForId] =
-    UploadPipelineObjectsTrans(client, pipelineDef, maxRetry)().right.toOption
+    UploadPipelineObjectsTrans(client, region, pipelineDef, maxRetry)().right.toOption
 
 }
