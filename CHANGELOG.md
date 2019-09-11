@@ -2,12 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.5.0 - 2019-09-10
+### Changed
+- [#583](https://github.com/krux/hyperion/issues/579) - House keeping updates.
+    SBT 1.3.0, scala 2.12.9, and stubborn 1.4.1. Also update readmes.
+
 ## 5.4.1 - 2019-05-21
-## Changed
+### Changed
 - [#579](https://github.com/krux/hyperion/issues/579) - Update build to scala 2.12.8 and sbt 1.2.8
 
 ## 5.4.0 - 2019-02-06
-## Added
+### Added
 - [#576](https://github.com/krux/hyperion/issues/576) - Support configuration of EBS volumes for EMR clusters
 
 ## 5.3.0 - 2019-01-15
@@ -16,65 +21,65 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 5.2.0 - 2019-01-10
 
-## Changed
+### Changed
 - [#568](https://github.com/krux/hyperion/issues/568) - Generalize Schedule and AdpSchedule to support expressions.
 
 ## 5.1.8 - 2018-12-24
 
-## Added
+### Added
 - [#566](https://github.com/krux/hyperion/issues/566) - Add withPreStepCommands and withPostStepCommands in S3DistCpActivity
 
 ## 5.1.7 - 2018-12-05
 
-## Added
+### Added
 
 - [#565](https://github.com/krux/hyperion/issues/565) - Add script to deploy hyperion scripts to S3.
 
 ## 5.1.6 - 2018-11-09
 
-## Changed
+### Changed
 - [#557](https://github.com/krux/hyperion/issues/557) - Fix Delayed scheduler.
 
 ## 5.1.5 - 2018-10-22
 
-## Changed
-- [#560](https://github.com/krux/hyperion/issues/560) - Keep consistency of PipelineActivity[_ <: ResourceObject]. Change WorkerGroup to trait.
+### Changed
+- [#560](https://github.com/krux/hyperion/issues/560) - Keep consistency of `PipelineActivity[_ <: ResourceObject]`. Change WorkerGroup to trait.
 
 ## 5.1.4 - 2018-09-05
 
-## Changed
+### Changed
 - [#546](https://github.com/krux/hyperion/issues/546) - Change Ec2Resource to set security group ids only when security groups are not set
 - [#558](https://github.com/krux/hyperion/issues/558) - Change Ec2Resource to set security groups and ids only when subnet id is not set
 
 ## 5.1.3 - 2018-09-04
 
-## Changed
+### Changed
 - [#554](https://github.com/krux/hyperion/issues/550) - Handle Parquet and ORC formats in Redshift Copy
 
 ## 5.1.2 - 2018-07-06
 
-## Changed
+### Changed
 - [#550](https://github.com/krux/hyperion/issues/550) - Update sbt to 1.1.6
 - [#449](https://github.com/krux/hyperion/issues/449) - Update AWS SDK dependency to use 1.11.x instead of specific version of 1.11
 
 ## 5.1.1 - 2018-07-03
 
-## Added
+### Added
 - [#547](https://github.com/krux/hyperion/issues/547) - Added support for AwsS3CpActivity to fail silently if the copy script fails
 
 ## 5.1.0 - 2018-05-29
 
-## Added
+### Added
 - [#545](https://github.com/krux/hyperion/issues/545) - Add profile support for the overwrite script in AwsS3CpActivity
 
 ## 5.0.1 - 2018-05-21
 
-## Fixed
+### Fixed
 - (doc) Updated test case message and update Scala 2.12.4 to 2.12.6
 
 ## 5.0.0 - 2018-05-21
 
-## Added
+### Added
 - [#460](https://github.com/krux/hyperion/issues/460) - Add scheduler delay feature to DataPipelinePipelineDefGroup
 
 ### Changed

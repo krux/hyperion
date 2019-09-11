@@ -29,7 +29,7 @@ Add Krux Hyperion as a dependency in your `build.sbt` or `Build.scala` as approp
 ```scala
 libraryDependencies ++= Seq(
   // Other dependencies ...
-  "com.krux" %% "hyperion" % "5.3.0"
+  "com.krux" %% "hyperion" % "5.5.0"
 )
 ```
 
@@ -38,7 +38,7 @@ libraryDependencies ++= Seq(
 This project is compiled, tested, and published for the following Scala versions:
 
 1. 2.11.12
-2. 2.12.4
+2. 2.12.9
 
 ## Usage
 

@@ -1,6 +1,6 @@
-val hyperionVersion = "5.4.1"
+val hyperionVersion = "5.5.0"
 val scala211Version = "2.11.12"
-val scala212Version = "2.12.8"
+val scala212Version = "2.12.9"
 val awsSdkVersion   = "[1.11.238, 1.12.0)"
 val mailVersion     = "1.6.1"
 val slf4jVersion    = "1.7.25"
@@ -23,7 +23,7 @@ val slf4jApiArtifact        = "org.slf4j"              %  "slf4j-api"           
 val slf4jSimpleArtifact     = "org.slf4j"              %  "slf4j-simple"              % slf4jVersion
 val scalatestArtifact       = "org.scalatest"          %% "scalatest"                 % "3.0.5"  % "test"
 val scalacheckArtifact      = "org.scalacheck"         %% "scalacheck"                % "1.13.5" % "test"
-val stubbornArtifact        = "com.krux"               %% "stubborn"                  % "1.3.0"
+val stubbornArtifact        = "com.krux"               %% "stubborn"                  % "1.4.1"
 
 scalaVersion in ThisBuild := scala212Version
 
