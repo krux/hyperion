@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# Usage: $0 s3://something.{py,gz} (-r requirements.pip)? (-m module)? (-i index-url)? (--extra-index-url url)? script.py? -- args
+# Usage: $0 s3://something.{py,gz} (-r requirements.txt)? (-m module)? (-i index-url)? (--extra-index-url url)? script.py? -- args
 
 declare -a on_exit_items
 
@@ -23,7 +23,7 @@ set -xe
 PY_REMOTE=${1?Python URL required}; shift
 PY_LOCAL="$(basename ${PY_REMOTE})"
 PY_EXT="${PY_LOCAL##*.}"
-REQUIREMENTS="requirements.pip"
+REQUIREMENTS="requirements.txt"
 WORKING_DIR=$(mktemp -d)
 cd ${WORKING_DIR}
 add_on_exit rm -rf ${WORKING_DIR}
