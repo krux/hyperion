@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.6.1 - 2019-10-16
+### Changed
+- [#590](https://github.com/krux/hyperion/issues/590) - Hyperion Level support to merge and split files for Bz2 compression format
+
 ## 5.5.1 - 2019-09-13
 ### Changed
 - Script `run-python.sh` now expects a `requirements.txt` file instead of `requirements.pip`.
