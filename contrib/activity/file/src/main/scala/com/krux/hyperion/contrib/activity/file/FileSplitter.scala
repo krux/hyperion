@@ -8,16 +8,16 @@ import scala.collection.mutable.ListBuffer
 
 
 class FileSplitter(
-                    header: Option[String],
-                    numberOfLinesPerFile: Long = Long.MaxValue,
-                    numberOfBytesPerFile: Long = Long.MaxValue,
-                    bufferSize: Long,
-                    compressed: Boolean,
-                    temporaryDirectory: File
-                  ) {
+    header: Option[String],
+    numberOfLinesPerFile: Long = Long.MaxValue,
+    numberOfBytesPerFile: Long = Long.MaxValue,
+    bufferSize: Long,
+    compressed: Boolean,
+    temporaryDirectory: File
+ ) {
   private class FileState(
-                           val outputStreamWriter: Option[OutputStream] = None
-                         ) {
+   val outputStreamWriter: Option[OutputStream] = None
+ ) {
     var numberOfLines: Long = 0L
     var numberOfBytes: Long = 0L
 
