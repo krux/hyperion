@@ -20,8 +20,8 @@ class FileSplitter(
   compressionFormat: CompressionFormat = CompressionFormat.GZ
 ) {
   private class FileState(
-                           val outputStreamWriter: Option[OutputStream] = None
-                         ) {
+   val outputStreamWriter: Option[OutputStream] = None
+ ) {
     var numberOfLines: Long = 0L
     var numberOfBytes: Long = 0L
 
