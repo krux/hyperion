@@ -2,21 +2,22 @@ package com.krux.hyperion.contrib.activity.file
 
 import java.io._
 import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
+import org.apache.commons.compress.compressors.bzip2.{ BZip2CompressorInputStream, BZip2CompressorOutputStream}
 
 import scala.collection.mutable.ListBuffer
 
 
 class FileSplitter(
-  header: Option[String],
-  numberOfLinesPerFile: Long = Long.MaxValue,
-  numberOfBytesPerFile: Long = Long.MaxValue,
-  bufferSize: Long,
-  compressed: Boolean,
-  temporaryDirectory: File
-) {
+    header: Option[String],
+    numberOfLinesPerFile: Long = Long.MaxValue,
+    numberOfBytesPerFile: Long = Long.MaxValue,
+    bufferSize: Long,
+    compressed: Boolean,
+    temporaryDirectory: File
+ ) {
   private class FileState(
-    val outputStreamWriter: Option[OutputStream] = None
-  ) {
+   val outputStreamWriter: Option[OutputStream] = None
+ ) {
     var numberOfLines: Long = 0L
     var numberOfBytes: Long = 0L
 
@@ -42,14 +43,24 @@ class FileSplitter(
     val splits = ListBuffer[File]()
     val input = new BufferedInputStream({
       val s = new FileInputStream(source)
-      if (source.getName.endsWith(".gz")) new GZIPInputStream(s) else s
+      if (source.getName.endsWith(".gz")) {
+        new GZIPInputStream(s)
+      }
+      else if(source.getName.endsWith(".bz2")){
+        new BZip2CompressorInputStream(s)
+      }
+      else {
+        s
+      }
     }, bufferSize.toInt)
     var needFile = true
+    val sourceName = source.getName
+    val compressionTypeEnding = sourceName.substring(sourceName.lastIndexOf(".")+1, sourceName.length)
 
     var read = input.read()
     while (read != -1) {
       if (needFile) {
-        val split = startNewFile()
+        val split = startNewFile(compressionTypeEnding)
         splits += split
 
         println(s"Creating split #${splits.size}: ${split.getAbsolutePath}")
@@ -72,14 +83,22 @@ class FileSplitter(
     fileState = new FileState
   }
 
-  private def startNewFile(): File = {
+  private def startNewFile(compressionTypeEnding: String): File = {
     fileState.close()
 
     val file = File.createTempFile("split-", ".tmp", temporaryDirectory)
 
     fileState = new FileState(Option(new BufferedOutputStream({
       val s = new FileOutputStream(file, true)
-      if (compressed) new GZIPOutputStream(s) else s
+      if (compressed && compressionTypeEnding.equals("gz")) {
+        new GZIPOutputStream(s)
+      }
+      else if (compressed && compressionTypeEnding.equals("bz2")){
+        new BZip2CompressorOutputStream(s)
+      }
+      else {
+        s
+      }
     })))
 
     header.map(_.getBytes).foreach { b =>
