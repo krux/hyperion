@@ -11,15 +11,9 @@ case class FileMerger(destination: File, skipFirstLine: Boolean = false, headers
   def merge(sources: File*): File = {
     val output: OutputStream = new BufferedOutputStream({
       val s = new FileOutputStream(destination, true)
-      if (destination.getName.endsWith(".gz")) {
-        new GZIPOutputStream(s)
-      }
-      else if(destination.getName.endsWith(".bz2")){
-        new BZip2CompressorOutputStream(s)
-      }
-      else{
-        s
-      }
+      if (destination.getName.endsWith(".gz")) new GZIPOutputStream(s)
+      else if(destination.getName.endsWith(".bz2")) new BZip2CompressorOutputStream(s)
+      else s
     })
 
     try {
@@ -58,15 +52,9 @@ case class FileMerger(destination: File, skipFirstLine: Boolean = false, headers
 
       val input = new BufferedInputStream({
         val s = new FileInputStream(source)
-        if (source.getName.endsWith(".gz")) {
-          new GZIPInputStream(s)
-        }
-        else if(destination.getName.endsWith(".bz2")){
-          new BZip2CompressorInputStream(s)
-        }
-        else {
-          s
-        }
+        if (source.getName.endsWith(".gz")) new GZIPInputStream(s)
+        else if(source.getName.endsWith(".bz2")) new BZip2CompressorInputStream(s)
+        else s
       })
 
       try {

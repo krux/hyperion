@@ -16,8 +16,8 @@ class FileSplitter(
   temporaryDirectory: File
 ) {
   private class FileState(
-   val outputStreamWriter: Option[OutputStream] = None
- ) {
+    val outputStreamWriter: Option[OutputStream] = None
+  ) {
     var numberOfLines: Long = 0L
     var numberOfBytes: Long = 0L
 
@@ -43,15 +43,9 @@ class FileSplitter(
     val splits = ListBuffer[File]()
     val input = new BufferedInputStream({
       val s = new FileInputStream(source)
-      if (source.getName.endsWith(".gz")) {
-        new GZIPInputStream(s)
-      }
-      else if(source.getName.endsWith(".bz2")){
-        new BZip2CompressorInputStream(s)
-      }
-      else {
-        s
-      }
+      if (source.getName.endsWith(".gz")) new GZIPInputStream(s)
+      else if(source.getName.endsWith(".bz2")) new BZip2CompressorInputStream(s)
+      else s
     }, bufferSize.toInt)
     var needFile = true
     val sourceName = source.getName
@@ -90,15 +84,9 @@ class FileSplitter(
 
     fileState = new FileState(Option(new BufferedOutputStream({
       val s = new FileOutputStream(file, true)
-      if (compressed && compressionTypeEnding.equals("gz")) {
-        new GZIPOutputStream(s)
-      }
-      else if (compressed && compressionTypeEnding.equals("bz2")){
-        new BZip2CompressorOutputStream(s)
-      }
-      else {
-        s
-      }
+      if (compressed && compressionTypeEnding.equals("gz")) new GZIPOutputStream(s)
+      else if (compressed && compressionTypeEnding.equals("bz2")) new BZip2CompressorOutputStream(s)
+      else s
     })))
 
     header.map(_.getBytes).foreach { b =>
