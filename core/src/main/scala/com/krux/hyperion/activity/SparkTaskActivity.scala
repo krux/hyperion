@@ -60,7 +60,11 @@ case class SparkTaskActivity private (
 
   override def objects = inputs ++ outputs ++ super.objects
 
-  private def sparkSettings: Seq[HString] = sparkOptions ++ sparkConfig.flatMap { case (k, v) => Seq[HString]("--conf", s"$k=$v") }
+  private def isCommandRunner = jarUri.toString.endsWith(EmrCommandRunner)
+
+  private def sparkSettings: Seq[HString] = sparkOptions ++
+    sparkConfig.flatMap { case (k, v) => Seq[HString]("--conf", s"$k=$v") } ++
+    sparkMainClass.filter(_ => isCommandRunner).toSeq.flatMap( main => Seq[HString]("--class", main.toString))
 
   lazy val serialize = new AdpHadoopActivity(
     id = id,
@@ -69,7 +73,7 @@ case class SparkTaskActivity private (
     mainClass = mainClass,
     argument = command.serialize +:
       sparkSettings.map(_.serialize) ++:
-      sparkJarUri.serialize +: sparkMainClass.map(_.toString) ++: arguments.map(_.serialize),
+      sparkJarUri.serialize +: sparkMainClass.filterNot(_ => isCommandRunner).map(_.toString) ++: arguments.map(_.serialize),
     hadoopQueue = hadoopQueue.map(_.serialize),
     preActivityTaskConfig = preActivityTaskConfig.map(_.ref),
     postActivityTaskConfig = postActivityTaskConfig.map(_.ref),
@@ -136,7 +140,7 @@ object SparkTaskActivity extends RunnableObject {
     baseFields = BaseFields(PipelineObjectId(SparkTaskActivity.getClass)),
     activityFields = ActivityFields(runsOn),
     emrTaskActivityFields = EmrTaskActivityFields(),
-    jarUri = EmrCommandRunner,
+    jarUri = EmrHadoopJarsDir.resolve(EmrCommandRunner).toString,
     sparkJarUri = jarUri,
     command = "spark-submit",
     sparkMainClass = None,

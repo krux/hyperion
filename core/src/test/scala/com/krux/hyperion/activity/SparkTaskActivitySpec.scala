@@ -25,7 +25,7 @@ class SparkTaskActivitySpec extends FlatSpec {
   it should "handle command runner" in {
     val cluster = EmrCluster().withApplications(EmrApplication.Spark)
     val activity = SparkTaskActivity.commandRunner("something.jar")(cluster).withMainClass(MainClass)
-    activity.jarUri.shouldBe("command-runner.jar": HString)
+    activity.jarUri.shouldBe("/var/lib/aws/emr/step-runner/hadoop-jars/command-runner.jar": HString)
     activity.command.shouldBe("spark-submit": HString)
   }
 }
