@@ -6,7 +6,7 @@ import org.joda.time.DateTime
 
 import com.krux.hyperion.adt._
 import com.krux.hyperion.aws.AdpParameter
-import com.krux.hyperion.common.{HdfsUri, S3Uri}
+import com.krux.hyperion.common.{ HdfsUri, S3Uri }
 
 /**
  * Defines and builds Parameter and returns the specific type instead of the paraent type.
@@ -73,7 +73,7 @@ sealed abstract class Parameter[T : GenericParameter] extends ParameterBuilder[T
       optional = HBoolean.False.serialize,
       allowedValues = None,
       isArray = HBoolean.False.serialize,
-      `default` = value.map(_.toString)
+      `default` = value.map(env.serialize)
     )
   )
 
