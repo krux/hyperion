@@ -13,7 +13,8 @@ class FileSplitter(
   numberOfBytesPerFile: Long = Long.MaxValue,
   bufferSize: Long,
   compressed: Boolean,
-  temporaryDirectory: File
+  temporaryDirectory: File,
+  compressionTypeEnding: String = "gz"
 ) {
   private class FileState(
     val outputStreamWriter: Option[OutputStream] = None
@@ -48,13 +49,11 @@ class FileSplitter(
       else s
     }, bufferSize.toInt)
     var needFile = true
-    val sourceName = source.getName
-    val compressionTypeEnding = sourceName.substring(sourceName.lastIndexOf(".")+1, sourceName.length)
 
     var read = input.read()
     while (read != -1) {
       if (needFile) {
-        val split = startNewFile(compressionTypeEnding)
+        val split = startNewFile()
         splits += split
 
         println(s"Creating split #${splits.size}: ${split.getAbsolutePath}")
@@ -77,7 +76,7 @@ class FileSplitter(
     fileState = new FileState
   }
 
-  private def startNewFile(compressionTypeEnding: String): File = {
+  private def startNewFile(): File = {
     fileState.close()
 
     val file = File.createTempFile("split-", ".tmp", temporaryDirectory)
