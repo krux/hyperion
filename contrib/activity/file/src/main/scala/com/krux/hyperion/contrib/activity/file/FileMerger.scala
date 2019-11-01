@@ -2,7 +2,7 @@ package com.krux.hyperion.contrib.activity.file
 
 import java.io._
 import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
-import org.apache.commons.compress.compressors.bzip2.{ BZip2CompressorInputStream, BZip2CompressorOutputStream}
+import org.apache.commons.compress.compressors.bzip2.{ BZip2CompressorInputStream, BZip2CompressorOutputStream }
 
 import org.apache.commons.io.IOUtils
 
