@@ -6,7 +6,6 @@ import com.github.nscala_time.time.Imports._
 import com.krux.hyperion._
 import com.krux.hyperion.cli.Reads._
 import com.krux.hyperion.expression.Duration
-import org.json4s.BuildInfo
 import scopt.OptionParser
 
 /**
