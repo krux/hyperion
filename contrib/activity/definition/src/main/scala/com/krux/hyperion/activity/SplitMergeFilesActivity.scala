@@ -25,7 +25,8 @@ case class SplitMergeFilesActivity private (
   bufferSize: Option[HString],
   pattern: Option[HString],
   markSuccessfulJobs: HBoolean,
-  temporaryDirectory: Option[HString]
+  temporaryDirectory: Option[HString],
+  compressionFormat: Option[HString]
 ) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = SplitMergeFilesActivity
@@ -47,6 +48,7 @@ case class SplitMergeFilesActivity private (
   def markingSuccessfulJobs() = copy(markSuccessfulJobs = HBoolean.True)
   def ignoringEmptyInput() = copy(ignoreEmptyInput = HBoolean.True)
   def withTemporaryDirectory(temporaryDirectory: HString) = copy(temporaryDirectory = Option(temporaryDirectory))
+  def withCompressionFormat(compressionFormat: HString) = copy(compressionFormat = Option(compressionFormat))
 
   private def arguments: Seq[HType] = Seq(
     compressedOutput.exists(Seq[HString]("-z")),
@@ -90,7 +92,8 @@ object SplitMergeFilesActivity extends RunnableObject {
       bufferSize = None,
       pattern = None,
       markSuccessfulJobs = HBoolean.False,
-      temporaryDirectory = None
+      temporaryDirectory = None,
+      compressionFormat = None
     )
 
 }
