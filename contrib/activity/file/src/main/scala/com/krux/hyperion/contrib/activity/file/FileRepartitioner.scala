@@ -33,7 +33,8 @@ case class FileRepartitioner(options: Options) {
         numberOfBytesPerFile = options.numberOfBytesPerFile.getOrElse(Long.MaxValue),
         bufferSize = options.bufferSize,
         compressed = options.compressed,
-        temporaryDirectory = options.temporaryDirectory.get
+        temporaryDirectory = options.temporaryDirectory.get,
+        compressionFormat = options.compressionFormat
       ).split(file)
 
     case Some(n) =>
@@ -43,7 +44,8 @@ case class FileRepartitioner(options: Options) {
         numberOfBytesPerFile = file.length() / n,
         bufferSize = options.bufferSize,
         compressed = options.compressed,
-        temporaryDirectory = options.temporaryDirectory.get
+        temporaryDirectory = options.temporaryDirectory.get,
+        compressionFormat = options.compressionFormat
       ).split(file)
   }
 

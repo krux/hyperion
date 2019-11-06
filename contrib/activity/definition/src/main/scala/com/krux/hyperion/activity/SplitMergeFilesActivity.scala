@@ -1,10 +1,13 @@
 package com.krux.hyperion.activity
 
 import com.krux.hyperion.HyperionContext
-import com.krux.hyperion.adt.{ HBoolean, HInt, HLong, HString, HType }
-import com.krux.hyperion.common.{ BaseFields, PipelineObjectId, S3Uri }
+import com.krux.hyperion.adt.{HBoolean, HInt, HLong, HString, HType}
+import com.krux.hyperion.common.{BaseFields, PipelineObjectId, S3Uri}
+import com.krux.hyperion.enum.CompressionFormat
+import com.krux.hyperion.enum.CompressionFormat.CompressionFormat
 import com.krux.hyperion.expression.RunnableObject
-import com.krux.hyperion.resource.{ Ec2Resource, Resource }
+import com.krux.hyperion.resource.{Ec2Resource, Resource}
+
 
 case class SplitMergeFilesActivity private (
   baseFields: BaseFields,
@@ -26,7 +29,7 @@ case class SplitMergeFilesActivity private (
   pattern: Option[HString],
   markSuccessfulJobs: HBoolean,
   temporaryDirectory: Option[HString],
-  compressionFormat: Option[HString]
+  compressionFormat: CompressionFormat
 ) extends BaseShellCommandActivity with WithS3Input with WithS3Output {
 
   type Self = SplitMergeFilesActivity
@@ -48,7 +51,7 @@ case class SplitMergeFilesActivity private (
   def markingSuccessfulJobs() = copy(markSuccessfulJobs = HBoolean.True)
   def ignoringEmptyInput() = copy(ignoreEmptyInput = HBoolean.True)
   def withTemporaryDirectory(temporaryDirectory: HString) = copy(temporaryDirectory = Option(temporaryDirectory))
-  def withCompressionFormat(compressionFormat: HString) = copy(compressionFormat = Option(compressionFormat))
+  def withCompressionFormat(compressionFormat: CompressionFormat) = copy(compressionFormat = compressionFormat)
 
   private def arguments: Seq[HType] = Seq(
     compressedOutput.exists(Seq[HString]("-z")),
@@ -64,7 +67,8 @@ case class SplitMergeFilesActivity private (
     bytesPerFile.map(n => Seq[HString]("-C", n)),
     bufferSize.map(n => Seq[HString]("-S", n)),
     pattern.map(p => Seq[HString]("--name", p)),
-    Option(Seq[HString](filename))
+    Option(Seq[HString](filename)),
+    Option(Seq[HString]("--CF",(compressionFormat.toString))),
   ).flatten.flatten
 
   override def scriptArguments = (jarUri.serialize: HString) +: mainClass +: arguments
@@ -93,7 +97,7 @@ object SplitMergeFilesActivity extends RunnableObject {
       pattern = None,
       markSuccessfulJobs = HBoolean.False,
       temporaryDirectory = None,
-      compressionFormat = None
+      compressionFormat = CompressionFormat.GZ
     )
 
 }

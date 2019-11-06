@@ -18,5 +18,5 @@ case class Options(
   ignoreEmptyInput: Boolean = false,
   inputs: Seq[File] = Seq.empty,
   outputDirectory: Seq[File] = Seq.empty,
-  temporaryDirectory: Option[File] = None
-)
+  temporaryDirectory: Option[File] = None,
+  compressionFormat: String = "gz")

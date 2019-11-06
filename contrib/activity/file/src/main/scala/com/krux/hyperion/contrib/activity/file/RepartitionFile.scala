@@ -146,6 +146,8 @@ object RepartitionFile {
         .text("Base of input file names (the path with the leading directories removed) matches shell pattern PATTERN.")
       arg[String]("NAME").required().action((x, c) => c.copy(output = x))
         .text("use NAME for the output filename.  The actual files will have suffixes of suffix-length")
+      opt[String]("compressionFormat").valueName("CF").optional().action((x, c) => c.copy(compressionFormat = x))
+        .text("specify the compression format required for merging and splitting files")
 
       note(s"\nIf --input PATH is not specified, then directories specified by $${INPUT1_STAGING_DIR}..$${INPUT10_STAGING_DIR} are searched for files.\n")
       note(s"If --output PATH is not specified, then directories specified by $${OUTPUT1_STAGING_DIR}..$${OUTPUT10_STAGING_DIR} are used.")
