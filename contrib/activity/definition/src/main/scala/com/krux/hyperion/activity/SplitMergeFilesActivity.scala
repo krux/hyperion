@@ -68,7 +68,7 @@ case class SplitMergeFilesActivity private (
     bufferSize.map(n => Seq[HString]("-S", n)),
     pattern.map(p => Seq[HString]("--name", p)),
     Option(Seq[HString](filename)),
-    Option(Seq[HString]("-k",(compressionFormat.toString))),
+    Option(Seq[HString]("-k",(compressionFormat.toString)))
   ).flatten.flatten
 
   override def scriptArguments = (jarUri.serialize: HString) +: mainClass +: arguments
