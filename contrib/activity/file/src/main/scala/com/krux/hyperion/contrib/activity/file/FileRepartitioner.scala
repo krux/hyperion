@@ -11,7 +11,11 @@ case class FileRepartitioner(options: Options) {
     case Seq(one) if options.numberOfFiles != Some(1) || options.header.isEmpty => one
 
     case files =>
-      val destination: File = File.createTempFile("merge-", if (options.compressed) ".gz" else ".tmp", options.temporaryDirectory.get)
+      val compressionExtension =
+        if (options.compressed && options.compressionFormat.equals("gz")) ".gz"
+        else if (options.compressed && options.compressionFormat.equals("bz2")) ".bz2"
+        else ".tmp"
+      val destination: File = File.createTempFile("merge-", compressionExtension, options.temporaryDirectory.get)
       destination.deleteOnExit()
 
       // If we are simply merging files then the merge step needs to add the header.

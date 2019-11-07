@@ -77,11 +77,12 @@ object RepartitionFile {
     }
 
   def applyDefaultCompression(options: Options): Options =
-    if (options.compressed && !options.output.endsWith(".gz")) {
+    if (options.compressed && options.compressionFormat.equals("gz"))
       options.copy(output = s"${options.output}.gz")
-    } else {
+    else if (options.compressed && options.compressionFormat.equals("bz2"))
+      options.copy(output = s"${options.output}.bz2")
+    else
       options
-    }
 
   def applyDefaults(options: Options): Options =
     Seq(
