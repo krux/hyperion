@@ -2,6 +2,9 @@ package com.krux.hyperion.contrib.activity.file
 
 import java.io.File
 
+import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat
+import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat.CompressionFormat
+
 case class Options(
   header: Option[String] = None,
   pattern: Option[String] = None,
@@ -19,4 +22,4 @@ case class Options(
   inputs: Seq[File] = Seq.empty,
   outputDirectory: Seq[File] = Seq.empty,
   temporaryDirectory: Option[File] = None,
-  compressionFormat: String = "gz")
+  compressionFormat: CompressionFormat = CompressionFormat.GZ)

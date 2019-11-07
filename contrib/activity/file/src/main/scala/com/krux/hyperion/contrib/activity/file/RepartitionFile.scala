@@ -1,8 +1,10 @@
 package com.krux.hyperion.contrib.activity.file
 
-import java.io.{ File, FilenameFilter }
+import java.io.{File, FilenameFilter}
 import java.nio.file._
 
+import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat
+import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat.CompressionFormat
 import scopt.OptionParser
 
 object RepartitionFile {
@@ -77,9 +79,9 @@ object RepartitionFile {
     }
 
   def applyDefaultCompression(options: Options): Options =
-    if (options.compressed && options.compressionFormat.equals("gz"))
+    if (options.compressed && options.compressionFormat.equals(CompressionFormat.GZ))
       options.copy(output = s"${options.output}.gz")
-    else if (options.compressed && options.compressionFormat.equals("bz2"))
+    else if (options.compressed && options.compressionFormat.equals(CompressionFormat.BZ2))
       options.copy(output = s"${options.output}.bz2")
     else
       options
@@ -108,6 +110,9 @@ object RepartitionFile {
   def main(args: Array[String]): Unit = {
     val parser = new OptionParser[Options](s"hyperion-file-repartition-activity") {
       override def showUsageOnError = false
+
+      implicit val compressionFormatRead: scopt.Read[CompressionFormat.Value] =
+        scopt.Read.reads(CompressionFormat withName _)
 
       note(
         """Repartitions a set of files into either a given number of files, lines per file or bytes per file.
@@ -147,7 +152,7 @@ object RepartitionFile {
         .text("Base of input file names (the path with the leading directories removed) matches shell pattern PATTERN.")
       arg[String]("NAME").required().action((x, c) => c.copy(output = x))
         .text("use NAME for the output filename.  The actual files will have suffixes of suffix-length")
-      opt[String]('k', "compressionFormat").optional().action((x, c) => c.copy(compressionFormat = x))
+      opt[CompressionFormat]('k', "compressionFormat").optional().action((x, c) => c.copy(compressionFormat = x))
         .text("specify the compression format required for merging and splitting files")
 
       note(s"\nIf --input PATH is not specified, then directories specified by $${INPUT1_STAGING_DIR}..$${INPUT10_STAGING_DIR} are searched for files.\n")

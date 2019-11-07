@@ -1,7 +1,9 @@
 package com.krux.hyperion.contrib.activity.file
 
 import java.io.File
-import java.nio.file.{ AtomicMoveNotSupportedException, Files, Paths, StandardCopyOption }
+import java.nio.file.{AtomicMoveNotSupportedException, Files, Paths, StandardCopyOption}
+
+import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat
 
 case class FileRepartitioner(options: Options) {
 
@@ -12,8 +14,8 @@ case class FileRepartitioner(options: Options) {
 
     case files =>
       val compressionExtension =
-        if (options.compressed && options.compressionFormat.equals("gz")) ".gz"
-        else if (options.compressed && options.compressionFormat.equals("bz2")) ".bz2"
+        if (options.compressed && options.compressionFormat.equals(CompressionFormat.GZ)) ".gz"
+        else if (options.compressed && options.compressionFormat.equals(CompressionFormat.BZ2)) ".bz2"
         else ".tmp"
       val destination: File = File.createTempFile("merge-", compressionExtension, options.temporaryDirectory.get)
       destination.deleteOnExit()
@@ -38,7 +40,7 @@ case class FileRepartitioner(options: Options) {
         bufferSize = options.bufferSize,
         compressed = options.compressed,
         temporaryDirectory = options.temporaryDirectory.get,
-        compressionFormat = options.compressionFormat
+        compressionFormat = options.compressionFormat.toString
       ).split(file)
 
     case Some(n) =>
@@ -49,7 +51,7 @@ case class FileRepartitioner(options: Options) {
         bufferSize = options.bufferSize,
         compressed = options.compressed,
         temporaryDirectory = options.temporaryDirectory.get,
-        compressionFormat = options.compressionFormat
+        compressionFormat = options.compressionFormat.toString
       ).split(file)
   }
 
