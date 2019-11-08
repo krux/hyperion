@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.7.1 - 2019-11-08
+### Fixed
+[#578](https://github.com/krux/hyperion/issues/578) - Correctly serialize the default value of datetime params.
+
 ## 5.7.0 - 2019-11-07
 ### Changed
 - [#590](https://github.com/krux/hyperion/issues/590) - Hyperion Level support to merge and split files for Bz2 compression format
