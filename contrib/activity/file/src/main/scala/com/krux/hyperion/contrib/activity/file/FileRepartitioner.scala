@@ -14,8 +14,8 @@ case class FileRepartitioner(options: Options) {
 
     case files =>
       val compressionExtension =
-        if (options.compressed && options.compressionFormat.equals(CompressionFormat.GZ)) ".gz"
-        else if (options.compressed && options.compressionFormat.equals(CompressionFormat.BZ2)) ".bz2"
+        if (options.compressed && options.compressionFormat == CompressionFormat.GZ) ".gz"
+        else if (options.compressed && options.compressionFormat == CompressionFormat.BZ2) ".bz2"
         else ".tmp"
       val destination: File = File.createTempFile("merge-", compressionExtension, options.temporaryDirectory.get)
       destination.deleteOnExit()

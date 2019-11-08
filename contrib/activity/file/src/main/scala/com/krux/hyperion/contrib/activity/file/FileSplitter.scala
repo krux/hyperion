@@ -86,8 +86,8 @@ class FileSplitter(
 
     fileState = new FileState(Option(new BufferedOutputStream({
       val s = new FileOutputStream(file, true)
-      if (compressed && compressionFormat.equals(CompressionFormat.GZ)) new GZIPOutputStream(s)
-      else if (compressed && compressionFormat.equals(CompressionFormat.BZ2)) new BZip2CompressorOutputStream(s)
+      if (compressed && compressionFormat == CompressionFormat.GZ) new GZIPOutputStream(s)
+      else if (compressed && compressionFormat == CompressionFormat.BZ2) new BZip2CompressorOutputStream(s)
       else s
     })))
 
