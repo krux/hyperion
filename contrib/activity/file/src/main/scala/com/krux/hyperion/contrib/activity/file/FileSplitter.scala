@@ -1,8 +1,11 @@
 package com.krux.hyperion.contrib.activity.file
 
 import java.io._
-import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
-import org.apache.commons.compress.compressors.bzip2.{ BZip2CompressorInputStream, BZip2CompressorOutputStream }
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+
+import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat
+import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat.CompressionFormat
+import org.apache.commons.compress.compressors.bzip2.{BZip2CompressorInputStream, BZip2CompressorOutputStream}
 
 import scala.collection.mutable.ListBuffer
 
@@ -14,7 +17,7 @@ class FileSplitter(
   bufferSize: Long,
   compressed: Boolean,
   temporaryDirectory: File,
-  compressionFormat: String = "gz"
+  compressionFormat: CompressionFormat = CompressionFormat.GZ
 ) {
   private class FileState(
     val outputStreamWriter: Option[OutputStream] = None
@@ -83,8 +86,8 @@ class FileSplitter(
 
     fileState = new FileState(Option(new BufferedOutputStream({
       val s = new FileOutputStream(file, true)
-      if (compressed && compressionFormat.equals("gz")) new GZIPOutputStream(s)
-      else if (compressed && compressionFormat.equals("bz2")) new BZip2CompressorOutputStream(s)
+      if (compressed && compressionFormat.equals(CompressionFormat.GZ)) new GZIPOutputStream(s)
+      else if (compressed && compressionFormat.equals(CompressionFormat.BZ2)) new BZip2CompressorOutputStream(s)
       else s
     })))
 
