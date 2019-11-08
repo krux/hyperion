@@ -40,7 +40,7 @@ case class FileRepartitioner(options: Options) {
         bufferSize = options.bufferSize,
         compressed = options.compressed,
         temporaryDirectory = options.temporaryDirectory.get,
-        compressionFormat = options.compressionFormat.toString
+        compressionFormat = options.compressionFormat
       ).split(file)
 
     case Some(n) =>
@@ -51,7 +51,7 @@ case class FileRepartitioner(options: Options) {
         bufferSize = options.bufferSize,
         compressed = options.compressed,
         temporaryDirectory = options.temporaryDirectory.get,
-        compressionFormat = options.compressionFormat.toString
+        compressionFormat = options.compressionFormat
       ).split(file)
   }
 
