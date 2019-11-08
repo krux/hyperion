@@ -3,8 +3,7 @@ package com.krux.hyperion.activity
 import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.adt.{HBoolean, HInt, HLong, HString, HType}
 import com.krux.hyperion.common.{BaseFields, PipelineObjectId, S3Uri}
-import com.krux.hyperion.enum.CompressionFormat
-import com.krux.hyperion.enum.CompressionFormat.CompressionFormat
+import com.krux.hyperion.activity.CompressionFormat.CompressionFormat
 import com.krux.hyperion.expression.RunnableObject
 import com.krux.hyperion.resource.{Ec2Resource, Resource}
 
