@@ -3,8 +3,6 @@ package com.krux.hyperion.contrib.activity.file
 import java.io.File
 import java.nio.file.{AtomicMoveNotSupportedException, Files, Paths, StandardCopyOption}
 
-import com.krux.hyperion.contrib.activity.file.enumeration.CompressionFormat
-
 case class FileRepartitioner(options: Options) {
 
   def repartition(): Boolean = moveFiles(nameFiles(split(merge())))

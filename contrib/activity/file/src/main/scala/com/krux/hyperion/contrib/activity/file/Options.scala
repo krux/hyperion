@@ -2,8 +2,7 @@ package com.krux.hyperion.contrib.activity.file
 
 import java.io.File
 
-import com.krux.hyperion.contrib.activity.file.enumeration.CompressionFormat
-import com.krux.hyperion.contrib.activity.file.enumeration.CompressionFormat.CompressionFormat
+import com.krux.hyperion.contrib.activity.file.CompressionFormat.CompressionFormat
 
 case class Options(
   header: Option[String] = None,
