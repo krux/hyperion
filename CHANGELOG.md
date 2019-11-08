@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 5.7.1 - 2019-11-08
 ### Changed
-- [#590](https://github.com/krux/hyperion/issues/590) - Changing hyperion level enum to enumeration
+- [#590](https://github.com/krux/hyperion/issues/595) - Changing hyperion level enum to enumeration
 
 ## 5.7.0 - 2019-11-07
 ### Changed
