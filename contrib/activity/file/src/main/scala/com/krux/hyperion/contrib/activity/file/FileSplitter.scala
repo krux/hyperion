@@ -3,8 +3,8 @@ package com.krux.hyperion.contrib.activity.file
 import java.io._
 import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
-import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat
-import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat.CompressionFormat
+import com.krux.hyperion.contrib.activity.file.enumeration.CompressionFormat
+import com.krux.hyperion.contrib.activity.file.enumeration.CompressionFormat.CompressionFormat
 import org.apache.commons.compress.compressors.bzip2.{BZip2CompressorInputStream, BZip2CompressorOutputStream}
 
 import scala.collection.mutable.ListBuffer

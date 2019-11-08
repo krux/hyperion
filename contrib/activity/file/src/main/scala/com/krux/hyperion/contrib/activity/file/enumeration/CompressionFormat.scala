@@ -1,4 +1,4 @@
-package com.krux.hyperion.contrib.activity.file.enum
+package com.krux.hyperion.contrib.activity.file.enumeration
 
 object CompressionFormat extends Enumeration {
   type CompressionFormat = Value

@@ -3,7 +3,7 @@ package com.krux.hyperion.contrib.activity.file
 import java.io.File
 import java.nio.file.{AtomicMoveNotSupportedException, Files, Paths, StandardCopyOption}
 
-import com.krux.hyperion.contrib.activity.file.enum.CompressionFormat
+import com.krux.hyperion.contrib.activity.file.enumeration.CompressionFormat
 
 case class FileRepartitioner(options: Options) {
 
