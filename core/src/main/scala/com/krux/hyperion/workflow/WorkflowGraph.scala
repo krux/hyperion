@@ -1,125 +1,71 @@
 package com.krux.hyperion.workflow
 
-import scala.annotation.tailrec
-import scala.language.implicitConversions
-
 import com.krux.hyperion.activity.PipelineActivity
-import com.krux.hyperion.common.PipelineObjectId
 import com.krux.hyperion.resource.ResourceObject
 
 class WorkflowGraph private (
-  val flow: Map[PipelineObjectId, Set[PipelineObjectId]],
-  val activities: Map[PipelineObjectId, PipelineActivity[_ <: ResourceObject]]
+  val nodes: Seq[PipelineActivity[_ <: ResourceObject]],
+  val roots: Seq[PipelineActivity[_ <: ResourceObject]],
+  val leaves: Seq[PipelineActivity[_ <: ResourceObject]],
+  val dependencies: Seq[(PipelineActivity[_ <: ResourceObject], PipelineActivity[_ <: ResourceObject])]
 ) {
-
-  type Flow = Map[PipelineObjectId, Set[PipelineObjectId]]
-
-  def this() =
-    this(
-      Map.empty[PipelineObjectId, Set[PipelineObjectId]],
-      Map.empty[PipelineObjectId, PipelineActivity[_ <: ResourceObject]]
-    )
-
-  def this(act: PipelineActivity[_ <: ResourceObject]) = {
-    this(
-      Map.empty[PipelineObjectId, Set[PipelineObjectId]],
-      Map(act.id -> act)
-    )
-  }
+  type A = PipelineActivity[_ <: ResourceObject]
 
   /**
-   * isolates are both roots and leaves
+   * The other graph of the expression follows this graph
    */
-  lazy val isolates: Set[PipelineObjectId] = activities.keySet -- flow.keySet
-
-  /**
-   * Ids of PipelineObject that does not depend on anything
-   */
-  lazy val roots: Set[PipelineObjectId] =
-    flow.values.foldLeft(flow.keySet) { (rs, dependents) =>
-      rs -- dependents
-    } ++ isolates
-
-  /**
-   * Ids of the PipelineObject have nothing depend on them
-   */
-  lazy val leaves: Set[PipelineObjectId] =
-    (flow.values.flatten.toSet -- flow.keySet) ++ isolates
-
-  /**
-   * Add a single activity
-   */
-  def +(act: PipelineActivity[_ <: ResourceObject]) =
-    if (activities.contains(act.id)) this
-    else new WorkflowGraph(flow, activities + (act.id -> act))
-
-  def +(act1: PipelineActivity[_ <: ResourceObject], act2: PipelineActivity[_ <: ResourceObject]) = {
-    val dependents = flow.get(act1.id) match {
-      case Some(acts) => acts + act2.id
-      case None => Set(act2.id)
-    }
-
-    val newActivities = activities + (act1.id -> act1) + (act2.id -> act2)
-
-    new WorkflowGraph(flow + (act1.id -> dependents), newActivities)
-  }
-
-  /**
-   * The other graph follows this graph
-   */
-  def ~>(other: WorkflowGraph): WorkflowGraph = {
-    val leafToRoots = this.leaves.map { r => r -> other.roots }.toMap
-
-    val newFlow = Seq(this.flow, other.flow, leafToRoots).reduceLeft(mergeFlow)
-    val newActivities = this.activities ++ other.activities
-
-    new WorkflowGraph(newFlow, newActivities)
-  }
+  def ~>(other: WorkflowGraph): WorkflowGraph =
+    WorkflowGraph(nodes ++ other.nodes, roots, other.leaves, dependencies ++ other.dependencies ++ other.roots.flatMap(r => leaves.map(l => r -> l)))
 
   /**
    * Merges two workflow graphs
    */
-  def ++(other: WorkflowGraph): WorkflowGraph = {
-    val newFlow = mergeFlow(this.flow, other.flow)
-    val newActivities = this.activities ++ other.activities
-    new WorkflowGraph(newFlow, newActivities)
+  def ++(other: WorkflowGraph): WorkflowGraph =
+      WorkflowGraph(nodes ++ other.nodes, roots ++ other.roots, leaves ++ other.leaves, dependencies ++ other.dependencies)
+
+
+  private lazy val dependencyGraph: Map[A, Seq[A]] =
+    nodes.map(_ -> Nil).toMap[A, Seq[A]] ++ dependencies.groupBy(_._1).mapValues(_.map(_._2))
+
+  private lazy val duplicatedIds =
+    nodes.groupBy(_.id).filter(_._2.toSet.size > 1).keySet
+
+  final def toActivities: Iterable[A] = {
+    assert(duplicatedIds.isEmpty, s"Duplicated ids detected: ${duplicatedIds.mkString(", ")}")
+
+    var unresolved = dependencyGraph
+    var resolved = Map.empty[A,A]
+
+    while(!unresolved.isEmpty){
+      val nodes = unresolved.filter(_._2.isEmpty).keySet
+      assert(!nodes.isEmpty, "Cyclic dependencies detected")
+
+      resolved ++= nodes.map(n => n -> n.dependsOn(dependencyGraph(n).map(resolved).sortBy(_.id):_*))
+      unresolved = unresolved.filterKeys(!nodes.contains(_)).mapValues(_.filterNot(nodes))
+    }
+    resolved.values.toSeq
+  }
+}
+
+object WorkflowGraph{
+
+  private def apply(
+    nodes: Seq[PipelineActivity[_ <: ResourceObject]],
+    roots: Seq[PipelineActivity[_ <: ResourceObject]],
+    leaves: Seq[PipelineActivity[_ <: ResourceObject]],
+    dependencies: Seq[(PipelineActivity[_ <: ResourceObject], PipelineActivity[_ <: ResourceObject])]
+  ): WorkflowGraph = {
+    new WorkflowGraph(nodes.distinct, roots.distinct, leaves.distinct, dependencies.distinct)
   }
 
-  private def mergeFlow(flow1: Flow, flow2: Flow): Flow =
-    flow2.foldLeft(flow1) { case (f, (act, dependents)) =>
-      val newDependents = f.get(act) match {
-        case Some(ds) => ds ++ dependents
-        case None => dependents
-      }
-      f + (act -> newDependents)
-    }
+  def apply(): WorkflowGraph = new WorkflowGraph(Nil, Nil, Nil, Nil)
 
-  implicit def pipelineId2Activity(pId: PipelineObjectId): PipelineActivity[_ <: ResourceObject] = activities(pId)
+  def apply(act: PipelineActivity[_ <: ResourceObject]): WorkflowGraph = new WorkflowGraph(Seq(act), Seq(act), Seq(act), Nil)
 
-  @tailrec
-  final def toActivities: Iterable[PipelineActivity[_ <: ResourceObject]] = {
-    assert(roots.nonEmpty)
-    assert(leaves.nonEmpty)
-
-    if (flow.isEmpty) {
-      activities.values
-    } else {
-      // get the immediate dependencies from the root node
-      val rootDependents: Set[(PipelineObjectId, PipelineObjectId)] =
-        for {
-          act <- roots -- isolates
-          dependent <- flow(act)
-        } yield (dependent, act)
-
-      // assign dependees to the immediate dependents
-      val actsWithDeps = rootDependents.groupBy(_._1)
-        .map { case (dependent, group) =>
-          dependent.dependsOn(group.map(_._2).toSeq.map(activities).sortBy(_.id): _*)
-        }
-
-      val newActivities = actsWithDeps.foldLeft(activities)((acts, act) => acts + (act.id -> act))
-      new WorkflowGraph(flow -- (roots -- isolates), newActivities).toActivities
-    }
+  def apply(exp: WorkflowExpression): WorkflowGraph = exp match {
+    case WorkflowNoActivityExpression => WorkflowGraph()
+    case WorkflowActivityExpression(act) => WorkflowGraph(act)
+    case WorkflowPlusExpression(left, right) => WorkflowGraph(left) ++ WorkflowGraph(right)
+    case WorkflowArrowExpression(left, right) => WorkflowGraph(left) ~> WorkflowGraph(right)
   }
-
 }

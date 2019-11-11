@@ -4,9 +4,9 @@ import com.krux.hyperion.HyperionContext
 import com.krux.hyperion.activity.ShellCommandActivity
 import com.krux.hyperion.resource.Ec2Resource
 import com.typesafe.config.ConfigFactory
-import org.scalatest.WordSpec
+import org.scalatest.{ Matchers, WordSpec }
 
-class WorkflowGraphSpec extends WordSpec {
+class WorkflowGraphSpec extends WordSpec  with Matchers{
 
   "WorkflowGraph" should {
 
@@ -32,40 +32,18 @@ class WorkflowGraphSpec extends WordSpec {
         (act4 -> act6)
       )
 
-      val workflowGraph = activityOrders.foldLeft(new WorkflowGraph()) { case (g, (a1, a2)) =>
-        g + (a1, a2)
+      val workflowGraph = activityOrders.foldLeft(WorkflowGraph()) { case (g, (a1, a2)) =>
+        g ++ (WorkflowGraph(a1) ~> WorkflowGraph(a2))
       }
 
-      val acts = workflowGraph.toActivities
+      val rAct3 = act3.dependsOn(act1, act2)
+      val rAct4 = act4.dependsOn(act2)
+      val rAct5 = act5.dependsOn(rAct3)
+      val rAct6 = act6.dependsOn(rAct3, rAct4)
 
-      assert(acts.size === 6)
-
-      acts.foreach { act =>
-        act.id.toString.take(4) match {
-          case "act1" =>
-            assert(act.dependsOn.size === 0)
-          case "act2" =>
-            assert(act.dependsOn.size === 0)
-          case "act3" =>
-            assert(act.dependsOn.map(_.id.toString.take(4)).toSet === Set("act1", "act2"))
-            act.dependsOn.foreach { dependee => assert(dependee.dependsOn.size === 0) }
-          case "act4" =>
-            assert(act.dependsOn.map(_.id.toString.take(4)).toSet === Set("act2"))
-            act.dependsOn.foreach { dependee => assert(dependee.dependsOn.size === 0) }
-          case "act5" =>
-            assert(act.dependsOn.map(_.id.toString.take(4)).toSet === Set("act3"))
-            act.dependsOn.foreach { dependee =>
-              assert(dependee.dependsOn.size === 2)
-            }
-          case "act6" =>
-            assert(act.dependsOn.map(_.id.toString.take(4)).toSet === Set("act3", "act4"))
-            act.dependsOn.foreach { dependee =>
-              if (dependee.id.toString.take(4) == "act3") assert(dependee.dependsOn.size === 2)
-              else assert(dependee.dependsOn.size === 1)
-            }
-          case _ => assert(true === false)  // should never happen
-        }
-      }
+      workflowGraph.toActivities should contain theSameElementsAs Seq(
+        act1, act2, rAct3, rAct4, rAct5, rAct6
+      )
     }
   }
 }
