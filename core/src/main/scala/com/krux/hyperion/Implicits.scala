@@ -1,8 +1,9 @@
 package com.krux.hyperion
 
+import java.time.ZonedDateTime
+
 import scala.language.implicitConversions
 
-import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.common.Memory
 import com.krux.hyperion.common.S3Uri.S3StringContext
 import com.krux.hyperion.common.HdfsUri.HdfsStringContext
@@ -16,7 +17,7 @@ object Implicits {
 
   implicit val jsonFormats = DefaultFormats
 
-  implicit def string2DateTime(day: String): DateTime = new DateTime(day)
+  implicit def string2DateTime(day: String): ZonedDateTime = ZonedDateTime.parse(day)
 
   implicit class DurationBuilder(n: Int) {
     def year = Year(n)

@@ -1,8 +1,7 @@
 package com.krux.hyperion.examples
 
 import com.typesafe.config.ConfigFactory
-
-import com.github.nscala_time.time.Imports.DateTime
+import java.time.ZonedDateTime
 
 import com.krux.hyperion.activity.ShellCommandActivity
 import com.krux.hyperion.Implicits._
@@ -15,7 +14,7 @@ object ExamplePipelineGroupWithSchedulerDelay extends DataPipelineDefGroup with 
 
   override implicit val hc: HyperionContext = new HyperionContext(ConfigFactory.load("example"))
 
-  def schedule: Schedule = Schedule.cron.startDateTime(new DateTime("2018-03-21T01:00:00Z"))
+  def schedule: Schedule = Schedule.cron.startDateTime(ZonedDateTime.parse("2018-03-21T01:00:00Z"))
 
   override def scheduleDelay = Some(1.hour)
 

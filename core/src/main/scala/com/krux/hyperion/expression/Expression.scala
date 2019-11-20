@@ -1,6 +1,6 @@
 package com.krux.hyperion.expression
 
-import org.joda.time.{DateTime, Period}
+import java.time.ZonedDateTime
 
 import scala.language.implicitConversions
 import scala.util.Try
@@ -31,7 +31,7 @@ object TypedExpression {
   implicit def int2IntConstantExp(num: Int): IntExp = IntConstantExp(num)
   implicit def string2StringConstantExp(raw: String): StringExp = StringConstantExp(raw)
   implicit def double2DoubleConstantExp(num: Double): DoubleExp = DoubleConstantExp(num)
-  implicit def dateTime2DateTimeConstantExp(dt: DateTime): DateTimeExp = DateTimeConstantExp(dt)
+  implicit def dateTime2DateTimeConstantExp(dt: ZonedDateTime): DateTimeExp = DateTimeConstantExp(dt)
 }
 
 trait IntExp extends TypedExpression { self =>
@@ -141,13 +141,13 @@ trait BooleanExp extends TypedExpression with Evaluatable[Boolean]
 
 trait DateTimeExp extends TypedExpression {
 
-  def +(period: Period): DateTimeExp = Seq(
-    Try(Year(period.getYears)),
-    Try(Month(period.getMonths)),
-    Try(Week(period.getWeeks)),
-    Try(Day(period.getDays)),
-    Try(Hour(period.getHours)),
-    Try(Minute(period.getMinutes))
+  def +(periodDuration: PeriodDuration): DateTimeExp = Seq(
+    Try(Year(periodDuration.year)),
+    Try(Month(periodDuration.month)),
+    Try(Week(periodDuration.week)),
+    Try(Day(periodDuration.day)),
+    Try(Hour(periodDuration.hour)),
+    Try(Minute(periodDuration.minute))
   ).flatMap(_.toOption).foldLeft(this)(_ + _)
 
   def + (period: Duration): DateTimeExp = period match {

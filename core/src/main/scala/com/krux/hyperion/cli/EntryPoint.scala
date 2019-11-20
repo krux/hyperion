@@ -1,8 +1,8 @@
 package com.krux.hyperion.cli
 
 import java.io.File
+import java.time.ZonedDateTime
 
-import com.github.nscala_time.time.Imports._
 import com.krux.hyperion._
 import com.krux.hyperion.cli.Reads._
 import com.krux.hyperion.expression.Duration
@@ -147,7 +147,7 @@ case class EntryPoint(pipeline: DataPipelineDefGroup) {
             """
               |     If specified, the TAG will be added to the tags specified in the pipeline definition.
             """.stripMargin),
-        opt[DateTime]("start").valueName("DATE")
+        opt[ZonedDateTime]("start").valueName("DATE")
           .action { (x, c) =>
             c.copy(schedule = Option(getRecurringSchedule(c, pipeline).startDateTime(x)))
           }
@@ -166,7 +166,7 @@ case class EntryPoint(pipeline: DataPipelineDefGroup) {
             """
               |     If specified, the pipeline will execute every PERIOD (ex: "1 day").
             """.stripMargin),
-        opt[DateTime]("until").valueName("DATE")
+        opt[ZonedDateTime]("until").valueName("DATE")
           .action { (x, c) =>
             c.copy(schedule = Option(getRecurringSchedule(c, pipeline).until(x)))
           }

@@ -2,7 +2,8 @@ package com.krux.hyperion.adt
 
 import scala.language.implicitConversions
 
-import org.joda.time.{DateTimeZone, DateTime}
+import java.time.format.DateTimeFormatter
+import java.time.{ZonedDateTime,ZoneOffset}
 
 import com.krux.hyperion.expression._
 import com.krux.hyperion.common.{HdfsUri, S3Uri, OptionalOrdered}
@@ -36,7 +37,7 @@ object HType {
   implicit def boolean2HBoolean(value: Boolean): HBoolean = HBoolean(Left(value))
   implicit def booleanExp2HBoolean(value: BooleanExp): HBoolean = HBoolean(Right(value))
 
-  implicit def dateTime2HDateTime(value: DateTime): HDateTime = HDateTime(Left(value))
+  implicit def dateTime2HDateTime(value: ZonedDateTime): HDateTime = HDateTime(Left(value))
   implicit def dateTimeExp2HDateTime(value: DateTimeExp): HDateTime = HDateTime(Right(value))
 
   implicit def duration2HDuration(value: Duration): HDuration = HDuration(Left(value))
@@ -131,12 +132,12 @@ object HBoolean {
   }
 }
 
-case class HDateTime(value: Either[DateTime, DateTimeExp]) extends HType {
+case class HDateTime(value: Either[ZonedDateTime, DateTimeExp]) extends HType {
 
-  val datetimeFormat = "yyyy-MM-dd'T'HH:mm:ss"
+  val datetimeFormat = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss")
 
   override lazy val serialize: String = value match {
-    case Left(dt) => dt.toDateTime(DateTimeZone.UTC).toString(datetimeFormat)
+    case Left(dt) => dt.withZoneSameLocal(ZoneOffset.UTC).format(datetimeFormat)
     case Right(expr) => expr.toString
   }
 

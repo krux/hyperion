@@ -1,11 +1,12 @@
 package com.krux.hyperion
 
-import com.github.nscala_time.time.Imports.{DateTime, DateTimeZone, Period}
+import java.time.{DayOfWeek, ZoneOffset, ZonedDateTime}
+
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.adt.{HDateTime, HDuration, HInt}
 import com.krux.hyperion.aws.{AdpOnDemandSchedule, AdpRecurringSchedule, AdpRef}
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ScheduleObjectId}
-import com.krux.hyperion.expression.Duration
+import com.krux.hyperion.expression.PeriodDuration
 
 /**
  * Schedule defines how a pipeline is run.
@@ -51,9 +52,8 @@ final case class RecurringSchedule private[hyperion] (
 
   def startDateTime(dt: HDateTime) = copy(start = Option(dt))
 
-
   def startThisHourAt(minuteOfHour: Int, secondOfMinute: Int) = {
-    val currentHour = DateTime.now.withZone(DateTimeZone.UTC).getHourOfDay
+    val currentHour = ZonedDateTime.now.withZoneSameLocal(ZoneOffset.UTC).getHour
     startTodayAt(currentHour, minuteOfHour, secondOfMinute)
   }
 
@@ -61,16 +61,19 @@ final case class RecurringSchedule private[hyperion] (
     startThisDayOfXAt(0, hourOfDay, minuteOfHour, secondOfMinute)((dt, _) => dt)
 
   def startThisWeekAt(dayOfWeek: Int, hourOfDay: Int, minuteOfHour: Int, secondOfMinute: Int) =
-    startThisDayOfXAt(dayOfWeek, hourOfDay, minuteOfHour, secondOfMinute)(_.withDayOfWeek(_))
+    startThisDayOfXAt(dayOfWeek, hourOfDay, minuteOfHour, secondOfMinute)((dt, int) => dt.`with`(DayOfWeek.of(int)))
 
   def startThisMonthAt(dayOfMonth: Int, hourOfDay: Int, minuteOfHour: Int, secondOfMinute: Int) =
     startThisDayOfXAt(dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute)(_.withDayOfMonth(_))
 
   private def startThisDayOfXAt(dayOfX: Int, hourOfDay: Int, minuteOfHour: Int,
-      secondOfMinute: Int)(dayOfFunc: (DateTime, Int) => DateTime) = {
-    val startDt = dayOfFunc(DateTime.now.withZone(DateTimeZone.UTC), dayOfX)
-      .withTime(hourOfDay, minuteOfHour, secondOfMinute, 0)
-    copy(start = Option(startDt: HDateTime))
+      secondOfMinute: Int)(dayOfFunc: (ZonedDateTime, Int) => ZonedDateTime) = {
+    val startDt = dayOfFunc(ZonedDateTime.now.withZoneSameLocal(ZoneOffset.UTC), dayOfX)
+    val startDtTm = ZonedDateTime.of(
+      startDt.getYear, startDt.getMonthValue, startDt.getDayOfMonth,
+      hourOfDay, minuteOfHour, secondOfMinute, 0, startDt.getZone
+    )
+    copy(start = Option(startDtTm: HDateTime))
   }
 
   def every(p: HDuration) = this.copy(period = p)
@@ -129,18 +132,18 @@ object Schedule {
 
   def onceAtActivation: RecurringSchedule = RecurringSchedule(end = Option(Left(1)), scheduleType = Cron)
 
-  def delay(schedule: Schedule, by: Duration, multiplier: Int): Schedule = {
+  def delay(schedule: Schedule, by: expression.Duration, multiplier: Int): Schedule = {
     import com.krux.hyperion.common.DurationConverters._
-    delay(schedule, by.asJodaPeriodMultiplied(multiplier))
+    delay(schedule, by.asPeriodDurationMultiplied(multiplier))
   }
 
-  def delay(schedule: Schedule, by: Period): Schedule = schedule match {
+  def delay(schedule: Schedule, by: PeriodDuration): Schedule = schedule match {
     case s: RecurringSchedule =>
       s.start match {
         case None =>
           s
         case Some(dt) =>
-          s.copy(start = Option(dt.value.fold[HDateTime](_ plus by, _ + by)))
+          s.copy(start = Option(dt.value.fold[HDateTime](_ plus by.toDuration, _ + by)))
       }
     case OnDemandSchedule =>
       OnDemandSchedule

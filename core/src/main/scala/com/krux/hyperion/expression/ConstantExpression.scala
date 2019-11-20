@@ -1,6 +1,6 @@
 package com.krux.hyperion.expression
 
-import org.joda.time.{DateTimeZone, DateTime}
+import java.time.{ZoneOffset, ZonedDateTime}
 
 
 trait ConstantExpression[T] extends Expression with Evaluatable[T] {
@@ -22,22 +22,22 @@ case class LongConstantExp(constantValue: Int) extends ConstantExpression[Int] w
 
 case class DoubleConstantExp(constantValue: Double) extends ConstantExpression[Double] with DoubleExp
 
-case class DateTimeConstantExp(constantValue: DateTime) extends ConstantExpression[DateTime] with DateTimeExp {
+case class DateTimeConstantExp(constantValue: ZonedDateTime) extends ConstantExpression[ZonedDateTime] with DateTimeExp {
 
   override def content: String = {
 
-    val utc = constantValue.toDateTime(DateTimeZone.UTC)
+    val utc = constantValue.withZoneSameLocal(ZoneOffset.UTC)
 
     val funcDt =
-      if (utc.getHourOfDay == 0 && utc.getMinuteOfHour == 0)
-        MakeDate(utc.getYear, utc.getMonthOfYear, utc.getDayOfMonth)
+      if (utc.getHour == 0 && utc.getMinute == 0)
+        MakeDate(utc.getYear, utc.getMonthValue, utc.getDayOfMonth)
       else
         MakeDateTime(
           utc.getYear,
-          utc.getMonthOfYear,
+          utc.getMonthValue,
           utc.getDayOfMonth,
-          utc.getHourOfDay,
-          utc.getMinuteOfHour)
+          utc.getHour,
+          utc.getMinute)
 
     funcDt.content
 

@@ -1,21 +1,20 @@
 package com.krux.hyperion.cli
 
-import com.github.nscala_time.time.Imports._
 import com.krux.hyperion.Schedule
 import com.krux.hyperion.expression.Duration
-import org.joda.time.DateTimeConstants
+import java.time.{DayOfWeek, ZonedDateTime, ZoneOffset}
 import scopt.Read._
 
 object Reads {
 
   private lazy val daysOfWeek = Map(
-    "monday" -> DateTimeConstants.MONDAY,
-    "tuesday" -> DateTimeConstants.TUESDAY,
-    "wednesday" -> DateTimeConstants.WEDNESDAY,
-    "thursday" -> DateTimeConstants.THURSDAY,
-    "friday" -> DateTimeConstants.FRIDAY,
-    "saturday" -> DateTimeConstants.SATURDAY,
-    "sunday" -> DateTimeConstants.SUNDAY
+    "monday" -> DayOfWeek.MONDAY,
+    "tuesday" -> DayOfWeek.TUESDAY,
+    "wednesday" -> DayOfWeek.WEDNESDAY,
+    "thursday" -> DayOfWeek.THURSDAY,
+    "friday" -> DayOfWeek.FRIDAY,
+    "saturday" -> DayOfWeek.SATURDAY,
+    "sunday" -> DayOfWeek.SUNDAY
   )
 
   private lazy val daysOfMonth = (1 to 31).flatMap { dom =>
@@ -29,17 +28,17 @@ object Reads {
 
   implicit val durationRead: scopt.Read[Duration] = reads { x => Duration(x) }
 
-  implicit val dateTimeRead: scopt.Read[DateTime] = reads { x =>
+  implicit val dateTimeRead: scopt.Read[ZonedDateTime] = reads { x =>
     val dt = x.toLowerCase match {
-      case "now" | "today" => DateTime.now
-      case "yesterday" => DateTime.yesterday
-      case "tomorrow" => DateTime.tomorrow
-      case dow if daysOfWeek.keySet contains dow => DateTime.now.withDayOfWeek(daysOfMonth(dow))
-      case dom if daysOfMonth.keySet contains dom => DateTime.now.withDayOfMonth(daysOfMonth(dom))
-      case d => DateTime.parse(d)
+      case "now" | "today" => ZonedDateTime.now
+      case "yesterday" => ZonedDateTime.now.minusDays(1)
+      case "tomorrow" => ZonedDateTime.now.plusDays(1)
+      case dow if daysOfWeek.keySet contains dow => ZonedDateTime.now.`with`(daysOfWeek(dow))
+      case dom if daysOfMonth.keySet contains dom => ZonedDateTime.now.withDayOfMonth(daysOfMonth(dom))
+      case d => ZonedDateTime.parse(d)
     }
 
-    dt.withZone(DateTimeZone.UTC)
+    dt.withZoneSameLocal(ZoneOffset.UTC)
   }
 
   implicit val scheduleRead: scopt.Read[Schedule] = reads { x =>

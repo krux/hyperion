@@ -5,10 +5,10 @@ import scala.util.{Failure, Success, Try}
 
 import java.io._
 import java.nio.file.Paths
+import java.time.ZonedDateTime
 
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.jcraft.jsch.{ChannelSftp, JSch, JSchException, UserInfo}
-import org.joda.time.DateTime
 import scopt.OptionParser
 
 object SftpActivity {
@@ -31,8 +31,8 @@ object SftpActivity {
     identity: Option[String] = None,
     path: Option[String] = None,
     pattern: Option[String] = None,
-    since: Option[DateTime] = None,
-    until: Option[DateTime] = None,
+    since: Option[ZonedDateTime] = None,
+    until: Option[ZonedDateTime] = None,
     skipEmpty: Boolean = false,
     markSuccessfulJobs: Boolean = false
   )
@@ -181,8 +181,8 @@ object SftpActivity {
             }
 
           case Some(DownloadAction) =>
-            val sinceDate = options.since.map(_.getMillis / 1000)
-            val untilDate = options.until.map(_.getMillis / 1000)
+            val sinceDate = options.since.map(_.toInstant.toEpochMilli / 1000)
+            val untilDate = options.until.map(_.toInstant.toEpochMilli / 1000)
 
             // List all of the files in the source folder
             sftp.ls(options.pattern.getOrElse("*")).asScala.foreach { entry =>
@@ -264,9 +264,9 @@ object SftpActivity {
             |  Downloads files matching PATTERN from SOURCE to OUTPUT1_STAGING_DIR.
           """.stripMargin)
         .children(
-          opt[String]("since").valueName("TIMESTAMP").optional().action((x, c) => c.copy(since = Option(new DateTime(x))))
+          opt[String]("since").valueName("TIMESTAMP").optional().action((x, c) => c.copy(since = Option(ZonedDateTime.parse(x))))
             .text("Download files modified after TIMESTAMP.\n"),
-          opt[String]("until").valueName("TIMESTAMP").optional().action((x, c) => c.copy(until = Option(new DateTime(x))))
+          opt[String]("until").valueName("TIMESTAMP").optional().action((x, c) => c.copy(until = Option(ZonedDateTime.parse(x))))
             .text("Download files modified before TIMESTAMP.\n"),
           arg[String]("SOURCE").optional().action((x, c) => c.copy(path = Option(x)))
             .text("Downloads files from SOURCE.\n")

@@ -1,8 +1,8 @@
 package com.krux.hyperion.expression
 
-import scala.language.implicitConversions
+import java.time.ZonedDateTime
 
-import org.joda.time.DateTime
+import scala.language.implicitConversions
 
 import com.krux.hyperion.adt._
 import com.krux.hyperion.aws.AdpParameter
@@ -125,7 +125,7 @@ object Parameter {
     )
   )
 
-  implicit def dateTimeParameter2HDateTime(p: Parameter[DateTime]): HDateTime = HDateTime(
+  implicit def dateTimeParameter2HDateTime(p: Parameter[ZonedDateTime]): HDateTime = HDateTime(
     Right(
       new DateTimeExp {
         def content = p.name
