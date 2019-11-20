@@ -12,6 +12,7 @@ val scoptArtifact           = "com.github.scopt"       %% "scopt"               
 val jschArtifact            = "com.jcraft"             %  "jsch"                      % "0.1.54"
 val configArtifact          = "com.typesafe"           %  "config"                    % "1.3.2"
 val commonsIoArtifact       = "commons-io"             %  "commons-io"                % "2.6"
+val commonsCompressArtifact = "org.apache.commons"     %  "commons-compress"          % "1.19"
 val awsDatapipelineArtifact = "com.amazonaws"          %  "aws-java-sdk-datapipeline" % awsSdkVersion
 val awsStsArtifact          = "com.amazonaws"          %  "aws-java-sdk-sts"          % awsSdkVersion
 val awsS3Artifact           = "com.amazonaws"          %  "aws-java-sdk-s3"           % awsSdkVersion
@@ -177,7 +178,8 @@ lazy val contribActivityFile = (project in file("contrib/activity/file")).
     name := "hyperion-file-activity",
     libraryDependencies ++= Seq(
       scoptArtifact,
-      commonsIoArtifact
+      commonsIoArtifact,
+      commonsCompressArtifact
     )
   )
 

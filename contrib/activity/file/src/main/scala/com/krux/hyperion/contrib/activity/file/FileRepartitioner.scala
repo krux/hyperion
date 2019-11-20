@@ -1,7 +1,7 @@
 package com.krux.hyperion.contrib.activity.file
 
 import java.io.File
-import java.nio.file.{ AtomicMoveNotSupportedException, Files, Paths, StandardCopyOption }
+import java.nio.file.{AtomicMoveNotSupportedException, Files, Paths, StandardCopyOption}
 
 case class FileRepartitioner(options: Options) {
 
@@ -11,7 +11,11 @@ case class FileRepartitioner(options: Options) {
     case Seq(one) if options.numberOfFiles != Some(1) || options.header.isEmpty => one
 
     case files =>
-      val destination: File = File.createTempFile("merge-", if (options.compressed) ".gz" else ".tmp", options.temporaryDirectory.get)
+      val compressionExtension =
+        if (options.compressed && options.compressionFormat == CompressionFormat.GZ) ".gz"
+        else if (options.compressed && options.compressionFormat == CompressionFormat.BZ2) ".bz2"
+        else ".tmp"
+      val destination: File = File.createTempFile("merge-", compressionExtension, options.temporaryDirectory.get)
       destination.deleteOnExit()
 
       // If we are simply merging files then the merge step needs to add the header.
@@ -33,7 +37,8 @@ case class FileRepartitioner(options: Options) {
         numberOfBytesPerFile = options.numberOfBytesPerFile.getOrElse(Long.MaxValue),
         bufferSize = options.bufferSize,
         compressed = options.compressed,
-        temporaryDirectory = options.temporaryDirectory.get
+        temporaryDirectory = options.temporaryDirectory.get,
+        compressionFormat = options.compressionFormat
       ).split(file)
 
     case Some(n) =>
@@ -43,7 +48,8 @@ case class FileRepartitioner(options: Options) {
         numberOfBytesPerFile = file.length() / n,
         bufferSize = options.bufferSize,
         compressed = options.compressed,
-        temporaryDirectory = options.temporaryDirectory.get
+        temporaryDirectory = options.temporaryDirectory.get,
+        compressionFormat = options.compressionFormat
       ).split(file)
   }
 

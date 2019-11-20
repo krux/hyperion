@@ -2,7 +2,8 @@ package com.krux.hyperion.expression
 
 import java.time.{ZoneOffset, ZonedDateTime}
 
-import com.krux.hyperion.common.{HdfsUri, S3Uri}
+import com.krux.hyperion.adt.HDateTime
+import com.krux.hyperion.common.{ HdfsUri, S3Uri }
 import com.krux.hyperion.expression.ParameterType._
 
 /**
@@ -20,11 +21,18 @@ trait GenericParameter[T] {
 
   /**
    * This needs to be implemented as a function (instead of a method) as we need to store it with
-   * the class at the time the implicit parseString for the type is availble (when the parameter
+   * the class at the time the implicit parseString for the type is available (when the parameter
    * instance is created). Since the calling of this function is mainly used when type is not
    * available such as in {{{List[Parameter[_]]}}}.
    */
   def parseString: (String) => T
+
+
+  /**
+   * This must be overwritten if default object serialization doesn't conform with
+   * the expected serialization format for a parameter value T.
+   */
+  def serialize(t: T): String = t.toString
 
   /**
    * Returns the reference expression of the parameter.
@@ -106,6 +114,8 @@ object GenericParameter {
     type Exp = DateTimeExp
 
     val parseString = (stringValue: String) => ZonedDateTime.parse(stringValue).withZoneSameLocal(ZoneOffset.UTC)
+
+    override def serialize(t: DateTime): String = (t: HDateTime).serialize
 
     def ref(param: Parameter[ZonedDateTime]): Exp = new Exp with Evaluatable[ZonedDateTime] {
       def content = param.name
