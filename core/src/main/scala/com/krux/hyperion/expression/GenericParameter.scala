@@ -115,7 +115,7 @@ object GenericParameter {
 
     val parseString = (stringValue: String) => ZonedDateTime.parse(stringValue).withZoneSameLocal(ZoneOffset.UTC)
 
-    override def serialize(t: DateTime): String = (t: HDateTime).serialize
+    override def serialize(t: ZonedDateTime): String = (t: HDateTime).serialize
 
     def ref(param: Parameter[ZonedDateTime]): Exp = new Exp with Evaluatable[ZonedDateTime] {
       def content = param.name
