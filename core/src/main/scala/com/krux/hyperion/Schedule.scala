@@ -1,12 +1,12 @@
 package com.krux.hyperion
 
-import java.time.{DayOfWeek, ZoneOffset, ZonedDateTime}
+import java.time.{DayOfWeek, LocalTime, ZoneOffset, ZonedDateTime}
 
 import com.krux.hyperion.Implicits._
 import com.krux.hyperion.adt.{HDateTime, HDuration, HInt}
 import com.krux.hyperion.aws.{AdpOnDemandSchedule, AdpRecurringSchedule, AdpRef}
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ScheduleObjectId}
-import com.krux.hyperion.expression.PeriodDuration
+import com.krux.hyperion.expression.{Duration, PeriodDuration}
 
 /**
  * Schedule defines how a pipeline is run.
@@ -53,7 +53,7 @@ final case class RecurringSchedule private[hyperion] (
   def startDateTime(dt: HDateTime) = copy(start = Option(dt))
 
   def startThisHourAt(minuteOfHour: Int, secondOfMinute: Int) = {
-    val currentHour = ZonedDateTime.now.withZoneSameLocal(ZoneOffset.UTC).getHour
+    val currentHour = ZonedDateTime.now.withZoneSameInstant(ZoneOffset.UTC).getHour
     startTodayAt(currentHour, minuteOfHour, secondOfMinute)
   }
 
@@ -68,12 +68,9 @@ final case class RecurringSchedule private[hyperion] (
 
   private def startThisDayOfXAt(dayOfX: Int, hourOfDay: Int, minuteOfHour: Int,
       secondOfMinute: Int)(dayOfFunc: (ZonedDateTime, Int) => ZonedDateTime) = {
-    val startDt = dayOfFunc(ZonedDateTime.now.withZoneSameLocal(ZoneOffset.UTC), dayOfX)
-    val startDtTm = ZonedDateTime.of(
-      startDt.getYear, startDt.getMonthValue, startDt.getDayOfMonth,
-      hourOfDay, minuteOfHour, secondOfMinute, 0, startDt.getZone
-    )
-    copy(start = Option(startDtTm: HDateTime))
+    val startDt = dayOfFunc(ZonedDateTime.now.withZoneSameInstant(ZoneOffset.UTC), dayOfX)
+      .`with`(LocalTime.of(hourOfDay, minuteOfHour, secondOfMinute))
+    copy(start = Option(startDt: HDateTime))
   }
 
   def every(p: HDuration) = this.copy(period = p)
@@ -132,7 +129,7 @@ object Schedule {
 
   def onceAtActivation: RecurringSchedule = RecurringSchedule(end = Option(Left(1)), scheduleType = Cron)
 
-  def delay(schedule: Schedule, by: expression.Duration, multiplier: Int): Schedule = {
+  def delay(schedule: Schedule, by: Duration, multiplier: Int): Schedule = {
     import com.krux.hyperion.common.DurationConverters._
     delay(schedule, by.asPeriodDurationMultiplied(multiplier))
   }

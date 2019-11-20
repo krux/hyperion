@@ -2,7 +2,6 @@ package com.krux.hyperion.common
 
 import com.krux.hyperion.expression._
 
-
 /**
  * Handles the duration conversion between expression and PeriodDuration
  */
@@ -20,11 +19,4 @@ object DurationConverters {
     }
 
   }
-
 }
-
-
-
-
-
-

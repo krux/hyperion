@@ -38,7 +38,7 @@ object Reads {
       case d => ZonedDateTime.parse(d)
     }
 
-    dt.withZoneSameLocal(ZoneOffset.UTC)
+    dt.withZoneSameInstant(ZoneOffset.UTC)
   }
 
   implicit val scheduleRead: scopt.Read[Schedule] = reads { x =>

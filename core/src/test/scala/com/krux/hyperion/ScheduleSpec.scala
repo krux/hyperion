@@ -24,8 +24,8 @@ class ScheduleSpec extends WordSpec{
     }
   }
 
-  "`with` function of ZonedDateTime" should {
-    "shift the date same as equivalence in Joda time" in {
+  "`with` function of DayOfWeek" should {
+    "shift the date same as withDayOfWeek in Joda time" in {
 
       val dateTimeFormatStr = "yyyy-MM-dd'T'HH:mm:ss"
       val datetimeFormat = DateTimeFormatter.ofPattern(dateTimeFormatStr)
@@ -42,6 +42,20 @@ class ScheduleSpec extends WordSpec{
         javaDt.`with`(DayOfWeek.of(6)).format(datetimeFormat) === jodaDt.withDayOfWeek(6).toString(dateTimeFormatStr) &&
         javaDt.`with`(DayOfWeek.of(7)).format(datetimeFormat) === jodaDt.withDayOfWeek(7).toString(dateTimeFormatStr)
       )
+    }
+  }
+
+  "withZoneSameLocal" should {
+    "be consistent with withZone in joda time" in {
+
+      val dateTimeFormatStr = "yyyy-MM-dd'T'HH:mm:ss"
+      val datetimeFormat = DateTimeFormatter.ofPattern( dateTimeFormatStr)
+
+      val javaDt = ZonedDateTime.parse("2019-11-18T00:00:00Z").withZoneSameLocal(ZoneId.of("UTC"))
+
+      val jodaDt = new DateTime("2019-11-18T00:00:00Z").withZone(DateTimeZone.UTC)
+
+      assert(javaDt.format(datetimeFormat) === jodaDt.toString(dateTimeFormatStr))
     }
   }
 }

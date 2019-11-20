@@ -3,6 +3,7 @@ package com.krux.hyperion.adt
 import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 
+import org.joda.time.{DateTime, DateTimeZone}
 import org.scalatest.WordSpec
 
 class HTypeSpec extends WordSpec {
@@ -15,18 +16,17 @@ class HTypeSpec extends WordSpec {
     }
   }
 
-  "withZoneSameLocal" should {
-    "change the time zone but retain the datetime" in {
+  "withZoneSameInstant" should {
+    "be consistent with withZone in joda time" in {
 
-      val datetimeFormat = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss")
+      val dateTimeFormatStr = "yyyy-MM-dd'T'HH:mm:ss"
+      val datetimeFormat = DateTimeFormatter.ofPattern( dateTimeFormatStr)
 
-      val dt = ZonedDateTime.parse("2019-11-18T00:00:00Z")
+      val javaDt = ZonedDateTime.parse("2019-11-18T00:00:00Z").withZoneSameInstant(ZoneId.of("UTC"))
 
-      val dtUtc = dt.withZoneSameLocal(ZoneId.of("UTC"))
+      val jodaDt = new DateTime("2019-11-18T00:00:00Z").withZone(DateTimeZone.UTC)
 
-      assert(
-        dt.format(datetimeFormat) === dtUtc.format(datetimeFormat) &&
-        dtUtc.getZone === ZoneId.of("UTC"))
+      assert(javaDt.format(datetimeFormat) === jodaDt.toString(dateTimeFormatStr))
     }
   }
 }
