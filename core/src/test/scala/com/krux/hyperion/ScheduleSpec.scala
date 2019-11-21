@@ -30,8 +30,8 @@ class ScheduleSpec extends WordSpec{
       val dateTimeFormatStr = "yyyy-MM-dd'T'HH:mm:ss"
       val datetimeFormat = DateTimeFormatter.ofPattern(dateTimeFormatStr)
 
-      val javaDt = ZonedDateTime.parse("2019-11-20T00:00:00Z").withZoneSameLocal(ZoneId.of("UTC"))
-      val jodaDt = new DateTime("2019-11-20T00:00:00Z").toDateTime(DateTimeZone.UTC)
+      val javaDt = ZonedDateTime.parse("2019-11-20T00:00:00Z").withZoneSameInstant(ZoneId.of("UTC"))
+      val jodaDt = new DateTime("2019-11-20T00:00:00Z").withZone(DateTimeZone.UTC)
 
       assert(
         javaDt.`with`(DayOfWeek.of(1)).format(datetimeFormat) === jodaDt.withDayOfWeek(1).toString(dateTimeFormatStr) &&
@@ -46,14 +46,13 @@ class ScheduleSpec extends WordSpec{
   }
 
   "withZoneSameLocal" should {
-    "be consistent with withZone in joda time" in {
+    "be consistent with toDateTime in joda time" in {
 
       val dateTimeFormatStr = "yyyy-MM-dd'T'HH:mm:ss"
       val datetimeFormat = DateTimeFormatter.ofPattern( dateTimeFormatStr)
 
       val javaDt = ZonedDateTime.parse("2019-11-18T00:00:00Z").withZoneSameLocal(ZoneId.of("UTC"))
-
-      val jodaDt = new DateTime("2019-11-18T00:00:00Z").withZone(DateTimeZone.UTC)
+      val jodaDt = new DateTime("2019-11-18T00:00:00Z").toDateTime(DateTimeZone.UTC)
 
       assert(javaDt.format(datetimeFormat) === jodaDt.toString(dateTimeFormatStr))
     }
