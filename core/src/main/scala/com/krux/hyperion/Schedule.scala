@@ -6,7 +6,7 @@ import com.krux.hyperion.Implicits._
 import com.krux.hyperion.adt.{HDateTime, HDuration, HInt}
 import com.krux.hyperion.aws.{AdpOnDemandSchedule, AdpRecurringSchedule, AdpRef}
 import com.krux.hyperion.common.{PipelineObject, PipelineObjectId, ScheduleObjectId}
-import com.krux.hyperion.expression.{Duration, PeriodDuration}
+import com.krux.hyperion.expression.Duration
 
 /**
  * Schedule defines how a pipeline is run.
@@ -131,16 +131,16 @@ object Schedule {
 
   def delay(schedule: Schedule, by: Duration, multiplier: Int): Schedule = {
     import com.krux.hyperion.common.DurationConverters._
-    delay(schedule, by.asPeriodDurationMultiplied(multiplier))
+    delay(schedule, by.asDurationMultiplied(multiplier))
   }
 
-  def delay(schedule: Schedule, by: PeriodDuration): Schedule = schedule match {
+  def delay(schedule: Schedule, by: java.time.Duration): Schedule = schedule match {
     case s: RecurringSchedule =>
       s.start match {
         case None =>
           s
         case Some(dt) =>
-          s.copy(start = Option(dt.value.fold[HDateTime](_ plus by.toDuration, _ + by)))
+          s.copy(start = Option(dt.value.fold[HDateTime](_ plus by, _ + by)))
       }
     case OnDemandSchedule =>
       OnDemandSchedule

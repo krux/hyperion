@@ -3,7 +3,6 @@ package com.krux.hyperion.expression
 import java.time.ZonedDateTime
 
 import scala.language.implicitConversions
-import scala.util.Try
 
 /**
  * Expression. Expressions are delimited by: "#{" and "}" and the contents of the braces are
@@ -141,14 +140,10 @@ trait BooleanExp extends TypedExpression with Evaluatable[Boolean]
 
 trait DateTimeExp extends TypedExpression {
 
-  def +(periodDuration: PeriodDuration): DateTimeExp = Seq(
-    Try(Year(periodDuration.year)),
-    Try(Month(periodDuration.month)),
-    Try(Week(periodDuration.week)),
-    Try(Day(periodDuration.day)),
-    Try(Hour(periodDuration.hour)),
-    Try(Minute(periodDuration.minute))
-  ).flatMap(_.toOption).foldLeft(this)(_ + _)
+  // java.time.Duration converted to minutes which is the lowest granularity
+  // supported by Amazon Datapipeline expression
+  def + (duration: java.time.Duration): DateTimeExp =
+    this + Minute(duration.toMinutes.toInt)
 
   def + (period: Duration): DateTimeExp = period match {
     case Minute(n) => PlusMinutes(this, IntConstantExp(n))

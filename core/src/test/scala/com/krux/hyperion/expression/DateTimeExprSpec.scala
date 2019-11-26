@@ -5,21 +5,21 @@ import org.scalatest.WordSpec
 class DateTimeExprSpec extends WordSpec {
   "+" should {
     "add hour period to DateTime expression" in {
-      val expectation = PlusHours(RunnableObject.ActualStartTime,2)
+      val expectation = PlusMinutes(RunnableObject.ActualStartTime,120)
 
-      val periodDuration = PeriodDuration.hours(2)
+      val duration = java.time.Duration.ofHours(2)
 
-      val expr = RunnableObject.ActualStartTime +  periodDuration
+      val expr = RunnableObject.ActualStartTime + duration
 
       assert(expr === expectation)
     }
 
     "add complex period to DateTime expression" in {
-      val expectation = PlusMinutes(PlusHours(PlusDays(PlusWeeks(PlusMonths(PlusYears(RunnableObject.ActualStartTime,1),1),1),1),1),10)
+      val expectation = PlusMinutes(RunnableObject.ActualStartTime,1510)
 
-      val periodDuration = PeriodDuration(year = 1, month = 1, week = 1, day = 1, hour = 1, minute = 10)
+      val duration = java.time.Duration.ofDays(1).plusHours(1).plusMinutes(10)
 
-      val expr = RunnableObject.ActualStartTime + periodDuration
+      val expr = RunnableObject.ActualStartTime + duration
 
       assert(expr === expectation)
     }
