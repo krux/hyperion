@@ -8,7 +8,7 @@ import com.krux.hyperion.expression._
  */
 object DurationConverters {
 
-  implicit class AsDuration(duration: Duration) {
+  implicit class AsJavaDuration(duration: Duration) {
 
     def asDurationMultiplied(multiplier: Int): java.time.Duration = duration match {
       case Year(n)   => java.time.Duration.ofDays(Period.ofYears(n * multiplier).getDays)
