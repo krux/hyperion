@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.7.3 - 2019-12-03
+### Changed
+- [#543](https://github.com/krux/hyperion/issues/543) - Replace joda time with java.time
+
 ## 5.7.2 - 2019-11-08
 ### Changed
 - [#595](https://github.com/krux/hyperion/issues/595) - Not able to import compressionFormat enum in other repository which uses hyperion
