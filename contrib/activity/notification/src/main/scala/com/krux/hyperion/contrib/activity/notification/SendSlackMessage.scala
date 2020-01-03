@@ -3,7 +3,7 @@ package com.krux.hyperion.contrib.activity.notification
 import java.net.{ HttpURLConnection, URL }
 
 import org.json4s.JsonAST.{ JString, JObject }
-import org.json4s.jackson.JsonMethods._
+import org.json4s.native.JsonMethods._
 import scopt.OptionParser
 
 object SendSlackMessage {

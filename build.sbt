@@ -7,7 +7,7 @@ val slf4jVersion    = "1.7.25"
 
 val nscalaTimeArtifact      = "com.github.nscala-time" %% "nscala-time"               % "2.18.0"
 val jodaConvertArtifact     = "org.joda"               %  "joda-convert"              % "2.0"    % "provided"
-val json4sJacksonArtifact   = "org.json4s"             %% "json4s-jackson"            % "3.5.3"
+val json4sNativeArtifact    = "org.json4s"             %% "json4s-native"             % "3.5.3"
 val scoptArtifact           = "com.github.scopt"       %% "scopt"                     % "3.7.0"
 val jschArtifact            = "com.jcraft"             %  "jsch"                      % "0.1.54"
 val configArtifact          = "com.typesafe"           %  "config"                    % "1.3.2"
@@ -133,7 +133,7 @@ lazy val core = (project in file("core")).
       awsDatapipelineArtifact,
       awsStsArtifact,
       nscalaTimeArtifact,
-      json4sJacksonArtifact,
+      json4sNativeArtifact,
       scoptArtifact,
       configArtifact,
       slf4jApiArtifact,
@@ -202,7 +202,7 @@ lazy val contribActivityNotification = (project in file("contrib/activity/notifi
     name := "hyperion-notification-activity",
     libraryDependencies ++= Seq(
       scoptArtifact,
-      json4sJacksonArtifact,
+      json4sNativeArtifact,
       awsSnsArtifact,
       awsSqsArtifact,
       smtpArtifact

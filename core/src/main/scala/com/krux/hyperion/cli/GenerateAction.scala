@@ -2,7 +2,7 @@ package com.krux.hyperion.cli
 
 import java.io.PrintStream
 
-import org.json4s.jackson.JsonMethods._
+import org.json4s.native.JsonMethods._
 
 import com.krux.hyperion.DataPipelineDefGroup
 
