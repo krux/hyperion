@@ -127,6 +127,11 @@ trait BaseEmrCluster extends ResourceObject {
     emrClusterFields.copy(visibleToAllUsers = Option(visible))
   )
 
+  def subnetId = emrClusterFields.subnetId
+  def withSubnetId(subnet: HString): Self = updateEmrClusterFields(
+    emrClusterFields.copy(subnetId = Option(subnet))
+  )
+
   def releaseLabel = emrClusterFields.releaseLabel
 
   def applications = emrClusterFields.applications
@@ -205,7 +210,6 @@ object BaseEmrCluster {
     availabilityZone = hc.emrAvailabilityZone.map(x => x: HString),
     resourceRole = Option(hc.emrResourceRole: HString),
     role = Option(hc.emrRole: HString),
-    subnetId = hc.emrSubnetId.map(x => x: HString),
     terminateAfter = hc.emrTerminateAfter.map(x => x: HDuration),
     initTimeout = hc.emrInitTimeout.map(x => x: HDuration)
   )

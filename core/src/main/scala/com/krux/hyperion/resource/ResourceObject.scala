@@ -38,11 +38,6 @@ trait ResourceObject extends NamedPipelineObject {
     resourceFields.copy(availabilityZone = Option(az))
   )
 
-  def subnetId = resourceFields.subnetId
-  def withSubnetId(subnet: HString): Self = updateResourceFields(
-    resourceFields.copy(subnetId = Option(subnet))
-  )
-
   def useOnDemandOnLastAttempt = resourceFields.useOnDemandOnLastAttempt
   def withUseOnDemandOnLastAttempt(use: HBoolean): Self = updateResourceFields(
     resourceFields.copy(useOnDemandOnLastAttempt = Option(use))

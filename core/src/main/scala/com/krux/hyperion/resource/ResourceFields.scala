@@ -9,7 +9,6 @@ case class ResourceFields(
   keyPair: Option[HString],
   region: Option[HString],
   availabilityZone: Option[HString],
-  subnetId: Option[HString],
   useOnDemandOnLastAttempt: Option[HBoolean] = None,
   initTimeout: Option[HDuration] = None,
   terminateAfter: Option[HDuration] = None,

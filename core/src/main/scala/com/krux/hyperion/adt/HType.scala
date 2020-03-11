@@ -27,6 +27,7 @@ object HType {
   implicit def stringOption2HStringOption(value: Option[String]): Option[HString] =
     value.map(v => HString(Left(v)))
   implicit def stringExp2HString(value: StringExp): HString = HString(Right(value))
+  implicit def stringSeqOption2HString(value: Option[Seq[String]]): Option[Seq[HString]] = value.map(v1 => v1.map(v2 => HString(Left(v2))))
 
   implicit def int2HInt(value: Int): HInt = HInt(Left(value))
   implicit def intExp2HInt(value: IntExp): HInt = HInt(Right(value))
