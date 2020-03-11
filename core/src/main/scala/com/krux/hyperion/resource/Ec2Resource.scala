@@ -52,7 +52,7 @@ case class Ec2Resource private (
     availabilityZone = availabilityZone.map(_.serialize),
     subnetId = if (randomSubnetIds.getOrElse(Seq()).nonEmpty) randomSubnetIds.map(ids => ids(random.nextInt(ids.size)).serialize) else None,
     associatePublicIpAddress = Option(associatePublicIpAddress.serialize),
-    securityGroups = if (randomSubnetIds.getOrElse(Seq()).nonEmpty) securityGroups.map(_.serialize) else None,
+    securityGroups = if (randomSubnetIds.getOrElse(Seq()).isEmpty) securityGroups.map(_.serialize) else None,
     securityGroupIds = if (randomSubnetIds.getOrElse(Seq()).nonEmpty) securityGroupIds.map(_.serialize) else None,
     spotBidPrice = spotBidPrice.map(_.serialize),
     useOnDemandOnLastAttempt = useOnDemandOnLastAttempt.map(_.serialize),
