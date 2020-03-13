@@ -1,11 +1,9 @@
 package com.krux.hyperion
 
-import scala.collection.JavaConverters._
 import scala.util.Try
 
-import com.typesafe.config.{Config, ConfigFactory}
-
 import com.krux.hyperion.expression.Duration
+import com.typesafe.config.{ Config, ConfigFactory }
 
 /**
  * Basic configurations
@@ -32,7 +30,7 @@ class HyperionContext(config: Config) {
   lazy val ec2Region = Try(config.getString("hyperion.aws.ec2.region")).toOption.getOrElse(region)
   lazy val ec2KeyPair = Try(config.getString("hyperion.aws.ec2.keypair")).toOption.orElse(keypair)
   lazy val ec2AvailabilityZone = Try(config.getString("hyperion.aws.ec2.availability_zone")).toOption
-  lazy val ec2RandomSubnetIds = Try(config.getStringList("hyperion.aws.ec2.random_subnets").asScala).toOption
+  lazy val ec2SubnetId = Try(config.getString("hyperion.aws.ec2.subnet")).toOption
   lazy val ec2Role = Try(config.getString("hyperion.aws.ec2.role")).toOption.getOrElse(role)
   lazy val ec2ResourceRole = Try(config.getString("hyperion.aws.ec2.resource.role")).toOption.getOrElse(resourceRole)
 

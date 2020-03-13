@@ -47,8 +47,7 @@ object LegacyEmrCluster {
       coreInstanceType = Option(hc.emrInstanceType: HString),
       taskInstanceCount = 0,
       taskInstanceType = Option(hc.emrInstanceType: HString),
-      releaseLabel = None, // make sure release label is not set
-      subnetId = hc.emrSubnetId
+      releaseLabel = None  // make sure release label is not set
     )
 
 }

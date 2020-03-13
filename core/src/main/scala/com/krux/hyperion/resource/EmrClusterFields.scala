@@ -11,7 +11,6 @@ case class EmrClusterFields(
   taskInstanceCount: HInt,
   taskInstanceType: Option[HString],
   releaseLabel: Option[HString],  // do not use ami version with release label
-  subnetId: Option[HString],
   supportedProducts: Option[HString] = None,
   bootstrapAction: Seq[HString] = Seq.empty,
   enableDebugging: Option[HBoolean] = None,

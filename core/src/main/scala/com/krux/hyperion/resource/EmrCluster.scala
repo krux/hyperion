@@ -51,8 +51,7 @@ object EmrCluster {
       coreInstanceType = Option(hc.emrInstanceType: HString),
       taskInstanceCount = 0,
       taskInstanceType = Option(hc.emrInstanceType: HString),
-      releaseLabel = hc.emrReleaseLabel,
-      subnetId = hc.emrSubnetId
+      releaseLabel = hc.emrReleaseLabel
     )
   )
 
