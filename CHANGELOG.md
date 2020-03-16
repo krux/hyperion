@@ -2,9 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 6.0.0-SNAPSHOT - 2019-12-03
+## 6.0.0-SNAPSHOT - 2020-03-13
 ### Changed
 - [#543](https://github.com/krux/hyperion/issues/543) - Replace joda time with java.time
+- [#577](https://github.com/krux/hyperion/issues/577) - Allow specifying multiple subnet IDs for EC2 resources in 
+configuration (`hyperion.aws.ec2.subnets`) and randomly retrieve one upon pipeline initialization. 
+`hyperion.aws.ec2.subnet` is NO LONGER SUPPORTED.
 
 ## 5.8.1 - 2019-12-06
 ### Fixed
