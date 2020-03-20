@@ -1,31 +1,16 @@
 package com.krux.hyperion.aws
 
-import java.time.format.DateTimeFormatter
-import java.time.{ZoneOffset, ZonedDateTime}
-
-import org.json4s._
 import org.json4s.JsonDSL._
+import org.json4s._
 
 /**
  * Serializes an AWS DataPipeline object to JSON
  */
 object AdpJsonSerializer {
 
-  val datetimeFormat = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss")
   val refKey = "ref"
   val idKey = "id"
   val nameKey = "name"
-
-  case object DateTimeSerializer extends CustomSerializer[ZonedDateTime](format => (
-    {
-      case JString(s) => ZonedDateTime.parse(s, datetimeFormat).withZoneSameLocal(ZoneOffset.UTC)
-      case JNull => null
-    },
-    {
-      case d: ZonedDateTime =>
-        JString(d.withZoneSameLocal(ZoneOffset.UTC).format(datetimeFormat))
-    }
-  ))
 
   case object AdpRefSerializer extends CustomSerializer[AdpRef[AdpDataPipelineObject]](format => (
     {
@@ -38,7 +23,7 @@ object AdpJsonSerializer {
 
   def apply[A <: AdpObject](obj: A)(implicit m: Manifest[A]): JValue = {
 
-    implicit val formats = DefaultFormats + FieldSerializer[A]() + DateTimeSerializer + AdpRefSerializer
+    implicit val formats = DefaultFormats + FieldSerializer[A]() + AdpRefSerializer
 
     obj match {
       case o: AdpParameter => Extraction.decompose(o)
