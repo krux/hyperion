@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#577](https://github.com/krux/hyperion/issues/577) - Allow specifying multiple subnet IDs for EC2 resources in 
 configuration (`hyperion.aws.ec2.subnets`) and randomly retrieve one upon pipeline initialization. 
 `hyperion.aws.ec2.subnet` is NO LONGER SUPPORTED.
-- [#570](https://github.com/krux/hyperion/issues/570) - AdpJsonSerializer is obsolete for date/time after a series of changes
+- [#570](https://github.com/krux/hyperion/issues/570) - DateTimeSerializer in AdpJsonSerializer is obsolete after a series of changes
 
 ## 5.8.1 - 2019-12-06
 ### Fixed
