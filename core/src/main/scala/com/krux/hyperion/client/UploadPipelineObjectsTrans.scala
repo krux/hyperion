@@ -63,13 +63,24 @@ case class UploadPipelineObjectsTrans(
         log.error(s"Failed to upload pipeline definition to pipeline $pipelineId")
         log.error(s"Deleting the just created pipeline $pipelineId")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
+        //Pipeline Creation Failed. Notify the Progress.
+        pipelineDef.pipelineLifeCycle.startPipeline(name, pipelineId, "fail")
+
         None
       } else if (putDefinitionResult.getValidationErrors.isEmpty
         && putDefinitionResult.getValidationWarnings.isEmpty) {
         log.info("Successfully created pipeline")
+
+        //Pipeline Created Successfully. Notify the Progress.
+        pipelineDef.pipelineLifeCycle.startPipeline(name, pipelineId, "start")
+
         Option(pipelineId)
       } else {
         log.warn("Successful with warnings")
+
+        //Pipeline Created with warnings. Notify the Progress.
+        pipelineDef.pipelineLifeCycle.startPipeline(name, pipelineId, "start")
+
         Option(pipelineId)
       }
 
@@ -78,6 +89,10 @@ case class UploadPipelineObjectsTrans(
         log.error(s"InvalidRequestException (${e.getErrorCode}): ${e.getErrorMessage}")
         log.error("Deleting the just created pipeline")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
+
+        //Pipeline Creation Failed. Notify the Progress.
+        pipelineDef.pipelineLifeCycle.startPipeline(name, pipelineId, "fail")
+
         None
     }
 

@@ -29,6 +29,14 @@ trait DataPipelineDefGroup
 
   def schedule: Schedule
 
+  def pipelineLifeCycle: PipelineLifeCycle = new PipelineLifeCycle {
+
+    override def startPipeline(id: String, name: String, status: String): Unit = {
+
+    }
+
+  }
+
   /**
    * No delay by default
    */
@@ -78,6 +86,7 @@ object DataPipelineDefGroup {
             dpdg.hc,
             dpdg.nameForKey(key),
             delayedSchedule(dpdg, idx),
+            dpdg.pipelineLifeCycle,
             () => workflow,
             dpdg.tags,
             dpdg.parameters
@@ -101,6 +110,7 @@ object DataPipelineDefGroup {
 
     def toAwsPipelineObjects: Map[WorkflowKey, Seq[AwsPipelineObject]] =
       objects.mapValues(_.map(_.serialize).toList.sortBy(_.id).map(AdpPipelineSerializer(_)))
+
 
     def toJson: JValue =
       ("objects" -> JArray(objects.values.flatten.map(_.serialize).toList.sortBy(_.id).map(AdpJsonSerializer(_)))) ~
