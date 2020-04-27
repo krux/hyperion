@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import com.krux.hyperion.DataPipelineDefGroup
 import com.krux.stubborn.Retryable
 import com.krux.stubborn.policy.ExponentialBackoffAndJitter
-
+import com.krux.hyperion.Status
 
 case class UploadPipelineObjectsTrans(
   client: DataPipeline,
@@ -41,6 +41,8 @@ case class UploadPipelineObjectsTrans(
     log.info(s"Created pipeline $pipelineId ($name)")
     log.info(s"Uploading pipeline definition to $pipelineId")
 
+    pipelineDef.pipelineLifeCycle.onCreated(name, pipelineId, Status.SUCCESS)
+
     try {
 
       val putDefinitionResult = client
@@ -63,24 +65,19 @@ case class UploadPipelineObjectsTrans(
         log.error(s"Failed to upload pipeline definition to pipeline $pipelineId")
         log.error(s"Deleting the just created pipeline $pipelineId")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
-        //Pipeline Creation Failed. Notify the Progress.
-        pipelineDef.pipelineLifeCycle.startPipeline(name, pipelineId, "fail")
-
+        //Pipeline Creation Failed. Update pipelineLifeCycle.
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.FAIL)
         None
       } else if (putDefinitionResult.getValidationErrors.isEmpty
         && putDefinitionResult.getValidationWarnings.isEmpty) {
         log.info("Successfully created pipeline")
-
-        //Pipeline Created Successfully. Notify the Progress.
-        pipelineDef.pipelineLifeCycle.startPipeline(name, pipelineId, "start")
-
+        //Pipeline Created Successfully. Update pipelineLifeCycle.
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.SUCCESS)
         Option(pipelineId)
       } else {
         log.warn("Successful with warnings")
-
-        //Pipeline Created with warnings. Notify the Progress.
-        pipelineDef.pipelineLifeCycle.startPipeline(name, pipelineId, "start")
-
+        //Pipeline Created with warnings. Update pipelineLifeCycle.
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.SUCCESS_WITH_WARNINGS)
         Option(pipelineId)
       }
 
@@ -89,10 +86,8 @@ case class UploadPipelineObjectsTrans(
         log.error(s"InvalidRequestException (${e.getErrorCode}): ${e.getErrorMessage}")
         log.error("Deleting the just created pipeline")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
-
-        //Pipeline Creation Failed. Notify the Progress.
-        pipelineDef.pipelineLifeCycle.startPipeline(name, pipelineId, "fail")
-
+        //Pipeline Creation Failed. Update pipelineLifeCycle.
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.FAIL)
         None
     }
 
