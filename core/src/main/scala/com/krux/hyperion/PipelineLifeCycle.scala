@@ -1,13 +1,13 @@
 package com.krux.hyperion
 
+import com.krux.hyperion.common.Status
+
 trait PipelineLifeCycle {
 
-  def onUploaded(id: String, name: String, status: Status.Value)
+  def onCreated(id: String, name: String, status: Status.Value): Unit = {
+  }
 
-  def onCreated(id: String, name: String, status: Status.Value)
+  def onUploaded(id: String, name: String, status: Status.Value): Unit = {
+  }
 
-}
-
-object Status extends Enumeration {
-  val SUCCESS, FAIL, SUCCESS_WITH_WARNINGS = Value
 }

@@ -6,9 +6,9 @@ import com.amazonaws.services.datapipeline.model.{CreatePipelineRequest, Invalid
   PipelineObject, PutPipelineDefinitionRequest, Tag}
 import org.slf4j.LoggerFactory
 import com.krux.hyperion.DataPipelineDefGroup
+import com.krux.hyperion.common.Status
 import com.krux.stubborn.Retryable
 import com.krux.stubborn.policy.ExponentialBackoffAndJitter
-import com.krux.hyperion.Status
 
 case class UploadPipelineObjectsTrans(
   client: DataPipeline,
@@ -41,7 +41,7 @@ case class UploadPipelineObjectsTrans(
     log.info(s"Created pipeline $pipelineId ($name)")
     log.info(s"Uploading pipeline definition to $pipelineId")
 
-    pipelineDef.pipelineLifeCycle.onCreated(name, pipelineId, Status.SUCCESS)
+    pipelineDef.pipelineLifeCycle.onCreated(pipelineId, name, Status.Success)
 
     try {
 
@@ -66,18 +66,18 @@ case class UploadPipelineObjectsTrans(
         log.error(s"Deleting the just created pipeline $pipelineId")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
         //Pipeline Creation Failed. Update pipelineLifeCycle.
-        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.FAIL)
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.Fail)
         None
       } else if (putDefinitionResult.getValidationErrors.isEmpty
         && putDefinitionResult.getValidationWarnings.isEmpty) {
         log.info("Successfully created pipeline")
         //Pipeline Created Successfully. Update pipelineLifeCycle.
-        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.SUCCESS)
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.Success)
         Option(pipelineId)
       } else {
         log.warn("Successful with warnings")
         //Pipeline Created with warnings. Update pipelineLifeCycle.
-        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.SUCCESS_WITH_WARNINGS)
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.SuccessWithWarnings)
         Option(pipelineId)
       }
 
@@ -87,7 +87,7 @@ case class UploadPipelineObjectsTrans(
         log.error("Deleting the just created pipeline")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
         //Pipeline Creation Failed. Update pipelineLifeCycle.
-        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.FAIL)
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.Fail)
         None
     }
 

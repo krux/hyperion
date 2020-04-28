@@ -30,11 +30,6 @@ trait DataPipelineDefGroup
   def schedule: Schedule
 
   def pipelineLifeCycle: PipelineLifeCycle = new PipelineLifeCycle {
-    override def onUploaded(id: String, name: String, status: Status.Value): Unit = {
-    }
-
-    override def onCreated(id: String, name: String, status: Status.Value): Unit = {
-    }
   }
 
   /**
