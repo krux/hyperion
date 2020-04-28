@@ -6,9 +6,9 @@ import com.amazonaws.services.datapipeline.model.{CreatePipelineRequest, Invalid
   PipelineObject, PutPipelineDefinitionRequest, Tag}
 import org.slf4j.LoggerFactory
 import com.krux.hyperion.DataPipelineDefGroup
+import com.krux.hyperion.common.Status
 import com.krux.stubborn.Retryable
 import com.krux.stubborn.policy.ExponentialBackoffAndJitter
-
 
 case class UploadPipelineObjectsTrans(
   client: DataPipeline,
@@ -41,6 +41,8 @@ case class UploadPipelineObjectsTrans(
     log.info(s"Created pipeline $pipelineId ($name)")
     log.info(s"Uploading pipeline definition to $pipelineId")
 
+    pipelineDef.pipelineLifeCycle.onCreated(pipelineId, name, Status.Success)
+
     try {
 
       val putDefinitionResult = client
@@ -63,13 +65,19 @@ case class UploadPipelineObjectsTrans(
         log.error(s"Failed to upload pipeline definition to pipeline $pipelineId")
         log.error(s"Deleting the just created pipeline $pipelineId")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
+        //Pipeline Creation Failed. Update pipelineLifeCycle.
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.Fail)
         None
       } else if (putDefinitionResult.getValidationErrors.isEmpty
         && putDefinitionResult.getValidationWarnings.isEmpty) {
         log.info("Successfully created pipeline")
+        //Pipeline Created Successfully. Update pipelineLifeCycle.
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.Success)
         Option(pipelineId)
       } else {
         log.warn("Successful with warnings")
+        //Pipeline Created with warnings. Update pipelineLifeCycle.
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.SuccessWithWarnings)
         Option(pipelineId)
       }
 
@@ -78,6 +86,8 @@ case class UploadPipelineObjectsTrans(
         log.error(s"InvalidRequestException (${e.getErrorCode}): ${e.getErrorMessage}")
         log.error("Deleting the just created pipeline")
         AwsClientForId(client, Set(pipelineId), maxRetry).deletePipelines()
+        //Pipeline Creation Failed. Update pipelineLifeCycle.
+        pipelineDef.pipelineLifeCycle.onUploaded(name, pipelineId, Status.Fail)
         None
     }
 

@@ -29,6 +29,9 @@ trait DataPipelineDefGroup
 
   def schedule: Schedule
 
+  def pipelineLifeCycle: PipelineLifeCycle = new PipelineLifeCycle {
+  }
+
   /**
    * No delay by default
    */
@@ -78,6 +81,7 @@ object DataPipelineDefGroup {
             dpdg.hc,
             dpdg.nameForKey(key),
             delayedSchedule(dpdg, idx),
+            dpdg.pipelineLifeCycle,
             () => workflow,
             dpdg.tags,
             dpdg.parameters
