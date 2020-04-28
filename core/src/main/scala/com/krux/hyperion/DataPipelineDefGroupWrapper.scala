@@ -9,6 +9,7 @@ case class DataPipelineDefGroupWrapper private (
   override val pipelineName: String,
   override val nameKeySeparator: String,
   schedule: Schedule,
+  override val pipelineLifeCycle: PipelineLifeCycle,
   override val scheduleDelay: Option[Duration],
   workflowsFunc: () => Map[WorkflowKey, WorkflowExpression],  // for delayed workfow execution
   override val tags: Map[String, Option[String]],
@@ -20,6 +21,7 @@ case class DataPipelineDefGroupWrapper private (
   def withScheduleDelay(scheduleDelay: Option[Duration]) = copy(scheduleDelay = scheduleDelay)
   def withTags(tags: Map[String, Option[String]]) = copy(tags = this.tags ++ tags)
   def withParameters(parameters: Iterable[Parameter[_]]) = copy(parameters = parameters)
+  def withPipelineLifeCycle(pipelineLifeCycle: PipelineLifeCycle) = copy(pipelineLifeCycle = pipelineLifeCycle)
 
   def workflows = workflowsFunc()
 
@@ -33,6 +35,7 @@ object DataPipelineDefGroupWrapper {
       inner.pipelineName,
       inner.nameKeySeparator,
       inner.schedule,
+      inner.pipelineLifeCycle,
       inner.scheduleDelay,
       () => inner.workflows,
       inner.tags,
