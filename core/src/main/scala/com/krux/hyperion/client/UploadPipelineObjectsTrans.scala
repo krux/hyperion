@@ -6,7 +6,7 @@ import com.amazonaws.services.datapipeline.model.{CreatePipelineRequest, Invalid
   PipelineObject, PutPipelineDefinitionRequest, Tag}
 import org.slf4j.LoggerFactory
 import com.krux.hyperion.DataPipelineDefGroup
-import com.krux.hyperion.common.Status
+import com.krux.hyperion.PipelineLifeCycle.Status
 import com.krux.stubborn.Retryable
 import com.krux.stubborn.policy.ExponentialBackoffAndJitter
 
