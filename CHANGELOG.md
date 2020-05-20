@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 configuration (`hyperion.aws.ec2.subnets`) and randomly retrieve one upon pipeline initialization. 
 `hyperion.aws.ec2.subnet` is NO LONGER SUPPORTED.
 - [#570](https://github.com/krux/hyperion/issues/570) - DateTimeSerializer in AdpJsonSerializer is obsolete after a series of changes
+- [#603](https://github.com/krux/hyperion/issues/602) - Ability to run custom code after pipeline creation
 
 ## 5.8.1 - 2019-12-06
 ### Fixed
